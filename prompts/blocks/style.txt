@@ -1,0 +1,1 @@
+Flat 2D vector animation, matches {match_target} exactly. Background stays pure black and static. Same line weight and palette throughout.

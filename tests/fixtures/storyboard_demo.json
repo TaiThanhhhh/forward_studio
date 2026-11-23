@@ -1,0 +1,776 @@
+{
+  "slug": "chay-marathon-bung-rong",
+  "topic": "Điều gì xảy ra nếu bạn chạy marathon với cái bụng rỗng?",
+  "title": "Chạy marathon mà không ăn gì",
+  "hook": "Điều gì xảy ra nếu bạn chạy marathon với cái bụng rỗng?",
+  "universe": "A",
+  "experiment_no": 1,
+  "ingredients": [
+    {
+      "id": "REF_RUNNER",
+      "desc": "a simple 2D runner: round head, big white eyes with black pupils, body and limbs drawn as thick white lines, short electric-blue headband",
+      "accent_on": "the headband"
+    },
+    {
+      "id": "REF_TANK",
+      "desc": "a fuel tank shaped like a tall battery with thick white outline and a vertical level bar inside",
+      "accent_on": "the level bar"
+    }
+  ],
+  "shots": [
+    {
+      "id": "C01",
+      "beat": "hook",
+      "vo": "Điều gì xảy ra nếu bạn chạy marathon với cái bụng rỗng?",
+      "onscreen": [
+        {
+          "kind": "tag",
+          "text": "THÍ NGHIỆM #1",
+          "t": 0.0
+        }
+      ],
+      "target_sec": 1.4,
+      "refs": [
+        "REF_RUNNER"
+      ],
+      "subject": "the round-headed runner with the blue headband",
+      "accent_on": "the blue headband",
+      "camera": "Fast 10 percent push-in",
+      "start_frame": {
+        "desc": "The round-headed runner with the blue headband mid-stride at full sprint, one foot in the air, a giant white brick wall filling the right edge of the frame"
+      },
+      "action": [
+        {
+          "t": [
+            0,
+            1.5
+          ],
+          "do": "The runner sprints two strides and slams face-first into the wall, body squashing flat like rubber"
+        },
+        {
+          "t": [
+            1.5,
+            4
+          ],
+          "do": "The runner bounces backward, eyes spinning, legs wobbling"
+        }
+      ],
+      "trim": {
+        "speed": 1.15
+      },
+      "transition_in": "cut",
+      "sfx": [
+        "hit"
+      ],
+      "punch_in": [
+        0.7
+      ]
+    },
+    {
+      "id": "C02",
+      "beat": "hook",
+      "vo": "",
+      "onscreen": [
+        {
+          "kind": "counter",
+          "from": 0,
+          "value": 42,
+          "unit": "km",
+          "t": 0.2
+        }
+      ],
+      "target_sec": 1.6,
+      "refs": [
+        "REF_RUNNER"
+      ],
+      "subject": "the round-headed runner with the blue headband",
+      "accent_on": "the blue headband",
+      "camera": "Locked-off static shot",
+      "start_frame": {
+        "desc": "The round-headed runner with the blue headband standing at a white start line, patting a hollow empty stomach drawn as a dashed circle"
+      },
+      "action": [
+        {
+          "t": [
+            0,
+            1.2
+          ],
+          "do": "The runner pats the hollow stomach twice and the dashed circle shakes"
+        },
+        {
+          "t": [
+            1.2,
+            4
+          ],
+          "do": "The runner shrugs, crouches and launches forward off the start line"
+        }
+      ],
+      "transition_in": "whip",
+      "sfx": []
+    },
+    {
+      "id": "C03",
+      "beat": "setup",
+      "vo": "Cơ thể chỉ cất sẵn chừng 2.000 kcal glycogen.",
+      "onscreen": [
+        {
+          "kind": "counter",
+          "from": 0,
+          "value": 2000,
+          "unit": "kcal",
+          "t": 0.3
+        },
+        {
+          "kind": "label",
+          "text": "GLYCOGEN",
+          "t": 1.4,
+          "pos": [
+            0.5,
+            0.2
+          ]
+        }
+      ],
+      "target_sec": 2.8,
+      "refs": [
+        "REF_RUNNER",
+        "REF_TANK"
+      ],
+      "subject": "the round-headed runner with the battery-shaped fuel tank on the back",
+      "accent_on": "the full level bar inside the tank",
+      "camera": "Slow 8 percent push-in",
+      "start_frame": {
+        "desc": "The round-headed runner jogging in place in profile, a tall battery-shaped fuel tank strapped to the back, its level bar full to the top"
+      },
+      "action": [
+        {
+          "t": [
+            0,
+            1.5
+          ],
+          "do": "The level bar inside the tank pulses brightly twice"
+        },
+        {
+          "t": [
+            1.5,
+            4
+          ],
+          "do": "The runner gives a thumbs-up and bounces on the toes with springy squash-and-stretch"
+        }
+      ],
+      "transition_in": "cut",
+      "sfx": [
+        "pop"
+      ]
+    },
+    {
+      "id": "C04",
+      "beat": "setup",
+      "vo": "Nhưng 42 km đốt khoảng 2.700 kcal.",
+      "onscreen": [
+        {
+          "kind": "counter",
+          "from": 0,
+          "value": 2700,
+          "unit": "kcal",
+          "t": 0.2
+        }
+      ],
+      "target_sec": 2.2,
+      "refs": [
+        "REF_RUNNER",
+        "REF_TANK"
+      ],
+      "subject": "the round-headed runner with the battery-shaped fuel tank on the back",
+      "accent_on": "the level bar inside the tank",
+      "camera": "Side tracking shot moving left to right with the runner",
+      "start_frame": {
+        "desc": "The round-headed runner running hard in profile from left to right, the tank on the back with its level bar full, small white flames licking from the tank top"
+      },
+      "action": [
+        {
+          "t": [
+            0,
+            2
+          ],
+          "do": "The runner pumps arms and legs fast while the flames grow taller"
+        },
+        {
+          "t": [
+            2,
+            4
+          ],
+          "do": "The level bar drops sharply in two quick jerks"
+        }
+      ],
+      "trim": {
+        "speed": 1.2
+      },
+      "transition_in": "cut",
+      "sfx": []
+    },
+    {
+      "id": "C05",
+      "beat": "setup",
+      "vo": "",
+      "onscreen": [
+        {
+          "kind": "label",
+          "text": "THIẾU 700 KCAL",
+          "t": 0.4,
+          "pos": [
+            0.5,
+            0.2
+          ]
+        }
+      ],
+      "target_sec": 1.8,
+      "refs": [
+        "REF_TANK"
+      ],
+      "subject": "the small battery-shaped fuel tank",
+      "accent_on": "the level bar",
+      "camera": "Fast 12 percent pull-back",
+      "start_frame": {
+        "desc": "A small battery-shaped fuel tank on the left facing a huge white furnace mouth on the right"
+      },
+      "action": [
+        {
+          "t": [
+            0,
+            1.5
+          ],
+          "do": "The furnace mouth gulps the level bar out of the tank in one big bite"
+        },
+        {
+          "t": [
+            1.5,
+            4
+          ],
+          "do": "The empty tank shivers while the furnace opens wide for more"
+        }
+      ],
+      "transition_in": "cut",
+      "sfx": []
+    },
+    {
+      "id": "C06",
+      "beat": "escalate",
+      "vo": "Km 10: vẫn ổn, cơ bắp còn đầy năng lượng.",
+      "onscreen": [
+        {
+          "kind": "tag",
+          "text": "KM 10",
+          "t": 0.1
+        }
+      ],
+      "target_sec": 2.0,
+      "refs": [
+        "REF_RUNNER",
+        "REF_TANK"
+      ],
+      "subject": "the round-headed runner with the battery-shaped fuel tank on the back",
+      "accent_on": "the level bar at three quarters",
+      "camera": "Locked-off static shot",
+      "start_frame": {
+        "desc": "The round-headed runner running happily from left to right with a wide smile, the tank level bar at three quarters"
+      },
+      "action": [
+        {
+          "t": [
+            0,
+            2
+          ],
+          "do": "The runner bounds forward with big springy strides, arms swinging high"
+        },
+        {
+          "t": [
+            2,
+            4
+          ],
+          "do": "The runner hops over a small white rock with an easy overshoot"
+        }
+      ],
+      "trim": {
+        "speed": 1.15
+      },
+      "transition_in": "whip",
+      "sfx": []
+    },
+    {
+      "id": "C07",
+      "beat": "escalate",
+      "vo": "Km 21: bình nhiên liệu vơi một nửa, chân bắt đầu nặng.",
+      "onscreen": [
+        {
+          "kind": "tag",
+          "text": "KM 21",
+          "t": 0.1
+        }
+      ],
+      "target_sec": 2.0,
+      "refs": [
+        "REF_RUNNER",
+        "REF_TANK"
+      ],
+      "subject": "the round-headed runner with the battery-shaped fuel tank on the back",
+      "accent_on": "the level bar at half",
+      "camera": "Locked-off static shot",
+      "start_frame": {
+        "desc": "The round-headed runner running from left to right with sweat drops flying, the tank level bar at half"
+      },
+      "action": [
+        {
+          "t": [
+            0,
+            2
+          ],
+          "do": "The runner strides on as sweat drops burst off the head"
+        },
+        {
+          "t": [
+            2,
+            4
+          ],
+          "do": "Each foot lands heavier, the body sagging lower with every step"
+        }
+      ],
+      "transition_in": "cut",
+      "sfx": []
+    },
+    {
+      "id": "C08",
+      "beat": "escalate",
+      "vo": "",
+      "onscreen": [],
+      "target_sec": 1.4,
+      "refs": [
+        "REF_RUNNER",
+        "REF_TANK"
+      ],
+      "continues_from": "C07",
+      "subject": "the round-headed runner with the battery-shaped fuel tank on the back",
+      "accent_on": "the level bar",
+      "camera": "Locked-off static shot",
+      "start_frame": {
+        "desc": ""
+      },
+      "action": [
+        {
+          "t": [
+            0,
+            3
+          ],
+          "do": "The runner's legs swell into heavy grey blocks that drag and scrape along the ground"
+        }
+      ],
+      "avoid_drop": [
+        "morphing"
+      ],
+      "transition_in": "match",
+      "sfx": []
+    },
+    {
+      "id": "C09",
+      "beat": "escalate",
+      "vo": "Km 32: glycogen chạm đáy.",
+      "onscreen": [
+        {
+          "kind": "tag",
+          "text": "KM 32",
+          "t": 0.1
+        }
+      ],
+      "target_sec": 1.8,
+      "refs": [
+        "REF_TANK"
+      ],
+      "subject": "the battery-shaped fuel tank",
+      "accent_on": "the empty tank outline flashing alarm red",
+      "camera": "Fast 12 percent push-in",
+      "start_frame": {
+        "desc": "Close-up of the battery-shaped fuel tank, completely empty, its outline glowing alarm red"
+      },
+      "action": [
+        {
+          "t": [
+            0,
+            3
+          ],
+          "do": "The empty tank flashes red three times and rattles violently"
+        }
+      ],
+      "transition_in": "cut",
+      "sfx": [
+        "tick"
+      ]
+    },
+    {
+      "id": "C10",
+      "beat": "payoff",
+      "vo": "Và bạn đâm sầm vào thứ runner gọi là bức tường.",
+      "onscreen": [
+        {
+          "kind": "label",
+          "text": "BỨC TƯỜNG",
+          "t": 0.5,
+          "pos": [
+            0.5,
+            0.2
+          ]
+        }
+      ],
+      "target_sec": 2.0,
+      "refs": [
+        "REF_RUNNER"
+      ],
+      "state_change": true,
+      "subject": "the round-headed runner with the blue headband",
+      "accent_on": "the blue headband",
+      "camera": "Locked-off static shot",
+      "start_frame": {
+        "desc": "The round-headed runner staggering toward a giant white brick wall that fills the right half of the frame"
+      },
+      "end_frame": {
+        "desc": "The round-headed runner squashed flat against the giant white brick wall, arms spread wide, eyes spinning"
+      },
+      "action": [
+        {
+          "t": [
+            0,
+            1.5
+          ],
+          "do": "The runner lurches forward and smashes into the wall, squashing flat on impact"
+        },
+        {
+          "t": [
+            1.5,
+            4
+          ],
+          "do": "The flattened runner peels slowly down the wall"
+        }
+      ],
+      "transition_in": "flash",
+      "sfx": [
+        "boom"
+      ]
+    },
+    {
+      "id": "C11",
+      "beat": "payoff",
+      "vo": "Cơ thể buộc phải chuyển sang đốt mỡ, nhưng mỡ cháy quá chậm nên tốc độ tụt hẳn.",
+      "onscreen": [
+        {
+          "kind": "label",
+          "text": "ĐỐT MỠ",
+          "t": 0.3,
+          "pos": [
+            0.5,
+            0.2
+          ]
+        }
+      ],
+      "target_sec": 2.4,
+      "refs": [
+        "REF_RUNNER"
+      ],
+      "subject": "the round-headed runner with a big grey fat block on the back",
+      "accent_on": "the tiny flame under the fat block",
+      "camera": "Slow 8 percent push-in",
+      "start_frame": {
+        "desc": "The round-headed runner walking slowly with a big grey fat block strapped to the back, one tiny flame flickering under it"
+      },
+      "action": [
+        {
+          "t": [
+            0,
+            2
+          ],
+          "do": "The tiny flame sputters and flickers while the runner trudges forward"
+        },
+        {
+          "t": [
+            2,
+            4
+          ],
+          "do": "The runner leans forward, exhausted, arms dangling"
+        }
+      ],
+      "transition_in": "cut",
+      "sfx": []
+    },
+    {
+      "id": "C12",
+      "beat": "payoff",
+      "vo": "",
+      "onscreen": [
+        {
+          "kind": "arrow",
+          "text": "NHANH HƠN BẠN",
+          "t": 0.5,
+          "to": [
+            0.32,
+            0.55
+          ]
+        }
+      ],
+      "target_sec": 1.8,
+      "refs": [
+        "REF_RUNNER"
+      ],
+      "subject": "the round-headed runner crawling",
+      "accent_on": "the snail shell",
+      "camera": "Locked-off static shot",
+      "start_frame": {
+        "desc": "The round-headed runner crawling on hands and knees on the right, a small white snail with a shell on the left"
+      },
+      "action": [
+        {
+          "t": [
+            0,
+            3
+          ],
+          "do": "The snail zips past the crawling runner leaving speed lines, the runner's jaw drops"
+        }
+      ],
+      "transition_in": "cut",
+      "sfx": [
+        "whoosh"
+      ]
+    },
+    {
+      "id": "C13",
+      "beat": "twist",
+      "vo": "Bất ngờ: runner chỉ 10% mỡ vẫn mang đủ năng lượng",
+      "onscreen": [
+        {
+          "kind": "counter",
+          "from": 0,
+          "value": 50000,
+          "unit": "kcal",
+          "t": 0.2
+        }
+      ],
+      "target_sec": 2.6,
+      "refs": [
+        "REF_RUNNER"
+      ],
+      "subject": "the round-headed runner",
+      "accent_on": "the outline of the tower of fat blocks",
+      "camera": "Fast tilt up from the runner to the top of the tower",
+      "start_frame": {
+        "desc": "The small round-headed runner standing at the bottom of a towering stack of grey fat blocks rising out of the top of the frame"
+      },
+      "action": [
+        {
+          "t": [
+            0,
+            2
+          ],
+          "do": "The tower of fat blocks shoots upward block by block with snappy overshoot"
+        },
+        {
+          "t": [
+            2,
+            4
+          ],
+          "do": "The runner looks up, eyes huge, mouth wide open"
+        }
+      ],
+      "transition_in": "whip",
+      "sfx": []
+    },
+    {
+      "id": "C14",
+      "beat": "twist",
+      "vo": "cho khoảng 18 cuộc marathon.",
+      "onscreen": [
+        {
+          "kind": "compare",
+          "text": "x18",
+          "t": 0.3
+        }
+      ],
+      "target_sec": 1.8,
+      "refs": [
+        "REF_RUNNER"
+      ],
+      "layout_free": true,
+      "avoid_drop": [
+        "extra characters"
+      ],
+      "subject": "a long line of identical round-headed runners",
+      "accent_on": "the headbands",
+      "camera": "Fast whip pan from left to right",
+      "start_frame": {
+        "desc": "A long diagonal line of identical tiny round-headed runners with blue headbands running from left to right"
+      },
+      "action": [
+        {
+          "t": [
+            0,
+            3
+          ],
+          "do": "The line of runners sprints forward in perfect sync, legs blurring"
+        }
+      ],
+      "transition_in": "cut",
+      "sfx": [
+        "hit"
+      ]
+    },
+    {
+      "id": "C15",
+      "beat": "twist",
+      "vo": "Vấn đề không phải thiếu nhiên liệu, mà là đốt không kịp.",
+      "onscreen": [
+        {
+          "kind": "label",
+          "text": "ĐỐT KHÔNG KỊP",
+          "t": 0.6,
+          "pos": [
+            0.5,
+            0.2
+          ]
+        }
+      ],
+      "target_sec": 2.6,
+      "refs": [
+        "REF_TANK"
+      ],
+      "subject": "the huge fat block and the small battery-shaped fuel tank",
+      "accent_on": "the fast-flowing pipe from the fuel tank",
+      "camera": "Locked-off static shot",
+      "start_frame": {
+        "desc": "A huge grey fat block on the left feeding a thin dripping pipe and a small battery-shaped fuel tank on the right feeding a wide gushing pipe, both pipes leading to a white engine in the center"
+      },
+      "action": [
+        {
+          "t": [
+            0,
+            2
+          ],
+          "do": "The wide pipe gushes in fast pulses while the thin pipe releases one slow drip"
+        },
+        {
+          "t": [
+            2,
+            4
+          ],
+          "do": "The engine roars on the wide pipe and sputters on the thin one"
+        }
+      ],
+      "transition_in": "cut",
+      "sfx": []
+    },
+    {
+      "id": "C16",
+      "beat": "twist",
+      "vo": "Vì vậy runner nạp 30 đến 60 gram tinh bột mỗi giờ.",
+      "onscreen": [
+        {
+          "kind": "label",
+          "text": "30–60 G/GIỜ",
+          "t": 0.4,
+          "pos": [
+            0.5,
+            0.2
+          ]
+        }
+      ],
+      "target_sec": 2.8,
+      "refs": [
+        "REF_RUNNER"
+      ],
+      "subject": "the round-headed runner with the blue headband",
+      "accent_on": "the energy gel pouch",
+      "camera": "Side tracking shot moving left to right with the runner",
+      "start_frame": {
+        "desc": "The round-headed runner running from left to right, squeezing a small energy gel pouch into the mouth"
+      },
+      "action": [
+        {
+          "t": [
+            0,
+            1.5
+          ],
+          "do": "The runner gulps the gel and the whole body flashes bright for an instant"
+        },
+        {
+          "t": [
+            1.5,
+            4
+          ],
+          "do": "The runner rockets forward with long smear lines, the headband flapping"
+        }
+      ],
+      "trim": {
+        "speed": 1.2
+      },
+      "transition_in": "cut",
+      "sfx": [
+        "whoosh"
+      ]
+    }
+  ],
+  "outro": {
+    "teaser": "Uống quá nhiều nước khi chạy?"
+  },
+  "thumbnail": {
+    "variants": [
+      {
+        "id": "T1",
+        "archetype": "before_disaster",
+        "text": "KM 32",
+        "refs": [
+          "REF_RUNNER"
+        ],
+        "scene": "the round-headed runner with the blue headband sprinting with a terrified face, one stride away from smashing into a giant white brick wall"
+      },
+      {
+        "id": "T2",
+        "archetype": "big_number",
+        "text": "",
+        "number": "50.000 KCAL",
+        "refs": [
+          "REF_RUNNER"
+        ],
+        "scene": "a tiny round-headed runner standing next to a towering stack of grey fat blocks"
+      },
+      {
+        "id": "T3",
+        "archetype": "red_circle",
+        "text": "HẾT XĂNG?",
+        "focus": [
+          0.5,
+          0.42
+        ],
+        "refs": [
+          "REF_RUNNER",
+          "REF_TANK"
+        ],
+        "scene": "the round-headed runner running with a battery-shaped fuel tank on the back that is completely empty"
+      },
+      {
+        "id": "T4",
+        "archetype": "split",
+        "text": "KM 1 → 32",
+        "refs": [
+          "REF_RUNNER"
+        ],
+        "scene": "the round-headed runner full of energy, smiling and sprinting"
+      }
+    ]
+  },
+  "caption": "Chạy 42 km mà không nạp gì thì cơ thể bạn sẽ ra sao? 🏃‍♂️⚡ Thí nghiệm #1",
+  "hashtags": [
+    "marathon",
+    "chaybo",
+    "glycogen"
+  ],
+  "sources": [
+    "https://pmc.ncbi.nlm.nih.gov/articles/PMC2958805 (Rapoport 2010, PLoS Comput Biol — glycogen ~2.000 kcal, 'bức tường' khi glycogen cạn)",
+    "https://pubmed.ncbi.nlm.nih.gov/26891166 (AND/DC/ACSM 2016, Nutrition and Athletic Performance — 30–60 g carb/giờ)",
+    "https://www.scilit.com/publications/5386983805af95713111a6915b048ab7 (Margaria 1963, Energy cost of running — ~1 kcal/kg/km → 65 kg × 42,2 km ≈ 2.700 kcal)",
+    "Mỡ: 10% của 65 kg = 6,5 kg × ~7.700 kcal/kg ≈ 50.000 kcal ≈ 18 marathon (phép tính, làm tròn)"
+  ]
+}

@@ -1,0 +1,244 @@
+{
+  "name": "Studio Product · dark stage",
+  "description": "Biến thể dark-stage của style #33 \"Studio Product\" (Sản phẩm và màn hình) trong 3D Style Atlas: một vật + một câu khẳng định được thử. Viết lại bằng lời của tool trên sân khấu đen, một accent.",
+  "source": {
+    "repo": "3D Style Atlas (Futurepedia / HubSpot Media)",
+    "url": "https://www.futurepedia.io/resources/3d-style-atlas/view",
+    "sha": "#33",
+    "license": "HubSpot Website Terms of Use (cá nhân, phi thương mại) — chỉ lấy ý tưởng thị giác, chữ + mã viết mới; xem docs/CREDITS.md",
+    "from": "#33 Studio Product · Products and screens · Product shot",
+    "how": "dark-stage: nền #000, look 3D `chrome` của engine three.js, block Flow ngắn tự viết"
+  },
+  "code_only": false,
+  "black_min": 0.5,
+  "voice_persona": "giọng trầm, chắc, nhịp mạnh",
+  "thumbnail": "một vật chủ đạo kiểu 3d flagship product shot nổi giữa nền đen, accent teal trên chi tiết sắp xảy ra chuyện",
+  "font": "Anton-Regular.ttf",
+  "size": 118,
+  "uppercase": true,
+  "fill": "#cfd3d8",
+  "stroke": 10,
+  "stroke_color": "#000000",
+  "shadow": {
+    "offset": [
+      8,
+      8
+    ],
+    "color": "#0b6a7c"
+  },
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#ffffff",
+  "sfx_role": {
+    "size_mult": 1.35,
+    "rotate": -6,
+    "fill": "#8FB8FF"
+  },
+  "tags": [
+    "bottle",
+    "insulated",
+    "durable",
+    "waterproof",
+    "lasts",
+    "product"
+  ],
+  "voice_tags": [
+    "deep",
+    "confident",
+    "documentary"
+  ],
+  "palette": {
+    "bg": "#000000",
+    "ink": "#cfd3d8",
+    "a": "#0b6a7c",
+    "b": "#9a9a9a",
+    "c": "#ffffff",
+    "_doc": "sân khấu đen + accent teal"
+  },
+  "pacing": {
+    "fps": "full",
+    "easing": "nặng, dừng gắt",
+    "bounce": false,
+    "camera": "slider long lens: two macro detail passes, pull-back, slow push",
+    "cut_rule": "cắt ở va chạm kim loại"
+  },
+  "marks": {
+    "arrow": "mũi tên thép",
+    "circle": "vòng sáng cam",
+    "label": "nhãn khắc chữ"
+  },
+  "transitions": [
+    "cut",
+    "whip"
+  ],
+  "sfx_pack": {
+    "pop": "ting",
+    "hit": "impact",
+    "whoosh": "whoosh",
+    "tick": "click",
+    "ding": "ting"
+  },
+  "music": {
+    "mood": "industrial pulse, metallic hits, low synth",
+    "bpm": 100
+  },
+  "flow": {
+    "is_3d": true,
+    "medium": "3D flagship product shot",
+    "look": "Precise product finishes: textured powder coat, lathe-marked steel, knurling, anodised flutes; strip softboxes only: sweeping graded key, twin back rims, overhead box",
+    "motion": "static product, moving light sweeps repeating across its surfaces",
+    "motion_block": "Static product, moving light sweeps repeating across its surfaces.",
+    "plate": "blank space beside the object for one line of type",
+    "accent": "#0b6a7c",
+    "accent_name": "teal",
+    "camera": "Slider long lens: two macro detail passes, pull-back, slow push",
+    "avoid_add": [
+      "bright backdrop",
+      "visible horizon",
+      "photoreal people"
+    ]
+  },
+  "world": {
+    "_doc": "Sân khấu đen, look 3D 'chrome' (engines/three/main.js → LOOK3D).",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 8,
+    "fog_far": 28,
+    "toon_steps": [
+      125,
+      200,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#cfd3d8",
+      "grey": "#6E7887",
+      "water": "#0b6a7c",
+      "accent": "#0b6a7c",
+      "accent_hi": "#FFD27A",
+      "accent_glow": "#0b6a7c",
+      "danger": "#FF5A3C",
+      "iron": "#323842",
+      "metal": "#9AA6B8",
+      "glass_line": "#D8E8FF",
+      "ink_text": "#0B0E13",
+      "chalk": "#F2F4F8",
+      "board": "#161C24",
+      "label": "#cfd3d8",
+      "dial": "#F2F4F8",
+      "bench": "#2B3440",
+      "bench_seam": "#11161C",
+      "bench_leg": "#1E252E",
+      "wall": "#161D26",
+      "feather": "#F2F4F8",
+      "orange": "#FFD27A"
+    },
+    "lights": {
+      "hemi": 1.05,
+      "hemi_sky": "#DCE4FF",
+      "hemi_ground": "#22262E",
+      "key": 2.3,
+      "key_dir": [
+        -0.55,
+        1.0,
+        0.75
+      ],
+      "rim": 2.4,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.45,
+        0.55,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#F2F4F8",
+      "px": 1.6,
+      "rim": "#0b6a7c",
+      "rim_px": 0,
+      "crease": 0.4
+    },
+    "grade": {
+      "sat": 1.06,
+      "vig": 0.16
+    },
+    "look3d": "chrome"
+  },
+  "cast_palette": {
+    "body": "#F2F4F8",
+    "shade": "#9AA0AA",
+    "ink": "#0B0E13",
+    "rim": "#F2F4F8",
+    "accent": "#FF9A3D",
+    "strap": "#5A6270"
+  },
+  "html": {
+    "look": "swiss",
+    "font": "Anton-Regular.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#cfd3d8",
+      "a": "#0b6a7c",
+      "b": "#9a9a9a",
+      "c": "#ffffff",
+      "hot": "#FF5A3C"
+    },
+    "roles": {
+      "hot": "hot",
+      "cold": "b",
+      "accent": "a"
+    },
+    "type": {
+      "weight": 400,
+      "upper": true
+    }
+  },
+  "not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "atlas": {
+    "number": 33,
+    "id": "studio-product",
+    "name": "Studio Product",
+    "tag": "Product shot",
+    "fit": 4,
+    "duplicate_of": "chrome3d-black",
+    "why": "Studio gần đen sẵn; 'thử độ bền một vật' là dạng thí nghiệm hay của kênh.",
+    "frame_props": [
+      "ball",
+      "ice",
+      "beaker"
+    ]
+  },
+  "category": "products",
+  "category_name": "Products and screens",
+  "tier": 1,
+  "brand_fit": "ok",
+  "variant": "dark-stage",
+  "image_style_block": "3D flagship product shot on a pure black stage (#000000): precise product finishes: textured powder coat, lathe-marked steel, knurling, anodised flutes. Strip softboxes only: sweeping graded key, twin back rims, overhead box. One accent colour (teal) only on the key element. Leave blank space beside the object for one line of type empty (captions are added later).",
+  "video_motion_block": "Static product, moving light sweeps repeating across its surfaces.",
+  "avoid_block": "Avoid: any text, letters or numbers, logos, bright backdrop, visible horizon, photoreal people.",
+  "materials": "precise product finishes: textured powder coat, lathe-marked steel, knurling, anodised flutes",
+  "lighting": "strip softboxes only: sweeping graded key, twin back rims, overhead box",
+  "camera": "slider long lens: two macro detail passes, pull-back, slow push",
+  "text_style": {
+    "plate": "blank space beside the object for one line of type",
+    "font": "Anton-Regular.ttf",
+    "uppercase": true,
+    "rule": "chữ do text_fx / chữ 3D của engine; prompt ảnh chỉ chừa chỗ trống"
+  },
+  "good_for": "một vật + một câu khẳng định được thử",
+  "what_it_is_not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "_generated": "vidlib/atlas.py từ config/atlas.json — sửa ở đó rồi chạy python scripts/atlas_import.py",
+  "_base": "chrome3d-black"
+}

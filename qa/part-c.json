@@ -1,0 +1,965 @@
+{
+ "c3": {
+  "what-happens-if-you-drop-a-1-000c-steel-ball": {
+   "instagram_reels": {
+    "rows": [
+     [
+      "khung",
+      "1080x1920",
+      true
+     ],
+     [
+      "fps CFR",
+      "30/1 / 30/1",
+      true
+     ],
+     [
+      "codec",
+      "h264 High L42 + aac",
+      true
+     ],
+     [
+      "pix_fmt",
+      "yuv420p",
+      true
+     ],
+     [
+      "màu",
+      "bt709/bt709/bt709 tv",
+      true
+     ],
+     [
+      "faststart",
+      "moov đầu",
+      true
+     ],
+     [
+      "audio",
+      "48000 Hz 255 kb/s",
+      true
+     ],
+     [
+      "loudness",
+      "-14.0 LUFS",
+      true
+     ],
+     [
+      "true peak",
+      "-1.8 dBTP",
+      true
+     ],
+     [
+      "thời lượng",
+      "19.3s",
+      true
+     ],
+     [
+      "dung lượng",
+      "6.3 MB",
+      true
+     ]
+    ],
+    "pass": true
+   },
+   "tiktok": {
+    "rows": [
+     [
+      "khung",
+      "1080x1920",
+      true
+     ],
+     [
+      "fps CFR",
+      "30/1 / 30/1",
+      true
+     ],
+     [
+      "codec",
+      "h264 High L42 + aac",
+      true
+     ],
+     [
+      "pix_fmt",
+      "yuv420p",
+      true
+     ],
+     [
+      "màu",
+      "bt709/bt709/bt709 tv",
+      true
+     ],
+     [
+      "faststart",
+      "moov đầu",
+      true
+     ],
+     [
+      "audio",
+      "48000 Hz 255 kb/s",
+      true
+     ],
+     [
+      "loudness",
+      "-14.0 LUFS",
+      true
+     ],
+     [
+      "true peak",
+      "-1.8 dBTP",
+      true
+     ],
+     [
+      "thời lượng",
+      "19.3s",
+      true
+     ],
+     [
+      "dung lượng",
+      "6.3 MB",
+      true
+     ],
+     [
+      "bitrate tối thiểu",
+      "2622 kb/s",
+      true
+     ]
+    ],
+    "pass": true
+   },
+   "youtube_shorts": {
+    "rows": [
+     [
+      "khung",
+      "1080x1920",
+      true
+     ],
+     [
+      "fps CFR",
+      "30/1 / 30/1",
+      true
+     ],
+     [
+      "codec",
+      "h264 High L42 + aac",
+      true
+     ],
+     [
+      "pix_fmt",
+      "yuv420p",
+      true
+     ],
+     [
+      "màu",
+      "bt709/bt709/bt709 tv",
+      true
+     ],
+     [
+      "faststart",
+      "moov đầu",
+      true
+     ],
+     [
+      "audio",
+      "48000 Hz 255 kb/s",
+      true
+     ],
+     [
+      "loudness",
+      "-14.0 LUFS",
+      true
+     ],
+     [
+      "true peak",
+      "-1.8 dBTP",
+      true
+     ],
+     [
+      "thời lượng",
+      "19.3s",
+      true
+     ],
+     [
+      "dung lượng",
+      "6.3 MB",
+      true
+     ]
+    ],
+    "pass": true
+   }
+  },
+  "e2e-classic-flat-vector": {
+   "instagram_reels": {
+    "rows": [
+     [
+      "khung",
+      "1080x1920",
+      true
+     ],
+     [
+      "fps CFR",
+      "30/1 / 30/1",
+      true
+     ],
+     [
+      "codec",
+      "h264 High L42 + aac",
+      true
+     ],
+     [
+      "pix_fmt",
+      "yuv420p",
+      true
+     ],
+     [
+      "màu",
+      "bt709/bt709/bt709 tv",
+      true
+     ],
+     [
+      "faststart",
+      "moov đầu",
+      true
+     ],
+     [
+      "audio",
+      "48000 Hz 255 kb/s",
+      true
+     ],
+     [
+      "loudness",
+      "-14.0 LUFS",
+      true
+     ],
+     [
+      "true peak",
+      "-1.8 dBTP",
+      true
+     ],
+     [
+      "thời lượng",
+      "19.3s",
+      true
+     ],
+     [
+      "dung lượng",
+      "6.3 MB",
+      true
+     ]
+    ],
+    "pass": true
+   },
+   "tiktok": {
+    "rows": [
+     [
+      "khung",
+      "1080x1920",
+      true
+     ],
+     [
+      "fps CFR",
+      "30/1 / 30/1",
+      true
+     ],
+     [
+      "codec",
+      "h264 High L42 + aac",
+      true
+     ],
+     [
+      "pix_fmt",
+      "yuv420p",
+      true
+     ],
+     [
+      "màu",
+      "bt709/bt709/bt709 tv",
+      true
+     ],
+     [
+      "faststart",
+      "moov đầu",
+      true
+     ],
+     [
+      "audio",
+      "48000 Hz 255 kb/s",
+      true
+     ],
+     [
+      "loudness",
+      "-14.0 LUFS",
+      true
+     ],
+     [
+      "true peak",
+      "-1.8 dBTP",
+      true
+     ],
+     [
+      "thời lượng",
+      "19.3s",
+      true
+     ],
+     [
+      "dung lượng",
+      "6.3 MB",
+      true
+     ],
+     [
+      "bitrate tối thiểu",
+      "2622 kb/s",
+      true
+     ]
+    ],
+    "pass": true
+   },
+   "youtube_shorts": {
+    "rows": [
+     [
+      "khung",
+      "1080x1920",
+      true
+     ],
+     [
+      "fps CFR",
+      "30/1 / 30/1",
+      true
+     ],
+     [
+      "codec",
+      "h264 High L42 + aac",
+      true
+     ],
+     [
+      "pix_fmt",
+      "yuv420p",
+      true
+     ],
+     [
+      "màu",
+      "bt709/bt709/bt709 tv",
+      true
+     ],
+     [
+      "faststart",
+      "moov đầu",
+      true
+     ],
+     [
+      "audio",
+      "48000 Hz 255 kb/s",
+      true
+     ],
+     [
+      "loudness",
+      "-14.0 LUFS",
+      true
+     ],
+     [
+      "true peak",
+      "-1.8 dBTP",
+      true
+     ],
+     [
+      "thời lượng",
+      "19.3s",
+      true
+     ],
+     [
+      "dung lượng",
+      "6.3 MB",
+      true
+     ]
+    ],
+    "pass": true
+   }
+  },
+  "atlas-glass-test-what-happens-if-you-drop-a-1": {
+   "instagram_reels": {
+    "rows": [
+     [
+      "khung",
+      "1080x1920",
+      true
+     ],
+     [
+      "fps CFR",
+      "30/1 / 30/1",
+      true
+     ],
+     [
+      "codec",
+      "h264 High L42 + aac",
+      true
+     ],
+     [
+      "pix_fmt",
+      "yuv420p",
+      true
+     ],
+     [
+      "màu",
+      "bt709/bt709/bt709 tv",
+      true
+     ],
+     [
+      "faststart",
+      "moov đầu",
+      true
+     ],
+     [
+      "audio",
+      "48000 Hz 243 kb/s",
+      true
+     ],
+     [
+      "loudness",
+      "-13.8 LUFS",
+      true
+     ],
+     [
+      "true peak",
+      "-3.2 dBTP",
+      true
+     ],
+     [
+      "thời lượng",
+      "17.3s",
+      true
+     ],
+     [
+      "dung lượng",
+      "11.8 MB",
+      true
+     ]
+    ],
+    "pass": true
+   },
+   "tiktok": {
+    "rows": [
+     [
+      "khung",
+      "1080x1920",
+      true
+     ],
+     [
+      "fps CFR",
+      "30/1 / 30/1",
+      true
+     ],
+     [
+      "codec",
+      "h264 High L42 + aac",
+      true
+     ],
+     [
+      "pix_fmt",
+      "yuv420p",
+      true
+     ],
+     [
+      "màu",
+      "bt709/bt709/bt709 tv",
+      true
+     ],
+     [
+      "faststart",
+      "moov đầu",
+      true
+     ],
+     [
+      "audio",
+      "48000 Hz 243 kb/s",
+      true
+     ],
+     [
+      "loudness",
+      "-13.8 LUFS",
+      true
+     ],
+     [
+      "true peak",
+      "-3.2 dBTP",
+      true
+     ],
+     [
+      "thời lượng",
+      "17.3s",
+      true
+     ],
+     [
+      "dung lượng",
+      "11.8 MB",
+      true
+     ],
+     [
+      "bitrate tối thiểu",
+      "5461 kb/s",
+      true
+     ]
+    ],
+    "pass": true
+   },
+   "youtube_shorts": {
+    "rows": [
+     [
+      "khung",
+      "1080x1920",
+      true
+     ],
+     [
+      "fps CFR",
+      "30/1 / 30/1",
+      true
+     ],
+     [
+      "codec",
+      "h264 High L42 + aac",
+      true
+     ],
+     [
+      "pix_fmt",
+      "yuv420p",
+      true
+     ],
+     [
+      "màu",
+      "bt709/bt709/bt709 tv",
+      true
+     ],
+     [
+      "faststart",
+      "moov đầu",
+      true
+     ],
+     [
+      "audio",
+      "48000 Hz 243 kb/s",
+      true
+     ],
+     [
+      "loudness",
+      "-13.8 LUFS",
+      true
+     ],
+     [
+      "true peak",
+      "-3.2 dBTP",
+      true
+     ],
+     [
+      "thời lượng",
+      "17.3s",
+      true
+     ],
+     [
+      "dung lượng",
+      "11.8 MB",
+      true
+     ]
+    ],
+    "pass": true
+   }
+  },
+  "atlas-xray-test-what-happens-if-you-drop-a-1": {
+   "instagram_reels": {
+    "rows": [
+     [
+      "khung",
+      "1080x1920",
+      true
+     ],
+     [
+      "fps CFR",
+      "30/1 / 30/1",
+      true
+     ],
+     [
+      "codec",
+      "h264 High L42 + aac",
+      true
+     ],
+     [
+      "pix_fmt",
+      "yuv420p",
+      true
+     ],
+     [
+      "màu",
+      "bt709/bt709/bt709 tv",
+      true
+     ],
+     [
+      "faststart",
+      "moov đầu",
+      true
+     ],
+     [
+      "audio",
+      "48000 Hz 244 kb/s",
+      true
+     ],
+     [
+      "loudness",
+      "-13.8 LUFS",
+      true
+     ],
+     [
+      "true peak",
+      "-2.8 dBTP",
+      true
+     ],
+     [
+      "thời lượng",
+      "17.3s",
+      true
+     ],
+     [
+      "dung lượng",
+      "16.7 MB",
+      true
+     ]
+    ],
+    "pass": true
+   },
+   "tiktok": {
+    "rows": [
+     [
+      "khung",
+      "1080x1920",
+      true
+     ],
+     [
+      "fps CFR",
+      "30/1 / 30/1",
+      true
+     ],
+     [
+      "codec",
+      "h264 High L42 + aac",
+      true
+     ],
+     [
+      "pix_fmt",
+      "yuv420p",
+      true
+     ],
+     [
+      "màu",
+      "bt709/bt709/bt709 tv",
+      true
+     ],
+     [
+      "faststart",
+      "moov đầu",
+      true
+     ],
+     [
+      "audio",
+      "48000 Hz 244 kb/s",
+      true
+     ],
+     [
+      "loudness",
+      "-13.8 LUFS",
+      true
+     ],
+     [
+      "true peak",
+      "-2.8 dBTP",
+      true
+     ],
+     [
+      "thời lượng",
+      "17.3s",
+      true
+     ],
+     [
+      "dung lượng",
+      "16.7 MB",
+      true
+     ],
+     [
+      "bitrate tối thiểu",
+      "7695 kb/s",
+      true
+     ]
+    ],
+    "pass": true
+   },
+   "youtube_shorts": {
+    "rows": [
+     [
+      "khung",
+      "1080x1920",
+      true
+     ],
+     [
+      "fps CFR",
+      "30/1 / 30/1",
+      true
+     ],
+     [
+      "codec",
+      "h264 High L42 + aac",
+      true
+     ],
+     [
+      "pix_fmt",
+      "yuv420p",
+      true
+     ],
+     [
+      "màu",
+      "bt709/bt709/bt709 tv",
+      true
+     ],
+     [
+      "faststart",
+      "moov đầu",
+      true
+     ],
+     [
+      "audio",
+      "48000 Hz 244 kb/s",
+      true
+     ],
+     [
+      "loudness",
+      "-13.8 LUFS",
+      true
+     ],
+     [
+      "true peak",
+      "-2.8 dBTP",
+      true
+     ],
+     [
+      "thời lượng",
+      "17.3s",
+      true
+     ],
+     [
+      "dung lượng",
+      "16.7 MB",
+      true
+     ]
+    ],
+    "pass": true
+   }
+  },
+  "atlas-swarm-test-what-happens-if-you-drop-a-1": {
+   "instagram_reels": {
+    "rows": [
+     [
+      "khung",
+      "1080x1920",
+      true
+     ],
+     [
+      "fps CFR",
+      "30/1 / 30/1",
+      true
+     ],
+     [
+      "codec",
+      "h264 High L42 + aac",
+      true
+     ],
+     [
+      "pix_fmt",
+      "yuv420p",
+      true
+     ],
+     [
+      "màu",
+      "bt709/bt709/bt709 tv",
+      true
+     ],
+     [
+      "faststart",
+      "moov đầu",
+      true
+     ],
+     [
+      "audio",
+      "48000 Hz 257 kb/s",
+      true
+     ],
+     [
+      "loudness",
+      "-13.9 LUFS",
+      true
+     ],
+     [
+      "true peak",
+      "-1.7 dBTP",
+      true
+     ],
+     [
+      "thời lượng",
+      "16.9s",
+      true
+     ],
+     [
+      "dung lượng",
+      "7.0 MB",
+      true
+     ]
+    ],
+    "pass": true
+   },
+   "tiktok": {
+    "rows": [
+     [
+      "khung",
+      "1080x1920",
+      true
+     ],
+     [
+      "fps CFR",
+      "30/1 / 30/1",
+      true
+     ],
+     [
+      "codec",
+      "h264 High L42 + aac",
+      true
+     ],
+     [
+      "pix_fmt",
+      "yuv420p",
+      true
+     ],
+     [
+      "màu",
+      "bt709/bt709/bt709 tv",
+      true
+     ],
+     [
+      "faststart",
+      "moov đầu",
+      true
+     ],
+     [
+      "audio",
+      "48000 Hz 257 kb/s",
+      true
+     ],
+     [
+      "loudness",
+      "-13.9 LUFS",
+      true
+     ],
+     [
+      "true peak",
+      "-1.7 dBTP",
+      true
+     ],
+     [
+      "thời lượng",
+      "16.9s",
+      true
+     ],
+     [
+      "dung lượng",
+      "7.0 MB",
+      true
+     ],
+     [
+      "bitrate tối thiểu",
+      "3305 kb/s",
+      true
+     ]
+    ],
+    "pass": true
+   },
+   "youtube_shorts": {
+    "rows": [
+     [
+      "khung",
+      "1080x1920",
+      true
+     ],
+     [
+      "fps CFR",
+      "30/1 / 30/1",
+      true
+     ],
+     [
+      "codec",
+      "h264 High L42 + aac",
+      true
+     ],
+     [
+      "pix_fmt",
+      "yuv420p",
+      true
+     ],
+     [
+      "màu",
+      "bt709/bt709/bt709 tv",
+      true
+     ],
+     [
+      "faststart",
+      "moov đầu",
+      true
+     ],
+     [
+      "audio",
+      "48000 Hz 257 kb/s",
+      true
+     ],
+     [
+      "loudness",
+      "-13.9 LUFS",
+      true
+     ],
+     [
+      "true peak",
+      "-1.7 dBTP",
+      true
+     ],
+     [
+      "thời lượng",
+      "16.9s",
+      true
+     ],
+     [
+      "dung lượng",
+      "7.0 MB",
+      true
+     ]
+    ],
+    "pass": true
+   }
+  }
+ },
+ "c4_repro": {
+  "slug": "atlas-swarm-test-what-happens-if-you-drop-a-1",
+  "rc": [
+   0,
+   0
+  ],
+  "sec": [
+   26,
+   31
+  ],
+  "same_sha256": true,
+  "phash_max_dist": 0,
+  "frames_compared": 17
+ },
+ "c4_resume": {
+  "slug": "atlas-xray-test-what-happens-if-you-drop-a-1",
+  "shot": "C02",
+  "frames_total": 55,
+  "frames_at_kill": 3,
+  "frames_before_kill": 3,
+  "rendered_after": 52,
+  "frames_after": 55,
+  "rc": 0,
+  "sec": 33,
+  "pass": true
+ }
+}

@@ -1,0 +1,1 @@
+Flat 2D vector animation still, 9:16 vertical. Pure solid black background ({bg}), no gradient, no texture.

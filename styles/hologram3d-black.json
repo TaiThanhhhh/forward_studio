@@ -1,0 +1,201 @@
+{
+  "name": "Hologram 3D Black",
+  "description": "Hologram khung dây 3D trên nền đen: lưới wireframe phát sáng cyan, bloom, hạt nhiễu, không bóng đổ — kiểu màn hình quét tương lai. Toàn bộ bằng code.",
+  "source": {
+    "repo": "studio — engine three.js (look3d)",
+    "url": "https://github.com/mrdoob/three.js",
+    "license": "MIT",
+    "from": "engines/three/main.js → LOOK3D (chất liệu + env map studio + hậu kỳ ACES/bloom/grain)",
+    "how": "preset chất liệu 3D của engine three.js trên sân khấu đen; prompt Flow 3D cùng look cho ngày có Flow"
+  },
+  "code_only": true,
+  "black_min": 0.5,
+  "voice_persona": "giọng điềm tĩnh, hơi bí ẩn, như hệ thống phân tích",
+  "thumbnail": "một vật thể khung dây cyan phát sáng giữa nền đen, một điểm hồng cảnh báo",
+  "font": "RobotoMono-Variable.ttf",
+  "size": 104,
+  "uppercase": true,
+  "fill": "#BFFBFF",
+  "stroke": 10,
+  "stroke_color": "#000000",
+  "shadow": {
+    "offset": [
+      8,
+      8
+    ],
+    "color": "#00E5FF"
+  },
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#7CFFB2",
+  "sfx_role": {
+    "size_mult": 1.35,
+    "rotate": -6,
+    "fill": "#FF3D7F"
+  },
+  "tags": [
+    "ai",
+    "computer",
+    "data",
+    "network",
+    "internet",
+    "hacker",
+    "code",
+    "future",
+    "space",
+    "satellite",
+    "signal",
+    "virus",
+    "simulation",
+    "scan"
+  ],
+  "voice_tags": [
+    "calm",
+    "deep",
+    "mysterious"
+  ],
+  "palette": {
+    "ink": "#BFFBFF",
+    "a": "#00E5FF",
+    "b": "#FF3D7F",
+    "c": "#7CFFB2",
+    "bg": "#000000"
+  },
+  "pacing": {
+    "fps": "full",
+    "easing": "mượt, có glitch ngắn",
+    "bounce": false,
+    "camera": "quét chậm quanh vật",
+    "cut_rule": "cắt bằng glitch"
+  },
+  "marks": {
+    "arrow": "mũi tên dây sáng",
+    "circle": "vòng quét",
+    "label": "nhãn HUD [ ]"
+  },
+  "transitions": [
+    "cut",
+    "glitch"
+  ],
+  "sfx_pack": {
+    "pop": "glitch",
+    "hit": "impact",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ding"
+  },
+  "music": {
+    "mood": "dark synth pulse, data blips, sub bass",
+    "bpm": 92
+  },
+  "flow": {
+    "is_3d": true,
+    "medium": "Stylized 3D wireframe hologram render",
+    "look": "Glowing cyan wireframe meshes with bloom, thin scan lines and faint digital noise, magenta warning accents, floating in pure black space",
+    "motion": "smooth scanning motion, slow rotations, glitch flickers on reveals"
+  },
+  "world": {
+    "_doc": "Sân khấu đen, look 3D 'holo' (engines/three/main.js → LOOK3D).",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 8,
+    "fog_far": 28,
+    "toon_steps": [
+      125,
+      200,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#BFFBFF",
+      "grey": "#6E7887",
+      "water": "#00E5FF",
+      "accent": "#00E5FF",
+      "accent_hi": "#7CFFB2",
+      "accent_glow": "#00E5FF",
+      "danger": "#FF3D7F",
+      "iron": "#323842",
+      "metal": "#9AA6B8",
+      "glass_line": "#D8E8FF",
+      "ink_text": "#0B0E13",
+      "chalk": "#BFFBFF",
+      "board": "#161C24",
+      "label": "#BFFBFF",
+      "dial": "#BFFBFF",
+      "bench": "#2B3440",
+      "bench_seam": "#11161C",
+      "bench_leg": "#1E252E",
+      "wall": "#161D26",
+      "feather": "#BFFBFF",
+      "orange": "#7CFFB2"
+    },
+    "lights": {
+      "hemi": 1.05,
+      "hemi_sky": "#DCE4FF",
+      "hemi_ground": "#22262E",
+      "key": 2.3,
+      "key_dir": [
+        -0.55,
+        1.0,
+        0.75
+      ],
+      "rim": 2.4,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.45,
+        0.55,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#BFFBFF",
+      "px": 1.6,
+      "rim": "#00E5FF",
+      "rim_px": 0,
+      "crease": 0.4
+    },
+    "grade": {
+      "sat": 1.06,
+      "vig": 0.16
+    },
+    "look3d": "holo"
+  },
+  "cast_palette": {
+    "body": "#BFFBFF",
+    "shade": "#9AA0AA",
+    "ink": "#0B0E13",
+    "rim": "#BFFBFF",
+    "accent": "#00E5FF",
+    "strap": "#5A6270"
+  },
+  "html": {
+    "look": "hud",
+    "font": "RobotoMono-Variable.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#BFFBFF",
+      "a": "#FF3D7F",
+      "b": "#00E5FF",
+      "c": "#7CFFB2"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    },
+    "type": {
+      "weight": 400,
+      "upper": true
+    }
+  },
+  "not": [
+    "không vật đặc có bề mặt (chỉ khung dây phát sáng)",
+    "không nền (đen #000000)",
+    "không ảnh thật"
+  ],
+  "code_engine": "three"
+}

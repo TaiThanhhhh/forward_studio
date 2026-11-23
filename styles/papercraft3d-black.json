@@ -1,0 +1,199 @@
+{
+  "name": "Papercraft 3D Black",
+  "description": "Mô hình giấy gấp 3D trên nền đen: mặt giấy phẳng, nếp gấp rõ, nét mảnh, hạt giấy, màu kem + đỏ + xanh mực. Ngày có Flow: clip giấy gấp 3D; shot code three.js cùng chất giấy.",
+  "source": {
+    "repo": "studio — engine three.js (look3d)",
+    "url": "https://github.com/mrdoob/three.js",
+    "license": "MIT",
+    "from": "engines/three/main.js → LOOK3D (chất liệu + env map studio + hậu kỳ ACES/bloom/grain)",
+    "how": "preset chất liệu 3D của engine three.js trên sân khấu đen; prompt Flow 3D cùng look cho ngày có Flow"
+  },
+  "code_only": false,
+  "black_min": 0.5,
+  "voice_persona": "người kể chuyện ấm, như đọc sách pop-up",
+  "thumbnail": "một mô hình giấy gấp nổi khối giữa nền đen, nếp gấp rõ, một mảnh đỏ bung ra",
+  "font": "Baloo2-Variable.ttf",
+  "size": 118,
+  "uppercase": true,
+  "fill": "#F5EBDD",
+  "stroke": 10,
+  "stroke_color": "#000000",
+  "shadow": {
+    "offset": [
+      8,
+      8
+    ],
+    "color": "#3E7CB1"
+  },
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#F2C14E",
+  "sfx_role": {
+    "size_mult": 1.35,
+    "rotate": -6,
+    "fill": "#E8553E"
+  },
+  "tags": [
+    "paper",
+    "book",
+    "history",
+    "origami",
+    "letter",
+    "story",
+    "craft",
+    "school",
+    "recipe",
+    "kitchen",
+    "money",
+    "city",
+    "house"
+  ],
+  "voice_tags": [
+    "storyteller",
+    "warm",
+    "friendly"
+  ],
+  "palette": {
+    "ink": "#F5EBDD",
+    "a": "#3E7CB1",
+    "b": "#E8553E",
+    "c": "#F2C14E",
+    "bg": "#000000"
+  },
+  "pacing": {
+    "fps": "twos",
+    "easing": "gấp/mở như sách pop-up",
+    "bounce": true,
+    "camera": "nghiêng nhẹ như nhìn sách",
+    "cut_rule": "cắt khi trang mở xong"
+  },
+  "marks": {
+    "arrow": "mũi tên giấy cắt",
+    "circle": "vòng giấy",
+    "label": "nhãn giấy dán"
+  },
+  "transitions": [
+    "cut",
+    "whip"
+  ],
+  "sfx_pack": {
+    "pop": "pop",
+    "hit": "thunk",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ding"
+  },
+  "music": {
+    "mood": "pizzicato strings, paper rustle, light percussion",
+    "bpm": 104
+  },
+  "flow": {
+    "is_3d": true,
+    "medium": "Stylized 3D papercraft render",
+    "look": "Folded paper models with crisp creases, matte cream, red and ink-blue paper, visible paper grain, thin cut edges, soft shadows on a pure black stage",
+    "motion": "pop-up book motion: pieces unfold, fold and flip into place, slight paper flutter"
+  },
+  "world": {
+    "_doc": "Sân khấu đen, look 3D 'paper' (engines/three/main.js → LOOK3D).",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 8,
+    "fog_far": 28,
+    "toon_steps": [
+      125,
+      200,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#F5EBDD",
+      "grey": "#6E7887",
+      "water": "#3E7CB1",
+      "accent": "#3E7CB1",
+      "accent_hi": "#F2C14E",
+      "accent_glow": "#3E7CB1",
+      "danger": "#E8553E",
+      "iron": "#323842",
+      "metal": "#9AA6B8",
+      "glass_line": "#D8E8FF",
+      "ink_text": "#0B0E13",
+      "chalk": "#F5EBDD",
+      "board": "#161C24",
+      "label": "#F5EBDD",
+      "dial": "#F5EBDD",
+      "bench": "#2B3440",
+      "bench_seam": "#11161C",
+      "bench_leg": "#1E252E",
+      "wall": "#161D26",
+      "feather": "#F5EBDD",
+      "orange": "#F2C14E"
+    },
+    "lights": {
+      "hemi": 1.05,
+      "hemi_sky": "#DCE4FF",
+      "hemi_ground": "#22262E",
+      "key": 2.3,
+      "key_dir": [
+        -0.55,
+        1.0,
+        0.75
+      ],
+      "rim": 2.4,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.45,
+        0.55,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#F5EBDD",
+      "px": 1.6,
+      "rim": "#3E7CB1",
+      "rim_px": 0,
+      "crease": 0.4
+    },
+    "grade": {
+      "sat": 1.06,
+      "vig": 0.16
+    },
+    "look3d": "paper"
+  },
+  "cast_palette": {
+    "body": "#F5EBDD",
+    "shade": "#9AA0AA",
+    "ink": "#0B0E13",
+    "rim": "#F5EBDD",
+    "accent": "#3E7CB1",
+    "strap": "#5A6270"
+  },
+  "html": {
+    "look": "sticker",
+    "font": "Baloo2-Variable.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#F5EBDD",
+      "a": "#E8553E",
+      "b": "#3E7CB1",
+      "c": "#F2C14E"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    },
+    "type": {
+      "weight": 400,
+      "upper": true
+    }
+  },
+  "not": [
+    "không phải ảnh giấy thật",
+    "không nền bàn làm việc (nền đen #000000)",
+    "không bề mặt bóng"
+  ]
+}

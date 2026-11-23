@@ -1,0 +1,194 @@
+{
+  "name": "Paper Cutout Black",
+  "description": "Cắt giấy 2D nhiều lớp: mép xé răng cưa có lõi giấy trắng, vân giấy, bóng mềm theo độ sâu lớp, nhịp stop-motion on 2s và mỗi lần chụp lệch nhẹ; nền là các dải giấy rất tối trôi thị sai trên đen.",
+  "source": {
+    "repo": "studio — engine html (looks.js + post2d.js, vòng 10)",
+    "url": "engines/html/looks.js · engines/html/post2d.js (mã trong repo)",
+    "sha": "—",
+    "license": "mã của kênh; font OFL/Apache ghi ở docs/round10/H1.md",
+    "from": "bài tham khảo '10 Claude animation styles' (chỉ tên phong cách); kỹ thuật in tram/Bayer/rối bóng viết mới",
+    "how": "look html mới (bút + hậu kỳ WebGL một pass) trên sân khấu đen; không chép mã/tài sản bên ngoài"
+  },
+  "code_engine": "html",
+  "code_only": true,
+  "tags": [
+    "kids",
+    "children",
+    "craft",
+    "paper",
+    "origami",
+    "school",
+    "toy",
+    "pet",
+    "farm",
+    "garden",
+    "dog",
+    "cat",
+    "bird",
+    "season",
+    "picnic",
+    "puppy"
+  ],
+  "black_min": 0.55,
+  "palette": {
+    "bg": "#000000",
+    "ink": "#F4EAD5",
+    "a": "#E2552D",
+    "b": "#2F86A6",
+    "c": "#F3C246",
+    "_doc": "giấy kem + cam đất + xanh mòng két + vàng mù tạt"
+  },
+  "pacing": {
+    "fps": "on 2s (stop-motion) + lệch nhẹ mỗi lần chụp",
+    "easing": "dead — trượt rồi dừng",
+    "bounce": false,
+    "cut_rule": "cắt khi một lớp giấy trượt che khung",
+    "rule": "mọi vật là mảnh giấy có độ sâu lớp"
+  },
+  "marks": {
+    "arrow": "mũi tên giấy xé",
+    "circle": "vòng giấy",
+    "label": "băng giấy xé, chữ in đen"
+  },
+  "transitions": [
+    "cut",
+    "whip"
+  ],
+  "sfx_pack": {
+    "pop": "pop",
+    "hit": "thunk",
+    "whoosh": "scrape",
+    "tick": "click",
+    "ding": "ting"
+  },
+  "music": {
+    "mood": "ukulele + glockenspiel vui, 104 BPM",
+    "bpm": 104
+  },
+  "voice_persona": "cô giáo mầm non kể chuyện, vui, rõ ràng",
+  "thumbnail": "con vật/vật cắt giấy mép xé thật to trên đen, bóng mềm, 2–3 từ chữ tròn",
+  "flow": {
+    "medium": "2D paper cutout stop-motion",
+    "look": "Layered torn-paper cutouts with white fibrous edges, visible paper grain and soft drop shadows between layers, floating over pure black",
+    "motion": "stop-motion on twos with tiny jitter each frame, layers slide in"
+  },
+  "font": "LuckiestGuy-Regular.ttf",
+  "size": 120,
+  "uppercase": true,
+  "fill": "#F4EAD5",
+  "stroke": 8,
+  "stroke_color": "#000000",
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#F3C246",
+  "sfx_role": {
+    "size_mult": 1.3,
+    "rotate": -5,
+    "fill": "#E2552D"
+  },
+  "html": {
+    "look": "cutout",
+    "font": "LuckiestGuy-Regular.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#F4EAD5",
+      "a": "#E2552D",
+      "b": "#2F86A6",
+      "c": "#F3C246"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    },
+    "type": {
+      "weight": 400
+    }
+  },
+  "world": {
+    "_doc": "Sân khấu đen tối thiểu cho shot 3D trong style này (màu suy từ palette 2D để không lệch tông). Hậu kỳ 3D theo look 2D (pixel/halftone/silhouette…) do WP-X thêm vào look3d.post.",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 10,
+    "fog_far": 34,
+    "toon_steps": [
+      120,
+      200,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#F4EAD5",
+      "grey": "#6E7480",
+      "water": "#2F86A6",
+      "accent": "#F3C246",
+      "accent_hi": "#F4EAD5",
+      "accent_glow": "#F3C246",
+      "danger": "#E2552D",
+      "iron": "#30343C",
+      "metal": "#A0A8B4",
+      "glass_line": "#F4EAD5",
+      "ink_text": "#0B0C10",
+      "chalk": "#F4EAD5",
+      "board": "#14161A",
+      "label": "#F4EAD5",
+      "dial": "#F4EAD5",
+      "bench": "#262A31",
+      "bench_seam": "#0E1013",
+      "bench_leg": "#1B1E23",
+      "wall": "#14171C",
+      "feather": "#F4EAD5",
+      "orange": "#F3C246"
+    },
+    "lights": {
+      "hemi": 1.1,
+      "hemi_sky": "#E8ECFF",
+      "hemi_ground": "#22252B",
+      "key": 2.4,
+      "key_dir": [
+        -0.55,
+        1.0,
+        0.75
+      ],
+      "rim": 2.0,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.45,
+        0.55,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#F4EAD5",
+      "px": 1.6,
+      "rim": "#F4EAD5",
+      "rim_px": 3,
+      "crease": 0.6
+    },
+    "grade": {
+      "sat": 1.05,
+      "vig": 0.18
+    },
+    "look3d": "paper"
+  },
+  "cast_palette": {
+    "body": "#F4EAD5",
+    "accent": "#F3C246",
+    "rim": "#F4EAD5"
+  },
+  "not": [
+    "không phải papercraft 3D (đây là lớp giấy phẳng 2D/2.5D)",
+    "không phải style `paper_cutout` cũ (chỉ kiểu chữ + look spy)",
+    "không nền giấy toàn khung — các lớp nền là giấy rất tối, khung vẫn đen"
+  ],
+  "voice_tags": [
+    "warm",
+    "friendly",
+    "playful",
+    "teacher"
+  ]
+}

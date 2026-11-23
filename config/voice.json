@@ -1,0 +1,414 @@
+{
+  "_doc": "Giọng đọc ElevenLabs cho kênh tiếng Anh. Key đọc từ biến môi trường hoặc file .env (ELEVENLABS_API_KEY) — KHÔNG ghi key vào đây. Đo ngày 14/11/2026 trên câu mẫu: eleven_v3/v4 nói ~3.0–3.2 từ/giây và GẦN NHƯ BỎ QUA voice_settings.speed; eleven_multilingual_v2 speed 1.1 ≈ 3.6 từ/giây nhưng không hiểu audio tag. Vì vậy: v3 (giữ audio tag) + cắt lặng + atempo hậu kỳ channel.json → vo.speed (1.12) để đạt ~3.6–3.7 từ/giây. Kit gợi ý speed 1.05–1.1, stability 45–55%.",
+  "provider": "elevenlabs",
+  "api_key_env": "ELEVENLABS_API_KEY",
+  "voice": {
+    "id": "TX3LPaxmHKxFdv7VOQHJ",
+    "name": "Liam — energetic, confident narrator (American)"
+  },
+  "alternates": [
+    {
+      "id": "nPczCjzI2devNBz1zQrb",
+      "name": "Brian — deep, resonant, warm (American) · chậm hơn (~3.0 từ/giây trên v3)"
+    },
+    {
+      "id": "cjVigY5qzO86Huf0OWal",
+      "name": "Eric — smooth, trustworthy (American)"
+    },
+    {
+      "id": "IKne3meq5aSn9XLyUdCD",
+      "name": "Charlie — deep, confident, energetic (Australian) · chậm nhất"
+    },
+    {
+      "id": "JBFqnCBsd6RMkjVDRZzb",
+      "name": "George — warm storyteller (British)"
+    }
+  ],
+  "model_id": "eleven_v3",
+  "output_format": "mp3_44100_128",
+  "voice_settings": {
+    "stability": 0.5,
+    "similarity_boost": 0.75,
+    "style": 0.0,
+    "use_speaker_boost": true,
+    "speed": 1.08
+  },
+  "audio_tags": {
+    "_doc": "Tag kiểu [excited] viết thẳng trong vo của shot (chỉ model v3 hiểu). Tag bị bỏ khỏi chữ trên màn hình, .srt và đếm từ. default_by_beat chỉ chèn khi câu chưa có tag.",
+    "enabled": true,
+    "allowed": [
+      "excited",
+      "curious",
+      "amazed",
+      "whispers",
+      "dramatically",
+      "sarcastic",
+      "serious",
+      "laughs",
+      "sighs",
+      "gasps",
+      "short pause",
+      "long pause"
+    ],
+    "default_by_beat": {
+      "hook": "excited",
+      "twist": "dramatically"
+    }
+  },
+  "pronunciation": {
+    "_doc": "Thuật ngữ khó đọc → cách viết để TTS đọc đúng (chỉ đổi chuỗi gửi đi; chữ trên màn hình giữ nguyên).",
+    "Leidenfrost": "Lyden-frost",
+    "Celsius": "Celsius",
+    "Fahrenheit": "Fahrenheit",
+    "supercooled": "super-cooled",
+    "Mpemba": "em-PEM-bah"
+  },
+  "min_words_per_sec": 3.2,
+  "max_words_per_sec": 4.3,
+  "measured": {
+    "eleven_v3": {
+      "Liam": 3.23,
+      "Eric": 3.16,
+      "Chris": 3.04,
+      "Brian": 2.98,
+      "Charlie": 2.85
+    },
+    "eleven_v4": {
+      "Brian": 3.05
+    },
+    "eleven_multilingual_v2": {
+      "Brian@1.1": 3.59
+    },
+    "unit": "từ/giây trên câu mẫu 21 từ, gồm cả khoảng ngừng"
+  },
+  "_doc_pools": "Kho giọng xoay vòng (vòng 7b): mỗi video tự chọn MỘT giọng chưa dùng trong rotation.avoid_recent video gần nhất, hợp voice_tags của style (vidlib/voices.py). Lấy từ GET /v1/voices của tài khoản ngày 14/11/2026. Thêm giọng: thêm một dòng {id, name, gender, accent, tags}; 'auto': false = chỉ dùng khi chỉ định tay. `voice` ở trên chỉ còn là giọng dự phòng/video cũ.",
+  "rotation": {
+    "_doc": "avoid_recent: số video gần nhất không lặp giọng. storyboard.voice = 'auto' | tên | id; cờ CLI --voice.",
+    "avoid_recent": 5
+  },
+  "pools": {
+    "en": [
+      {
+        "id": "TX3LPaxmHKxFdv7VOQHJ",
+        "name": "Liam — energetic social-media creator",
+        "gender": "male",
+        "accent": "american",
+        "tags": [
+          "energetic",
+          "hype",
+          "young",
+          "bright",
+          "playful"
+        ]
+      },
+      {
+        "id": "nPczCjzI2devNBz1zQrb",
+        "name": "Brian — deep, resonant, comforting",
+        "gender": "male",
+        "accent": "american",
+        "tags": [
+          "deep",
+          "warm",
+          "calm",
+          "resonant",
+          "narrator",
+          "smooth"
+        ],
+        "_note": "chậm (~3.0 từ/giây trên v3) — atempo tự bù"
+      },
+      {
+        "id": "cjVigY5qzO86Huf0OWal",
+        "name": "Eric — smooth, trustworthy",
+        "gender": "male",
+        "accent": "american",
+        "tags": [
+          "smooth",
+          "calm",
+          "narrator",
+          "steady",
+          "clear"
+        ]
+      },
+      {
+        "id": "IKne3meq5aSn9XLyUdCD",
+        "name": "Charlie — deep, confident, energetic",
+        "gender": "male",
+        "accent": "australian",
+        "tags": [
+          "energetic",
+          "deep",
+          "hype",
+          "young",
+          "upbeat"
+        ],
+        "_note": "chậm nhất — atempo tự bù"
+      },
+      {
+        "id": "JBFqnCBsd6RMkjVDRZzb",
+        "name": "George — warm captivating storyteller",
+        "gender": "male",
+        "accent": "british",
+        "tags": [
+          "storyteller",
+          "warm",
+          "mature",
+          "british",
+          "wise",
+          "curious"
+        ]
+      },
+      {
+        "id": "CwhRBWXzGAHq8TQ4Fs17",
+        "name": "Roger — laid-back, casual, resonant",
+        "gender": "male",
+        "accent": "american",
+        "tags": [
+          "casual",
+          "resonant",
+          "mature",
+          "smooth",
+          "deep"
+        ]
+      },
+      {
+        "id": "EXAVITQu4vr4xnSDxMaL",
+        "name": "Sarah — mature, reassuring, confident",
+        "gender": "female",
+        "accent": "american",
+        "tags": [
+          "confident",
+          "calm",
+          "narrator",
+          "clear",
+          "steady"
+        ]
+      },
+      {
+        "id": "FGY2WhTYpPnrIDTdsKH5",
+        "name": "Laura — enthusiast, quirky attitude",
+        "gender": "female",
+        "accent": "american",
+        "tags": [
+          "energetic",
+          "quirky",
+          "young",
+          "playful",
+          "hype",
+          "mischief"
+        ]
+      },
+      {
+        "id": "SAz9YHcvj6GT2YYXdXww",
+        "name": "River — relaxed, neutral, informative",
+        "gender": "neutral",
+        "accent": "american",
+        "tags": [
+          "calm",
+          "informative",
+          "teacher",
+          "clear",
+          "steady"
+        ]
+      },
+      {
+        "id": "Xb7hH8MSUJpSbSDYk0k2",
+        "name": "Alice — clear, engaging educator",
+        "gender": "female",
+        "accent": "british",
+        "tags": [
+          "teacher",
+          "clear",
+          "british",
+          "upbeat",
+          "curious"
+        ]
+      },
+      {
+        "id": "XrExE9yKIg1WjnnlVkGX",
+        "name": "Matilda — knowledgeable, professional",
+        "gender": "female",
+        "accent": "american",
+        "tags": [
+          "teacher",
+          "upbeat",
+          "clear",
+          "informative",
+          "friendly"
+        ]
+      },
+      {
+        "id": "bIHbv24MWmeRgasZH58o",
+        "name": "Will — relaxed optimist",
+        "gender": "male",
+        "accent": "american",
+        "tags": [
+          "casual",
+          "chill",
+          "young",
+          "friendly",
+          "upbeat"
+        ]
+      },
+      {
+        "id": "cgSgspJ2msm6clMCkdW9",
+        "name": "Jessica — playful, bright, warm",
+        "gender": "female",
+        "accent": "american",
+        "tags": [
+          "playful",
+          "bright",
+          "warm",
+          "young",
+          "friendly",
+          "energetic"
+        ]
+      },
+      {
+        "id": "hpp4J3VqNfWAUOO0d1Us",
+        "name": "Bella — professional, bright, warm",
+        "gender": "female",
+        "accent": "american",
+        "tags": [
+          "teacher",
+          "bright",
+          "warm",
+          "news",
+          "clear",
+          "professional"
+        ]
+      },
+      {
+        "id": "iP95p4xoKVk53GoZ742B",
+        "name": "Chris — charming, down-to-earth",
+        "gender": "male",
+        "accent": "american",
+        "tags": [
+          "casual",
+          "friendly",
+          "warm",
+          "curious"
+        ]
+      },
+      {
+        "id": "onwK4e9ZLuTAKqWW03F9",
+        "name": "Daniel — steady broadcaster",
+        "gender": "male",
+        "accent": "british",
+        "tags": [
+          "news",
+          "formal",
+          "steady",
+          "british",
+          "serious"
+        ]
+      },
+      {
+        "id": "pFZP5JQG7iQjIQuC4Bku",
+        "name": "Lily — velvety actress",
+        "gender": "female",
+        "accent": "british",
+        "tags": [
+          "storyteller",
+          "velvety",
+          "british",
+          "dramatic",
+          "mischief"
+        ]
+      },
+      {
+        "id": "pNInz6obpgDQGcFmaJgB",
+        "name": "Adam — dominant, firm",
+        "gender": "male",
+        "accent": "american",
+        "tags": [
+          "deep",
+          "firm",
+          "dramatic",
+          "serious",
+          "intense"
+        ]
+      },
+      {
+        "id": "pqHfZKP75CvOlQylNhV4",
+        "name": "Bill — wise, mature, balanced",
+        "gender": "male",
+        "accent": "american",
+        "tags": [
+          "wise",
+          "mature",
+          "storyteller",
+          "calm",
+          "old"
+        ]
+      },
+      {
+        "id": "OEHTkiHZj6OczWZHu0Aj",
+        "name": "John — conversational",
+        "gender": "male",
+        "accent": "american",
+        "tags": [
+          "casual",
+          "young",
+          "friendly",
+          "conversational"
+        ]
+      },
+      {
+        "id": "N2lVS1w4EtoT3dr4eOWO",
+        "name": "Callum — husky trickster",
+        "gender": "male",
+        "accent": "american",
+        "tags": [
+          "character",
+          "mischief",
+          "husky"
+        ],
+        "auto": false
+      },
+      {
+        "id": "SOYHLrjzK2X1ezoPC6cr",
+        "name": "Harry — fierce warrior",
+        "gender": "male",
+        "accent": "american",
+        "tags": [
+          "character",
+          "intense",
+          "rough"
+        ],
+        "auto": false
+      }
+    ],
+    "vi": [
+      {
+        "id": "6Xq32rHt6oAu98TBDKfr",
+        "name": "Tram — friendly Southern Vietnamese",
+        "gender": "female",
+        "accent": "southern",
+        "tags": [
+          "friendly",
+          "bright"
+        ]
+      },
+      {
+        "id": "xjyQliDr4k3i3iSr1wSb",
+        "name": "Tuyết — Southern Vietnamese storyteller",
+        "gender": "female",
+        "accent": "southern",
+        "tags": [
+          "storyteller",
+          "calm"
+        ]
+      },
+      {
+        "id": "Xq6JCnPKC1WM8ONUXMCJ",
+        "name": "Nhi — Vietnamese Southern",
+        "gender": "female",
+        "accent": "southern",
+        "tags": [
+          "playful",
+          "young"
+        ]
+      }
+    ]
+  }
+}

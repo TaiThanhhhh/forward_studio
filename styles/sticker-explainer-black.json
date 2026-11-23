@@ -1,0 +1,111 @@
+{
+  "name": "Sticker Explainer Black",
+  "description": "Giải thích 'cứng' kiểu nhãn dán: mọi vật có viền trắng dày + bóng mềm như sticker, đặt trên canvas tối chấm lưới; camera lia dài nối các điểm thông tin; biểu đồ chính xác.",
+  "source": {
+    "repo": "mg-styles-15",
+    "url": "https://github.com/Vincentwei1021/mg-styles-15",
+    "sha": "269f6ed788cf",
+    "license": "MIT",
+    "from": "demos/19-paperclip + prompts/19-paperclip.md",
+    "how": "port ý tưởng kỹ thuật từ mã MIT, viết lại thành module của engine html (không chạy repo gốc)"
+  },
+  "code_engine": "html",
+  "code_only": true,
+  "tags": [
+    "facts",
+    "economy",
+    "materials",
+    "numbers",
+    "supply",
+    "comparison",
+    "phone",
+    "element",
+    "metal",
+    "price",
+    "cost",
+    "smartphone"
+  ],
+  "black_min": 0.55,
+  "palette": {
+    "bg": "#000000",
+    "ink": "#EEF2F5",
+    "a": "#FF5A36",
+    "b": "#7FB7D9",
+    "_doc": "trắng xám lạnh + một màu nhấn cam đỏ + xanh xám phụ"
+  },
+  "pacing": {
+    "fps": "ones",
+    "easing": "đường cong dài (smootherstep) cho camera; vật bật nhẹ",
+    "bounce": false,
+    "rule": "mỗi câu thoại phải có một phần tử hình mới",
+    "charts": "cột mọc đúng tỉ lệ, số đếm lên",
+    "cut_rule": "ít cắt: một camera nối nhiều điểm"
+  },
+  "marks": {
+    "arrow": "đường dẫn mảnh + chấm đầu",
+    "circle": "vòng nét đều",
+    "label": "nhãn trắng bo góc, chữ đen"
+  },
+  "transitions": [
+    "cut",
+    "whip"
+  ],
+  "sfx_pack": {
+    "pop": "click",
+    "hit": "thunk",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ding"
+  },
+  "music": {
+    "mood": "nền tech-explainer sạch, click UI",
+    "bpm": 108
+  },
+  "voice_persona": "biên tập viên khoa học điềm tĩnh, nhanh",
+  "thumbnail": "một sticker to viền trắng + con số khổng lồ + chú thích nhỏ",
+  "flow": {
+    "medium": "Sticker-style explainer collage",
+    "look": "Objects as die-cut stickers with a thick white outline and soft drop shadow, flat icons and precise charts on a dark dotted canvas, restrained two-colour palette",
+    "motion": "one long smooth camera move linking information points, elements pop in on each sentence"
+  },
+  "font": "Montserrat-Variable.ttf",
+  "size": 112,
+  "uppercase": false,
+  "fill": "#EEF2F5",
+  "stroke": 8,
+  "stroke_color": "#000000",
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#FF5A36",
+  "sfx_role": {
+    "size_mult": 1.3,
+    "rotate": -5,
+    "fill": "#FF5A36"
+  },
+  "variation": "Bold",
+  "html": {
+    "look": "sticker",
+    "font": "Montserrat-Variable.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#EEF2F5",
+      "a": "#FF5A36",
+      "b": "#7FB7D9"
+    }
+  },
+  "not": [
+    "không phải flat vector (ở đây mọi mảnh có viền trắng 9 px + bóng)",
+    "không phải evidence board (không ghim, không dây đỏ, không giấy)",
+    "không vui nhộn: nghiêm, chữ đều nét, căn thẳng"
+  ],
+  "voice_tags": [
+    "teacher",
+    "clear",
+    "professional",
+    "calm"
+  ]
+}

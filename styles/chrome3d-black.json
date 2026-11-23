@@ -1,0 +1,201 @@
+{
+  "name": "Chrome 3D Black",
+  "description": "Kim loại chrome / thép bóng 3D trên nền đen: phản chiếu softbox trắng + dải rim cam nóng, không nét mực, bloom. Toàn bộ bằng code (three.js metalness = 1).",
+  "source": {
+    "repo": "studio — engine three.js (look3d)",
+    "url": "https://github.com/mrdoob/three.js",
+    "license": "MIT",
+    "from": "engines/three/main.js → LOOK3D (chất liệu + env map studio + hậu kỳ ACES/bloom/grain)",
+    "how": "preset chất liệu 3D của engine three.js trên sân khấu đen; prompt Flow 3D cùng look cho ngày có Flow"
+  },
+  "code_only": true,
+  "black_min": 0.5,
+  "voice_persona": "giọng trầm, chắc, nhịp mạnh",
+  "thumbnail": "một khối chrome bóng gương phản chiếu dải cam nóng giữa nền đen",
+  "font": "Anton-Regular.ttf",
+  "size": 118,
+  "uppercase": true,
+  "fill": "#F2F4F8",
+  "stroke": 10,
+  "stroke_color": "#000000",
+  "shadow": {
+    "offset": [
+      8,
+      8
+    ],
+    "color": "#FF9A3D"
+  },
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#FFD27A",
+  "sfx_role": {
+    "size_mult": 1.35,
+    "rotate": -6,
+    "fill": "#8FB8FF"
+  },
+  "tags": [
+    "metal",
+    "steel",
+    "iron",
+    "gold",
+    "car",
+    "engine",
+    "machine",
+    "robot",
+    "coin",
+    "rocket",
+    "magnet",
+    "money",
+    "knife",
+    "sword"
+  ],
+  "voice_tags": [
+    "deep",
+    "confident",
+    "documentary"
+  ],
+  "palette": {
+    "ink": "#F2F4F8",
+    "a": "#FF9A3D",
+    "b": "#8FB8FF",
+    "c": "#FFD27A",
+    "bg": "#000000"
+  },
+  "pacing": {
+    "fps": "full",
+    "easing": "nặng, dừng gắt",
+    "bounce": false,
+    "camera": "dolly chậm bắt phản chiếu",
+    "cut_rule": "cắt ở va chạm kim loại"
+  },
+  "marks": {
+    "arrow": "mũi tên thép",
+    "circle": "vòng sáng cam",
+    "label": "nhãn khắc chữ"
+  },
+  "transitions": [
+    "cut",
+    "whip"
+  ],
+  "sfx_pack": {
+    "pop": "ting",
+    "hit": "impact",
+    "whoosh": "whoosh",
+    "tick": "click",
+    "ding": "ting"
+  },
+  "music": {
+    "mood": "industrial pulse, metallic hits, low synth",
+    "bpm": 100
+  },
+  "flow": {
+    "is_3d": true,
+    "medium": "Stylized 3D liquid-chrome render",
+    "look": "Mirror-polished chrome and brushed steel objects reflecting a white studio softbox and a hot orange rim strip, crisp specular highlights, pure black void",
+    "motion": "heavy weighty motion, slow turns that catch reflections, sharp impact stops"
+  },
+  "world": {
+    "_doc": "Sân khấu đen, look 3D 'chrome' (engines/three/main.js → LOOK3D).",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 8,
+    "fog_far": 28,
+    "toon_steps": [
+      125,
+      200,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#F2F4F8",
+      "grey": "#6E7887",
+      "water": "#FF9A3D",
+      "accent": "#FF9A3D",
+      "accent_hi": "#FFD27A",
+      "accent_glow": "#FF9A3D",
+      "danger": "#8FB8FF",
+      "iron": "#323842",
+      "metal": "#9AA6B8",
+      "glass_line": "#D8E8FF",
+      "ink_text": "#0B0E13",
+      "chalk": "#F2F4F8",
+      "board": "#161C24",
+      "label": "#F2F4F8",
+      "dial": "#F2F4F8",
+      "bench": "#2B3440",
+      "bench_seam": "#11161C",
+      "bench_leg": "#1E252E",
+      "wall": "#161D26",
+      "feather": "#F2F4F8",
+      "orange": "#FFD27A"
+    },
+    "lights": {
+      "hemi": 1.05,
+      "hemi_sky": "#DCE4FF",
+      "hemi_ground": "#22262E",
+      "key": 2.3,
+      "key_dir": [
+        -0.55,
+        1.0,
+        0.75
+      ],
+      "rim": 2.4,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.45,
+        0.55,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#F2F4F8",
+      "px": 1.6,
+      "rim": "#FF9A3D",
+      "rim_px": 0,
+      "crease": 0.4
+    },
+    "grade": {
+      "sat": 1.06,
+      "vig": 0.16
+    },
+    "look3d": "chrome"
+  },
+  "cast_palette": {
+    "body": "#F2F4F8",
+    "shade": "#9AA0AA",
+    "ink": "#0B0E13",
+    "rim": "#F2F4F8",
+    "accent": "#FF9A3D",
+    "strap": "#5A6270"
+  },
+  "html": {
+    "look": "swiss",
+    "font": "Anton-Regular.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#F2F4F8",
+      "a": "#8FB8FF",
+      "b": "#FF9A3D",
+      "c": "#FFD27A"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    },
+    "type": {
+      "weight": 400,
+      "upper": true
+    }
+  },
+  "not": [
+    "không phải ảnh sản phẩm thật",
+    "không nền xưởng (nền đen #000000)",
+    "không bề mặt nhám không phản chiếu"
+  ],
+  "code_engine": "three"
+}

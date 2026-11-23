@@ -1,0 +1,244 @@
+{
+  "name": "Split-Flap Board · dark stage",
+  "description": "Biến thể dark-stage của style #34 \"Split-Flap Board\" (Nội dung phẳng thành vật thật) trong 3D Style Atlas: đếm ngược, xếp hạng, danh sách số. Viết lại bằng lời của tool trên sân khấu đen, một accent.",
+  "source": {
+    "repo": "3D Style Atlas (Futurepedia / HubSpot Media)",
+    "url": "https://www.futurepedia.io/resources/3d-style-atlas/view",
+    "sha": "#34",
+    "license": "HubSpot Website Terms of Use (cá nhân, phi thương mại) — chỉ lấy ý tưởng thị giác, chữ + mã viết mới; xem docs/CREDITS.md",
+    "from": "#34 Split-Flap Board · Flat content made physical · Title",
+    "how": "dark-stage: nền #000, look 3D `plastic` của engine three.js, block Flow ngắn tự viết"
+  },
+  "code_only": true,
+  "black_min": 0.5,
+  "voice_persona": "người kể vui nhộn, nhanh, nhấn từ như đang chơi",
+  "thumbnail": "một vật chủ đạo kiểu 3d mechanical split-flap board nổi giữa nền đen, accent amber trên chi tiết sắp xảy ra chuyện",
+  "font": "Baloo2-Variable.ttf",
+  "size": 118,
+  "uppercase": true,
+  "fill": "#fff1dc",
+  "stroke": 10,
+  "stroke_color": "#000000",
+  "shadow": {
+    "offset": [
+      8,
+      8
+    ],
+    "color": "#ffa530"
+  },
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#ffffff",
+  "sfx_role": {
+    "size_mult": 1.35,
+    "rotate": -6,
+    "fill": "#FF4F6D"
+  },
+  "tags": [
+    "countdown",
+    "ranking",
+    "top",
+    "fastest",
+    "list",
+    "schedule"
+  ],
+  "voice_tags": [
+    "playful",
+    "bright",
+    "energetic"
+  ],
+  "palette": {
+    "bg": "#000000",
+    "ink": "#fff1dc",
+    "a": "#ffa530",
+    "b": "#8fb4ff",
+    "c": "#ffffff",
+    "_doc": "sân khấu đen + accent amber"
+  },
+  "pacing": {
+    "fps": "full",
+    "easing": "bật nảy squash-and-stretch",
+    "bounce": true,
+    "camera": "shallow-focus long lens, sideways track, pull-back, push toward the highlighted row",
+    "cut_rule": "cắt ở pha bật nảy"
+  },
+  "marks": {
+    "arrow": "mũi tên nhựa 3D bo tròn",
+    "circle": "vòng nhựa sáng",
+    "label": "nhãn dán sticker bo tròn"
+  },
+  "transitions": [
+    "cut",
+    "whip"
+  ],
+  "sfx_pack": {
+    "pop": "pop",
+    "hit": "thunk",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ding"
+  },
+  "music": {
+    "mood": "toy-box plucks, glockenspiel, bouncy bass",
+    "bpm": 118
+  },
+  "flow": {
+    "is_3d": true,
+    "medium": "3D mechanical split-flap board",
+    "look": "Black plastic flaps with worn off-white print, dark brushed-steel frame, amber backlit sign; soft overhead lamp in front, flash on every falling flap, faint cool side fill",
+    "motion": "characters riffle through the alphabet and land column by column",
+    "motion_block": "Characters riffle through the alphabet and land column by column.",
+    "plate": "every flap face left blank — letters are set in post",
+    "accent": "#ffa530",
+    "accent_name": "amber",
+    "camera": "Shallow-focus long lens, sideways track, pull-back, push toward the highlighted row",
+    "avoid_add": [
+      "bright backdrop",
+      "visible horizon",
+      "photoreal people"
+    ]
+  },
+  "world": {
+    "_doc": "Sân khấu đen, look 3D 'plastic' (engines/three/main.js → LOOK3D).",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 8,
+    "fog_far": 28,
+    "toon_steps": [
+      125,
+      200,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#fff1dc",
+      "grey": "#6E7887",
+      "water": "#2EC4FF",
+      "accent": "#ffa530",
+      "accent_hi": "#FFD23F",
+      "accent_glow": "#ffa530",
+      "danger": "#ffa530",
+      "iron": "#323842",
+      "metal": "#9AA6B8",
+      "glass_line": "#D8E8FF",
+      "ink_text": "#0B0E13",
+      "chalk": "#F7F4EE",
+      "board": "#161C24",
+      "label": "#fff1dc",
+      "dial": "#F7F4EE",
+      "bench": "#2B3440",
+      "bench_seam": "#11161C",
+      "bench_leg": "#1E252E",
+      "wall": "#161D26",
+      "feather": "#F7F4EE",
+      "orange": "#FFD23F"
+    },
+    "lights": {
+      "hemi": 1.05,
+      "hemi_sky": "#DCE4FF",
+      "hemi_ground": "#22262E",
+      "key": 2.3,
+      "key_dir": [
+        -0.55,
+        1.0,
+        0.75
+      ],
+      "rim": 2.4,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.45,
+        0.55,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#F7F4EE",
+      "px": 1.6,
+      "rim": "#ffa530",
+      "rim_px": 0,
+      "crease": 0.4
+    },
+    "grade": {
+      "sat": 1.06,
+      "vig": 0.16
+    },
+    "look3d": "plastic"
+  },
+  "cast_palette": {
+    "body": "#F7F4EE",
+    "shade": "#9AA0AA",
+    "ink": "#0B0E13",
+    "rim": "#F7F4EE",
+    "accent": "#2EC4FF",
+    "strap": "#5A6270"
+  },
+  "html": {
+    "look": "sticker",
+    "font": "Baloo2-Variable.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#fff1dc",
+      "a": "#ffa530",
+      "b": "#8fb4ff",
+      "c": "#ffffff"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    },
+    "type": {
+      "weight": 400,
+      "upper": true
+    }
+  },
+  "not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "atlas": {
+    "number": 34,
+    "id": "split-flap-board",
+    "name": "Split-Flap Board",
+    "tag": "Title",
+    "fit": 4,
+    "duplicate_of": "",
+    "why": "Hợp dạng kịch bản đếm ngược; chữ do engine/text_fx vẽ, không để AI vẽ.",
+    "frame_props": [
+      "ball",
+      "ice",
+      "beaker"
+    ]
+  },
+  "category": "flat-physical",
+  "category_name": "Flat content made physical",
+  "tier": 1,
+  "brand_fit": "ok",
+  "variant": "dark-stage",
+  "image_style_block": "3D mechanical split-flap board on a pure black stage (#000000): black plastic flaps with worn off-white print, dark brushed-steel frame, amber backlit sign. Soft overhead lamp in front, flash on every falling flap, faint cool side fill. One accent colour (amber) only on the key element. Leave every flap face left blank — letters are set in post empty (captions are added later).",
+  "video_motion_block": "Characters riffle through the alphabet and land column by column.",
+  "avoid_block": "Avoid: any text, letters or numbers, logos, bright backdrop, visible horizon, photoreal people.",
+  "materials": "black plastic flaps with worn off-white print, dark brushed-steel frame, amber backlit sign",
+  "lighting": "soft overhead lamp in front, flash on every falling flap, faint cool side fill",
+  "camera": "shallow-focus long lens, sideways track, pull-back, push toward the highlighted row",
+  "text_style": {
+    "plate": "every flap face left blank — letters are set in post",
+    "font": "Baloo2-Variable.ttf",
+    "uppercase": true,
+    "rule": "chữ do text_fx / chữ 3D của engine; prompt ảnh chỉ chừa chỗ trống"
+  },
+  "good_for": "đếm ngược, xếp hạng, danh sách số",
+  "what_it_is_not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "code_engine": "three",
+  "_generated": "vidlib/atlas.py từ config/atlas.json — sửa ở đó rồi chạy python scripts/atlas_import.py",
+  "_base": "plastic-toy3d-black"
+}

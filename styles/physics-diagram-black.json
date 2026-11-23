@@ -1,0 +1,160 @@
+{
+  "name": "Physics Diagram Black",
+  "description": "Sơ đồ vật lý/toán kiểu bảng đen số: nền đen tuyệt đối, chỉ đặt 'thứ đang được nói', đồ thị vẽ dần có chấm chạy, vector lực, phương trình mà mỗi ký hiệu cùng màu với vật nó chỉ; biến đổi mượt thay cho cắt.",
+  "source": {
+    "repo": "manim (Community Edition)",
+    "url": "https://github.com/ManimCommunity/manim",
+    "sha": "pip",
+    "license": "MIT",
+    "from": "thư viện (pip install manim) + ngữ pháp t1 của huashu-art-motion (references/动画语法/t1_3b1b.md, MIT)",
+    "how": "dùng làm thư viện; scene viết mới trong engines/manim; luật 'màu = tên khái niệm, ≤ 2 ý trên màn hình, đối tượng trước chữ sau' học từ grammar t1"
+  },
+  "code_engine": "manim",
+  "code_only": true,
+  "tags": [
+    "heat",
+    "temperature",
+    "force",
+    "energy",
+    "math",
+    "equation",
+    "graph",
+    "pressure",
+    "speed",
+    "gravity",
+    "cooling",
+    "physics",
+    "freeze",
+    "melt",
+    "boil",
+    "degree",
+    "magnet",
+    "magnetic",
+    "bullet"
+  ],
+  "black_min": 0.8,
+  "palette": {
+    "bg": "#000000",
+    "ink": "#ECECEC",
+    "a": "#FF6B3D",
+    "b": "#58C4DD",
+    "c": "#FFD866",
+    "_doc": "màu = tên khái niệm: cam = nóng/lực, xanh = lạnh/nước, vàng = kết quả; tối đa 4 màu ngữ nghĩa"
+  },
+  "pacing": {
+    "fps": "ones",
+    "easing": "smooth (ease-in-out) cho mọi biến đổi; một hoạt cảnh 1–3 s rồi giữ",
+    "bounce": false,
+    "rule": "đối tượng xuất hiện trước, chữ/phương trình đến sau; cùng lúc ≤ 2 ý trên màn hình",
+    "hold": "khi giữ chỉ còn camera trôi rất nhẹ",
+    "cut_rule": "ưu tiên biến đổi (Transform) thay cho cắt"
+  },
+  "marks": {
+    "arrow": "vector mảnh đầu nhọn, màu theo khái niệm",
+    "circle": "khung nhấn (surrounding rectangle) vẽ một lượt",
+    "label": "chữ nhỏ cùng màu với vật"
+  },
+  "transitions": [
+    "cut",
+    "fade"
+  ],
+  "sfx_pack": {
+    "pop": "tick",
+    "hit": "thud",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ting"
+  },
+  "music": {
+    "mood": "piano + dây tối giản, suy tư",
+    "bpm": 90
+  },
+  "voice_persona": "thầy giáo điềm đạm, tò mò, nói như đang nghĩ",
+  "thumbnail": "một đường cong cam trên trục toạ độ + một con số vàng",
+  "flow": {
+    "medium": "Mathematical animation diagram",
+    "look": "Thin precise coloured lines and curves on a pure black background, clean axes, vectors and equations where colour encodes meaning, no decoration",
+    "motion": "curves draw on smoothly, shapes transform into one another, long calm holds"
+  },
+  "font": "Montserrat-Variable.ttf",
+  "size": 112,
+  "uppercase": false,
+  "fill": "#ECECEC",
+  "stroke": 0,
+  "stroke_color": "#000000",
+  "intro": "write_on",
+  "intro_frames": 10,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#FFD866",
+  "sfx_role": {
+    "size_mult": 1.3,
+    "rotate": -5,
+    "fill": "#FF6B3D"
+  },
+  "variation": "SemiBold",
+  "manim": {
+    "font": "Montserrat-Variable.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#ECECEC",
+      "hot": "#FF6B3D",
+      "cold": "#58C4DD",
+      "accent": "#FFD866",
+      "dim": "#6B6B6B"
+    },
+    "stroke": 6,
+    "creep": 0.03
+  },
+  "html": {
+    "_doc": "beat mà engine manim không có (drop, process, scale, callout) dựng bằng engine html với bút nét mảnh cùng bảng màu",
+    "look": "flat",
+    "font": "Montserrat-Variable.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#ECECEC",
+      "a": "#FF6B3D",
+      "b": "#58C4DD",
+      "c": "#FFD866"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    },
+    "pen": {
+      "fill": false,
+      "stroke": 5,
+      "tint": 0.16
+    },
+    "type": {
+      "weight": 600,
+      "upper": false,
+      "enter": "write"
+    },
+    "motion": {
+      "ease": "smooth",
+      "enter": "draw",
+      "creep": 0.03,
+      "lead": 14
+    },
+    "post": {
+      "grain": 0.02,
+      "vignette": 0.1
+    }
+  },
+  "not": [
+    "không phải slide chữ trên nền đen (không liệt kê gạch đầu dòng)",
+    "không phải HUD (không trang trí dữ liệu giả)",
+    "không phải Swiss (không lưới chữ, không khối đồ hoạ)",
+    "không hợp câu chuyện/ý kiến — chỉ khi có thứ để 'biến thành' hoặc đo được"
+  ],
+  "voice_tags": [
+    "teacher",
+    "calm",
+    "deep",
+    "wise"
+  ]
+}

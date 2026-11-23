@@ -1,0 +1,138 @@
+{
+  "name": "Forward (brand)",
+  "description": "Chữ brand mặc định: Anton (display tiếng Anh, đậm, dễ đọc trên điện thoại) trắng, viền đen dày, bật nảy gọn.",
+  "font": "Anton-Regular.ttf",
+  "size": 128,
+  "uppercase": true,
+  "fill": "#FFFFFF",
+  "stroke": 10,
+  "stroke_color": "#000000",
+  "glow": {
+    "color": "#3F6BFF",
+    "radius": 16,
+    "strength": 0.9
+  },
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.8,
+    "every": 2
+  },
+  "number_fill": "#FFFFFF",
+  "sfx_role": {
+    "size_mult": 1.3,
+    "rotate": -7,
+    "fill": "#FF2D2D"
+  },
+  "world": {
+    "_doc": "Thế giới 3D của engine code-shot cho style này: sân khấu đen, khối trắng/xám phẳng, mực đen + viền trắng ngoài (khớp clip Flow: nét ~7 px, rim trắng), accent xanh.",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 25,
+    "fog_far": 90,
+    "toon_steps": [
+      175,
+      255
+    ],
+    "shadows": false,
+    "colors": {
+      "white": "#ffffff",
+      "grey": "#9a9a9a",
+      "water": "#7a7a7a",
+      "accent": "#1849F7",
+      "accent_hi": "#9db3ff",
+      "accent_glow": "#3F6BFF",
+      "danger": "#FF2D2D",
+      "iron": "#3c3c40",
+      "metal": "#d9d9d9",
+      "glass_line": "#ffffff",
+      "ink_text": "#000000",
+      "chalk": "#F3F1EA",
+      "board": "#121212",
+      "label": "#ffffff",
+      "dial": "#ffffff",
+      "bench": "#1c1c1c",
+      "bench_seam": "#000000",
+      "bench_leg": "#2a2a2a"
+    },
+    "lights": {
+      "hemi": 1.5,
+      "hemi_sky": "#ffffff",
+      "hemi_ground": "#ffffff",
+      "key": 2.6,
+      "key_dir": [
+        -0.5,
+        1.0,
+        0.9
+      ],
+      "rim": 0.0,
+      "rim_color": "accent"
+    },
+    "ink": {
+      "color": "#000000",
+      "px": 6.5,
+      "rim": "#ffffff",
+      "rim_px": 6,
+      "crease": 0.9
+    },
+    "grade": {
+      "sat": 1.0,
+      "vig": 0.0
+    }
+  },
+  "cast_palette": {
+    "ink": "#000000",
+    "rim": "#ffffff",
+    "accent": "#1849F7",
+    "shade": "#c9c9c9",
+    "body": "#ffffff",
+    "strap": "#8a8a8a"
+  },
+  "font_vi": "BeVietnamPro-Black.ttf",
+  "tags": [
+    "general",
+    "everyday",
+    "physics",
+    "experiment",
+    "speed",
+    "fall",
+    "drop",
+    "throw",
+    "jump",
+    "run",
+    "car",
+    "bike",
+    "road",
+    "gravity",
+    "disappear",
+    "vanish",
+    "stop"
+  ],
+  "voice_tags": [
+    "energetic",
+    "hype",
+    "young",
+    "bright"
+  ],
+  "html": {
+    "_doc": "Look của engine html cho shot motion (counter, graph, compare, scale…) trong video style này — bảng màu khớp style.",
+    "look": "flat",
+    "font": "Anton-Regular.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#FFFFFF",
+      "a": "#FF2D2D",
+      "b": "#1849F7",
+      "c": "#3F6BFF"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    },
+    "type": {
+      "weight": 400,
+      "upper": true
+    }
+  }
+}

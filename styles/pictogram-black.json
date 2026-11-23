@@ -1,0 +1,108 @@
+{
+  "name": "Pictogram Black",
+  "description": "Phim pictogram kiểu nhận diện truyền hình: mỗi thẻ = một pictogram làm một việc + tiêu đề 900 khổng lồ + số mục mono '03 / 07'; nền là hoạ tiết đĩa/nửa đĩa năm sắc độ của MỘT màu, cả hàng trượt ngang; khoá theo nhịp.",
+  "source": {
+    "repo": "lemo-opuscar",
+    "url": "https://github.com/lemomo-ai/lemo-opuscar",
+    "sha": "3a7132b996be",
+    "license": "MIT cho mã; tài liệu chỉ đọc để hiểu, tự viết lại + ghi công",
+    "from": "styles/pictogram-motion/STYLE.md (CC BY-NC 4.0)",
+    "how": "đọc để hiểu ngữ pháp rồi tự viết lại bằng lời và mã của tool (không chép tài liệu/mã nguồn)"
+  },
+  "code_engine": "html",
+  "code_only": true,
+  "tags": [
+    "list",
+    "steps",
+    "ranking",
+    "safety",
+    "rules",
+    "sport",
+    "catalogue",
+    "body",
+    "survive",
+    "survival",
+    "olympic"
+  ],
+  "black_min": 0.5,
+  "palette": {
+    "bg": "#000000",
+    "ink": "#FFFFFF",
+    "a": "#FFC400",
+    "_doc": "trắng + MỘT màu (vàng) dùng ở 5 sắc độ cho hoạ tiết; mỗi chương có thể đổi màu bằng override"
+  },
+  "pacing": {
+    "fps": "ones",
+    "easing": "exponential ease-out khi vào; in-out cho whip/wipe; back tối đa một lần",
+    "bounce": false,
+    "beat": "mỗi shot bắt đầu trên nhịp; hành động chính đáp đúng nhịp nguyên; thẻ thường dài một ô nhịp, thẻ phụ nửa ô",
+    "type": "trượt lên từ mặt nạ: tiêu đề trước, dòng hai sau ~0.08 s",
+    "cut_rule": "chuyển cảnh bám lưới: hàng trượt, cột rơi, lật ô"
+  },
+  "marks": {
+    "arrow": "thanh bo tròn dày",
+    "circle": "đĩa sân khấu sau pictogram",
+    "label": "dòng 900 căn trái + meta mono góc"
+  },
+  "transitions": [
+    "cut",
+    "whip"
+  ],
+  "sfx_pack": {
+    "pop": "click",
+    "hit": "thud",
+    "whoosh": "whoosh",
+    "tick": "tick",
+    "ding": "ding"
+  },
+  "music": {
+    "mood": "nhạc nhận diện truyền hình: trống gọn, bass tròn, đều nhịp",
+    "bpm": 120
+  },
+  "voice_persona": "phát thanh viên thể thao gọn, đều nhịp",
+  "thumbnail": "một pictogram trắng trên đĩa vàng + tiêu đề 900 hai dòng",
+  "flow": {
+    "medium": "Pictogram broadcast identity",
+    "look": "Faceless flat pictograms built from round-capped bars, discs and half-discs, huge heavy grotesque titles, tonal disc pattern in five shades of one hue, black ground",
+    "motion": "every action lands on the beat, rows of the pattern slide sideways, type rises from a mask"
+  },
+  "font": "Montserrat-Variable.ttf",
+  "size": 128,
+  "uppercase": true,
+  "fill": "#FFFFFF",
+  "stroke": 0,
+  "stroke_color": "#000000",
+  "intro": "pop",
+  "intro_frames": 6,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#FFC400",
+  "sfx_role": {
+    "size_mult": 1.3,
+    "rotate": -5,
+    "fill": "#FFC400"
+  },
+  "variation": "Black",
+  "html": {
+    "look": "picto",
+    "font": "Montserrat-Variable.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#FFFFFF",
+      "a": "#FFC400"
+    }
+  },
+  "not": [
+    "không phải isometric (không chiều sâu)",
+    "không phải Swiss (pictogram và hoạ tiết gánh ngang chữ)",
+    "không phải hoạt hình (pictogram không có mặt, không biểu cảm)",
+    "không phải phim dữ liệu (số là nhãn, không phải biểu đồ)"
+  ],
+  "voice_tags": [
+    "news",
+    "energetic",
+    "clear"
+  ]
+}

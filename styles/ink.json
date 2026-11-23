@@ -1,0 +1,68 @@
+{
+  "name": "Ink",
+  "description": "Chữ quét bút lông: nét khô xơ, quét từ trái sang phải, mép rách nhẹ.",
+  "font": "SedgwickAve-Regular.ttf",
+  "size": 136,
+  "uppercase": true,
+  "fill": "#FFFFFF",
+  "stroke": 0,
+  "texture": "brush",
+  "intro": "brush",
+  "intro_frames": 10,
+  "boil": {
+    "px": 1.3,
+    "every": 2
+  },
+  "number_fill": "#FFFFFF",
+  "sfx_role": {
+    "size_mult": 1.4,
+    "rotate": -8,
+    "fill": "#FF2D2D"
+  },
+  "flow": {
+    "_doc": "Chất liệu trong prompt Flow (thay 'Flat 2D vector' + câu nét/màu của brand). Nền đen, accent, bố cục, AVOID giữ nguyên.",
+    "medium": "Brush-ink 2D",
+    "look": "Rough dry-brush white ink outlines with tapered strokes, flat grey ink washes"
+  },
+  "tags": [
+    "nature",
+    "water",
+    "ocean",
+    "sea",
+    "weather",
+    "storm",
+    "river",
+    "rain",
+    "wave",
+    "tsunami",
+    "cloud",
+    "wind",
+    "tide"
+  ],
+  "voice_tags": [
+    "storyteller",
+    "calm",
+    "warm",
+    "velvety"
+  ],
+  "html": {
+    "_doc": "Look của engine html cho shot motion (counter, graph, compare, scale…) trong video style này — bảng màu khớp style.",
+    "look": "boil",
+    "font": "SedgwickAve-Regular.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#FFFFFF",
+      "a": "#FF2D2D",
+      "b": "#9FC0FF"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "a"
+    },
+    "pen": {
+      "boil": 1.2,
+      "stroke": 7
+    }
+  }
+}

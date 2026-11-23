@@ -1,0 +1,201 @@
+{
+  "name": "X-ray 3D Black",
+  "description": "Quét X-quang 3D trên nền đen: vật thể bán trong suốt chỉ sáng ở viền (fresnel), cộng sáng, bloom, hạt phim — nhìn xuyên vào cơ thể/vật. Toàn bộ bằng code.",
+  "source": {
+    "repo": "studio — engine three.js (look3d)",
+    "url": "https://github.com/mrdoob/three.js",
+    "license": "MIT",
+    "from": "engines/three/main.js → LOOK3D (chất liệu + env map studio + hậu kỳ ACES/bloom/grain)",
+    "how": "preset chất liệu 3D của engine three.js trên sân khấu đen; prompt Flow 3D cùng look cho ngày có Flow"
+  },
+  "code_only": true,
+  "black_min": 0.5,
+  "voice_persona": "giọng bác sĩ điềm tĩnh, rõ ràng",
+  "thumbnail": "một cơ quan/vật thể trong suốt sáng viền cyan giữa nền đen, một điểm đỏ phát sáng",
+  "font": "Montserrat-Variable.ttf",
+  "size": 118,
+  "uppercase": true,
+  "fill": "#E6F7FF",
+  "stroke": 10,
+  "stroke_color": "#000000",
+  "shadow": {
+    "offset": [
+      8,
+      8
+    ],
+    "color": "#49C6FF"
+  },
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#FFE08A",
+  "sfx_role": {
+    "size_mult": 1.35,
+    "rotate": -6,
+    "fill": "#FF4D5E"
+  },
+  "tags": [
+    "body",
+    "heart",
+    "lungs",
+    "brain",
+    "bone",
+    "skeleton",
+    "blood",
+    "organ",
+    "disease",
+    "medicine",
+    "hospital",
+    "doctor",
+    "inside",
+    "x-ray"
+  ],
+  "voice_tags": [
+    "calm",
+    "documentary",
+    "curious"
+  ],
+  "palette": {
+    "ink": "#E6F7FF",
+    "a": "#49C6FF",
+    "b": "#FF4D5E",
+    "c": "#FFE08A",
+    "bg": "#000000"
+  },
+  "pacing": {
+    "fps": "full",
+    "easing": "mượt, nhịp tim",
+    "bounce": false,
+    "camera": "quét xuyên lớp",
+    "cut_rule": "cắt theo nhịp tim"
+  },
+  "marks": {
+    "arrow": "mũi tên sáng mảnh",
+    "circle": "vòng quét đỏ",
+    "label": "nhãn y khoa mảnh"
+  },
+  "transitions": [
+    "cut",
+    "fade"
+  ],
+  "sfx_pack": {
+    "pop": "pop",
+    "hit": "heartbeat",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ding"
+  },
+  "music": {
+    "mood": "heartbeat pulse, soft drones, clinical blips",
+    "bpm": 88
+  },
+  "flow": {
+    "is_3d": true,
+    "medium": "Stylized 3D x-ray scan render",
+    "look": "Translucent objects glowing only at their silhouettes (fresnel rim), additive cyan light, red highlight on the key organ or part, film grain, pure black background",
+    "motion": "slow scanning sweeps, gentle pulsing, push-ins through layers"
+  },
+  "world": {
+    "_doc": "Sân khấu đen, look 3D 'xray' (engines/three/main.js → LOOK3D).",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 8,
+    "fog_far": 28,
+    "toon_steps": [
+      125,
+      200,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#E6F7FF",
+      "grey": "#6E7887",
+      "water": "#49C6FF",
+      "accent": "#49C6FF",
+      "accent_hi": "#FFE08A",
+      "accent_glow": "#49C6FF",
+      "danger": "#FF4D5E",
+      "iron": "#323842",
+      "metal": "#9AA6B8",
+      "glass_line": "#D8E8FF",
+      "ink_text": "#0B0E13",
+      "chalk": "#E6F7FF",
+      "board": "#161C24",
+      "label": "#E6F7FF",
+      "dial": "#E6F7FF",
+      "bench": "#2B3440",
+      "bench_seam": "#11161C",
+      "bench_leg": "#1E252E",
+      "wall": "#161D26",
+      "feather": "#E6F7FF",
+      "orange": "#FFE08A"
+    },
+    "lights": {
+      "hemi": 1.05,
+      "hemi_sky": "#DCE4FF",
+      "hemi_ground": "#22262E",
+      "key": 2.3,
+      "key_dir": [
+        -0.55,
+        1.0,
+        0.75
+      ],
+      "rim": 2.4,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.45,
+        0.55,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#E6F7FF",
+      "px": 1.6,
+      "rim": "#49C6FF",
+      "rim_px": 0,
+      "crease": 0.4
+    },
+    "grade": {
+      "sat": 1.06,
+      "vig": 0.16
+    },
+    "look3d": "xray"
+  },
+  "cast_palette": {
+    "body": "#E6F7FF",
+    "shade": "#9AA0AA",
+    "ink": "#0B0E13",
+    "rim": "#E6F7FF",
+    "accent": "#49C6FF",
+    "strap": "#5A6270"
+  },
+  "html": {
+    "look": "flat",
+    "font": "Montserrat-Variable.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#E6F7FF",
+      "a": "#FF4D5E",
+      "b": "#49C6FF",
+      "c": "#FFE08A"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    },
+    "type": {
+      "weight": 700,
+      "upper": true
+    }
+  },
+  "not": [
+    "không ảnh X-quang y tế thật",
+    "không máu me (chỉ ánh sáng viền)",
+    "không nền (đen #000000)"
+  ],
+  "code_engine": "three"
+}

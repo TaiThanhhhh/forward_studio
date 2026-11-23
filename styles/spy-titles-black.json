@@ -1,0 +1,113 @@
+{
+  "name": "Spy Titles Black",
+  "description": "Phim mở đầu điệp viên thập niên 60 bản tối: mảng giấy cắt tay mép gồ ghề, bóng giấy lệch, dải chéo trượt, chữ nghiêng tinh nghịch làm kiến trúc; hình rối on twos, kèn đồng cắt hình.",
+  "source": {
+    "repo": "lemo-opuscar",
+    "url": "https://github.com/lemomo-ai/lemo-opuscar",
+    "sha": "3a7132b996be",
+    "license": "MIT cho mã; tài liệu chỉ đọc để hiểu, tự viết lại + ghi công",
+    "from": "styles/spy-titles/STYLE.md (CC BY-NC 4.0)",
+    "how": "đọc để hiểu ngữ pháp rồi tự viết lại bằng lời và mã của tool (không chép tài liệu/mã nguồn)"
+  },
+  "code_engine": "html",
+  "code_only": true,
+  "tags": [
+    "mystery",
+    "secret",
+    "heist",
+    "cold-war",
+    "poison",
+    "crime",
+    "myth",
+    "spy",
+    "code",
+    "agent",
+    "escape"
+  ],
+  "black_min": 0.55,
+  "palette": {
+    "bg": "#000000",
+    "ink": "#F1E6D0",
+    "a": "#E8432A",
+    "b": "#E8B32A",
+    "_doc": "4 mực đặc: đen + kem + đỏ cam + mù tạt; không gradient"
+  },
+  "pacing": {
+    "fps": "rối on twos (15 hình/giây); camera và băng chữ on ones",
+    "easing": "trượt theo đường lưới rồi DỪNG CHẾT đúng nhịp (ease-out ngắn)",
+    "bounce": false,
+    "stop_time": "ở cú kèn: cả khung đứng 2 nhịp trong im lặng rồi chạy tiếp (đặt hold: true)",
+    "cut_rule": "kèn đồng là điểm cắt; cảnh vỡ thành dải song song trượt chéo"
+  },
+  "marks": {
+    "arrow": "mũi tên giấy cắt",
+    "circle": "khoanh bằng vành giấy cắt hở",
+    "label": "chữ trên băng giấy mù tạt, nghiêng 3°"
+  },
+  "transitions": [
+    "cut",
+    "whip",
+    "flash"
+  ],
+  "sfx_pack": {
+    "pop": "snap",
+    "hit": "sting",
+    "whoosh": "scrape",
+    "tick": "click",
+    "ding": "sting_low"
+  },
+  "music": {
+    "mood": "jazz điệp viên: kèn đồng giật, bongo, contrabass",
+    "bpm": 132
+  },
+  "voice_persona": "người dẫn truyện bí ẩn, nửa đùa",
+  "thumbnail": "bóng một vật cắt giấy + dải chéo đỏ + chữ nghiêng 2 từ",
+  "flow": {
+    "medium": "1960s cut-paper title sequence",
+    "look": "Flat opaque hand-cut paper shapes with slightly uneven edges and small offset paper shadows, diagonal bars, cream, red-orange and mustard on black, no gradients",
+    "motion": "puppet motion on twos, shapes slide along diagonals and stop dead on the beat"
+  },
+  "font": "Anton-Regular.ttf",
+  "size": 132,
+  "uppercase": true,
+  "fill": "#F1E6D0",
+  "stroke": 0,
+  "stroke_color": "#000000",
+  "intro": "drop_letters",
+  "intro_frames": 10,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#E8B32A",
+  "sfx_role": {
+    "size_mult": 1.3,
+    "rotate": -5,
+    "fill": "#E8432A"
+  },
+  "letter_jitter_deg": 3,
+  "html": {
+    "look": "spy",
+    "font": "Anton-Regular.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#F1E6D0",
+      "a": "#E8432A",
+      "b": "#E8B32A"
+    }
+  },
+  "not": [
+    "không phải flat vector (mép là giấy cắt, có bóng giấy thật)",
+    "không phải halftone (không chấm in)",
+    "không phải Swiss (đường chéo, chữ nghiêng, tinh nghịch)",
+    "không nhại điệp viên bằng súng/đồ chơi — chỉ hình khối và nhịp",
+    "không phải paper_cutout (style chữ cho clip Flow)"
+  ],
+  "voice_tags": [
+    "storyteller",
+    "dramatic",
+    "velvety",
+    "mischief",
+    "british"
+  ]
+}

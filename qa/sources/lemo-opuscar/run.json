@@ -1,0 +1,28 @@
+{
+ "repo": "lemo-opuscar",
+ "page": "styles/swiss-motion/demo/index.html",
+ "size": [
+  1920,
+  1080
+ ],
+ "times": [
+  8.0,
+  22.0,
+  33.4
+ ],
+ "frames": [
+  "qa/sources/lemo-opuscar/t_08.00.jpg",
+  "qa/sources/lemo-opuscar/t_22.00.jpg",
+  "qa/sources/lemo-opuscar/t_33.40.jpg"
+ ],
+ "boot_sec": 0.23,
+ "sec_per_frame": [
+  0.063,
+  0.066,
+  0.075
+ ],
+ "blocked_requests": [],
+ "missing_files": [],
+ "page_errors": [],
+ "ok": true
+}

@@ -1,0 +1,195 @@
+{
+  "name": "Pixel 16-bit Black",
+  "description": "Pixel art 16-bit: cả khung hạ về lưới 1/5, lượng tử về bảng ≤ 48 màu sinh từ palette + Bayer dither, viền tối cùng tông; nền là trời sao + dải núi thị sai trôi liên tục; chữ font pixel có bóng đổ 1 khối.",
+  "source": {
+    "repo": "studio — engine html (looks.js + post2d.js, vòng 10)",
+    "url": "engines/html/looks.js · engines/html/post2d.js (mã trong repo)",
+    "sha": "—",
+    "license": "mã của kênh; font OFL/Apache ghi ở docs/round10/H1.md",
+    "from": "bài tham khảo '10 Claude animation styles' (chỉ tên phong cách); kỹ thuật in tram/Bayer/rối bóng viết mới",
+    "how": "look html mới (bút + hậu kỳ WebGL một pass) trên sân khấu đen; không chép mã/tài sản bên ngoài"
+  },
+  "code_engine": "html",
+  "code_only": true,
+  "tags": [
+    "game",
+    "gaming",
+    "video-game",
+    "rpg",
+    "quest",
+    "level",
+    "boss",
+    "pixel",
+    "console",
+    "16-bit",
+    "player",
+    "speedrun",
+    "dungeon",
+    "retro",
+    "nostalgia",
+    "controller"
+  ],
+  "black_min": 0.55,
+  "palette": {
+    "bg": "#000000",
+    "ink": "#F7F1E3",
+    "a": "#F2544B",
+    "b": "#3D8BEF",
+    "c": "#F9C846",
+    "_doc": "trắng kem + đỏ san hô + xanh SNES + vàng; mỗi màu thành dải 6 nấc sáng"
+  },
+  "pacing": {
+    "fps": "nội dung on 2s, nền thị sai on ones",
+    "easing": "out, chuyển động bám lưới pixel",
+    "bounce": false,
+    "cut_rule": "cắt như qua màn chơi: khung mới trượt vào",
+    "rule": "không vật nào lệch khỏi lưới pixel"
+  },
+  "marks": {
+    "arrow": "mũi tên pixel",
+    "circle": "khung chọn pixel",
+    "label": "hộp thoại RPG viền đôi"
+  },
+  "transitions": [
+    "cut",
+    "glitch"
+  ],
+  "sfx_pack": {
+    "pop": "pop",
+    "hit": "hit",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ting"
+  },
+  "music": {
+    "mood": "chiptune 16-bit giai điệu RPG, 128 BPM",
+    "bpm": 128
+  },
+  "voice_persona": "người kể chuyện game thủ, tươi, hơi tinh nghịch",
+  "thumbnail": "một sprite 16-bit thật to trên trời sao pixel, chữ pixel 2–3 từ có bóng",
+  "flow": {
+    "medium": "16-bit pixel art",
+    "look": "Low-resolution 16-bit era pixel art with a limited palette, ordered dithering and dark same-hue outlines, on a pure black starfield",
+    "motion": "movement snaps to the pixel grid, parallax background layers"
+  },
+  "font": "PixelifySans-Variable.ttf",
+  "size": 120,
+  "uppercase": true,
+  "fill": "#F7F1E3",
+  "stroke": 8,
+  "stroke_color": "#000000",
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#F9C846",
+  "sfx_role": {
+    "size_mult": 1.3,
+    "rotate": -5,
+    "fill": "#F2544B"
+  },
+  "html": {
+    "look": "pixel16",
+    "font": "PixelifySans-Variable.ttf",
+    "mono": "PressStart2P-Regular.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#F7F1E3",
+      "a": "#F2544B",
+      "b": "#3D8BEF",
+      "c": "#F9C846"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    },
+    "type": {
+      "weight": 600
+    }
+  },
+  "world": {
+    "_doc": "Sân khấu đen tối thiểu cho shot 3D trong style này (màu suy từ palette 2D để không lệch tông). Hậu kỳ 3D theo look 2D (pixel/halftone/silhouette…) do WP-X thêm vào look3d.post.",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 10,
+    "fog_far": 34,
+    "toon_steps": [
+      120,
+      200,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#F7F1E3",
+      "grey": "#6E7480",
+      "water": "#3D8BEF",
+      "accent": "#F9C846",
+      "accent_hi": "#F7F1E3",
+      "accent_glow": "#F9C846",
+      "danger": "#F2544B",
+      "iron": "#30343C",
+      "metal": "#A0A8B4",
+      "glass_line": "#F7F1E3",
+      "ink_text": "#0B0C10",
+      "chalk": "#F7F1E3",
+      "board": "#14161A",
+      "label": "#F7F1E3",
+      "dial": "#F7F1E3",
+      "bench": "#262A31",
+      "bench_seam": "#0E1013",
+      "bench_leg": "#1B1E23",
+      "wall": "#14171C",
+      "feather": "#F7F1E3",
+      "orange": "#F9C846"
+    },
+    "lights": {
+      "hemi": 1.1,
+      "hemi_sky": "#E8ECFF",
+      "hemi_ground": "#22252B",
+      "key": 2.4,
+      "key_dir": [
+        -0.55,
+        1.0,
+        0.75
+      ],
+      "rim": 2.0,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.45,
+        0.55,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#000000",
+      "px": 3.0,
+      "rim": "#F7F1E3",
+      "rim_px": 3,
+      "crease": 0.6
+    },
+    "grade": {
+      "sat": 1.05,
+      "vig": 0.18
+    },
+    "look3d": "lowpoly"
+  },
+  "cast_palette": {
+    "body": "#F7F1E3",
+    "accent": "#F9C846",
+    "rim": "#F7F1E3"
+  },
+  "not": [
+    "không nhân vật game có bản quyền (Mario, Sonic…) — chỉ phong cách",
+    "không phải 8-bit (đây nhiều màu hơn, có dither, viền cùng tông)",
+    "không blur/glow — mọi cạnh là khối pixel"
+  ],
+  "voice_tags": [
+    "playful",
+    "young",
+    "upbeat",
+    "quirky"
+  ]
+}

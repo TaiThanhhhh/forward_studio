@@ -1,0 +1,1 @@
+Bold clean white outlines, uniform line weight, flat white/grey fills, single accent color {accent_name} ({accent}) only on {accent_on}. Crisp, high contrast, minimal.

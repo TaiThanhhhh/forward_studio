@@ -1,0 +1,87 @@
+{
+  "_doc": "Dạng kịch bản (narrative) — xoay vòng theo video như style/giọng (vidlib/narratives.py). Mỗi dạng: name (tiếng Việt, cho người làm), shape (tiếng Anh, cho LLM viết kịch bản), visual (tiếng Anh: hình cho ngày code + ngày Flow), tags (chủ đề hợp, so cả dạng gốc của từ), strong (regex trên ý tưởng → +3 điểm, được phép dù vừa dùng: tiêu đề '5 things…' bắt buộc phải đếm ngược), moves (kiểu bay camera spine ưa dùng — giao với ngữ pháp camera của look, rỗng = theo look), base (điểm nền).",
+  "avoid_recent": 3,
+  "narratives": {
+    "classic": {
+      "name": "Thí nghiệm kinh điển (mở → leo thang → bước ngoặt)",
+      "shape": "Experiment arc: the hook states the paradox → setup shows the normal case → the experiment starts → two or three escalating stages, each stranger than the last → payoff (the measured result) → twist (one ironic line set up earlier).",
+      "visual": "One clear visual change per stage; save the biggest number for the payoff.",
+      "tags": [],
+      "strong": [],
+      "moves": [],
+      "base": 0.4
+    },
+    "countdown": {
+      "name": "Đếm ngược top N",
+      "shape": "Countdown: the hook promises four or five surprising effects and teases number one without revealing it. Then count DOWN: each item is one stage ('Number five: …') with one fact and one consequence, each stronger than the last. Number one is the payoff; the twist follows it.",
+      "visual": "Every item opens on its number: `kicker: \"#5\"` (code day: `counter` with layout `giant`, `fact` with layout `stamp`, or a `scene` acting the item out; Flow day: a text_fx `#5` badge). The items must look different from each other — never the same card five times.",
+      "tags": ["things", "ways", "reasons", "signs", "effects", "mistakes", "symptoms", "top", "worst", "habits", "facts", "dangers", "rules"],
+      "strong": ["^\\s*(\\d+|three|four|five|six|seven)\\s+(things|ways|reasons|signs|effects|mistakes|facts|rules|dangers)\\b", "\\btop\\s+\\d+\\b"],
+      "moves": ["pan_d", "spin", "pan_u"]
+    },
+    "timeline": {
+      "name": "Theo đồng hồ (từng phút / từng giờ)",
+      "shape": "Clock: walk through time in fixed jumps (seconds, minutes, hours, days or years — whatever fits the topic). Each stage opens on the time ('Minute ten.', 'Hour six.') and says what has changed by then. The jumps may grow (one minute → ten minutes → one hour → one day). The last stop is the payoff; the twist reframes the whole timeline.",
+      "visual": "Every shot's `kicker` is the time stamp (\"MIN 10\", \"HOUR 6\", \"DAY 3\") and the clock must visibly advance: clock / stopwatch / hourglass icons, a `graph` that grows, a `process` with layout `path`. Flow day: a text_fx time stamp on every stage.",
+      "tags": ["minute", "hour", "day", "week", "year", "without", "stop", "quit", "after", "long", "sleep", "fast", "fasting", "marathon", "run", "hold", "awake", "forever", "age"],
+      "strong": ["\\b(second|minute|hour|day|week|year)s?\\s+by\\s+(second|minute|hour|day|week|year)\\b", "\\bafter\\s+(\\d+|one|two|three|ten|a hundred)\\s+(seconds|minutes|hours|days|weeks|years)\\b", "\\bfor\\s+(\\d+|a|one|two|three|ten)\\s+(hours|days|weeks|months|years)\\b"],
+      "moves": ["pan_r"]
+    },
+    "myth_fact": {
+      "name": "Lật tẩy hiểu lầm (myth vs fact)",
+      "shape": "Myth vs fact: the hook states the belief everybody holds, as if it were true. Then bust it in rounds: two or three myths, each = the myth in one line → the test or evidence → the fact with one number. The payoff is what really happens; the twist is the one part of the myth that was secretly right (or why the myth exists at all).",
+      "visual": "Make every verdict visible: `fact` with layout `stamp` (MYTH → FACT), `compare` with layout `split` (what people think vs what happens), a `scene` that runs the test. Flow day: text_fx stamps MYTH / FACT over the test.",
+      "tags": ["myth", "really", "true", "actually", "believe", "safe", "dangerous", "healthy", "bad", "should", "need", "lie", "wrong", "fake", "real"],
+      "strong": ["\\bmyths?\\b", "\\b(is|are) it (true|safe|bad|real)\\b", "\\bactually\\b"],
+      "moves": ["spin", "pan_r", "pan_l"]
+    },
+    "escalation": {
+      "name": "Phóng đại ×10 mỗi bước",
+      "shape": "Times ten: run the same experiment at one, then ten, a hundred, a thousand… (or divide by ten going small). Each step is one stage: the new amount → what changes → one number. Keep going until something absurd or a hard limit — the breaking point is the payoff. The twist brings it back to human scale.",
+      "visual": "Each step must feel like a jump in scale: a `scale` beat, `counter` with layout `bar`, a `scene` with more and more copies of the object; the one-take camera dives into the object between steps. Flow day: identical framing, more and more of the object each clip.",
+      "tags": ["bigger", "more", "huge", "giant", "tiny", "size", "speed", "faster", "scale", "much", "many", "million", "billion", "times", "earth", "sun", "planet", "weight", "heavy", "small", "big", "every"],
+      "strong": ["\\b(10|ten|100|hundred|thousand|million|billion)\\s*(x|×|times)\\b", "\\btimes (bigger|faster|heavier|more|hotter|smaller)\\b", "\\bscaled? (up|down)\\b"],
+      "moves": ["dive", "pan_r", "push_through", "pan_d", "spiral"]
+    },
+    "journey": {
+      "name": "Hành trình của một vật",
+      "shape": "Journey: follow ONE thing from start to end — a sip of water through the body, a photon from the sun, a coin through the economy. Narrate its route stop by stop ('First it hits… then… by the time it reaches…'). Each stop is one stage with one fact. The destination is the payoff; the twist is where it really ends up or how long it really took.",
+      "visual": "The traveller is the SAME object in every shot (same icon or actor) moving through changing surroundings: a `scene` with the object as the actor moving along `keys`, `process` with layout `path`, `callout` labelling where it is now. Flow day: the same object in every start frame (ingredients).",
+      "tags": ["inside", "through", "body", "travel", "journey", "path", "blood", "cell", "stomach", "swallow", "drink", "eat", "digest", "light", "signal", "trip", "where", "water", "food"],
+      "strong": ["\\bwhere does\\b", "\\bjourney\\b", "\\binside (your|the|a)\\b", "\\bthrough (your|the|a)\\b"],
+      "moves": ["pan_d", "diag", "dive", "truck_parallax"]
+    },
+    "versus": {
+      "name": "Đối đầu A vs B",
+      "shape": "Versus: two contenders (two objects, two strategies, two animals…). Introduce both in the hook. Then two or three rounds, each one measurable test with a winner and a running score. An upset in the last round; the payoff names the winner; the twist says why the loser still matters (or the hidden cost of winning).",
+      "visual": "Keep both contenders on screen together: `compare` with layout `split` or `balance`, a `scene` with both actors racing, the running score in the `kicker` (\"ROUND 2 · 1–0\"). Flow day: mirror-composed frames, contender A always on the left.",
+      "tags": ["vs", "versus", "better", "worse", "which", "compare", "than", "against", "fight", "race", "stronger", "faster", "win", "beat"],
+      "strong": ["\\bvs\\.?\\b", "\\bversus\\b", "\\bwhich is (better|worse|faster|stronger|safer)\\b", "\\b(beat|beats|against)\\b"],
+      "moves": ["pan_r", "pan_l"]
+    },
+    "rewind": {
+      "name": "Mở bằng kết cục rồi tua lại",
+      "shape": "Rewind: open on the final outcome — the most extreme moment — as the hook. Then rewind to zero ('Let's go back.') and walk forward fast through three or four stages that explain how it got there. The payoff catches up with the opening image; the twist reveals the detail the opening hid.",
+      "visual": "Shot 1 and the payoff show the SAME image (the payoff with more context). Mark the rewind visibly: a `title` with kicker \"REWIND\" or a `scene` played backwards (keys reversed), then forward stages with step kickers. Flow day: the payoff clip reuses the hook's start frame.",
+      "tags": ["explode", "collapse", "die", "break", "crash", "end", "fall", "destroy", "burn", "melt", "freeze", "disappear", "faint", "pass"],
+      "strong": [],
+      "moves": ["pull", "pan_r", "pan_d", "whip_rot"]
+    },
+    "chain_reaction": {
+      "name": "Phản ứng dây chuyền (domino)",
+      "shape": "Chain reaction: one small trigger → domino one → domino two → domino three, each caused by the last ('…which means… which means…'). The tipping point is the payoff; the twist is how small the trigger was.",
+      "visual": "Show causality on screen: a `scene` with `arrows` from one actor to the next, `process` with layout `path`; every new shot starts from the last object of the previous one (the one-take camera carries it across). Flow day: each clip's start frame is the previous clip's end state.",
+      "tags": ["chain", "domino", "cause", "trigger", "remove", "disappear", "suddenly", "collapse", "ecosystem", "grid", "internet", "stopped", "vanish", "spread"],
+      "strong": ["\\bchain reaction\\b", "\\bdomino\\b", "\\b(disappeared|vanished|stopped) (overnight|tomorrow|forever)\\b"],
+      "moves": ["pan_r", "diag", "pan_d", "truck_parallax"]
+    },
+    "mystery": {
+      "name": "Bí ẩn có lời giải",
+      "shape": "Mystery: open with a strange documented fact that seems impossible. Offer the intuitive guess and kill it. Zoom into the real cause clue by clue (clue → clue → mechanism). The payoff is the mechanism; the twist adds the one detail that makes it even stranger.",
+      "visual": "Clues and close-ups: `callout` with labels pointing at the cause, `fact` with layout `left` for each clue, the camera dives into the object to reveal the mechanism. Flow day: macro close-ups, one clue per clip.",
+      "tags": ["why", "mystery", "strange", "weird", "impossible", "secret", "hidden", "nobody", "unknown", "paradox", "how"],
+      "strong": ["^\\s*why\\b", "\\bmystery\\b", "\\bnobody knows\\b"],
+      "moves": ["dive", "pan_r", "pull", "pan_d", "rack", "push_through"]
+    }
+  }
+}

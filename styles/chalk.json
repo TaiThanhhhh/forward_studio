@@ -1,0 +1,65 @@
+{
+  "name": "Chalk",
+  "description": "Chữ phấn viết tay trên bảng đen: được viết dần từng nét, hạt phấn rỗ, rung nhẹ như frame vẽ tay.",
+  "font": "PatrickHand-Regular.ttf",
+  "size": 132,
+  "uppercase": true,
+  "fill": "#F3F1EA",
+  "stroke": 0,
+  "texture": "chalk",
+  "intro": "write_on",
+  "intro_frames": 14,
+  "boil": {
+    "px": 1.8,
+    "every": 2
+  },
+  "number_fill": "#F3F1EA",
+  "sfx_role": {
+    "size_mult": 1.35,
+    "rotate": -6,
+    "fill": "#FF6A5C"
+  },
+  "frost_color": "#9FC0FF",
+  "heat_color": "#FF2D2D",
+  "flow": {
+    "_doc": "Chất liệu trong prompt Flow (thay 'Flat 2D vector' + câu nét/màu của brand). Nền đen, accent, bố cục, AVOID giữ nguyên.",
+    "medium": "Hand-drawn chalk 2D",
+    "look": "Dusty off-white chalk outlines with visible chalk grain, uniform stroke weight, soft chalk-hatched grey fills"
+  },
+  "tags": [
+    "school",
+    "math",
+    "history",
+    "teacher",
+    "formula",
+    "puzzle",
+    "lesson",
+    "number",
+    "count",
+    "calculate",
+    "probability",
+    "chance"
+  ],
+  "voice_tags": [
+    "teacher",
+    "clear",
+    "warm",
+    "friendly"
+  ],
+  "html": {
+    "_doc": "Look của engine html cho shot motion (counter, graph, compare, scale…) trong video style này — bảng màu khớp style.",
+    "look": "boil",
+    "font": "PatrickHand-Regular.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#F3F1EA",
+      "a": "#FF6A5C",
+      "b": "#9FC0FF"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "a"
+    }
+  }
+}

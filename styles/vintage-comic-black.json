@@ -1,0 +1,195 @@
+{
+  "name": "Vintage Comic Black",
+  "description": "Truyện tranh cũ: một khung tranh giấy ngả vàng giữa sân khấu đen, mực viền dày, 4 màu phẳng + chấm Ben-Day cho tông giữa, bản màu lệch nhẹ; tiêu đề là hộp chú thích vàng, nhãn kết là bóng thoại; va chạm có tia tốc độ và trường năng lượng chấm đen.",
+  "source": {
+    "repo": "studio — engine html (looks.js + post2d.js, vòng 10)",
+    "url": "engines/html/looks.js · engines/html/post2d.js (mã trong repo)",
+    "sha": "—",
+    "license": "mã của kênh; font OFL/Apache ghi ở docs/round10/H1.md",
+    "from": "bài tham khảo '10 Claude animation styles' (chỉ tên phong cách); kỹ thuật in tram/Bayer/rối bóng viết mới",
+    "how": "look html mới (bút + hậu kỳ WebGL một pass) trên sân khấu đen; không chép mã/tài sản bên ngoài"
+  },
+  "code_engine": "html",
+  "code_only": true,
+  "tags": [
+    "superhero",
+    "hero",
+    "villain",
+    "comic",
+    "cartoon",
+    "power",
+    "super",
+    "punch",
+    "fight",
+    "battle",
+    "rescue",
+    "strongest",
+    "fastest",
+    "vs",
+    "showdown",
+    "mutant"
+  ],
+  "black_min": 0.42,
+  "palette": {
+    "bg": "#000000",
+    "ink": "#FFF6E0",
+    "a": "#E62E2D",
+    "b": "#1F6FD0",
+    "c": "#FFD23A",
+    "_doc": "giấy kem + đỏ/xanh/vàng in 4 màu; ngoài khung tranh là đen"
+  },
+  "pacing": {
+    "fps": "ones (30fps), va chạm giữ 2 frame",
+    "easing": "bounce — vào bằng nảy mạnh",
+    "bounce": true,
+    "cut_rule": "cắt theo khung tranh: mỗi beat là một khung mới",
+    "rule": "nhãn kết luôn trong bóng thoại"
+  },
+  "marks": {
+    "arrow": "mũi tên khối mập viền mực",
+    "circle": "tia BAM răng cưa",
+    "label": "bóng thoại trắng / hộp chú thích vàng"
+  },
+  "transitions": [
+    "cut",
+    "whip"
+  ],
+  "sfx_pack": {
+    "pop": "pop",
+    "hit": "impact",
+    "whoosh": "whoosh",
+    "tick": "click",
+    "ding": "sting"
+  },
+  "music": {
+    "mood": "surf-rock/brass anh hùng thập niên 60, 132 BPM",
+    "bpm": 132
+  },
+  "voice_persona": "người dẫn truyện tranh kịch tính, nhấn từng câu như chữ BAM",
+  "thumbnail": "khung tranh giấy vàng trên nền đen, một nhân vật/vật với tia BAM + bóng thoại 2–3 từ",
+  "flow": {
+    "medium": "Vintage comic book panel",
+    "look": "A single aged-paper comic panel floating on pure black: thick black ink lines, four flat print colours with Ben-Day dot shading and slight colour-plate offset",
+    "motion": "punchy pops, speed lines on impact, held frames on hits"
+  },
+  "font": "Bangers-Regular.ttf",
+  "size": 132,
+  "uppercase": true,
+  "fill": "#FFF6E0",
+  "stroke": 8,
+  "stroke_color": "#000000",
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#FFD23A",
+  "sfx_role": {
+    "size_mult": 1.3,
+    "rotate": -5,
+    "fill": "#E62E2D"
+  },
+  "html": {
+    "look": "comic",
+    "font": "Bangers-Regular.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#FFF6E0",
+      "a": "#E62E2D",
+      "b": "#1F6FD0",
+      "c": "#FFD23A"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    },
+    "type": {
+      "weight": 400
+    }
+  },
+  "world": {
+    "_doc": "Sân khấu đen tối thiểu cho shot 3D trong style này (màu suy từ palette 2D để không lệch tông). Hậu kỳ 3D theo look 2D (pixel/halftone/silhouette…) do WP-X thêm vào look3d.post.",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 10,
+    "fog_far": 34,
+    "toon_steps": [
+      120,
+      200,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#FFF6E0",
+      "grey": "#6E7480",
+      "water": "#1F6FD0",
+      "accent": "#FFD23A",
+      "accent_hi": "#FFF6E0",
+      "accent_glow": "#FFD23A",
+      "danger": "#E62E2D",
+      "iron": "#30343C",
+      "metal": "#A0A8B4",
+      "glass_line": "#FFF6E0",
+      "ink_text": "#0B0C10",
+      "chalk": "#FFF6E0",
+      "board": "#14161A",
+      "label": "#FFF6E0",
+      "dial": "#FFF6E0",
+      "bench": "#262A31",
+      "bench_seam": "#0E1013",
+      "bench_leg": "#1B1E23",
+      "wall": "#14171C",
+      "feather": "#FFF6E0",
+      "orange": "#FFD23A"
+    },
+    "lights": {
+      "hemi": 1.1,
+      "hemi_sky": "#E8ECFF",
+      "hemi_ground": "#22252B",
+      "key": 2.4,
+      "key_dir": [
+        -0.55,
+        1.0,
+        0.75
+      ],
+      "rim": 2.0,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.45,
+        0.55,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#000000",
+      "px": 6.5,
+      "rim": "#FFF6E0",
+      "rim_px": 3,
+      "crease": 0.6
+    },
+    "grade": {
+      "sat": 1.05,
+      "vig": 0.18
+    },
+    "look3d": "toon"
+  },
+  "cast_palette": {
+    "body": "#FFF6E0",
+    "accent": "#FFD23A",
+    "rim": "#FFF6E0"
+  },
+  "not": [
+    "không phải giấy toàn khung — giấy chỉ có trong khung tranh, quanh là đen",
+    "không phải style `comic` cũ (chỉ kiểu chữ) — đây có khung, Ben-Day, bóng thoại",
+    "không nhân vật siêu anh hùng có bản quyền",
+    "không phải halftone CMYK (đây là màu phẳng + chấm một màu)"
+  ],
+  "voice_tags": [
+    "dramatic",
+    "hype",
+    "energetic",
+    "character"
+  ]
+}

@@ -1,0 +1,206 @@
+{
+  "theme": "GTA 6 launch week: the numbers behind the biggest game release ever",
+  "ideas": [
+    {
+      "title": "GTA 6 Is Slowing Down the Internet",
+      "hook": "A video game nobody has played yet just broke internet traffic records in Europe.",
+      "twist": "And every single byte of it is still locked: nobody can play one second until midnight.",
+      "visual": [
+        "one 212 GB download stacked as floppy disks, rising past a skyscraper",
+        "ten million consoles pulling on one glowing pipe until the gauge pins at 10x",
+        "a traffic graph spiking off the top of the frame, then a padlock on every console"
+      ],
+      "truth": "True",
+      "narrative": "chain_reaction",
+      "truth_note": "Preload (up to 212 GB) opened Nov 10, 2026; German ISP 1&1 saw console traffic 10x normal, Virgin Media reported record peak + daily volume (Forbes, Push Square). ~10.31M digital preorders is a Sensor Tower estimate; 2.2 EB total is our multiplication.",
+      "sources": [
+        "https://www.forbes.com/sites/paultassi/2026/11/11/gta-6-pre-loads-are-slowing-down-the-internet-warns-isp/",
+        "https://www.pushsquare.com/news/2026/11/gta-6-preloading-is-causing-major-download-traffic-spikes-in-europe",
+        "https://www.tweaktown.com/news/114626/gta-6-pre-orders-break-dollars1-billion-with-10-million-sales-analyst-firm-estimates/index.html",
+        "https://www.forbes.com/sites/erikkain/2026/11/16/gta-6-release-date-time-ps5-xbox-series-x-download-size-day-one-update/"
+      ],
+      "code_shots": "floppy stack vs skyscraper (scale), 212 GB / 2.2 EB counters, ISP gauge at 10x, traffic graph spike, padlock scene",
+      "score": 10,
+      "why": "Happening this week, a physical cause-and-effect (one file → the whole internet) with a clean ironic twist."
+    },
+    {
+      "title": "What If Every GTA 6 Player Pressed Start",
+      "hook": "When GTA 6 unlocks, ten million consoles could pull as much power as two nuclear reactors.",
+      "twist": "And that's before anyone switches on the TV.",
+      "visual": [
+        "one console drawing 200 watts on a meter",
+        "consoles multiplying x10 each step until the city grid gauge redlines",
+        "two cooling towers appear next to the pile of consoles"
+      ],
+      "truth": "Hypothetical",
+      "narrative": "escalation",
+      "truth_note": "Sony ecodesign data: PS5 gaming ~200–216 W. 10M simultaneous players is an imagined upper case (unlocks roll by time zone); a large reactor is ~1 GW.",
+      "sources": [
+        "https://www.playstation.com/en-gr/legal/ecodesign/",
+        "https://www.tweaktown.com/news/114626/gta-6-pre-orders-break-dollars1-billion-with-10-million-sales-analyst-firm-estimates/index.html"
+      ],
+      "code_shots": "power meter counter, x10 escalation scale, grid gauge, reactor comparison",
+      "score": 8,
+      "why": "Simple multiplication with an absurd endpoint viewers can repeat to friends."
+    },
+    {
+      "title": "Why GTA 6 Took Thirteen Years",
+      "hook": "A kid born the day GTA 5 came out is old enough for middle school, and still waiting.",
+      "twist": "On launch day that kid turns thirteen — four years too young for a game rated M.",
+      "visual": [
+        "a calendar flipping from 2013 to 2026",
+        "a baby growing into a teen beside a loading bar",
+        "an 'M 17+' stamp landing on the finish line"
+      ],
+      "truth": "True",
+      "narrative": "timeline",
+      "truth_note": "GTA V released Sep 17, 2013; GTA VI delayed in May 2025 and Nov 2025, now Nov 19, 2026. M rating = 17+.",
+      "sources": [
+        "https://www.gamesradar.com/gta-6-guide/",
+        "https://guinnessworldrecords.com/world-records/105330-fastest-entertainment-property-to-gross-1-billion"
+      ],
+      "code_shots": "timeline process beat, calendar counter, loading bar",
+      "score": 9,
+      "why": "Everyone felt the wait; the age twist is instantly shareable."
+    },
+    {
+      "title": "GTA 5 vs GTA 6: The Billion Dollar Race",
+      "hook": "GTA 5 needed three days to make a billion dollars, and GTA 6 may have done it before launch.",
+      "twist": "Until Rockstar posts real numbers, GTA 5 still owns the record.",
+      "visual": [
+        "two money towers racing upward",
+        "a stopwatch at three days vs a stopwatch that never started",
+        "a 'NOT OFFICIAL' stamp over the GTA 6 tower"
+      ],
+      "truth": "Disputed",
+      "narrative": "versus",
+      "truth_note": "GTA V: $1B in 3 days (Guinness, 2013). GTA VI ~$1B preorders is a Sensor Tower estimate; Take-Two hasn't published counts.",
+      "sources": [
+        "https://guinnessworldrecords.com/world-records/105330-fastest-entertainment-property-to-gross-1-billion",
+        "https://www.forbes.com/sites/antoniopequenoiv/2026/11/11/grand-theft-auto-vi-reaches-1-billion-in-sales-ahead-of-release-report-says/"
+      ],
+      "code_shots": "compare bars, counters, stamp",
+      "score": 8,
+      "why": "A race with a running score and an honest upset."
+    },
+    {
+      "title": "GTA 6 in Floppy Disks Is Terrifying",
+      "hook": "If you saved GTA 6 on floppy disks, the stack would be taller than the Empire State Building.",
+      "twist": "The very first GTA fit on one CD with room to spare.",
+      "visual": [
+        "a single floppy disk, then a stack climbing into the sky",
+        "the stack passing a skyscraper silhouette",
+        "a tiny CD next to the tower"
+      ],
+      "truth": "True",
+      "narrative": "escalation",
+      "truth_note": "212 GB / 1.44 MB ≈ 147,000 floppies × 3.3 mm ≈ 485 m, above the Empire State Building's 443 m tip. Math, not a measurement.",
+      "sources": [
+        "https://www.forbes.com/sites/erikkain/2026/11/16/gta-6-release-date-time-ps5-xbox-series-x-download-size-day-one-update/"
+      ],
+      "code_shots": "scale-zoom stack vs building, counter of disks",
+      "score": 8,
+      "why": "A ridiculous but correct scale picture."
+    },
+    {
+      "title": "4 Records GTA 6 Broke Without Launching",
+      "hook": "GTA 6 has been breaking records for three years without a single person playing it.",
+      "twist": "Its own second trailer couldn't beat its first one on YouTube.",
+      "visual": [
+        "a trophy shelf filling up in front of a locked door",
+        "a view counter rolling to ninety million",
+        "trailer two's bar stopping just short of trailer one's"
+      ],
+      "truth": "Disputed",
+      "narrative": "countdown",
+      "truth_note": "Trailer 1: 90.4M YouTube views in 24h (Guinness). Trailer 2: Rockstar claims 475M cross-platform in 24h (unverified), fewer YouTube views than T1.",
+      "sources": [
+        "https://www.tweaktown.com/news/105101/grand-theft-auto-6-trailer-2-fails-to-beat-the-world-record-set-by-1/index.html",
+        "https://www.techradar.com/gaming/the-latest-grand-theft-auto-6-trailer-has-set-a-major-record-by-racking-up-475-million-views-in-just-24-hours"
+      ],
+      "code_shots": "countdown counters, compare bars",
+      "score": 7,
+      "why": "List format with a self-own twist."
+    },
+    {
+      "title": "Did GTA 6 Cost More Than Burj Khalifa",
+      "hook": "The internet decided GTA 6 cost more than the tallest building on Earth.",
+      "twist": "Rockstar denied the comparison, and still hasn't told anyone the real number.",
+      "visual": [
+        "a skyscraper and a game cartridge on a giant scale",
+        "price tags flying: 1.5, 2, 3 billion",
+        "a 'MYTH' stamp, then a question mark that never resolves"
+      ],
+      "truth": "Disputed",
+      "narrative": "myth_fact",
+      "truth_note": "Burj Khalifa ~$1.5B; Rockstar's Jennifer Kolbe denied GTA 6 cost more (Bloomberg). Real budget undisclosed; analysts guess $1–1.5B.",
+      "sources": [
+        "https://www.gamesradar.com/games/grand-theft-auto/rockstar-still-wont-reveal-the-cost-of-gta-6-development-but-its-definitely-not-the-previously-rumored-usd1-5-billion/",
+        "https://www.destructoid.com/why-the-rumored-2-billion-gta-6-budget-is-quite-unlikely-to-be-real/"
+      ],
+      "code_shots": "balance scale, compare bars, stamp",
+      "score": 7,
+      "why": "Busts a viral number honestly."
+    },
+    {
+      "title": "Midnight Will Unlock GTA 6 Twenty-Six Times",
+      "hook": "GTA 6 doesn't launch once — it launches over and over as midnight crawls around the planet.",
+      "twist": "Players in New Zealand get almost a full day's head start on Hawaii.",
+      "visual": [
+        "a line of midnight sweeping across a dark globe",
+        "padlocks popping open city by city",
+        "a clock face spinning a full day"
+      ],
+      "truth": "True",
+      "narrative": "journey",
+      "truth_note": "Rockstar: unlock at midnight local time, Nov 19. Time zones span ~26 hours (UTC+14 to UTC-12; populated NZ +13 to Hawaii -10 = 23 h).",
+      "sources": [
+        "https://tech.yahoo.com/gaming/breaking-news/article/gta-6-launches-this-week-pre-loads-global-release-pricing-and-everything-else-you-need-to-know-about-the-highly-anticipated-game-160715994.html"
+      ],
+      "code_shots": "globe scene with sweeping terminator line, clock counter",
+      "score": 7,
+      "why": "A fresh angle on the release date everyone is checking."
+    },
+    {
+      "title": "Your Console Is Already Hiding GTA 6",
+      "hook": "The whole game is already sitting on millions of consoles, and none of them can open it.",
+      "twist": "At midnight the thing that arrives is tiny: not the game, just the key.",
+      "visual": [
+        "a console with a sealed vault inside",
+        "scrambled bytes behind glass",
+        "a tiny key flying across the globe"
+      ],
+      "truth": "Disputed",
+      "narrative": "mystery",
+      "truth_note": "Preloads are stored locked until release; exact unlock mechanism/key size isn't published by Sony/Microsoft.",
+      "sources": [
+        "https://www.notebookcheck.net/GTA-6-preload-begins-today-November-10.1446790.0.html"
+      ],
+      "code_shots": "vault/padlock scene, process diagram",
+      "score": 6,
+      "why": "Explains a tech mechanism people use without knowing."
+    },
+    {
+      "title": "GTA 6 Eats a Third of Your PS5",
+      "hook": "One game is about to take a third of the space on a launch PS5.",
+      "twist": "Delete it and you can fit GTA 5 three times.",
+      "visual": [
+        "an SSD bar filling with one fat block",
+        "other games getting pushed out of the drive",
+        "three small blocks fitting where one big one was"
+      ],
+      "truth": "True",
+      "narrative": "classic",
+      "truth_note": "212 GB vs ~667 GB usable on the original PS5 ≈ 32%. GTA V PS5 install is ~90+ GB (approx.).",
+      "sources": [
+        "https://www.forbes.com/sites/erikkain/2026/11/16/gta-6-release-date-time-ps5-xbox-series-x-download-size-day-one-update/"
+      ],
+      "code_shots": "storage bar graph, compare",
+      "score": 6,
+      "why": "Practical and relatable for launch week."
+    }
+  ],
+  "picked": [
+    1
+  ]
+}

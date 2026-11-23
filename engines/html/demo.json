@@ -1,0 +1,779 @@
+{
+  "_doc": "Dữ liệu mẫu cho từng beat (tools.styleframes, scripts/html_sheet.py, test). Chỉ là phép thử — nội dung video thật đến từ storyboard.",
+  "title": {
+    "kicker": "experiment 12",
+    "title": "What happens if…",
+    "sub": "1,000°C steel ball",
+    "icon": "ball",
+    "icon_role": "hot"
+  },
+  "drop": {
+    "title": "Drop it in",
+    "a": {
+      "icon": "ball",
+      "label": "1,000°C steel",
+      "role": "hot"
+    },
+    "b": {
+      "icon": "glass",
+      "label": "ice water"
+    },
+    "result": "Instant steam",
+    "hit": 0.45,
+    "sfx": "splash"
+  },
+  "counter": {
+    "title": "Surface heat",
+    "from": 20,
+    "to": 1000,
+    "suffix": "°C",
+    "unit": "red hot",
+    "label": "Hotter than lava",
+    "icon": "flame"
+  },
+  "compare": {
+    "title": "Which wins?",
+    "left": {
+      "icon": "ball",
+      "icon_role": "hot",
+      "label": "Steel ball",
+      "value": 1000,
+      "unit": "°C"
+    },
+    "right": {
+      "icon": "ice",
+      "label": "Ice water",
+      "value": 0,
+      "unit": "°C"
+    },
+    "vs": "VS",
+    "result": "Heat wins"
+  },
+  "graph": {
+    "title": "Cooling curve",
+    "x_label": "seconds",
+    "y_label": "°C",
+    "y_unit": "°C",
+    "points": [
+      [
+        0,
+        1000
+      ],
+      [
+        1,
+        620
+      ],
+      [
+        2,
+        330
+      ],
+      [
+        4,
+        140
+      ],
+      [
+        7,
+        60
+      ],
+      [
+        10,
+        20
+      ]
+    ],
+    "marks": [
+      {
+        "x": 2,
+        "label": "vapor layer breaks"
+      }
+    ],
+    "y_min": 0
+  },
+  "process": {
+    "title": "Leidenfrost effect",
+    "steps": [
+      {
+        "icon": "ball",
+        "role": "hot",
+        "label": "Steel hits water"
+      },
+      {
+        "icon": "steam",
+        "label": "Vapor shield forms"
+      },
+      {
+        "icon": "bubble",
+        "label": "Shield collapses"
+      },
+      {
+        "icon": "snow",
+        "label": "Violent boiling"
+      }
+    ]
+  },
+  "scale": {
+    "title": "How thin is it?",
+    "items": [
+      {
+        "label": "Steel ball",
+        "size": 50,
+        "unit": "mm",
+        "icon": "ball",
+        "role": "hot"
+      },
+      {
+        "label": "Water droplet",
+        "size": 2,
+        "unit": "mm",
+        "icon": "drop"
+      },
+      {
+        "label": "Vapor layer",
+        "size": 0.1,
+        "unit": "mm",
+        "icon": "dot",
+        "decimals": 1
+      }
+    ]
+  },
+  "callout": {
+    "title": "Inside the glass",
+    "icon": "glass",
+    "labels": [
+      {
+        "text": "Steam jacket",
+        "side": "l",
+        "y": -0.9
+      },
+      {
+        "text": "Ice melts",
+        "side": "r",
+        "y": -0.3
+      },
+      {
+        "text": "Ball sinks",
+        "side": "l",
+        "y": 0.8
+      }
+    ]
+  },
+  "fact": {
+    "kicker": "the twist",
+    "text": "The water never touches the steel",
+    "em": "at first"
+  },
+  "outro": {
+    "next_prefix": "next experiment",
+    "teaser": "Lava vs ice?",
+    "follow": "Follow for more"
+  },
+  "scene": {
+    "title": "Water floods in",
+    "actors": [
+      {
+        "id": "runner",
+        "icon": "runner",
+        "x": 0.22,
+        "y": 0.42,
+        "size": 230,
+        "keys": [
+          {
+            "u": 0.55,
+            "x": 0.18
+          }
+        ]
+      },
+      {
+        "id": "bottle",
+        "icon": "bottle",
+        "x": 0.42,
+        "y": 0.36,
+        "size": 120,
+        "role": "cold",
+        "rot": -20,
+        "keys": [
+          {
+            "u": 0.3,
+            "rot": -70,
+            "p": 0.2
+          }
+        ]
+      },
+      {
+        "id": "drop1",
+        "icon": "drop",
+        "x": 0.38,
+        "y": 0.4,
+        "size": 70,
+        "role": "cold",
+        "in": 0.28,
+        "keys": [
+          {
+            "u": 0.62,
+            "x": 0.7,
+            "y": 0.66,
+            "ease": "in"
+          }
+        ],
+        "out": 0.66
+      },
+      {
+        "id": "drop2",
+        "icon": "drop",
+        "x": 0.38,
+        "y": 0.4,
+        "size": 60,
+        "role": "cold",
+        "in": 0.36,
+        "keys": [
+          {
+            "u": 0.7,
+            "x": 0.7,
+            "y": 0.66,
+            "ease": "in"
+          }
+        ],
+        "out": 0.74
+      },
+      {
+        "id": "cell",
+        "icon": "cell",
+        "x": 0.7,
+        "y": 0.68,
+        "size": 200,
+        "role": "cold",
+        "keys": [
+          {
+            "u": 0.62,
+            "size": 200
+          },
+          {
+            "u": 0.9,
+            "size": 330,
+            "ease": "spring"
+          }
+        ]
+      }
+    ],
+    "labels": [
+      {
+        "text": "Cell swells",
+        "of": "cell",
+        "u": 0.78,
+        "tag": true
+      }
+    ],
+    "arrows": [
+      {
+        "from": "bottle",
+        "to": "cell",
+        "u": 0.2
+      }
+    ],
+    "fx": [
+      {
+        "kind": "splash",
+        "at": "cell",
+        "u": 0.64
+      }
+    ]
+  },
+  "units": {
+    "title": "Who sleeps 8 hours?",
+    "per_label": "1 in 100 people",
+    "groups": [
+      {
+        "label": "Teens",
+        "value": 27,
+        "icon": "person",
+        "role": "hot"
+      },
+      {
+        "label": "Adults",
+        "value": 65,
+        "icon": "person",
+        "role": "cold"
+      }
+    ],
+    "result": "Teens lose"
+  },
+  "timeline": {
+    "title": "The race to orbit",
+    "events": [
+      {
+        "t": 1957,
+        "label": "First satellite",
+        "icon": "satellite"
+      },
+      {
+        "t": 1961,
+        "label": "First human in orbit",
+        "icon": "astronaut",
+        "role": "hot"
+      },
+      {
+        "t": 1969,
+        "label": "Moon landing",
+        "icon": "moon"
+      },
+      {
+        "t": 1998,
+        "label": "Station in orbit",
+        "icon": "planet"
+      },
+      {
+        "t": 2020,
+        "label": "Private crews fly",
+        "icon": "rocket",
+        "role": "hot"
+      }
+    ]
+  },
+  "split": {
+    "title": "Same minute, two hearts",
+    "a": {
+      "label": "Resting",
+      "icon": "heart",
+      "action": "pulse",
+      "rate": 62,
+      "unit": "BPM",
+      "role": "cold"
+    },
+    "b": {
+      "label": "Sprinting",
+      "icon": "heart",
+      "action": "pulse",
+      "rate": 168,
+      "unit": "BPM",
+      "role": "hot"
+    }
+  },
+  "meter": {
+    "kind": "ecg",
+    "title": "Mid-match pulse",
+    "from": 84,
+    "value": 131,
+    "label": "Like a brisk jog"
+  },
+  "split__run": {
+    "title": "One second of speed",
+    "a": {
+      "label": "Cheetah",
+      "icon": "animal",
+      "action": "run",
+      "value": 29,
+      "unit": "m/s",
+      "role": "hot"
+    },
+    "b": {
+      "label": "Human sprinter",
+      "icon": "runner",
+      "action": "run",
+      "value": 10.4,
+      "unit": "m/s"
+    }
+  },
+  "split__count": {
+    "title": "Steps per minute",
+    "a": {
+      "label": "Runner",
+      "icon": "runner",
+      "action": "count",
+      "rate": 180,
+      "unit": "steps/min",
+      "role": "hot"
+    },
+    "b": {
+      "label": "Walker",
+      "icon": "person",
+      "action": "count",
+      "rate": 100,
+      "unit": "steps/min",
+      "role": "cold"
+    }
+  },
+  "meter__battery": {
+    "kind": "battery",
+    "title": "Phone after 1 hour of gaming",
+    "from": 100,
+    "value": 18,
+    "label": "Brightness eats it"
+  },
+  "meter__tank": {
+    "kind": "tank",
+    "title": "Water you lose in a marathon",
+    "from": 0,
+    "value": 3.2,
+    "max": 4,
+    "unit": "liters",
+    "label": "Half a bucket"
+  },
+  "meter__thermo": {
+    "kind": "thermo",
+    "title": "Inside a parked car",
+    "from": 24,
+    "value": 63,
+    "min": 0,
+    "max": 80,
+    "danger": 50,
+    "unit": "°C",
+    "label": "Hot enough to burn"
+  },
+  "meter__dial": {
+    "kind": "dial",
+    "title": "Noise at a concert",
+    "from": 40,
+    "value": 112,
+    "danger": 85,
+    "unit": "dB",
+    "label": "Hearing damage zone"
+  },
+  "counter__odometer": {
+    "title": "A marathon in steps",
+    "from": 0,
+    "to": 42195,
+    "unit": "meters",
+    "label": "About 55,000 steps",
+    "icon": "shoe",
+    "layout": "odometer"
+  },
+  "counter__flap": {
+    "title": "Seconds in one hour",
+    "from": 0,
+    "to": 3600,
+    "unit": "seconds",
+    "label": "Every hour",
+    "layout": "flap"
+  },
+  "counter__units": {
+    "title": "Coffee in a week",
+    "to": 23,
+    "icon": "cup",
+    "unit": "cups",
+    "label": "Over 3 a day",
+    "layout": "units"
+  },
+  "counter__gauge": {
+    "title": "Engine coolant",
+    "from": 20,
+    "to": 112,
+    "suffix": "°C",
+    "danger": 100,
+    "label": "Past boiling",
+    "layout": "gauge"
+  },
+  "compare__race": {
+    "title": "Who gets there first?",
+    "layout": "race",
+    "left": {
+      "icon": "runner",
+      "label": "Sprinter",
+      "value": 10.4,
+      "unit": "m/s"
+    },
+    "right": {
+      "icon": "bike",
+      "label": "Cyclist",
+      "value": 12.5,
+      "unit": "m/s"
+    },
+    "result": "The bike wins"
+  },
+  "compare__units": {
+    "title": "Sugar per day",
+    "layout": "units",
+    "left": {
+      "icon": "cube",
+      "label": "Advised",
+      "value": 25,
+      "unit": "g",
+      "role": "cold"
+    },
+    "right": {
+      "icon": "cube",
+      "label": "Average",
+      "value": 77,
+      "unit": "g",
+      "role": "hot"
+    },
+    "result": "Three times too much"
+  },
+  "compare__stack": {
+    "title": "Coins in the jar",
+    "layout": "stack",
+    "left": {
+      "icon": "coin",
+      "label": "Saved",
+      "value": 6,
+      "role": "cold"
+    },
+    "right": {
+      "icon": "coin",
+      "label": "Spent",
+      "value": 11,
+      "role": "hot"
+    },
+    "result": "Spent wins"
+  },
+  "compare__overlay": {
+    "title": "How long is a blue whale?",
+    "layout": "overlay",
+    "left": {
+      "icon": "whale",
+      "label": "Blue whale",
+      "value": 30,
+      "unit": "m",
+      "role": "cold"
+    },
+    "right": {
+      "icon": "car",
+      "label": "Car",
+      "value": 4.5,
+      "unit": "m",
+      "role": "hot"
+    },
+    "result": "Six cars long"
+  },
+  "title__kinetic": {
+    "kicker": "sleep lab",
+    "title": "Your brain burns sugar all night",
+    "em": "sugar",
+    "sub": "20% of your energy",
+    "layout": "kinetic"
+  },
+  "title__reveal": {
+    "kicker": "deep sea",
+    "title": "Where light dies",
+    "icon": "fish",
+    "icon_role": "cold",
+    "sub": "1,000 m down",
+    "layout": "reveal"
+  },
+  "fact__flip": {
+    "kicker": "myth check",
+    "front": "You only use 10% of your brain",
+    "text": "You use all of it, just not at once",
+    "em": "Every region works",
+    "layout": "flip"
+  },
+  "fact__quote": {
+    "text": "The dose makes the poison.",
+    "by": "Paracelsus, 1538",
+    "em": "Even water",
+    "layout": "quote"
+  },
+  "process__loop": {
+    "title": "The water cycle",
+    "layout": "loop",
+    "cycles": 2,
+    "steps": [
+      {
+        "icon": "sun",
+        "label": "Evaporates"
+      },
+      {
+        "icon": "cloud",
+        "label": "Clouds form"
+      },
+      {
+        "icon": "raincloud",
+        "label": "Rain falls"
+      },
+      {
+        "icon": "wave",
+        "label": "Back to sea"
+      }
+    ]
+  },
+  "process__nest": {
+    "title": "Zoom into a muscle",
+    "layout": "nest",
+    "steps": [
+      {
+        "icon": "muscle",
+        "label": "Biceps"
+      },
+      {
+        "icon": "dna",
+        "label": "Muscle fiber"
+      },
+      {
+        "icon": "cell",
+        "label": "One cell"
+      },
+      {
+        "icon": "mitochondria",
+        "label": "Mitochondria"
+      }
+    ]
+  },
+  "process__domino": {
+    "title": "One late coffee",
+    "layout": "domino",
+    "steps": [
+      {
+        "icon": "cup",
+        "label": "Coffee at 6 pm"
+      },
+      {
+        "icon": "clock",
+        "label": "Caffeine lingers"
+      },
+      {
+        "icon": "bed",
+        "label": "Deep sleep drops"
+      },
+      {
+        "icon": "brain",
+        "label": "Foggy morning"
+      }
+    ]
+  },
+  "scene__depth": {
+    "title": "Find the racing heart",
+    "camera": [
+      {
+        "u": 0,
+        "x": 0.56,
+        "y": 0.52,
+        "z": -0.2,
+        "focus": 2.5
+      },
+      {
+        "u": 0.6,
+        "x": 0.46,
+        "y": 0.52,
+        "z": 0.3,
+        "focus": 0,
+        "ease": "smooth"
+      },
+      {
+        "u": 1,
+        "x": 0.43,
+        "y": 0.52,
+        "z": 0.45,
+        "rot": 3,
+        "focus": 0
+      }
+    ],
+    "actors": [
+      {
+        "id": "c0",
+        "icon": "runner",
+        "x": -0.25,
+        "y": 0.47,
+        "z": 2.6,
+        "size": 430,
+        "role": "ink"
+      },
+      {
+        "id": "c1",
+        "icon": "person",
+        "x": 0.12,
+        "y": 0.47,
+        "z": 2.6,
+        "size": 430,
+        "role": "ink"
+      },
+      {
+        "id": "c2",
+        "icon": "runner",
+        "x": 0.5,
+        "y": 0.47,
+        "z": 2.6,
+        "size": 430,
+        "role": "ink"
+      },
+      {
+        "id": "c3",
+        "icon": "person",
+        "x": 0.88,
+        "y": 0.47,
+        "z": 2.6,
+        "size": 430,
+        "role": "ink"
+      },
+      {
+        "id": "c4",
+        "icon": "runner",
+        "x": 1.25,
+        "y": 0.47,
+        "z": 2.6,
+        "size": 430,
+        "role": "ink"
+      },
+      {
+        "id": "m1",
+        "icon": "person",
+        "x": 0.12,
+        "y": 0.55,
+        "z": 1.0,
+        "size": 330,
+        "role": "cold"
+      },
+      {
+        "id": "m2",
+        "icon": "person",
+        "x": 0.82,
+        "y": 0.56,
+        "z": 1.0,
+        "size": 330,
+        "role": "cold",
+        "keys": [
+          {
+            "u": 1,
+            "x": 0.74
+          }
+        ]
+      },
+      {
+        "id": "heart",
+        "icon": "heart",
+        "x": 0.44,
+        "y": 0.6,
+        "z": 0,
+        "size": 300,
+        "role": "hot",
+        "do": [
+          {
+            "u": 0.0,
+            "verb": "heartbeat",
+            "args": {
+              "bpm": 150
+            }
+          }
+        ]
+      },
+      {
+        "id": "watch",
+        "icon": "smartwatch",
+        "x": 0.2,
+        "y": 0.78,
+        "z": -0.6,
+        "size": 170,
+        "in": 0.3,
+        "keys": [
+          {
+            "u": 0.75,
+            "x": 0.27,
+            "y": 0.76
+          }
+        ]
+      }
+    ],
+    "labels": [
+      {
+        "text": "150 BPM",
+        "of": "heart",
+        "u": 0.55,
+        "tag": true
+      }
+    ],
+    "fx": [
+      {
+        "kind": "shockwave",
+        "at": "heart",
+        "u": 0.62
+      }
+    ]
+  }
+}

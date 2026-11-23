@@ -1,0 +1,14 @@
+{
+  "_doc": "Đơn giá để ước tính chi phí mỗi video (vidlib/cost.py). null = chưa xác nhận → UI chỉ hiện số lượng. Cập nhật khi đổi gói.",
+  "updated": "2026-11-15",
+  "elevenlabs": {
+    "usd_per_1k_chars": null,
+    "credits_per_char": 1,
+    "_note": "eleven_v3: 1 ký tự ≈ 1 credit (theo gói). Đơn giá phụ thuộc gói (Creator/Pro/…) — chủ kênh điền khi chốt gói (AUD-602). Nguồn thứ cấp ước ~0.10–0.30 USD/1K ký tự."
+  },
+  "llm": {
+    "claude-opus-5-5": {"in_per_m": 4.0, "out_per_m": 20.0, "_src": "skill claude-api (giá Anthropic)"},
+    "gemini-flash-latest": {"in_per_m": null, "out_per_m": null}
+  },
+  "flow": {"usd_per_gen": null, "_note": "theo gói Google AI (Pro/Ultra) — credit Flow, nhập tay"}
+}

@@ -1,0 +1,198 @@
+{
+  "name": "Plastic Toy 3D Black",
+  "description": "Đồ chơi nhựa bóng (vinyl toy) 3D trên sân khấu đen: màu kẹo bão hoà, lớp phủ bóng clearcoat, phản chiếu softbox, bóng đổ mềm. Ngày có Flow: clip 3D đồ chơi; shot code three.js cùng chất liệu nhựa.",
+  "source": {
+    "repo": "studio — engine three.js (look3d)",
+    "url": "https://github.com/mrdoob/three.js",
+    "license": "MIT",
+    "from": "engines/three/main.js → LOOK3D (chất liệu + env map studio + hậu kỳ ACES/bloom/grain)",
+    "how": "preset chất liệu 3D của engine three.js trên sân khấu đen; prompt Flow 3D cùng look cho ngày có Flow"
+  },
+  "code_only": false,
+  "black_min": 0.5,
+  "voice_persona": "người kể vui nhộn, nhanh, nhấn từ như đang chơi",
+  "thumbnail": "một món đồ chơi nhựa bóng màu kẹo giữa nền đen, phản chiếu softbox, một chi tiết đỏ sắp bật tung",
+  "font": "Baloo2-Variable.ttf",
+  "size": 118,
+  "uppercase": true,
+  "fill": "#F7F4EE",
+  "stroke": 10,
+  "stroke_color": "#000000",
+  "shadow": {
+    "offset": [
+      8,
+      8
+    ],
+    "color": "#2EC4FF"
+  },
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#FFD23F",
+  "sfx_role": {
+    "size_mult": 1.35,
+    "rotate": -6,
+    "fill": "#FF4F6D"
+  },
+  "tags": [
+    "toy",
+    "game",
+    "kid",
+    "candy",
+    "sugar",
+    "playground",
+    "brick",
+    "plastic",
+    "balloon",
+    "dice",
+    "gummy",
+    "lego"
+  ],
+  "voice_tags": [
+    "playful",
+    "bright",
+    "energetic"
+  ],
+  "palette": {
+    "ink": "#F7F4EE",
+    "a": "#2EC4FF",
+    "b": "#FF4F6D",
+    "c": "#FFD23F",
+    "bg": "#000000"
+  },
+  "pacing": {
+    "fps": "full",
+    "easing": "bật nảy squash-and-stretch",
+    "bounce": true,
+    "camera": "orbit nhẹ + push-in",
+    "cut_rule": "cắt ở pha bật nảy"
+  },
+  "marks": {
+    "arrow": "mũi tên nhựa 3D bo tròn",
+    "circle": "vòng nhựa sáng",
+    "label": "nhãn dán sticker bo tròn"
+  },
+  "transitions": [
+    "cut",
+    "whip"
+  ],
+  "sfx_pack": {
+    "pop": "pop",
+    "hit": "thunk",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ding"
+  },
+  "music": {
+    "mood": "toy-box plucks, glockenspiel, bouncy bass",
+    "bpm": 118
+  },
+  "flow": {
+    "is_3d": true,
+    "medium": "Glossy 3D vinyl-toy render",
+    "look": "Chunky rounded glossy plastic toys with candy colours, clear-coat highlights from a studio softbox, soft contact shadows, tiny bevels on every edge",
+    "motion": "bouncy toy-like keyframes with squash-and-stretch, quick pops and playful overshoot"
+  },
+  "world": {
+    "_doc": "Sân khấu đen, look 3D 'plastic' (engines/three/main.js → LOOK3D).",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 8,
+    "fog_far": 28,
+    "toon_steps": [
+      125,
+      200,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#F7F4EE",
+      "grey": "#6E7887",
+      "water": "#2EC4FF",
+      "accent": "#2EC4FF",
+      "accent_hi": "#FFD23F",
+      "accent_glow": "#2EC4FF",
+      "danger": "#FF4F6D",
+      "iron": "#323842",
+      "metal": "#9AA6B8",
+      "glass_line": "#D8E8FF",
+      "ink_text": "#0B0E13",
+      "chalk": "#F7F4EE",
+      "board": "#161C24",
+      "label": "#F7F4EE",
+      "dial": "#F7F4EE",
+      "bench": "#2B3440",
+      "bench_seam": "#11161C",
+      "bench_leg": "#1E252E",
+      "wall": "#161D26",
+      "feather": "#F7F4EE",
+      "orange": "#FFD23F"
+    },
+    "lights": {
+      "hemi": 1.05,
+      "hemi_sky": "#DCE4FF",
+      "hemi_ground": "#22262E",
+      "key": 2.3,
+      "key_dir": [
+        -0.55,
+        1.0,
+        0.75
+      ],
+      "rim": 2.4,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.45,
+        0.55,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#F7F4EE",
+      "px": 1.6,
+      "rim": "#2EC4FF",
+      "rim_px": 0,
+      "crease": 0.4
+    },
+    "grade": {
+      "sat": 1.06,
+      "vig": 0.16
+    },
+    "look3d": "plastic"
+  },
+  "cast_palette": {
+    "body": "#F7F4EE",
+    "shade": "#9AA0AA",
+    "ink": "#0B0E13",
+    "rim": "#F7F4EE",
+    "accent": "#2EC4FF",
+    "strap": "#5A6270"
+  },
+  "html": {
+    "look": "sticker",
+    "font": "Baloo2-Variable.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#F7F4EE",
+      "a": "#FF4F6D",
+      "b": "#2EC4FF",
+      "c": "#FFD23F"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    },
+    "type": {
+      "weight": 400,
+      "upper": true
+    }
+  },
+  "not": [
+    "không phải ảnh chụp đồ chơi thật hay thương hiệu đồ chơi có thật",
+    "không nền phòng chơi (nền luôn đen #000000)",
+    "không bề mặt nhám/đất sét (luôn bóng, có highlight)"
+  ]
+}

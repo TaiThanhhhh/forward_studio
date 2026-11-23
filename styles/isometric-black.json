@@ -1,0 +1,113 @@
+{
+  "name": "Isometric Black",
+  "description": "Thế giới thu nhỏ 2.5D trên sân khấu tối: sàn lưới đẳng trục không điểm tụ, bục và cột là lăng trụ 'mọc' lên, camera chỉ trượt song song.",
+  "source": {
+    "repo": "mg-styles-15",
+    "url": "https://github.com/Vincentwei1021/mg-styles-15",
+    "sha": "269f6ed788cf",
+    "license": "MIT",
+    "from": "demos/03-isometric + prompts/03-isometric.md",
+    "how": "port ý tưởng kỹ thuật từ mã MIT, viết lại thành module của engine html (không chạy repo gốc)"
+  },
+  "code_engine": "html",
+  "code_only": true,
+  "tags": [
+    "city",
+    "machine",
+    "system",
+    "energy",
+    "data",
+    "engineering",
+    "building",
+    "factory",
+    "power",
+    "grid",
+    "traffic",
+    "network"
+  ],
+  "black_min": 0.55,
+  "palette": {
+    "bg": "#000000",
+    "ink": "#E9EDF5",
+    "a": "#FF8A65",
+    "b": "#5DE6B1",
+    "c": "#9B8CFF",
+    "_doc": "trắng lạnh + cam đào (nóng) + bạc hà (lạnh) + oải hương (nhấn)"
+  },
+  "pacing": {
+    "fps": "ones",
+    "easing": "khối mọc: đáy đáp trước, thân kéo scaleY từ 0 có vượt, nắp đậy trễ 2–3 frame",
+    "bounce": true,
+    "stagger_frames": 3,
+    "camera": "trượt song song, thị sai 1 : 0.8 : 0.6, không xoay",
+    "cut_rule": "cắt khi sóng ô sàn lật qua"
+  },
+  "marks": {
+    "arrow": "mũi tên nằm trên mặt sàn đẳng trục",
+    "circle": "vòng nhấn nét đặc",
+    "label": "chữ đậm phía trên khối"
+  },
+  "transitions": [
+    "cut",
+    "whip"
+  ],
+  "sfx_pack": {
+    "pop": "click",
+    "hit": "thunk",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ding"
+  },
+  "music": {
+    "mood": "pluck FM/marimba sáng, công nghệ",
+    "bpm": 110
+  },
+  "voice_persona": "kỹ sư trẻ hào hứng, rõ ràng",
+  "thumbnail": "một khối đẳng trục phát sáng trên sàn lưới tối, số to phía trên",
+  "flow": {
+    "medium": "Isometric 2.5D illustration",
+    "look": "True isometric projection with no vanishing point, miniature objects as extruded prisms with a lighter top face and two darker side faces, dark stage with a faint isometric grid floor",
+    "motion": "objects grow upward from the floor with a small overshoot, camera only slides in parallel, never rotates"
+  },
+  "font": "Montserrat-Variable.ttf",
+  "size": 120,
+  "uppercase": true,
+  "fill": "#E9EDF5",
+  "stroke": 8,
+  "stroke_color": "#000000",
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#5DE6B1",
+  "sfx_role": {
+    "size_mult": 1.3,
+    "rotate": -5,
+    "fill": "#FF8A65"
+  },
+  "variation": "ExtraBold",
+  "html": {
+    "look": "iso",
+    "font": "Montserrat-Variable.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#E9EDF5",
+      "a": "#FF8A65",
+      "b": "#5DE6B1",
+      "c": "#9B8CFF"
+    }
+  },
+  "not": [
+    "không phải 3D phối cảnh (toon3d-lab): không điểm tụ, camera không xoay",
+    "không phải flat vector: mọi khối có mặt trên + 2 mặt bên",
+    "không phải sơ đồ kỹ thuật blueprint"
+  ],
+  "voice_tags": [
+    "upbeat",
+    "young",
+    "clear",
+    "energetic"
+  ]
+}

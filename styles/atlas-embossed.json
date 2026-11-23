@@ -1,0 +1,243 @@
+{
+  "name": "Embossed · dark stage",
+  "description": "Biến thể dark-stage của style #36 \"Embossed\" (Nội dung phẳng thành vật thật) trong 3D Style Atlas: câu trích, tiêu đề cuối. Viết lại bằng lời của tool trên sân khấu đen, một accent.",
+  "source": {
+    "repo": "3D Style Atlas (Futurepedia / HubSpot Media)",
+    "url": "https://www.futurepedia.io/resources/3d-style-atlas/view",
+    "sha": "#36",
+    "license": "HubSpot Website Terms of Use (cá nhân, phi thương mại) — chỉ lấy ý tưởng thị giác, chữ + mã viết mới; xem docs/CREDITS.md",
+    "from": "#36 Embossed · Flat content made physical · Title",
+    "how": "dark-stage: nền #000, look 3D `paper` của engine three.js, block Flow ngắn tự viết"
+  },
+  "code_only": true,
+  "black_min": 0.5,
+  "voice_persona": "người kể chuyện ấm, như đọc sách pop-up",
+  "thumbnail": "một vật chủ đạo kiểu 3d macro letterpress on cotton paper nổi giữa nền đen, accent copper foil trên chi tiết sắp xảy ra chuyện",
+  "font": "Baloo2-Variable.ttf",
+  "size": 118,
+  "uppercase": true,
+  "fill": "#efe5d0",
+  "stroke": 10,
+  "stroke_color": "#000000",
+  "shadow": {
+    "offset": [
+      8,
+      8
+    ],
+    "color": "#f2a56b"
+  },
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#ffe9cf",
+  "sfx_role": {
+    "size_mult": 1.35,
+    "rotate": -6,
+    "fill": "#E8553E"
+  },
+  "tags": [
+    "quote",
+    "saying",
+    "motto",
+    "title-card",
+    "press"
+  ],
+  "voice_tags": [
+    "storyteller",
+    "warm",
+    "friendly"
+  ],
+  "palette": {
+    "bg": "#000000",
+    "ink": "#efe5d0",
+    "a": "#f2a56b",
+    "b": "#3e5173",
+    "c": "#ffe9cf",
+    "_doc": "sân khấu đen + accent copper foil"
+  },
+  "pacing": {
+    "fps": "twos",
+    "easing": "gấp/mở như sách pop-up",
+    "bounce": true,
+    "camera": "shallow-focus long lens from the plate down to the paper, slow pass to the foil",
+    "cut_rule": "cắt khi trang mở xong"
+  },
+  "marks": {
+    "arrow": "mũi tên giấy cắt",
+    "circle": "vòng giấy",
+    "label": "nhãn giấy dán"
+  },
+  "transitions": [
+    "cut",
+    "whip"
+  ],
+  "sfx_pack": {
+    "pop": "pop",
+    "hit": "thunk",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ding"
+  },
+  "music": {
+    "mood": "pizzicato strings, paper rustle, light percussion",
+    "bpm": 104
+  },
+  "flow": {
+    "is_3d": true,
+    "medium": "3D macro letterpress on cotton paper",
+    "look": "Cream cotton paper with inked impressions, mirror copper foil, etched brass type; low hard raking lamp, lit far walls and shadowed floors in every impression",
+    "motion": "press cycle: plate swings down, lifts to reveal the impression, foil stamp follows",
+    "motion_block": "Press cycle: plate swings down, lifts to reveal the impression, foil stamp follows.",
+    "plate": "the pressed area left blank — the line is set in post",
+    "accent": "#f2a56b",
+    "accent_name": "copper foil",
+    "camera": "Shallow-focus long lens from the plate down to the paper, slow pass to the foil",
+    "avoid_add": [
+      "bright backdrop",
+      "visible horizon",
+      "photoreal people"
+    ]
+  },
+  "world": {
+    "_doc": "Sân khấu đen, look 3D 'paper' (engines/three/main.js → LOOK3D).",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 8,
+    "fog_far": 28,
+    "toon_steps": [
+      125,
+      200,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#efe5d0",
+      "grey": "#6E7887",
+      "water": "#3E7CB1",
+      "accent": "#f2a56b",
+      "accent_hi": "#F2C14E",
+      "accent_glow": "#f2a56b",
+      "danger": "#f2a56b",
+      "iron": "#323842",
+      "metal": "#9AA6B8",
+      "glass_line": "#D8E8FF",
+      "ink_text": "#0B0E13",
+      "chalk": "#F5EBDD",
+      "board": "#161C24",
+      "label": "#efe5d0",
+      "dial": "#F5EBDD",
+      "bench": "#2B3440",
+      "bench_seam": "#11161C",
+      "bench_leg": "#1E252E",
+      "wall": "#161D26",
+      "feather": "#F5EBDD",
+      "orange": "#F2C14E"
+    },
+    "lights": {
+      "hemi": 1.05,
+      "hemi_sky": "#DCE4FF",
+      "hemi_ground": "#22262E",
+      "key": 2.3,
+      "key_dir": [
+        -0.55,
+        1.0,
+        0.75
+      ],
+      "rim": 2.4,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.45,
+        0.55,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#F5EBDD",
+      "px": 1.6,
+      "rim": "#f2a56b",
+      "rim_px": 0,
+      "crease": 0.4
+    },
+    "grade": {
+      "sat": 1.06,
+      "vig": 0.16
+    },
+    "look3d": "paper"
+  },
+  "cast_palette": {
+    "body": "#F5EBDD",
+    "shade": "#9AA0AA",
+    "ink": "#0B0E13",
+    "rim": "#F5EBDD",
+    "accent": "#3E7CB1",
+    "strap": "#5A6270"
+  },
+  "html": {
+    "look": "sticker",
+    "font": "Baloo2-Variable.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#efe5d0",
+      "a": "#f2a56b",
+      "b": "#3e5173",
+      "c": "#ffe9cf"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    },
+    "type": {
+      "weight": 400,
+      "upper": true
+    }
+  },
+  "not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "atlas": {
+    "number": 36,
+    "id": "embossed",
+    "name": "Embossed",
+    "tag": "Title",
+    "fit": 2,
+    "duplicate_of": "",
+    "why": "Giấy sáng trên bàn ép tối → 'adapted'; chỉ hợp thẻ tiêu đề → tier 2.",
+    "frame_props": [
+      "ball",
+      "ice",
+      "beaker"
+    ]
+  },
+  "category": "flat-physical",
+  "category_name": "Flat content made physical",
+  "tier": 2,
+  "brand_fit": "adapted",
+  "variant": "dark-stage",
+  "image_style_block": "3D macro letterpress on cotton paper on a pure black stage (#000000): cream cotton paper with inked impressions, mirror copper foil, etched brass type. Low hard raking lamp, lit far walls and shadowed floors in every impression. One accent colour (copper foil) only on the key element. Leave the pressed area left blank — the line is set in post empty (captions are added later).",
+  "video_motion_block": "Press cycle: plate swings down, lifts to reveal the impression, foil stamp follows.",
+  "avoid_block": "Avoid: any text, letters or numbers, logos, bright backdrop, visible horizon, photoreal people.",
+  "materials": "cream cotton paper with inked impressions, mirror copper foil, etched brass type",
+  "lighting": "low hard raking lamp, lit far walls and shadowed floors in every impression",
+  "camera": "shallow-focus long lens from the plate down to the paper, slow pass to the foil",
+  "text_style": {
+    "plate": "the pressed area left blank — the line is set in post",
+    "font": "Baloo2-Variable.ttf",
+    "uppercase": true,
+    "rule": "chữ do text_fx / chữ 3D của engine; prompt ảnh chỉ chừa chỗ trống"
+  },
+  "good_for": "câu trích, tiêu đề cuối",
+  "what_it_is_not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "code_engine": "three",
+  "_generated": "vidlib/atlas.py từ config/atlas.json — sửa ở đó rồi chạy python scripts/atlas_import.py",
+  "_base": "papercraft3d-black"
+}

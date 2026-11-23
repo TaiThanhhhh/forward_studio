@@ -1,0 +1,243 @@
+{
+  "name": "Factory Line · dark stage",
+  "description": "Biến thể dark-stage của style #16 \"Factory Line\" (Cỗ máy giải thích) trong 3D Style Atlas: quy trình nhiều bước, mỗi trạm làm một việc. Viết lại bằng lời của tool trên sân khấu đen, một accent.",
+  "source": {
+    "repo": "3D Style Atlas (Futurepedia / HubSpot Media)",
+    "url": "https://www.futurepedia.io/resources/3d-style-atlas/view",
+    "sha": "#16",
+    "license": "HubSpot Website Terms of Use (cá nhân, phi thương mại) — chỉ lấy ý tưởng thị giác, chữ + mã viết mới; xem docs/CREDITS.md",
+    "from": "#16 Factory Line · Machines that explain · Explainer",
+    "how": "dark-stage: nền #000, look 3D `plastic` của engine three.js, block Flow ngắn tự viết"
+  },
+  "code_only": true,
+  "black_min": 0.5,
+  "voice_persona": "người kể vui nhộn, nhanh, nhấn từ như đang chơi",
+  "thumbnail": "một vật chủ đạo kiểu 3d toy production line nổi giữa nền đen, accent safety orange trên chi tiết sắp xảy ra chuyện",
+  "font": "Baloo2-Variable.ttf",
+  "size": 118,
+  "uppercase": true,
+  "fill": "#ffffff",
+  "stroke": 10,
+  "stroke_color": "#000000",
+  "shadow": {
+    "offset": [
+      8,
+      8
+    ],
+    "color": "#ff641a"
+  },
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#ffd033",
+  "sfx_role": {
+    "size_mult": 1.35,
+    "rotate": -6,
+    "fill": "#FF4F6D"
+  },
+  "tags": [
+    "factory",
+    "assembly",
+    "pipeline",
+    "manufacturing",
+    "conveyor"
+  ],
+  "voice_tags": [
+    "playful",
+    "bright",
+    "energetic"
+  ],
+  "palette": {
+    "bg": "#000000",
+    "ink": "#ffffff",
+    "a": "#ff641a",
+    "b": "#2a6cf0",
+    "c": "#ffd033",
+    "_doc": "sân khấu đen + accent safety orange"
+  },
+  "pacing": {
+    "fps": "full",
+    "easing": "bật nảy squash-and-stretch",
+    "bounce": true,
+    "camera": "side dolly travelling with the tray, looking down around 35°",
+    "cut_rule": "cắt ở pha bật nảy"
+  },
+  "marks": {
+    "arrow": "mũi tên nhựa 3D bo tròn",
+    "circle": "vòng nhựa sáng",
+    "label": "nhãn dán sticker bo tròn"
+  },
+  "transitions": [
+    "cut",
+    "whip"
+  ],
+  "sfx_pack": {
+    "pop": "pop",
+    "hit": "thunk",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ding"
+  },
+  "music": {
+    "mood": "toy-box plucks, glockenspiel, bouncy bass",
+    "bpm": 118
+  },
+  "flow": {
+    "is_3d": true,
+    "medium": "3D toy production line",
+    "look": "Cobalt, orange and cream enamel housings, steel rods, ribbed rubber belt, printed page on a tray; warm low key front-left under the tool heads, working lamps glinting",
+    "motion": "indexing belt: stop, one heavy machine action, green lamp, advance",
+    "motion_block": "Indexing belt: stop, one heavy machine action, green lamp, advance.",
+    "plate": "blank label panels on each machine",
+    "accent": "#ff641a",
+    "accent_name": "safety orange",
+    "camera": "Side dolly travelling with the tray, looking down around 35°",
+    "avoid_add": [
+      "bright backdrop",
+      "visible horizon",
+      "photoreal people"
+    ]
+  },
+  "world": {
+    "_doc": "Sân khấu đen, look 3D 'plastic' (engines/three/main.js → LOOK3D).",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 8,
+    "fog_far": 28,
+    "toon_steps": [
+      125,
+      200,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#ffffff",
+      "grey": "#6E7887",
+      "water": "#2EC4FF",
+      "accent": "#ff641a",
+      "accent_hi": "#FFD23F",
+      "accent_glow": "#ff641a",
+      "danger": "#ff641a",
+      "iron": "#323842",
+      "metal": "#9AA6B8",
+      "glass_line": "#D8E8FF",
+      "ink_text": "#0B0E13",
+      "chalk": "#F7F4EE",
+      "board": "#161C24",
+      "label": "#ffffff",
+      "dial": "#F7F4EE",
+      "bench": "#2B3440",
+      "bench_seam": "#11161C",
+      "bench_leg": "#1E252E",
+      "wall": "#161D26",
+      "feather": "#F7F4EE",
+      "orange": "#FFD23F"
+    },
+    "lights": {
+      "hemi": 1.05,
+      "hemi_sky": "#DCE4FF",
+      "hemi_ground": "#22262E",
+      "key": 2.3,
+      "key_dir": [
+        -0.55,
+        1.0,
+        0.75
+      ],
+      "rim": 2.4,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.45,
+        0.55,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#F7F4EE",
+      "px": 1.6,
+      "rim": "#ff641a",
+      "rim_px": 0,
+      "crease": 0.4
+    },
+    "grade": {
+      "sat": 1.06,
+      "vig": 0.16
+    },
+    "look3d": "plastic"
+  },
+  "cast_palette": {
+    "body": "#F7F4EE",
+    "shade": "#9AA0AA",
+    "ink": "#0B0E13",
+    "rim": "#F7F4EE",
+    "accent": "#2EC4FF",
+    "strap": "#5A6270"
+  },
+  "html": {
+    "look": "sticker",
+    "font": "Baloo2-Variable.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#ffffff",
+      "a": "#ff641a",
+      "b": "#2a6cf0",
+      "c": "#ffd033"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    },
+    "type": {
+      "weight": 400,
+      "upper": true
+    }
+  },
+  "not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "atlas": {
+    "number": 16,
+    "id": "factory-line",
+    "name": "Factory Line",
+    "tag": "Explainer",
+    "fit": 3,
+    "duplicate_of": "",
+    "why": "Sàn sáng gốc → nền đen; hợp quy trình nhưng ít hợp thí nghiệm → tier 2.",
+    "frame_props": [
+      "ball",
+      "ice",
+      "beaker"
+    ]
+  },
+  "category": "machines",
+  "category_name": "Machines that explain",
+  "tier": 2,
+  "brand_fit": "adapted",
+  "variant": "dark-stage",
+  "image_style_block": "3D toy production line on a pure black stage (#000000): cobalt, orange and cream enamel housings, steel rods, ribbed rubber belt, printed page on a tray. Warm low key front-left under the tool heads, working lamps glinting. One accent colour (safety orange) only on the key element. Leave blank label panels on each machine empty (captions are added later).",
+  "video_motion_block": "Indexing belt: stop, one heavy machine action, green lamp, advance.",
+  "avoid_block": "Avoid: any text, letters or numbers, logos, bright backdrop, visible horizon, photoreal people.",
+  "materials": "cobalt, orange and cream enamel housings, steel rods, ribbed rubber belt, printed page on a tray",
+  "lighting": "warm low key front-left under the tool heads, working lamps glinting",
+  "camera": "side dolly travelling with the tray, looking down around 35°",
+  "text_style": {
+    "plate": "blank label panels on each machine",
+    "font": "Baloo2-Variable.ttf",
+    "uppercase": true,
+    "rule": "chữ do text_fx / chữ 3D của engine; prompt ảnh chỉ chừa chỗ trống"
+  },
+  "good_for": "quy trình nhiều bước, mỗi trạm làm một việc",
+  "what_it_is_not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "code_engine": "three",
+  "_generated": "vidlib/atlas.py từ config/atlas.json — sửa ở đó rồi chạy python scripts/atlas_import.py",
+  "_base": "plastic-toy3d-black"
+}

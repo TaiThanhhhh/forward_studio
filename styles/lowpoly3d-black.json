@@ -1,0 +1,200 @@
+{
+  "name": "Low-poly 3D Black",
+  "description": "Low-poly đa giác phẳng 3D trên nền đen: khối ít mặt, đổ bóng phẳng từng mặt, nét mảnh, màu đất ấm + teal. Toàn bộ bằng code (three.js flatShading + hình học ít cạnh).",
+  "source": {
+    "repo": "studio — engine three.js (look3d)",
+    "url": "https://github.com/mrdoob/three.js",
+    "license": "MIT",
+    "from": "engines/three/main.js → LOOK3D (chất liệu + env map studio + hậu kỳ ACES/bloom/grain)",
+    "how": "preset chất liệu 3D của engine three.js trên sân khấu đen; prompt Flow 3D cùng look cho ngày có Flow"
+  },
+  "code_only": true,
+  "black_min": 0.5,
+  "voice_persona": "người kể chuyện tò mò, ấm",
+  "thumbnail": "một hòn núi/hành tinh low-poly nhiều mặt phẳng giữa nền đen, một mặt cam rực",
+  "font": "Montserrat-Variable.ttf",
+  "size": 118,
+  "uppercase": true,
+  "fill": "#F3EFE6",
+  "stroke": 10,
+  "stroke_color": "#000000",
+  "shadow": {
+    "offset": [
+      8,
+      8
+    ],
+    "color": "#3FB8AF"
+  },
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#FFD166",
+  "sfx_role": {
+    "size_mult": 1.35,
+    "rotate": -6,
+    "fill": "#FF7A3D"
+  },
+  "tags": [
+    "mountain",
+    "planet",
+    "earth",
+    "volcano",
+    "animal",
+    "forest",
+    "geography",
+    "map",
+    "world",
+    "island",
+    "dinosaur",
+    "desert",
+    "ancient"
+  ],
+  "voice_tags": [
+    "curious",
+    "storyteller",
+    "warm"
+  ],
+  "palette": {
+    "ink": "#F3EFE6",
+    "a": "#3FB8AF",
+    "b": "#FF7A3D",
+    "c": "#FFD166",
+    "bg": "#000000"
+  },
+  "pacing": {
+    "fps": "full",
+    "easing": "bậc, gọn",
+    "bounce": true,
+    "camera": "orbit chậm kiểu diorama",
+    "cut_rule": "cắt khi khối lắp xong"
+  },
+  "marks": {
+    "arrow": "mũi tên đa giác",
+    "circle": "vòng đa giác",
+    "label": "nhãn phẳng"
+  },
+  "transitions": [
+    "cut",
+    "whip"
+  ],
+  "sfx_pack": {
+    "pop": "pop",
+    "hit": "thunk",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ding"
+  },
+  "music": {
+    "mood": "marimba arpeggios, soft kick, adventurous",
+    "bpm": 108
+  },
+  "flow": {
+    "is_3d": true,
+    "medium": "Stylized low-poly 3D render",
+    "look": "Faceted low-polygon geometry with flat-shaded faces, warm earth tones and teal accents, thin outlines, soft directional light on a pure black stage",
+    "motion": "clean geometric motion, stepped rotations, pops into place"
+  },
+  "world": {
+    "_doc": "Sân khấu đen, look 3D 'lowpoly' (engines/three/main.js → LOOK3D).",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 8,
+    "fog_far": 28,
+    "toon_steps": [
+      125,
+      200,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#F3EFE6",
+      "grey": "#6E7887",
+      "water": "#3FB8AF",
+      "accent": "#3FB8AF",
+      "accent_hi": "#FFD166",
+      "accent_glow": "#3FB8AF",
+      "danger": "#FF7A3D",
+      "iron": "#323842",
+      "metal": "#9AA6B8",
+      "glass_line": "#D8E8FF",
+      "ink_text": "#0B0E13",
+      "chalk": "#F3EFE6",
+      "board": "#161C24",
+      "label": "#F3EFE6",
+      "dial": "#F3EFE6",
+      "bench": "#2B3440",
+      "bench_seam": "#11161C",
+      "bench_leg": "#1E252E",
+      "wall": "#161D26",
+      "feather": "#F3EFE6",
+      "orange": "#FFD166"
+    },
+    "lights": {
+      "hemi": 1.05,
+      "hemi_sky": "#DCE4FF",
+      "hemi_ground": "#22262E",
+      "key": 2.3,
+      "key_dir": [
+        -0.55,
+        1.0,
+        0.75
+      ],
+      "rim": 2.4,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.45,
+        0.55,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#F3EFE6",
+      "px": 1.6,
+      "rim": "#3FB8AF",
+      "rim_px": 0,
+      "crease": 0.4
+    },
+    "grade": {
+      "sat": 1.06,
+      "vig": 0.16
+    },
+    "look3d": "lowpoly"
+  },
+  "cast_palette": {
+    "body": "#F3EFE6",
+    "shade": "#9AA0AA",
+    "ink": "#0B0E13",
+    "rim": "#F3EFE6",
+    "accent": "#3FB8AF",
+    "strap": "#5A6270"
+  },
+  "html": {
+    "look": "iso",
+    "font": "Montserrat-Variable.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#F3EFE6",
+      "a": "#FF7A3D",
+      "b": "#3FB8AF",
+      "c": "#FFD166"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    },
+    "type": {
+      "weight": 700,
+      "upper": true
+    }
+  },
+  "not": [
+    "không mịn bóng (luôn thấy mặt đa giác)",
+    "không nền phong cảnh (nền đen #000000)",
+    "không ảnh thật"
+  ],
+  "code_engine": "three"
+}

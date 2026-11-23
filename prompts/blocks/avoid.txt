@@ -1,0 +1,1 @@
+Avoid: on-screen text, subtitles, letters, watermark, scene cut, camera shake, morphing, style change, 3D shading, photorealism, extra characters, background change, color shift, blur.

@@ -1,0 +1,244 @@
+{
+  "name": "Floating Screens · dark stage",
+  "description": "Biến thể dark-stage của style #31 \"Floating Screens\" (Sản phẩm và màn hình) trong 3D Style Atlas: luồng ứng dụng. Viết lại bằng lời của tool trên sân khấu đen, một accent.",
+  "source": {
+    "repo": "3D Style Atlas (Futurepedia / HubSpot Media)",
+    "url": "https://www.futurepedia.io/resources/3d-style-atlas/view",
+    "sha": "#31",
+    "license": "HubSpot Website Terms of Use (cá nhân, phi thương mại) — chỉ lấy ý tưởng thị giác, chữ + mã viết mới; xem docs/CREDITS.md",
+    "from": "#31 Floating Screens · Products and screens · Explainer",
+    "how": "dark-stage: nền #000, look 3D `glass` của engine three.js, block Flow ngắn tự viết"
+  },
+  "code_only": true,
+  "black_min": 0.5,
+  "voice_persona": "giọng trầm, rõ, chậm rãi như phim tài liệu khoa học",
+  "thumbnail": "một vật chủ đạo kiểu 3d floating interface cards nổi giữa nền đen, accent green trên chi tiết sắp xảy ra chuyện",
+  "font": "Montserrat-Variable.ttf",
+  "size": 118,
+  "uppercase": true,
+  "fill": "#f3eee5",
+  "stroke": 10,
+  "stroke_color": "#000000",
+  "shadow": {
+    "offset": [
+      8,
+      8
+    ],
+    "color": "#0f6d4c"
+  },
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#e6dfd2",
+  "sfx_role": {
+    "size_mult": 1.35,
+    "rotate": -6,
+    "fill": "#FF7AC8"
+  },
+  "tags": [
+    "app",
+    "workflow",
+    "checkout",
+    "interface",
+    "online"
+  ],
+  "voice_tags": [
+    "calm",
+    "warm",
+    "curious"
+  ],
+  "palette": {
+    "bg": "#000000",
+    "ink": "#f3eee5",
+    "a": "#0f6d4c",
+    "b": "#1f1b16",
+    "c": "#e6dfd2",
+    "_doc": "sân khấu đen + accent green"
+  },
+  "pacing": {
+    "fps": "full",
+    "easing": "mượt, chậm vào chậm ra",
+    "bounce": false,
+    "camera": "constant-speed dolly past the row, panning to the newest card",
+    "cut_rule": "cắt lúc ánh sáng loé qua cạnh kính"
+  },
+  "marks": {
+    "arrow": "tia sáng mảnh",
+    "circle": "vòng sáng mảnh",
+    "label": "nhãn chữ mảnh sáng"
+  },
+  "transitions": [
+    "cut",
+    "fade"
+  ],
+  "sfx_pack": {
+    "pop": "pop",
+    "hit": "thunk",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ding"
+  },
+  "music": {
+    "mood": "glassy pads, soft bells, airy pulse",
+    "bpm": 96
+  },
+  "flow": {
+    "is_3d": true,
+    "medium": "3D floating interface cards",
+    "look": "Printed card interface faces on thick glass blocks, raised card buttons; large soft window light, each card shadowing the next",
+    "motion": "cards hinge in like heavy doors, buttons depress, a cable draws to the next card",
+    "motion_block": "Cards hinge in like heavy doors, buttons depress, a cable draws to the next card.",
+    "plate": "blank card faces",
+    "accent": "#0f6d4c",
+    "accent_name": "green",
+    "camera": "Constant-speed dolly past the row, panning to the newest card",
+    "avoid_add": [
+      "bright backdrop",
+      "visible horizon",
+      "photoreal people"
+    ]
+  },
+  "world": {
+    "_doc": "Sân khấu đen, look 3D 'glass' (engines/three/main.js → LOOK3D).",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 8,
+    "fog_far": 28,
+    "toon_steps": [
+      125,
+      200,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#f3eee5",
+      "grey": "#6E7887",
+      "water": "#7FD8FF",
+      "accent": "#0f6d4c",
+      "accent_hi": "#C9B8FF",
+      "accent_glow": "#0f6d4c",
+      "danger": "#FF5A3C",
+      "iron": "#323842",
+      "metal": "#9AA6B8",
+      "glass_line": "#D8E8FF",
+      "ink_text": "#0B0E13",
+      "chalk": "#EAF6FF",
+      "board": "#161C24",
+      "label": "#f3eee5",
+      "dial": "#EAF6FF",
+      "bench": "#2B3440",
+      "bench_seam": "#11161C",
+      "bench_leg": "#1E252E",
+      "wall": "#161D26",
+      "feather": "#EAF6FF",
+      "orange": "#C9B8FF"
+    },
+    "lights": {
+      "hemi": 1.05,
+      "hemi_sky": "#DCE4FF",
+      "hemi_ground": "#22262E",
+      "key": 2.3,
+      "key_dir": [
+        -0.55,
+        1.0,
+        0.75
+      ],
+      "rim": 2.4,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.45,
+        0.55,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#EAF6FF",
+      "px": 1.6,
+      "rim": "#0f6d4c",
+      "rim_px": 0,
+      "crease": 0.4
+    },
+    "grade": {
+      "sat": 1.06,
+      "vig": 0.16
+    },
+    "look3d": "glass"
+  },
+  "cast_palette": {
+    "body": "#EAF6FF",
+    "shade": "#9AA0AA",
+    "ink": "#0B0E13",
+    "rim": "#EAF6FF",
+    "accent": "#7FD8FF",
+    "strap": "#5A6270"
+  },
+  "html": {
+    "look": "flat",
+    "font": "Montserrat-Variable.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#f3eee5",
+      "a": "#0f6d4c",
+      "b": "#1f1b16",
+      "c": "#e6dfd2",
+      "hot": "#FF5A3C"
+    },
+    "roles": {
+      "hot": "hot",
+      "cold": "b",
+      "accent": "a"
+    },
+    "type": {
+      "weight": 700,
+      "upper": true
+    }
+  },
+  "not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "code_engine": "three",
+  "atlas": {
+    "number": 31,
+    "id": "floating-screens",
+    "name": "Floating Screens",
+    "tag": "Explainer",
+    "fit": 1,
+    "duplicate_of": "",
+    "why": "Phòng sáng ấm là bản sắc + chủ đề app không phải mảng kênh → off-brand.",
+    "frame_props": [
+      "ball",
+      "ice",
+      "beaker"
+    ]
+  },
+  "category": "products",
+  "category_name": "Products and screens",
+  "tier": 2,
+  "brand_fit": "off-brand",
+  "variant": "dark-stage",
+  "image_style_block": "3D floating interface cards on a pure black stage (#000000): printed card interface faces on thick glass blocks, raised card buttons. Large soft window light, each card shadowing the next. One accent colour (green) only on the key element. Leave blank card faces empty (captions are added later).",
+  "video_motion_block": "Cards hinge in like heavy doors, buttons depress, a cable draws to the next card.",
+  "avoid_block": "Avoid: any text, letters or numbers, logos, bright backdrop, visible horizon, photoreal people.",
+  "materials": "printed card interface faces on thick glass blocks, raised card buttons",
+  "lighting": "large soft window light, each card shadowing the next",
+  "camera": "constant-speed dolly past the row, panning to the newest card",
+  "text_style": {
+    "plate": "blank card faces",
+    "font": "Montserrat-Variable.ttf",
+    "uppercase": true,
+    "rule": "chữ do text_fx / chữ 3D của engine; prompt ảnh chỉ chừa chỗ trống"
+  },
+  "good_for": "luồng ứng dụng",
+  "what_it_is_not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "_generated": "vidlib/atlas.py từ config/atlas.json — sửa ở đó rồi chạy python scripts/atlas_import.py",
+  "_base": "glass3d-black"
+}

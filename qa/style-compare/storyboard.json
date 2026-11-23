@@ -1,0 +1,203 @@
+{
+  "_doc": "Storyboard phép thử vòng 7 (scripts/style_compare.py): cùng một ý tưởng 20 s dựng bằng nhiều style. Mọi shot là mode code, beat tổng quát.",
+  "topic": "What happens if you drop a 1,000°C steel ball into ice water?",
+  "title": "What happens if you drop a 1,000°C steel ball into ice water?",
+  "hook": "The water won't touch it.",
+  "truth": "True",
+  "language": "en",
+  "style": "swiss-motion-black",
+  "format": {
+    "target_sec": 20
+  },
+  "shots": [
+    {
+      "id": "C01",
+      "beat": "hook",
+      "mode": "code",
+      "target_sec": 3.6,
+      "vo": "[excited] Drop a thousand-degree steel ball into ice water. The water won't touch it.",
+      "code": {
+        "scene": "title",
+        "params": {
+          "kicker": "experiment",
+          "title": "1,000°C steel vs ice water",
+          "sub": "The water won't touch it",
+          "icon": "ball",
+          "icon_role": "hot"
+        }
+      }
+    },
+    {
+      "id": "C02",
+      "beat": "setup",
+      "mode": "code",
+      "target_sec": 1.6,
+      "vo": "Steel that hot glows orange-red.",
+      "code": {
+        "scene": "counter",
+        "params": {
+          "title": "Steel temperature",
+          "from": 20,
+          "to": 1000,
+          "suffix": "°C",
+          "unit": "orange-red glow",
+          "icon": "flame",
+          "land": 0.55
+        }
+      }
+    },
+    {
+      "id": "C03",
+      "beat": "escalate",
+      "mode": "code",
+      "target_sec": 2.4,
+      "vo": "It hits, and the water flashes into steam.",
+      "code": {
+        "scene": "drop",
+        "params": {
+          "title": "Drop it in",
+          "a": {
+            "icon": "ball",
+            "label": "1,000°C",
+            "role": "hot"
+          },
+          "b": {
+            "icon": "glass",
+            "label": "ice water"
+          },
+          "result": "Flash to steam",
+          "hit": 0.4,
+          "sfx": "splash"
+        }
+      }
+    },
+    {
+      "id": "C04",
+      "beat": "escalate",
+      "mode": "code",
+      "target_sec": 2.4,
+      "vo": "That steam blanket is the Leidenfrost effect.",
+      "code": {
+        "scene": "process",
+        "params": {
+          "title": "Leidenfrost effect",
+          "steps": [
+            {
+              "icon": "ball",
+              "role": "hot",
+              "label": "Hot steel"
+            },
+            {
+              "icon": "steam",
+              "label": "Steam blanket"
+            },
+            {
+              "icon": "drop",
+              "label": "Water kept away"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "C05",
+      "beat": "payoff",
+      "mode": "code",
+      "target_sec": 3.4,
+      "vo": "As the ball cools, the blanket collapses, and the water boils violently.",
+      "code": {
+        "scene": "graph",
+        "params": {
+          "title": "The ball cools",
+          "x_label": "seconds",
+          "y_label": "°C",
+          "y_unit": "°C",
+          "points": [
+            [
+              0,
+              1000
+            ],
+            [
+              1,
+              640
+            ],
+            [
+              2,
+              330
+            ],
+            [
+              4,
+              140
+            ],
+            [
+              7,
+              60
+            ],
+            [
+              10,
+              20
+            ]
+          ],
+          "marks": [
+            {
+              "x": 2,
+              "label": "blanket collapses"
+            }
+          ],
+          "y_min": 0,
+          "end": 0.75
+        }
+      }
+    },
+    {
+      "id": "C06",
+      "beat": "twist",
+      "mode": "code",
+      "target_sec": 3.2,
+      "vo": "[dramatically] The twist: the glass stays at zero until the ice melts.",
+      "code": {
+        "scene": "fact",
+        "params": {
+          "kicker": "the twist",
+          "text": "The glass stays at zero",
+          "em": "until the ice is gone",
+          "icon": "ice"
+        }
+      }
+    }
+  ],
+  "outro": {
+    "teaser": "Lava vs ice?",
+    "mode": "code",
+    "enabled": true,
+    "loop": true,
+    "follow_text": "Follow for more"
+  },
+  "publish": {
+    "titles": [
+      "1,000°C Steel Ball vs Ice Water"
+    ],
+    "description": "A red-hot steel ball meets ice water. The water never touches it at first.",
+    "hashtags": [
+      "#science",
+      "#experiment",
+      "#shorts",
+      "#physics",
+      "#leidenfrost"
+    ]
+  },
+  "thumbnail": {
+    "variants": [
+      {
+        "id": "T1",
+        "archetype": "vs",
+        "text": "WON'T TOUCH?!",
+        "scene": "a glowing steel ball above a glass of ice water",
+        "focus": [
+          0.5,
+          0.45
+        ]
+      }
+    ]
+  }
+}

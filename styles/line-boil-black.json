@@ -1,0 +1,117 @@
+{
+  "name": "Line Boil Black",
+  "description": "Hoạt hình vẽ tay từng khung trên nền đen: nét kem 'sôi' (vẽ lại lệch nhẹ mỗi 2 frame), tô lệch khuôn, chạy on twos, cel FX (khói, tia) bằng nét.",
+  "source": {
+    "repo": "mg-styles-15",
+    "url": "https://github.com/Vincentwei1021/mg-styles-15",
+    "sha": "269f6ed788cf",
+    "license": "MIT",
+    "from": "demos/05-cel-boil + prompts/05-cel-boil.md",
+    "how": "port ý tưởng kỹ thuật từ mã MIT, viết lại thành module của engine html (không chạy repo gốc); chi tiết boil bổ sung cho cơ chế boil đã có từ vòng 4–6"
+  },
+  "code_engine": "html",
+  "code_only": true,
+  "tags": [
+    "fire",
+    "heat",
+    "burn",
+    "flame",
+    "cook",
+    "kitchen",
+    "chemistry",
+    "reaction",
+    "boil",
+    "hot",
+    "lava",
+    "match",
+    "candle",
+    "vinegar",
+    "soda",
+    "baking",
+    "mix",
+    "fizz",
+    "foam",
+    "bottle"
+  ],
+  "black_min": 0.7,
+  "palette": {
+    "bg": "#000000",
+    "ink": "#F3EAD7",
+    "a": "#FF4B33",
+    "b": "#FFD23F",
+    "_doc": "mực kem + đỏ cà chua + vàng nắng"
+  },
+  "pacing": {
+    "fps": "on twos (15 hình/giây trên 30fps); hành động nhanh on ones; giữ hình on threes",
+    "easing": "ease-out tay, có smear 1 frame khi lao nhanh",
+    "bounce": false,
+    "boil": "2.2 px đổi mỗi 2 frame",
+    "cut_rule": "cắt cứng ngay trên smear"
+  },
+  "marks": {
+    "arrow": "mũi tên nét tay rung",
+    "circle": "vòng tay vẽ 1.1 vòng, hở",
+    "label": "chữ tay + gạch chân rung"
+  },
+  "transitions": [
+    "cut",
+    "flash"
+  ],
+  "sfx_pack": {
+    "pop": "pop",
+    "hit": "thud",
+    "whoosh": "whoosh_soft",
+    "tick": "scratch",
+    "ding": "ting"
+  },
+  "music": {
+    "mood": "jazz pizzicato/xylophone tinh nghịch",
+    "bpm": 104
+  },
+  "voice_persona": "người kể chuyện ấm, hơi tinh quái",
+  "thumbnail": "vật vẽ nét kem rung trên đen, một mảng đỏ lệch khuôn, chữ tay 2–3 từ",
+  "flow": {
+    "medium": "Hand-drawn frame-by-frame cel animation",
+    "look": "Boiling cream ink linework redrawn every two frames, slightly off-register red and yellow fills, cel FX smoke and sparks, pure black background",
+    "motion": "animated on twos, smear frames on fast moves, lines never perfectly still"
+  },
+  "font": "PatrickHand-Regular.ttf",
+  "size": 132,
+  "uppercase": true,
+  "fill": "#F3EAD7",
+  "stroke": 0,
+  "stroke_color": "#000000",
+  "intro": "write_on",
+  "intro_frames": 10,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#FFD23F",
+  "sfx_role": {
+    "size_mult": 1.3,
+    "rotate": -5,
+    "fill": "#FF4B33"
+  },
+  "html": {
+    "look": "boil",
+    "font": "PatrickHand-Regular.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#F3EAD7",
+      "a": "#FF4B33",
+      "b": "#FFD23F"
+    }
+  },
+  "not": [
+    "không phải sổ tay vẽ tay (nét ở đây luôn rung; sketchnote nét đứng yên, có hatching)",
+    "không phải chalk/board (không bảng, không phấn)",
+    "không mượt kiểu vector: cố ý giật on twos"
+  ],
+  "voice_tags": [
+    "storyteller",
+    "warm",
+    "mischief",
+    "playful"
+  ]
+}

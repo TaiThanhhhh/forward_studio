@@ -1,0 +1,248 @@
+{
+  "name": "Blueprint Build · dark stage",
+  "description": "Biến thể dark-stage của style #05 \"Blueprint Build\" (Sơ đồ có chiều sâu) trong 3D Style Atlas: bản vẽ → vật thể, kích thước, cách bố trí. Viết lại bằng lời của tool trên sân khấu đen, một accent.",
+  "source": {
+    "repo": "3D Style Atlas (Futurepedia / HubSpot Media)",
+    "url": "https://www.futurepedia.io/resources/3d-style-atlas/view",
+    "sha": "#05",
+    "license": "HubSpot Website Terms of Use (cá nhân, phi thương mại) — chỉ lấy ý tưởng thị giác, chữ + mã viết mới; xem docs/CREDITS.md",
+    "from": "#05 Blueprint Build · Diagrams with depth · Explainer",
+    "how": "dark-stage: nền #000, look 3D `holo` của engine three.js, block Flow ngắn tự viết"
+  },
+  "code_only": true,
+  "black_min": 0.5,
+  "voice_persona": "giọng điềm tĩnh, hơi bí ẩn, như hệ thống phân tích",
+  "thumbnail": "một vật chủ đạo kiểu 3d technical drawing that lifts into a wireframe and then a solid nổi giữa nền đen, accent blueprint blue trên chi tiết sắp xảy ra chuyện",
+  "font": "RobotoMono-Variable.ttf",
+  "size": 104,
+  "uppercase": true,
+  "fill": "#f1f6ff",
+  "stroke": 10,
+  "stroke_color": "#000000",
+  "shadow": {
+    "offset": [
+      8,
+      8
+    ],
+    "color": "#5d97ff"
+  },
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#dbe8ff",
+  "sfx_role": {
+    "size_mult": 1.35,
+    "rotate": -6,
+    "fill": "#FF3D7F"
+  },
+  "tags": [
+    "plan",
+    "layout",
+    "dimensions",
+    "engineering",
+    "design",
+    "desk"
+  ],
+  "voice_tags": [
+    "calm",
+    "deep",
+    "mysterious"
+  ],
+  "palette": {
+    "bg": "#000000",
+    "ink": "#f1f6ff",
+    "a": "#5d97ff",
+    "b": "#1f52ad",
+    "c": "#dbe8ff",
+    "_doc": "sân khấu đen + accent blueprint blue"
+  },
+  "pacing": {
+    "fps": "full",
+    "easing": "mượt, có glitch ngắn",
+    "bounce": false,
+    "camera": "crane from straight-down plan view tipping to three-quarter as height appears",
+    "cut_rule": "cắt bằng glitch"
+  },
+  "marks": {
+    "arrow": "mũi tên dây sáng",
+    "circle": "vòng quét",
+    "label": "nhãn HUD [ ]"
+  },
+  "transitions": [
+    "cut",
+    "glitch"
+  ],
+  "sfx_pack": {
+    "pop": "glitch",
+    "hit": "impact",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ding"
+  },
+  "music": {
+    "mood": "dark synth pulse, data blips, sub bass",
+    "bpm": 92
+  },
+  "flow": {
+    "is_3d": true,
+    "medium": "3D technical drawing that lifts into a wireframe and then a solid",
+    "look": "White plotter lines, dashed hidden edges, dimension arrows, then oak/steel/plaster solids; single soft back-side key, long shadow toward lens, light cool fill",
+    "motion": "pen-order line plotting with a glowing tip, parts extrude from their plan, notes peel up",
+    "motion_block": "Pen-order line plotting with a glowing tip, parts extrude from their plan, notes peel up.",
+    "plate": "a blank title block in the corner",
+    "accent": "#5d97ff",
+    "accent_name": "blueprint blue",
+    "camera": "Crane from straight-down plan view tipping to three-quarter as height appears",
+    "avoid_add": [
+      "bright backdrop",
+      "visible horizon",
+      "photoreal people"
+    ]
+  },
+  "world": {
+    "_doc": "Sân khấu đen, look 3D 'holo' (engines/three/main.js → LOOK3D).",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 8,
+    "fog_far": 28,
+    "toon_steps": [
+      125,
+      200,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#f1f6ff",
+      "grey": "#6E7887",
+      "water": "#00E5FF",
+      "accent": "#5d97ff",
+      "accent_hi": "#7CFFB2",
+      "accent_glow": "#5d97ff",
+      "danger": "#FF5A3C",
+      "iron": "#323842",
+      "metal": "#9AA6B8",
+      "glass_line": "#D8E8FF",
+      "ink_text": "#0B0E13",
+      "chalk": "#BFFBFF",
+      "board": "#161C24",
+      "label": "#f1f6ff",
+      "dial": "#BFFBFF",
+      "bench": "#2B3440",
+      "bench_seam": "#11161C",
+      "bench_leg": "#1E252E",
+      "wall": "#161D26",
+      "feather": "#BFFBFF",
+      "orange": "#7CFFB2"
+    },
+    "lights": {
+      "hemi": 1.05,
+      "hemi_sky": "#DCE4FF",
+      "hemi_ground": "#22262E",
+      "key": 2.3,
+      "key_dir": [
+        -0.55,
+        1.0,
+        0.75
+      ],
+      "rim": 2.4,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.45,
+        0.55,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#BFFBFF",
+      "px": 1.6,
+      "rim": "#5d97ff",
+      "rim_px": 0,
+      "crease": 0.4
+    },
+    "grade": {
+      "sat": 1.06,
+      "vig": 0.16
+    },
+    "look3d": {
+      "kind": "holo",
+      "bloom": 0.25
+    }
+  },
+  "cast_palette": {
+    "body": "#BFFBFF",
+    "shade": "#9AA0AA",
+    "ink": "#0B0E13",
+    "rim": "#BFFBFF",
+    "accent": "#00E5FF",
+    "strap": "#5A6270"
+  },
+  "html": {
+    "look": "hud",
+    "font": "RobotoMono-Variable.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#f1f6ff",
+      "a": "#5d97ff",
+      "b": "#1f52ad",
+      "c": "#dbe8ff",
+      "hot": "#FF5A3C"
+    },
+    "roles": {
+      "hot": "hot",
+      "cold": "b",
+      "accent": "a"
+    },
+    "type": {
+      "weight": 400,
+      "upper": true
+    }
+  },
+  "not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "code_engine": "three",
+  "atlas": {
+    "number": 5,
+    "id": "blueprint-build",
+    "name": "Blueprint Build",
+    "tag": "Explainer",
+    "fit": 3,
+    "duplicate_of": "blueprint",
+    "why": "Màu xanh bản vẽ là bản sắc; trên nền đen thành nét trắng → 'adapted'. Đã có style 2D blueprint.",
+    "frame_props": [
+      "ball",
+      "ice",
+      "beaker"
+    ]
+  },
+  "category": "diagrams",
+  "category_name": "Diagrams with depth",
+  "tier": 2,
+  "brand_fit": "adapted",
+  "variant": "dark-stage",
+  "image_style_block": "3D technical drawing that lifts into a wireframe and then a solid on a pure black stage (#000000): white plotter lines, dashed hidden edges, dimension arrows, then oak/steel/plaster solids. Single soft back-side key, long shadow toward lens, light cool fill. One accent colour (blueprint blue) only on the key element. Leave a blank title block in the corner empty (captions are added later).",
+  "video_motion_block": "Pen-order line plotting with a glowing tip, parts extrude from their plan, notes peel up.",
+  "avoid_block": "Avoid: any text, letters or numbers, logos, bright backdrop, visible horizon, photoreal people.",
+  "materials": "white plotter lines, dashed hidden edges, dimension arrows, then oak/steel/plaster solids",
+  "lighting": "single soft back-side key, long shadow toward lens, light cool fill",
+  "camera": "crane from straight-down plan view tipping to three-quarter as height appears",
+  "text_style": {
+    "plate": "a blank title block in the corner",
+    "font": "RobotoMono-Variable.ttf",
+    "uppercase": true,
+    "rule": "chữ do text_fx / chữ 3D của engine; prompt ảnh chỉ chừa chỗ trống"
+  },
+  "good_for": "bản vẽ → vật thể, kích thước, cách bố trí",
+  "what_it_is_not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "_generated": "vidlib/atlas.py từ config/atlas.json — sửa ở đó rồi chạy python scripts/atlas_import.py",
+  "_base": "hologram3d-black"
+}

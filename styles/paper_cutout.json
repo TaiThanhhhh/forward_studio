@@ -1,0 +1,88 @@
+{
+  "name": "Paper cutout",
+  "description": "Chữ cắt giấy: mỗi chữ cái một mảnh giấy màu, hơi nghiêng, bóng đổ, rơi xuống từng chữ và nảy.",
+  "font": "Baloo2-Variable.ttf",
+  "variation": "ExtraBold",
+  "size": 128,
+  "uppercase": true,
+  "fill": "#FFFFFF",
+  "letter_colors": [
+    "#FFFFFF",
+    "#D8D8D8",
+    "#3F6BFF",
+    "#FFFFFF"
+  ],
+  "stroke": 0,
+  "paper_edge": {
+    "color": "#FFFFFF",
+    "width": 5
+  },
+  "shadow": {
+    "offset": [
+      7,
+      9
+    ],
+    "color": "#3A3A3A"
+  },
+  "letter_jitter_deg": 6,
+  "intro": "drop_letters",
+  "intro_frames": 14,
+  "boil": {
+    "px": 0.0,
+    "every": 2
+  },
+  "number_fill": "#FFFFFF",
+  "sfx_role": {
+    "size_mult": 1.35,
+    "rotate": -6,
+    "fill": "#FF2D2D"
+  },
+  "flow": {
+    "_doc": "Chất liệu trong prompt Flow (thay 'Flat 2D vector' + câu nét/màu của brand). Nền đen, accent, bố cục, AVOID giữ nguyên.",
+    "medium": "Paper cut-out 2D",
+    "look": "Layered matte paper shapes in white and grey with thin white paper edges and soft drop shadows"
+  },
+  "tags": [
+    "kids",
+    "animal",
+    "food",
+    "craft",
+    "pet",
+    "toy",
+    "cat",
+    "dog",
+    "bird",
+    "egg",
+    "candy",
+    "fruit",
+    "eat"
+  ],
+  "voice_tags": [
+    "playful",
+    "bright",
+    "friendly",
+    "warm"
+  ],
+  "html": {
+    "_doc": "Look của engine html cho shot motion (counter, graph, compare, scale…) trong video style này — bảng màu khớp style.",
+    "look": "spy",
+    "font": "Baloo2-Variable.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#FFFFFF",
+      "a": "#FF2D2D",
+      "b": "#3F6BFF",
+      "c": "#D8D8D8"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "b"
+    },
+    "type": {
+      "weight": 800,
+      "upper": true,
+      "jaunty": 2
+    }
+  }
+}

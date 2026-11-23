@@ -1,0 +1,249 @@
+{
+  "name": "Particle Swarm · dark stage",
+  "description": "Biến thể dark-stage của style #23 \"Particle Swarm\" (Nội dung phẳng thành vật thật) trong 3D Style Atlas: phân tử, nhiệt, nổ, thứ làm từ nhiều đơn vị. Viết lại bằng lời của tool trên sân khấu đen, một accent.",
+  "source": {
+    "repo": "3D Style Atlas (Futurepedia / HubSpot Media)",
+    "url": "https://www.futurepedia.io/resources/3d-style-atlas/view",
+    "sha": "#23",
+    "license": "HubSpot Website Terms of Use (cá nhân, phi thương mại) — chỉ lấy ý tưởng thị giác, chữ + mã viết mới; xem docs/CREDITS.md",
+    "from": "#23 Particle Swarm · Flat content made physical · Explainer",
+    "how": "dark-stage: nền #000, look 3D `glass` của engine three.js, block Flow ngắn tự viết"
+  },
+  "code_only": true,
+  "black_min": 0.5,
+  "voice_persona": "giọng trầm, rõ, chậm rãi như phim tài liệu khoa học",
+  "thumbnail": "một vật chủ đạo kiểu 3d swarm of tiny glass beads nổi giữa nền đen, accent golden corn trên chi tiết sắp xảy ra chuyện",
+  "font": "Montserrat-Variable.ttf",
+  "size": 118,
+  "uppercase": true,
+  "fill": "#f2f8ff",
+  "stroke": 10,
+  "stroke_color": "#000000",
+  "shadow": {
+    "offset": [
+      8,
+      8
+    ],
+    "color": "#ffb030"
+  },
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#7cc4ff",
+  "sfx_role": {
+    "size_mult": 1.35,
+    "rotate": -6,
+    "fill": "#FF7AC8"
+  },
+  "tags": [
+    "molecule",
+    "atom",
+    "popcorn",
+    "particles",
+    "explode",
+    "boil",
+    "gas",
+    "melt"
+  ],
+  "voice_tags": [
+    "calm",
+    "warm",
+    "curious"
+  ],
+  "palette": {
+    "bg": "#000000",
+    "ink": "#f2f8ff",
+    "a": "#ffb030",
+    "b": "#1d7fe6",
+    "c": "#7cc4ff",
+    "_doc": "sân khấu đen + accent golden corn"
+  },
+  "pacing": {
+    "fps": "full",
+    "easing": "mượt, chậm vào chậm ra",
+    "bounce": false,
+    "camera": "long lens, shallow focus, slow dolly drifting to square-on",
+    "cut_rule": "cắt lúc ánh sáng loé qua cạnh kính"
+  },
+  "marks": {
+    "arrow": "tia sáng mảnh",
+    "circle": "vòng sáng mảnh",
+    "label": "nhãn chữ mảnh sáng"
+  },
+  "transitions": [
+    "cut",
+    "fade"
+  ],
+  "sfx_pack": {
+    "pop": "pop",
+    "hit": "thunk",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ding"
+  },
+  "music": {
+    "mood": "glassy pads, soft bells, airy pulse",
+    "bpm": 96
+  },
+  "flow": {
+    "is_3d": true,
+    "medium": "3D swarm of tiny glass beads",
+    "look": "Polished glass seed beads, uneven sizes, bright glints, translucent far-side glow; soft warm window-style key top-left, bead-on-bead shadows",
+    "motion": "bead streams that overshoot and settle; breathing forms, colour fronts, bursts",
+    "motion_block": "Bead streams that overshoot and settle; breathing forms, colour fronts, bursts.",
+    "plate": "a blank caption plate below the swarm",
+    "accent": "#ffb030",
+    "accent_name": "golden corn",
+    "camera": "Long lens, shallow focus, slow dolly drifting to square-on",
+    "avoid_add": [
+      "bright backdrop",
+      "visible horizon",
+      "photoreal people"
+    ]
+  },
+  "world": {
+    "_doc": "Sân khấu đen, look 3D 'glass' (engines/three/main.js → LOOK3D).",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 8,
+    "fog_far": 28,
+    "toon_steps": [
+      125,
+      200,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#f2f8ff",
+      "grey": "#6E7887",
+      "water": "#7FD8FF",
+      "accent": "#ffb030",
+      "accent_hi": "#C9B8FF",
+      "accent_glow": "#ffb030",
+      "danger": "#ffb030",
+      "iron": "#323842",
+      "metal": "#9AA6B8",
+      "glass_line": "#D8E8FF",
+      "ink_text": "#0B0E13",
+      "chalk": "#EAF6FF",
+      "board": "#161C24",
+      "label": "#f2f8ff",
+      "dial": "#EAF6FF",
+      "bench": "#2B3440",
+      "bench_seam": "#11161C",
+      "bench_leg": "#1E252E",
+      "wall": "#161D26",
+      "feather": "#EAF6FF",
+      "orange": "#C9B8FF"
+    },
+    "lights": {
+      "hemi": 1.05,
+      "hemi_sky": "#DCE4FF",
+      "hemi_ground": "#22262E",
+      "key": 2.3,
+      "key_dir": [
+        -0.55,
+        1.0,
+        0.75
+      ],
+      "rim": 2.4,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.45,
+        0.55,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#EAF6FF",
+      "px": 1.6,
+      "rim": "#ffb030",
+      "rim_px": 0,
+      "crease": 0.4
+    },
+    "grade": {
+      "sat": 1.06,
+      "vig": 0.16
+    },
+    "look3d": {
+      "kind": "glass",
+      "glow": 0.3
+    }
+  },
+  "cast_palette": {
+    "body": "#EAF6FF",
+    "shade": "#9AA0AA",
+    "ink": "#0B0E13",
+    "rim": "#EAF6FF",
+    "accent": "#7FD8FF",
+    "strap": "#5A6270"
+  },
+  "html": {
+    "look": "flat",
+    "font": "Montserrat-Variable.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#f2f8ff",
+      "a": "#ffb030",
+      "b": "#1d7fe6",
+      "c": "#7cc4ff"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    },
+    "type": {
+      "weight": 700,
+      "upper": true
+    }
+  },
+  "not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "code_engine": "three",
+  "atlas": {
+    "number": 23,
+    "id": "particle-swarm",
+    "name": "Particle Swarm",
+    "tag": "Explainer",
+    "fit": 5,
+    "duplicate_of": "",
+    "why": "Vách giấy sáng gốc → nền đen ('adapted'); hạt nóng lên/bung ra = đúng ngôn ngữ thí nghiệm nhiệt của kênh.",
+    "frame_props": [
+      "ball",
+      "ice",
+      "beaker"
+    ]
+  },
+  "category": "flat-physical",
+  "category_name": "Flat content made physical",
+  "tier": 1,
+  "brand_fit": "adapted",
+  "variant": "dark-stage",
+  "image_style_block": "3D swarm of tiny glass beads on a pure black stage (#000000): polished glass seed beads, uneven sizes, bright glints, translucent far-side glow. Soft warm window-style key top-left, bead-on-bead shadows. One accent colour (golden corn) only on the key element. Leave a blank caption plate below the swarm empty (captions are added later).",
+  "video_motion_block": "Bead streams that overshoot and settle; breathing forms, colour fronts, bursts.",
+  "avoid_block": "Avoid: any text, letters or numbers, logos, bright backdrop, visible horizon, photoreal people.",
+  "materials": "polished glass seed beads, uneven sizes, bright glints, translucent far-side glow",
+  "lighting": "soft warm window-style key top-left, bead-on-bead shadows",
+  "camera": "long lens, shallow focus, slow dolly drifting to square-on",
+  "text_style": {
+    "plate": "a blank caption plate below the swarm",
+    "font": "Montserrat-Variable.ttf",
+    "uppercase": true,
+    "rule": "chữ do text_fx / chữ 3D của engine; prompt ảnh chỉ chừa chỗ trống"
+  },
+  "good_for": "phân tử, nhiệt, nổ, thứ làm từ nhiều đơn vị",
+  "what_it_is_not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "_generated": "vidlib/atlas.py từ config/atlas.json — sửa ở đó rồi chạy python scripts/atlas_import.py",
+  "_base": "glass3d-black"
+}

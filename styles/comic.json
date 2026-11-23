@@ -1,0 +1,89 @@
+{
+  "name": "Comic",
+  "description": "Chữ truyện tranh: Bangers, viền đen dày, bóng đổ khối, chữ tượng thanh nằm trong khung nổ răng cưa.",
+  "font": "Bangers-Regular.ttf",
+  "size": 140,
+  "uppercase": true,
+  "fill": "#FFFFFF",
+  "stroke": 11,
+  "stroke_color": "#000000",
+  "shadow": {
+    "offset": [
+      9,
+      9
+    ],
+    "color": "#1849F7"
+  },
+  "letter_jitter_deg": 4,
+  "intro": "pop",
+  "intro_frames": 6,
+  "boil": {
+    "px": 1.1,
+    "every": 2
+  },
+  "number_fill": "#FFFFFF",
+  "sfx_role": {
+    "size_mult": 1.45,
+    "rotate": -9,
+    "fill": "#FF2D2D",
+    "burst": {
+      "fill": "#FFFFFF",
+      "outline": "#000000",
+      "width": 9,
+      "spikes": 13,
+      "pad": 46
+    }
+  },
+  "flow": {
+    "_doc": "Chất liệu trong prompt Flow (thay 'Flat 2D vector' + câu nét/màu của brand). Nền đen, accent, bố cục, AVOID giữ nguyên.",
+    "medium": "Bold comic-book 2D",
+    "look": "Thick black-and-white comic ink outlines, flat white/grey fills with halftone dot shading"
+  },
+  "tags": [
+    "action",
+    "explosion",
+    "explode",
+    "impact",
+    "crash",
+    "fun",
+    "smash",
+    "superhero",
+    "collision",
+    "punch",
+    "bullet",
+    "hammer",
+    "break"
+  ],
+  "voice_tags": [
+    "energetic",
+    "playful",
+    "hype",
+    "mischief"
+  ],
+  "html": {
+    "_doc": "Look của engine html cho shot motion (counter, graph, compare, scale…) trong video style này — bảng màu khớp style.",
+    "look": "flat",
+    "font": "Bangers-Regular.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#FFFFFF",
+      "a": "#FF2D2D",
+      "b": "#FFD23F",
+      "c": "#3F6BFF"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "c",
+      "accent": "b"
+    },
+    "type": {
+      "weight": 400,
+      "upper": true
+    },
+    "pen": {
+      "fill": true,
+      "stroke": 6,
+      "strokeRole": "bg"
+    }
+  }
+}

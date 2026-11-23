@@ -1,0 +1,108 @@
+{
+  "name": "Sketchnote Black",
+  "description": "Trang sổ nghiên cứu vẽ tay bản tối: nét bút trắng ngà đứng yên + MỘT màu cam, bóng bằng hatching chéo, khung tiêu đề nét đứt góc vẽ lố, nhãn '@' khối đặc; nét vẽ ra từng nét, camera đọc từ trên xuống.",
+  "source": {
+    "repo": "dashi-animationstyle",
+    "url": "https://github.com/chuspeeism/dashi-animationstyle",
+    "sha": "aa620f3b859a",
+    "license": "MIT",
+    "from": "styles/手绘笔记/风格卡.md (MIT)",
+    "how": "port ý tưởng kỹ thuật từ mã MIT, viết lại thành module của engine html (không chạy repo gốc); bỏ xử lý chữ Trung; đối chiếu để không trùng lab-notebook-black (engine board)"
+  },
+  "code_engine": "html",
+  "code_only": true,
+  "tags": [
+    "biology",
+    "nature",
+    "observation",
+    "anatomy",
+    "plant",
+    "animal",
+    "discovery",
+    "diary",
+    "insect",
+    "bee",
+    "tree",
+    "forest"
+  ],
+  "black_min": 0.7,
+  "palette": {
+    "bg": "#000000",
+    "ink": "#E8E6DC",
+    "a": "#F8711C",
+    "_doc": "ĐẢO từ giấy trắng ngà mực xanh đen: nét trắng ngà trên đen + một màu cam"
+  },
+  "pacing": {
+    "fps": "ones",
+    "easing": "nét vẽ ra tuyến tính, chữ viết ra từng chữ",
+    "bounce": false,
+    "camera": "trôi đọc từ trên xuống, không zoom",
+    "cut_rule": "cắt như lật trang"
+  },
+  "marks": {
+    "arrow": "đường dẫn mảnh, đầu có chấm đặc",
+    "circle": "khoanh tay elip hở màu cam",
+    "label": "'@nhãn:' khối cam đặc, chữ tay"
+  },
+  "transitions": [
+    "cut",
+    "fade"
+  ],
+  "sfx_pack": {
+    "pop": "scratch",
+    "hit": "thud",
+    "whoosh": "scrape",
+    "tick": "scratch",
+    "ding": "ting"
+  },
+  "music": {
+    "mood": "guitar mộc/piano nhỏ, thong thả",
+    "bpm": 92
+  },
+  "voice_persona": "nhà tự nhiên học kể nhỏ nhẹ",
+  "thumbnail": "một hình vẽ nét có hatching + khoanh cam + chữ tay",
+  "flow": {
+    "medium": "Hand-drawn research sketchnote",
+    "look": "Steady off-white pen linework with diagonal hatching for shade, one orange accent, dashed title box with overshooting corners, black page",
+    "motion": "lines draw on stroke by stroke, the view reads slowly from top to bottom"
+  },
+  "font": "PatrickHand-Regular.ttf",
+  "size": 128,
+  "uppercase": false,
+  "fill": "#E8E6DC",
+  "stroke": 0,
+  "stroke_color": "#000000",
+  "intro": "write_on",
+  "intro_frames": 12,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#F8711C",
+  "sfx_role": {
+    "size_mult": 1.3,
+    "rotate": -5,
+    "fill": "#F8711C"
+  },
+  "html": {
+    "look": "sketch",
+    "font": "PatrickHand-Regular.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#E8E6DC",
+      "a": "#F8711C"
+    }
+  },
+  "not": [
+    "không phải line boil (nét ở đây KHÔNG rung, có hatching, vẽ ra dần rồi đứng)",
+    "không phải lab-notebook-black (đó là bảng bằng chứng có thẻ ghim, engine board)",
+    "không phải chalk (không phấn, không bảng)",
+    "không hợp nhiều số liệu/biểu đồ hoặc cắt nhanh"
+  ],
+  "voice_tags": [
+    "calm",
+    "warm",
+    "storyteller",
+    "british"
+  ]
+}

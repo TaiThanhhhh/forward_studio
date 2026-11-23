@@ -1,0 +1,232 @@
+{
+  "name": "Painted · dark stage",
+  "description": "Biến thể dark-stage của style #13 \"Painted\" (Bộ lọc trên 3D) trong 3D Style Atlas: chuyện kể đồng quê kiểu sách tranh. Viết lại bằng lời của tool trên sân khấu đen, một accent.",
+  "source": {
+    "repo": "3D Style Atlas (Futurepedia / HubSpot Media)",
+    "url": "https://www.futurepedia.io/resources/3d-style-atlas/view",
+    "sha": "#13",
+    "license": "HubSpot Website Terms of Use (cá nhân, phi thương mại) — chỉ lấy ý tưởng thị giác, chữ + mã viết mới; xem docs/CREDITS.md",
+    "from": "#13 Painted · Filters over 3D · Story",
+    "how": "dark-stage: nền #000, look 3D `toon` của engine three.js, block Flow ngắn tự viết"
+  },
+  "code_only": false,
+  "tags": [
+    "painting",
+    "countryside",
+    "bread",
+    "farm",
+    "village"
+  ],
+  "black_min": 0.5,
+  "palette": {
+    "bg": "#000000",
+    "ink": "#d69a5a",
+    "a": "#f0a878",
+    "b": "#5f8a36",
+    "c": "#c08a56",
+    "_doc": "sân khấu đen + accent sunset peach"
+  },
+  "pacing": {
+    "fps": "lớp sơn on twos (chấm đổi mỗi 2 frame); chữ on ones",
+    "easing": "smootherstep, chậm",
+    "bounce": false,
+    "cut_rule": "cắt chậm, như bước sang bức kế trong phòng tranh",
+    "camera": "single walking-height camera travelling with the wind between places"
+  },
+  "marks": {
+    "arrow": "không mũi tên trong tranh — chỉ nhãn bảo tàng",
+    "circle": "không khoanh",
+    "label": "nhãn bảo tàng: chữ kem viền đen"
+  },
+  "transitions": [
+    "cut",
+    "fade"
+  ],
+  "sfx_pack": {
+    "pop": "ting",
+    "hit": "thud",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "sparkle"
+  },
+  "music": {
+    "mood": "piano ấn tượng chậm, vang phòng tranh",
+    "bpm": 84
+  },
+  "voice_persona": "giám tuyển thì thầm trong phòng tranh",
+  "thumbnail": "một vật chủ đạo kiểu 3d scene rendered as an oil painting nổi giữa nền đen, accent sunset peach trên chi tiết sắp xảy ra chuyện",
+  "flow": {
+    "is_3d": true,
+    "medium": "3D scene rendered as an oil painting",
+    "look": "Simple rough forms under directional brush dabs, bristle streaks, canvas texture; low golden back-side sun, blue-violet shadows, small warm practical lamps",
+    "motion": "chained events inside the picture: gust through wheat, sails spinning, stone grinding",
+    "motion_block": "Chained events inside the picture: gust through wheat, sails spinning, stone grinding.",
+    "plate": "a bare unpainted corner of the canvas",
+    "accent": "#f0a878",
+    "accent_name": "sunset peach",
+    "camera": "Single walking-height camera travelling with the wind between places",
+    "avoid_add": [
+      "bright backdrop",
+      "visible horizon",
+      "photoreal people"
+    ]
+  },
+  "font": "Caladea-Bold.ttf",
+  "size": 108,
+  "uppercase": false,
+  "fill": "#d69a5a",
+  "stroke": 6,
+  "stroke_color": "#000000",
+  "intro": "write_on",
+  "intro_frames": 12,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#c08a56",
+  "sfx_role": {
+    "size_mult": 1.3,
+    "rotate": -5,
+    "fill": "#FF8A3C"
+  },
+  "html": {
+    "look": "gallery",
+    "font": "Caladea-Bold.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#d69a5a",
+      "a": "#f0a878",
+      "b": "#5f8a36",
+      "c": "#c08a56"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    }
+  },
+  "not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "voice_tags": [
+    "velvety",
+    "calm",
+    "british",
+    "storyteller"
+  ],
+  "world": {
+    "_doc": "Sân khấu lab tối: khối xám xanh than, nét mực TRẮNG (ngược với forward), rim light accent xanh từ sau, bóng đổ thật, DOF.",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 6,
+    "fog_far": 26,
+    "toon_steps": [
+      110,
+      190,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#d69a5a",
+      "grey": "#56657A",
+      "water": "#2E6E96",
+      "accent": "#f0a878",
+      "accent_hi": "#A9C0FF",
+      "accent_glow": "#f0a878",
+      "danger": "#f0a878",
+      "iron": "#2B2F36",
+      "metal": "#8C99AB",
+      "glass_line": "#CFE3FF",
+      "ink_text": "#0B0E13",
+      "chalk": "#F3F1EA",
+      "board": "#141B22",
+      "label": "#d69a5a",
+      "dial": "#E8EDF3",
+      "bench": "#2B3440",
+      "bench_seam": "#11161C",
+      "bench_leg": "#1E252E",
+      "wall": "#161D26",
+      "feather": "#F2EFE6",
+      "orange": "#FF9A3D"
+    },
+    "lights": {
+      "hemi": 0.9,
+      "hemi_sky": "#B9C8FF",
+      "hemi_ground": "#20262E",
+      "key": 2.4,
+      "key_dir": [
+        -0.6,
+        1.0,
+        0.7
+      ],
+      "rim": 2.2,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.4,
+        0.5,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#F2F2F2",
+      "px": 2.8,
+      "rim": "#f0a878",
+      "rim_px": 0,
+      "crease": 0.7
+    },
+    "grade": {
+      "sat": 1.05,
+      "vig": 0.18
+    },
+    "look3d": "toon"
+  },
+  "cast_palette": {
+    "body": "#E9EEF4",
+    "shade": "#AAB6C6",
+    "ink": "#0B0E13",
+    "rim": "#F2F2F2",
+    "accent": "#3F6BFF",
+    "strap": "#56657A"
+  },
+  "atlas": {
+    "number": 13,
+    "id": "painted",
+    "name": "Painted",
+    "tag": "Story",
+    "fit": 2,
+    "duplicate_of": "gallery-pointillist-black",
+    "why": "Bản sắc là ánh hoàng hôn trên vải toan sáng → mất khi về nền đen: off-brand (chỉ chọn tay).",
+    "frame_props": [
+      "ball",
+      "ice",
+      "beaker"
+    ]
+  },
+  "category": "filters",
+  "category_name": "Filters over 3D",
+  "tier": 2,
+  "brand_fit": "off-brand",
+  "variant": "dark-stage",
+  "image_style_block": "3D scene rendered as an oil painting on a pure black stage (#000000): simple rough forms under directional brush dabs, bristle streaks, canvas texture. Low golden back-side sun, blue-violet shadows, small warm practical lamps. One accent colour (sunset peach) only on the key element. Leave a bare unpainted corner of the canvas empty (captions are added later).",
+  "video_motion_block": "Chained events inside the picture: gust through wheat, sails spinning, stone grinding.",
+  "avoid_block": "Avoid: any text, letters or numbers, logos, bright backdrop, visible horizon, photoreal people.",
+  "materials": "simple rough forms under directional brush dabs, bristle streaks, canvas texture",
+  "lighting": "low golden back-side sun, blue-violet shadows, small warm practical lamps",
+  "camera": "single walking-height camera travelling with the wind between places",
+  "text_style": {
+    "plate": "a bare unpainted corner of the canvas",
+    "font": "Caladea-Bold.ttf",
+    "uppercase": false,
+    "rule": "chữ do text_fx / chữ 3D của engine; prompt ảnh chỉ chừa chỗ trống"
+  },
+  "good_for": "chuyện kể đồng quê kiểu sách tranh",
+  "what_it_is_not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "_generated": "vidlib/atlas.py từ config/atlas.json — sửa ở đó rồi chạy python scripts/atlas_import.py",
+  "_base": "gallery-pointillist-black"
+}

@@ -1,0 +1,63 @@
+{
+  "engine": "html",
+  "page": "engines/html/index.html",
+  "scene": "title",
+  "params": {
+    "kicker": "experiment 12",
+    "title": "What happens if…",
+    "sub": "1,000°C steel ball",
+    "icon": "ball",
+    "icon_role": "hot"
+  },
+  "frames": 30,
+  "fps": 30,
+  "width": 1080,
+  "height": 1920,
+  "look": {
+    "look": "silhouette",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#FFE7C2",
+      "a": "#FF6B35",
+      "b": "#8FB3FF",
+      "c": "#FFC15E"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    },
+    "type": {
+      "weight": 700
+    }
+  },
+  "fonts": [
+    {
+      "family": "StyleFont",
+      "url": "/assets/fonts/Caladea-Bold.ttf",
+      "file": "Caladea-Bold.ttf"
+    },
+    {
+      "family": "StyleMono",
+      "url": "/assets/fonts/RobotoMono-Variable.ttf",
+      "file": "RobotoMono-Variable.ttf",
+      "weight": "100 900"
+    }
+  ],
+  "safe": {
+    "top": 270,
+    "bottom": 384,
+    "left": 65,
+    "right_icons_x": 940,
+    "right_icons_from_y": 700,
+    "caption_band": [
+      1150,
+      1450
+    ]
+  },
+  "locale": "en-US",
+  "style": "ink-silhouette-black",
+  "shot": "title",
+  "beat": null,
+  "engine_rev": "56deca315c03"
+}

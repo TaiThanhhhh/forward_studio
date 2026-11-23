@@ -1,0 +1,14 @@
+# Bắt buộc
+pillow>=10
+numpy>=1.24
+opencv-python>=4.8
+# engine code-shot: điều khiển Edge/Chromium headless (không tải trình duyệt — dùng Edge có sẵn)
+playwright>=1.40
+# engine manim (style physics-diagram-black: đồ thị, vector lực, phương trình). Không cài được thì tool tự bỏ style đó
+# khỏi chế độ chọn tự động; KHÔNG cần LaTeX.
+manim>=0.18
+# Tuỳ chọn: --ai claude / --ai gemini (viết storyboard qua API, cần API key trong biến môi trường)
+anthropic
+google-genai
+# Tuỳ chọn: mốc từng từ chính xác hơn cho caption (nặng ~1 GB) — bỏ dấu # để cài
+# faster-whisper

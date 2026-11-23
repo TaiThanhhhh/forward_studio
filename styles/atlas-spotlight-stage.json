@@ -1,0 +1,242 @@
+{
+  "name": "Spotlight Stage · dark stage",
+  "description": "Biến thể dark-stage của style #06 \"Spotlight Stage\" (Không gian và hành trình) trong 3D Style Atlas: lịch sử, chuyện kể theo cảnh. Viết lại bằng lời của tool trên sân khấu đen, một accent.",
+  "source": {
+    "repo": "3D Style Atlas (Futurepedia / HubSpot Media)",
+    "url": "https://www.futurepedia.io/resources/3d-style-atlas/view",
+    "sha": "#06",
+    "license": "HubSpot Website Terms of Use (cá nhân, phi thương mại) — chỉ lấy ý tưởng thị giác, chữ + mã viết mới; xem docs/CREDITS.md",
+    "from": "#06 Spotlight Stage · Spaces and journeys · Story",
+    "how": "dark-stage: nền #000, look 3D `paper` của engine three.js, block Flow ngắn tự viết"
+  },
+  "code_only": false,
+  "black_min": 0.5,
+  "voice_persona": "người kể chuyện ấm, như đọc sách pop-up",
+  "thumbnail": "một vật chủ đạo kiểu 3d toy theatre with flat card cut-outs nổi giữa nền đen, accent spotlight gold trên chi tiết sắp xảy ra chuyện",
+  "font": "Baloo2-Variable.ttf",
+  "size": 118,
+  "uppercase": true,
+  "fill": "#c9b78f",
+  "stroke": 10,
+  "stroke_color": "#000000",
+  "shadow": {
+    "offset": [
+      8,
+      8
+    ],
+    "color": "#ffd27a"
+  },
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#6f4622",
+  "sfx_role": {
+    "size_mult": 1.35,
+    "rotate": -6,
+    "fill": "#E8553E"
+  },
+  "tags": [
+    "history",
+    "invention",
+    "legend",
+    "century",
+    "first-flight"
+  ],
+  "voice_tags": [
+    "storyteller",
+    "warm",
+    "friendly"
+  ],
+  "palette": {
+    "bg": "#000000",
+    "ink": "#c9b78f",
+    "a": "#ffd27a",
+    "b": "#9e1f2a",
+    "c": "#6f4622",
+    "_doc": "sân khấu đen + accent spotlight gold"
+  },
+  "pacing": {
+    "fps": "twos",
+    "easing": "gấp/mở như sách pop-up",
+    "bounce": true,
+    "camera": "stalls-seat point of view, slow continuous move with each scene change",
+    "cut_rule": "cắt khi trang mở xong"
+  },
+  "marks": {
+    "arrow": "mũi tên giấy cắt",
+    "circle": "vòng giấy",
+    "label": "nhãn giấy dán"
+  },
+  "transitions": [
+    "cut",
+    "whip"
+  ],
+  "sfx_pack": {
+    "pop": "pop",
+    "hit": "thunk",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ding"
+  },
+  "music": {
+    "mood": "pizzicato strings, paper rustle, light percussion",
+    "bpm": 104
+  },
+  "flow": {
+    "is_3d": true,
+    "medium": "3D toy theatre with flat card cut-outs",
+    "look": "Gouache-painted card flats, cut-out actors on rods, velvet drapes, dark timber boards; stage lamps only, visible beams in haze, follow spots plus per-scene colour wash",
+    "motion": "flats slide in from wings, pieces fly in from above, cut-outs glide in floor slots",
+    "motion_block": "Flats slide in from wings, pieces fly in from above, cut-outs glide in floor slots.",
+    "plate": "a blank easel card downstage",
+    "accent": "#ffd27a",
+    "accent_name": "spotlight gold",
+    "camera": "Stalls-seat point of view, slow continuous move with each scene change",
+    "avoid_add": [
+      "bright backdrop",
+      "visible horizon",
+      "photoreal people"
+    ]
+  },
+  "world": {
+    "_doc": "Sân khấu đen, look 3D 'paper' (engines/three/main.js → LOOK3D).",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 8,
+    "fog_far": 28,
+    "toon_steps": [
+      125,
+      200,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#c9b78f",
+      "grey": "#6E7887",
+      "water": "#3E7CB1",
+      "accent": "#ffd27a",
+      "accent_hi": "#F2C14E",
+      "accent_glow": "#ffd27a",
+      "danger": "#ffd27a",
+      "iron": "#323842",
+      "metal": "#9AA6B8",
+      "glass_line": "#D8E8FF",
+      "ink_text": "#0B0E13",
+      "chalk": "#F5EBDD",
+      "board": "#161C24",
+      "label": "#c9b78f",
+      "dial": "#F5EBDD",
+      "bench": "#2B3440",
+      "bench_seam": "#11161C",
+      "bench_leg": "#1E252E",
+      "wall": "#161D26",
+      "feather": "#F5EBDD",
+      "orange": "#F2C14E"
+    },
+    "lights": {
+      "hemi": 1.05,
+      "hemi_sky": "#DCE4FF",
+      "hemi_ground": "#22262E",
+      "key": 2.3,
+      "key_dir": [
+        -0.55,
+        1.0,
+        0.75
+      ],
+      "rim": 2.4,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.45,
+        0.55,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#F5EBDD",
+      "px": 1.6,
+      "rim": "#ffd27a",
+      "rim_px": 0,
+      "crease": 0.4
+    },
+    "grade": {
+      "sat": 1.06,
+      "vig": 0.16
+    },
+    "look3d": "paper"
+  },
+  "cast_palette": {
+    "body": "#F5EBDD",
+    "shade": "#9AA0AA",
+    "ink": "#0B0E13",
+    "rim": "#F5EBDD",
+    "accent": "#3E7CB1",
+    "strap": "#5A6270"
+  },
+  "html": {
+    "look": "sticker",
+    "font": "Baloo2-Variable.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#c9b78f",
+      "a": "#ffd27a",
+      "b": "#9e1f2a",
+      "c": "#6f4622"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    },
+    "type": {
+      "weight": 400,
+      "upper": true
+    }
+  },
+  "not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "atlas": {
+    "number": 6,
+    "id": "spotlight-stage",
+    "name": "Spotlight Stage",
+    "tag": "Story",
+    "fit": 3,
+    "duplicate_of": "",
+    "why": "Vốn là phòng tối → giữ bản sắc; kênh ít dùng dạng sân khấu kể chuyện → tier 2.",
+    "frame_props": [
+      "ball",
+      "ice",
+      "beaker"
+    ]
+  },
+  "category": "spaces",
+  "category_name": "Spaces and journeys",
+  "tier": 2,
+  "brand_fit": "ok",
+  "variant": "dark-stage",
+  "image_style_block": "3D toy theatre with flat card cut-outs on a pure black stage (#000000): gouache-painted card flats, cut-out actors on rods, velvet drapes, dark timber boards. Stage lamps only, visible beams in haze, follow spots plus per-scene colour wash. One accent colour (spotlight gold) only on the key element. Leave a blank easel card downstage empty (captions are added later).",
+  "video_motion_block": "Flats slide in from wings, pieces fly in from above, cut-outs glide in floor slots.",
+  "avoid_block": "Avoid: any text, letters or numbers, logos, bright backdrop, visible horizon, photoreal people.",
+  "materials": "gouache-painted card flats, cut-out actors on rods, velvet drapes, dark timber boards",
+  "lighting": "stage lamps only, visible beams in haze, follow spots plus per-scene colour wash",
+  "camera": "stalls-seat point of view, slow continuous move with each scene change",
+  "text_style": {
+    "plate": "a blank easel card downstage",
+    "font": "Baloo2-Variable.ttf",
+    "uppercase": true,
+    "rule": "chữ do text_fx / chữ 3D của engine; prompt ảnh chỉ chừa chỗ trống"
+  },
+  "good_for": "lịch sử, chuyện kể theo cảnh",
+  "what_it_is_not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "_generated": "vidlib/atlas.py từ config/atlas.json — sửa ở đó rồi chạy python scripts/atlas_import.py",
+  "_base": "papercraft3d-black"
+}

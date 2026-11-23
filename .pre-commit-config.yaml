@@ -1,0 +1,21 @@
+# pre-commit (AUD-1301): pip install pre-commit && pre-commit install
+repos:
+  - repo: local
+    hooks:
+      - id: ruff
+        name: ruff
+        entry: python -m ruff check
+        language: system
+        types: [python]
+      - id: unit-tests
+        name: unit tests (nhanh)
+        entry: python -m unittest discover -s tests -t .
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+      - id: atlas-check
+        name: atlas presets (không chép nguyên văn)
+        entry: python scripts/atlas_import.py --check
+        language: system
+        pass_filenames: false
+        files: ^(config/atlas\.json|vidlib/atlas\.py)$

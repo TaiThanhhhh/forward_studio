@@ -1,0 +1,245 @@
+{
+  "name": "Low-Poly · dark stage",
+  "description": "Biến thể dark-stage của style #01 \"Low-Poly\" (Bộ lọc trên 3D) trong 3D Style Atlas: chu trình, hành trình qua một vùng đất (mỗi chặng một lá cờ). Viết lại bằng lời của tool trên sân khấu đen, một accent.",
+  "source": {
+    "repo": "3D Style Atlas (Futurepedia / HubSpot Media)",
+    "url": "https://www.futurepedia.io/resources/3d-style-atlas/view",
+    "sha": "#01",
+    "license": "HubSpot Website Terms of Use (cá nhân, phi thương mại) — chỉ lấy ý tưởng thị giác, chữ + mã viết mới; xem docs/CREDITS.md",
+    "from": "#01 Low-Poly · Filters over 3D · Explainer",
+    "how": "dark-stage: nền #000, look 3D `lowpoly` của engine three.js, block Flow ngắn tự viết"
+  },
+  "code_only": true,
+  "black_min": 0.5,
+  "voice_persona": "người kể chuyện tò mò, ấm",
+  "thumbnail": "một vật chủ đạo kiểu stylized low-poly 3d miniature nổi giữa nền đen, accent teal trên chi tiết sắp xảy ra chuyện",
+  "font": "Montserrat-Variable.ttf",
+  "size": 118,
+  "uppercase": true,
+  "fill": "#ecd3a0",
+  "stroke": 10,
+  "stroke_color": "#000000",
+  "shadow": {
+    "offset": [
+      8,
+      8
+    ],
+    "color": "#63bfb4"
+  },
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#e6f5ea",
+  "sfx_role": {
+    "size_mult": 1.35,
+    "rotate": -6,
+    "fill": "#FF7A3D"
+  },
+  "tags": [
+    "cycle",
+    "journey",
+    "river",
+    "landscape",
+    "route",
+    "rain",
+    "mountain"
+  ],
+  "voice_tags": [
+    "curious",
+    "storyteller",
+    "warm"
+  ],
+  "palette": {
+    "bg": "#000000",
+    "ink": "#ecd3a0",
+    "a": "#63bfb4",
+    "b": "#f08a64",
+    "c": "#e6f5ea",
+    "_doc": "sân khấu đen + accent teal"
+  },
+  "pacing": {
+    "fps": "full",
+    "easing": "bậc, gọn",
+    "bounce": true,
+    "camera": "long-lens crane, tilt-shift focus band, stop-by-stop then full model",
+    "cut_rule": "cắt khi khối lắp xong"
+  },
+  "marks": {
+    "arrow": "mũi tên đa giác",
+    "circle": "vòng đa giác",
+    "label": "nhãn phẳng"
+  },
+  "transitions": [
+    "cut",
+    "whip"
+  ],
+  "sfx_pack": {
+    "pop": "pop",
+    "hit": "thunk",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ding"
+  },
+  "music": {
+    "mood": "marimba arpeggios, soft kick, adventurous",
+    "bpm": 108
+  },
+  "flow": {
+    "is_3d": true,
+    "medium": "Stylized low-poly 3D miniature",
+    "look": "Faceted low-poly geometry, flat tone per face, matte paper feel; water a touch glossy; warm low side sun, soft shadow edges, cool sky fill on shade sides",
+    "motion": "facets unfold from a seed point, pop-up bounces, heaving water, bobbing droplets",
+    "motion_block": "Facets unfold from a seed point, pop-up bounces, heaving water, bobbing droplets.",
+    "plate": "a small blank paper flag on a pin",
+    "accent": "#63bfb4",
+    "accent_name": "teal",
+    "camera": "Long-lens crane, tilt-shift focus band, stop-by-stop then full model",
+    "avoid_add": [
+      "bright backdrop",
+      "visible horizon",
+      "photoreal people"
+    ]
+  },
+  "world": {
+    "_doc": "Sân khấu đen, look 3D 'lowpoly' (engines/three/main.js → LOOK3D).",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 8,
+    "fog_far": 28,
+    "toon_steps": [
+      125,
+      200,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#ecd3a0",
+      "grey": "#6E7887",
+      "water": "#3FB8AF",
+      "accent": "#63bfb4",
+      "accent_hi": "#FFD166",
+      "accent_glow": "#63bfb4",
+      "danger": "#f08a64",
+      "iron": "#323842",
+      "metal": "#9AA6B8",
+      "glass_line": "#D8E8FF",
+      "ink_text": "#0B0E13",
+      "chalk": "#F3EFE6",
+      "board": "#161C24",
+      "label": "#ecd3a0",
+      "dial": "#F3EFE6",
+      "bench": "#2B3440",
+      "bench_seam": "#11161C",
+      "bench_leg": "#1E252E",
+      "wall": "#161D26",
+      "feather": "#F3EFE6",
+      "orange": "#FFD166"
+    },
+    "lights": {
+      "hemi": 1.05,
+      "hemi_sky": "#DCE4FF",
+      "hemi_ground": "#22262E",
+      "key": 2.3,
+      "key_dir": [
+        -0.55,
+        1.0,
+        0.75
+      ],
+      "rim": 2.4,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.45,
+        0.55,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#F3EFE6",
+      "px": 1.6,
+      "rim": "#63bfb4",
+      "rim_px": 0,
+      "crease": 0.4
+    },
+    "grade": {
+      "sat": 1.06,
+      "vig": 0.16
+    },
+    "look3d": "lowpoly"
+  },
+  "cast_palette": {
+    "body": "#F3EFE6",
+    "shade": "#9AA0AA",
+    "ink": "#0B0E13",
+    "rim": "#F3EFE6",
+    "accent": "#3FB8AF",
+    "strap": "#5A6270"
+  },
+  "html": {
+    "look": "iso",
+    "font": "Montserrat-Variable.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#ecd3a0",
+      "a": "#63bfb4",
+      "b": "#f08a64",
+      "c": "#e6f5ea"
+    },
+    "roles": {
+      "hot": "b",
+      "cold": "c",
+      "accent": "a"
+    },
+    "type": {
+      "weight": 700,
+      "upper": true
+    }
+  },
+  "not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "code_engine": "three",
+  "atlas": {
+    "number": 1,
+    "id": "low-poly",
+    "name": "Low-Poly",
+    "tag": "Explainer",
+    "fit": 4,
+    "duplicate_of": "lowpoly3d-black",
+    "why": "Trùng lowpoly3d-black (đã có) → tier 2; nền đen giữ được vì mô hình nổi trong khoảng tối.",
+    "frame_props": [
+      "ball",
+      "ice",
+      "beaker"
+    ]
+  },
+  "category": "filters",
+  "category_name": "Filters over 3D",
+  "tier": 2,
+  "brand_fit": "ok",
+  "variant": "dark-stage",
+  "image_style_block": "Stylized low-poly 3D miniature on a pure black stage (#000000): faceted low-poly geometry, flat tone per face, matte paper feel; water a touch glossy. Warm low side sun, soft shadow edges, cool sky fill on shade sides. One accent colour (teal) only on the key element. Leave a small blank paper flag on a pin empty (captions are added later).",
+  "video_motion_block": "Facets unfold from a seed point, pop-up bounces, heaving water, bobbing droplets.",
+  "avoid_block": "Avoid: any text, letters or numbers, logos, bright backdrop, visible horizon, photoreal people.",
+  "materials": "faceted low-poly geometry, flat tone per face, matte paper feel; water a touch glossy",
+  "lighting": "warm low side sun, soft shadow edges, cool sky fill on shade sides",
+  "camera": "long-lens crane, tilt-shift focus band, stop-by-stop then full model",
+  "text_style": {
+    "plate": "a small blank paper flag on a pin",
+    "font": "Montserrat-Variable.ttf",
+    "uppercase": true,
+    "rule": "chữ do text_fx / chữ 3D của engine; prompt ảnh chỉ chừa chỗ trống"
+  },
+  "good_for": "chu trình, hành trình qua một vùng đất (mỗi chặng một lá cờ)",
+  "what_it_is_not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "_generated": "vidlib/atlas.py từ config/atlas.json — sửa ở đó rồi chạy python scripts/atlas_import.py",
+  "_base": "lowpoly3d-black"
+}

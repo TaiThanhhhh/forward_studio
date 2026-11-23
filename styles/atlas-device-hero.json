@@ -1,0 +1,243 @@
+{
+  "name": "Device Hero · dark stage",
+  "description": "Biến thể dark-stage của style #32 \"Device Hero\" (Sản phẩm và màn hình) trong 3D Style Atlas: điện thoại, thiết bị (vd thả điện thoại vào…). Viết lại bằng lời của tool trên sân khấu đen, một accent.",
+  "source": {
+    "repo": "3D Style Atlas (Futurepedia / HubSpot Media)",
+    "url": "https://www.futurepedia.io/resources/3d-style-atlas/view",
+    "sha": "#32",
+    "license": "HubSpot Website Terms of Use (cá nhân, phi thương mại) — chỉ lấy ý tưởng thị giác, chữ + mã viết mới; xem docs/CREDITS.md",
+    "from": "#32 Device Hero · Products and screens · Product shot",
+    "how": "dark-stage: nền #000, look 3D `chrome` của engine three.js, block Flow ngắn tự viết"
+  },
+  "code_only": false,
+  "black_min": 0.5,
+  "voice_persona": "giọng trầm, chắc, nhịp mạnh",
+  "thumbnail": "một vật chủ đạo kiểu 3d phone launch shot nổi giữa nền đen, accent warm screen white trên chi tiết sắp xảy ra chuyện",
+  "font": "Anton-Regular.ttf",
+  "size": 118,
+  "uppercase": true,
+  "fill": "#f1eee8",
+  "stroke": 10,
+  "stroke_color": "#000000",
+  "shadow": {
+    "offset": [
+      8,
+      8
+    ],
+    "color": "#fff3e2"
+  },
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#ffffff",
+  "sfx_role": {
+    "size_mult": 1.35,
+    "rotate": -6,
+    "fill": "#8FB8FF"
+  },
+  "tags": [
+    "phone",
+    "smartphone",
+    "screen",
+    "device",
+    "drop-phone"
+  ],
+  "voice_tags": [
+    "deep",
+    "confident",
+    "documentary"
+  ],
+  "palette": {
+    "bg": "#000000",
+    "ink": "#f1eee8",
+    "a": "#fff3e2",
+    "b": "#b9b2a8",
+    "c": "#ffffff",
+    "_doc": "sân khấu đen + accent warm screen white"
+  },
+  "pacing": {
+    "fps": "full",
+    "easing": "nặng, dừng gắt",
+    "bounce": false,
+    "camera": "low slow drift past the phone, push dipping below the screen, gentle arc",
+    "cut_rule": "cắt ở va chạm kim loại"
+  },
+  "marks": {
+    "arrow": "mũi tên thép",
+    "circle": "vòng sáng cam",
+    "label": "nhãn khắc chữ"
+  },
+  "transitions": [
+    "cut",
+    "whip"
+  ],
+  "sfx_pack": {
+    "pop": "ting",
+    "hit": "impact",
+    "whoosh": "whoosh",
+    "tick": "click",
+    "ding": "ting"
+  },
+  "music": {
+    "mood": "industrial pulse, metallic hits, low synth",
+    "bpm": 100
+  },
+  "flow": {
+    "is_3d": true,
+    "medium": "3D phone launch shot",
+    "look": "Satin titanium phone, black cover glass, mirror-gloss floor; indirect strip lights and softbox reflections only, screen as the brightest element",
+    "motion": "phone turns to camera under sliding strip reflections, interface layers peel away",
+    "motion_block": "Phone turns to camera under sliding strip reflections, interface layers peel away.",
+    "plate": "a blank glowing screen",
+    "accent": "#fff3e2",
+    "accent_name": "warm screen white",
+    "camera": "Low slow drift past the phone, push dipping below the screen, gentle arc",
+    "avoid_add": [
+      "bright backdrop",
+      "visible horizon",
+      "photoreal people"
+    ]
+  },
+  "world": {
+    "_doc": "Sân khấu đen, look 3D 'chrome' (engines/three/main.js → LOOK3D).",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 8,
+    "fog_far": 28,
+    "toon_steps": [
+      125,
+      200,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#f1eee8",
+      "grey": "#6E7887",
+      "water": "#4FB3FF",
+      "accent": "#fff3e2",
+      "accent_hi": "#FFD27A",
+      "accent_glow": "#fff3e2",
+      "danger": "#FF5A3C",
+      "iron": "#323842",
+      "metal": "#9AA6B8",
+      "glass_line": "#D8E8FF",
+      "ink_text": "#0B0E13",
+      "chalk": "#F2F4F8",
+      "board": "#161C24",
+      "label": "#f1eee8",
+      "dial": "#F2F4F8",
+      "bench": "#2B3440",
+      "bench_seam": "#11161C",
+      "bench_leg": "#1E252E",
+      "wall": "#161D26",
+      "feather": "#F2F4F8",
+      "orange": "#FFD27A"
+    },
+    "lights": {
+      "hemi": 1.05,
+      "hemi_sky": "#DCE4FF",
+      "hemi_ground": "#22262E",
+      "key": 2.3,
+      "key_dir": [
+        -0.55,
+        1.0,
+        0.75
+      ],
+      "rim": 2.4,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.45,
+        0.55,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#F2F4F8",
+      "px": 1.6,
+      "rim": "#fff3e2",
+      "rim_px": 0,
+      "crease": 0.4
+    },
+    "grade": {
+      "sat": 1.06,
+      "vig": 0.16
+    },
+    "look3d": "chrome"
+  },
+  "cast_palette": {
+    "body": "#F2F4F8",
+    "shade": "#9AA0AA",
+    "ink": "#0B0E13",
+    "rim": "#F2F4F8",
+    "accent": "#FF9A3D",
+    "strap": "#5A6270"
+  },
+  "html": {
+    "look": "swiss",
+    "font": "Anton-Regular.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#f1eee8",
+      "a": "#fff3e2",
+      "b": "#b9b2a8",
+      "c": "#ffffff",
+      "hot": "#FF5A3C"
+    },
+    "roles": {
+      "hot": "hot",
+      "cold": "b",
+      "accent": "a"
+    },
+    "type": {
+      "weight": 400,
+      "upper": true
+    }
+  },
+  "not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "atlas": {
+    "number": 32,
+    "id": "device-hero",
+    "name": "Device Hero",
+    "tag": "Product shot",
+    "fit": 3,
+    "duplicate_of": "chrome3d-black",
+    "why": "Studio tối giữ bản sắc; hợp ý tưởng 'thả điện thoại vào X' nhưng hẹp → tier 2.",
+    "frame_props": [
+      "ball",
+      "ice",
+      "beaker"
+    ]
+  },
+  "category": "products",
+  "category_name": "Products and screens",
+  "tier": 2,
+  "brand_fit": "ok",
+  "variant": "dark-stage",
+  "image_style_block": "3D phone launch shot on a pure black stage (#000000): satin titanium phone, black cover glass, mirror-gloss floor. Indirect strip lights and softbox reflections only, screen as the brightest element. One accent colour (warm screen white) only on the key element. Leave a blank glowing screen empty (captions are added later).",
+  "video_motion_block": "Phone turns to camera under sliding strip reflections, interface layers peel away.",
+  "avoid_block": "Avoid: any text, letters or numbers, logos, bright backdrop, visible horizon, photoreal people.",
+  "materials": "satin titanium phone, black cover glass, mirror-gloss floor",
+  "lighting": "indirect strip lights and softbox reflections only, screen as the brightest element",
+  "camera": "low slow drift past the phone, push dipping below the screen, gentle arc",
+  "text_style": {
+    "plate": "a blank glowing screen",
+    "font": "Anton-Regular.ttf",
+    "uppercase": true,
+    "rule": "chữ do text_fx / chữ 3D của engine; prompt ảnh chỉ chừa chỗ trống"
+  },
+  "good_for": "điện thoại, thiết bị (vd thả điện thoại vào…)",
+  "what_it_is_not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "_generated": "vidlib/atlas.py từ config/atlas.json — sửa ở đó rồi chạy python scripts/atlas_import.py",
+  "_base": "chrome3d-black"
+}

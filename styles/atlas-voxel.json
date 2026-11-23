@@ -1,0 +1,247 @@
+{
+  "name": "Voxel · dark stage",
+  "description": "Biến thể dark-stage của style #18 \"Voxel\" (Bộ lọc trên 3D) trong 3D Style Atlas: thứ lớn dần theo giai đoạn. Viết lại bằng lời của tool trên sân khấu đen, một accent.",
+  "source": {
+    "repo": "3D Style Atlas (Futurepedia / HubSpot Media)",
+    "url": "https://www.futurepedia.io/resources/3d-style-atlas/view",
+    "sha": "#18",
+    "license": "HubSpot Website Terms of Use (cá nhân, phi thương mại) — chỉ lấy ý tưởng thị giác, chữ + mã viết mới; xem docs/CREDITS.md",
+    "from": "#18 Voxel · Filters over 3D · Explainer",
+    "how": "dark-stage: nền #000, look 3D `lowpoly` của engine three.js, block Flow ngắn tự viết"
+  },
+  "code_only": true,
+  "black_min": 0.5,
+  "voice_persona": "người kể chuyện tò mò, ấm",
+  "thumbnail": "một vật chủ đạo kiểu 3d voxel model nổi giữa nền đen, accent leaf green trên chi tiết sắp xảy ra chuyện",
+  "font": "Montserrat-Variable.ttf",
+  "size": 118,
+  "uppercase": true,
+  "fill": "#ffffff",
+  "stroke": 10,
+  "stroke_color": "#000000",
+  "shadow": {
+    "offset": [
+      8,
+      8
+    ],
+    "color": "#86b84f"
+  },
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#a5cf5c",
+  "sfx_role": {
+    "size_mult": 1.35,
+    "rotate": -6,
+    "fill": "#FF7A3D"
+  },
+  "tags": [
+    "plant",
+    "seed",
+    "grow",
+    "cube",
+    "blocks"
+  ],
+  "voice_tags": [
+    "curious",
+    "storyteller",
+    "warm"
+  ],
+  "palette": {
+    "bg": "#000000",
+    "ink": "#ffffff",
+    "a": "#86b84f",
+    "b": "#8a5a38",
+    "c": "#a5cf5c",
+    "_doc": "sân khấu đen + accent leaf green"
+  },
+  "pacing": {
+    "fps": "full",
+    "easing": "bậc, gọn",
+    "bounce": true,
+    "camera": "long lens at ~26°, wide aperture miniature look, slow arc and pull-back",
+    "cut_rule": "cắt khi khối lắp xong"
+  },
+  "marks": {
+    "arrow": "mũi tên đa giác",
+    "circle": "vòng đa giác",
+    "label": "nhãn phẳng"
+  },
+  "transitions": [
+    "cut",
+    "whip"
+  ],
+  "sfx_pack": {
+    "pop": "pop",
+    "hit": "thunk",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ding"
+  },
+  "music": {
+    "mood": "marimba arpeggios, soft kick, adventurous",
+    "bpm": 108
+  },
+  "flow": {
+    "is_3d": true,
+    "medium": "3D voxel model",
+    "look": "Chamfered matte cubes on an off-white plinth; warm sun front-left, sky occlusion in corners, per-cube contact shadow",
+    "motion": "column drop-ins and layer growth, swelling and popping cubes, bounce on landing",
+    "motion_block": "Column drop-ins and layer growth, swelling and popping cubes, bounce on landing.",
+    "plate": "the blank front face of the display base",
+    "accent": "#86b84f",
+    "accent_name": "leaf green",
+    "camera": "Long lens at ~26°, wide aperture miniature look, slow arc and pull-back",
+    "avoid_add": [
+      "bright backdrop",
+      "visible horizon",
+      "photoreal people"
+    ]
+  },
+  "world": {
+    "_doc": "Sân khấu đen, look 3D 'lowpoly' (engines/three/main.js → LOOK3D).",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 8,
+    "fog_far": 28,
+    "toon_steps": [
+      125,
+      200,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#ffffff",
+      "grey": "#6E7887",
+      "water": "#3FB8AF",
+      "accent": "#86b84f",
+      "accent_hi": "#FFD166",
+      "accent_glow": "#86b84f",
+      "danger": "#FF7A3D",
+      "iron": "#323842",
+      "metal": "#9AA6B8",
+      "glass_line": "#D8E8FF",
+      "ink_text": "#0B0E13",
+      "chalk": "#F3EFE6",
+      "board": "#161C24",
+      "label": "#ffffff",
+      "dial": "#F3EFE6",
+      "bench": "#2B3440",
+      "bench_seam": "#11161C",
+      "bench_leg": "#1E252E",
+      "wall": "#161D26",
+      "feather": "#F3EFE6",
+      "orange": "#FFD166"
+    },
+    "lights": {
+      "hemi": 1.05,
+      "hemi_sky": "#DCE4FF",
+      "hemi_ground": "#22262E",
+      "key": 2.3,
+      "key_dir": [
+        -0.55,
+        1.0,
+        0.75
+      ],
+      "rim": 2.4,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.45,
+        0.55,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#F3EFE6",
+      "px": 1.6,
+      "rim": "#86b84f",
+      "rim_px": 0,
+      "crease": 0.4
+    },
+    "grade": {
+      "sat": 1.06,
+      "vig": 0.16
+    },
+    "look3d": {
+      "kind": "lowpoly",
+      "facet": 3
+    }
+  },
+  "cast_palette": {
+    "body": "#F3EFE6",
+    "shade": "#9AA0AA",
+    "ink": "#0B0E13",
+    "rim": "#F3EFE6",
+    "accent": "#3FB8AF",
+    "strap": "#5A6270"
+  },
+  "html": {
+    "look": "iso",
+    "font": "Montserrat-Variable.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#ffffff",
+      "a": "#86b84f",
+      "b": "#8a5a38",
+      "c": "#a5cf5c",
+      "hot": "#FF5A3C"
+    },
+    "roles": {
+      "hot": "hot",
+      "cold": "b",
+      "accent": "a"
+    },
+    "type": {
+      "weight": 700,
+      "upper": true
+    }
+  },
+  "not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "code_engine": "three",
+  "atlas": {
+    "number": 18,
+    "id": "voxel",
+    "name": "Voxel",
+    "tag": "Explainer",
+    "fit": 3,
+    "duplicate_of": "lowpoly3d-black",
+    "why": "Gần lowpoly3d-black → tier 2.",
+    "frame_props": [
+      "ball",
+      "ice",
+      "beaker"
+    ]
+  },
+  "category": "filters",
+  "category_name": "Filters over 3D",
+  "tier": 2,
+  "brand_fit": "ok",
+  "variant": "dark-stage",
+  "image_style_block": "3D voxel model on a pure black stage (#000000): chamfered matte cubes on an off-white plinth. Warm sun front-left, sky occlusion in corners, per-cube contact shadow. One accent colour (leaf green) only on the key element. Leave the blank front face of the display base empty (captions are added later).",
+  "video_motion_block": "Column drop-ins and layer growth, swelling and popping cubes, bounce on landing.",
+  "avoid_block": "Avoid: any text, letters or numbers, logos, bright backdrop, visible horizon, photoreal people.",
+  "materials": "chamfered matte cubes on an off-white plinth",
+  "lighting": "warm sun front-left, sky occlusion in corners, per-cube contact shadow",
+  "camera": "long lens at ~26°, wide aperture miniature look, slow arc and pull-back",
+  "text_style": {
+    "plate": "the blank front face of the display base",
+    "font": "Montserrat-Variable.ttf",
+    "uppercase": true,
+    "rule": "chữ do text_fx / chữ 3D của engine; prompt ảnh chỉ chừa chỗ trống"
+  },
+  "good_for": "thứ lớn dần theo giai đoạn",
+  "what_it_is_not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "_generated": "vidlib/atlas.py từ config/atlas.json — sửa ở đó rồi chạy python scripts/atlas_import.py",
+  "_base": "lowpoly3d-black"
+}

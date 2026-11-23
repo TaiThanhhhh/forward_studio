@@ -1,0 +1,244 @@
+{
+  "name": "Node Network · dark stage",
+  "description": "Biến thể dark-stage của style #27 \"Node Network\" (Sơ đồ có chiều sâu) trong 3D Style Atlas: lan truyền, mạng lưới. Viết lại bằng lời của tool trên sân khấu đen, một accent.",
+  "source": {
+    "repo": "3D Style Atlas (Futurepedia / HubSpot Media)",
+    "url": "https://www.futurepedia.io/resources/3d-style-atlas/view",
+    "sha": "#27",
+    "license": "HubSpot Website Terms of Use (cá nhân, phi thương mại) — chỉ lấy ý tưởng thị giác, chữ + mã viết mới; xem docs/CREDITS.md",
+    "from": "#27 Node Network · Diagrams with depth · Explainer",
+    "how": "dark-stage: nền #000, look 3D `plastic` của engine three.js, block Flow ngắn tự viết"
+  },
+  "code_only": true,
+  "black_min": 0.5,
+  "voice_persona": "người kể vui nhộn, nhanh, nhấn từ như đang chơi",
+  "thumbnail": "một vật chủ đạo kiểu 3d porcelain-and-brass network model nổi giữa nền đen, accent cobalt enamel trên chi tiết sắp xảy ra chuyện",
+  "font": "Baloo2-Variable.ttf",
+  "size": 118,
+  "uppercase": true,
+  "fill": "#f3eee2",
+  "stroke": 10,
+  "stroke_color": "#000000",
+  "shadow": {
+    "offset": [
+      8,
+      8
+    ],
+    "color": "#15369c"
+  },
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#935a47",
+  "sfx_role": {
+    "size_mult": 1.35,
+    "rotate": -6,
+    "fill": "#FF4F6D"
+  },
+  "tags": [
+    "network",
+    "spread",
+    "viral",
+    "infection",
+    "connection"
+  ],
+  "voice_tags": [
+    "playful",
+    "bright",
+    "energetic"
+  ],
+  "palette": {
+    "bg": "#000000",
+    "ink": "#f3eee2",
+    "a": "#15369c",
+    "b": "#c9a04a",
+    "c": "#935a47",
+    "_doc": "sân khấu đen + accent cobalt enamel"
+  },
+  "pacing": {
+    "fps": "full",
+    "easing": "bật nảy squash-and-stretch",
+    "bounce": true,
+    "camera": "long lens, close start on the first token, steady pull-back drifting left to right",
+    "cut_rule": "cắt ở pha bật nảy"
+  },
+  "marks": {
+    "arrow": "mũi tên nhựa 3D bo tròn",
+    "circle": "vòng nhựa sáng",
+    "label": "nhãn dán sticker bo tròn"
+  },
+  "transitions": [
+    "cut",
+    "whip"
+  ],
+  "sfx_pack": {
+    "pop": "pop",
+    "hit": "thunk",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ding"
+  },
+  "music": {
+    "mood": "toy-box plucks, glockenspiel, bouncy bass",
+    "bpm": 118
+  },
+  "flow": {
+    "is_3d": true,
+    "medium": "3D porcelain-and-brass network model",
+    "look": "Ivory porcelain tokens, cobalt enamel faces, brass rods and number plaques; warm overhead spot, soft rod shadows on the wall, pool widening with the model",
+    "motion": "link-by-link growth: rod extends, token clicks in, light bead travels, token flips",
+    "motion_block": "Link-by-link growth: rod extends, token clicks in, light bead travels, token flips.",
+    "plate": "blank number plaques on each ring",
+    "accent": "#15369c",
+    "accent_name": "cobalt enamel",
+    "camera": "Long lens, close start on the first token, steady pull-back drifting left to right",
+    "avoid_add": [
+      "bright backdrop",
+      "visible horizon",
+      "photoreal people"
+    ]
+  },
+  "world": {
+    "_doc": "Sân khấu đen, look 3D 'plastic' (engines/three/main.js → LOOK3D).",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 8,
+    "fog_far": 28,
+    "toon_steps": [
+      125,
+      200,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#f3eee2",
+      "grey": "#6E7887",
+      "water": "#2EC4FF",
+      "accent": "#15369c",
+      "accent_hi": "#FFD23F",
+      "accent_glow": "#15369c",
+      "danger": "#FF4F6D",
+      "iron": "#323842",
+      "metal": "#9AA6B8",
+      "glass_line": "#D8E8FF",
+      "ink_text": "#0B0E13",
+      "chalk": "#F7F4EE",
+      "board": "#161C24",
+      "label": "#f3eee2",
+      "dial": "#F7F4EE",
+      "bench": "#2B3440",
+      "bench_seam": "#11161C",
+      "bench_leg": "#1E252E",
+      "wall": "#161D26",
+      "feather": "#F7F4EE",
+      "orange": "#FFD23F"
+    },
+    "lights": {
+      "hemi": 1.05,
+      "hemi_sky": "#DCE4FF",
+      "hemi_ground": "#22262E",
+      "key": 2.3,
+      "key_dir": [
+        -0.55,
+        1.0,
+        0.75
+      ],
+      "rim": 2.4,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.45,
+        0.55,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#F7F4EE",
+      "px": 1.6,
+      "rim": "#15369c",
+      "rim_px": 0,
+      "crease": 0.4
+    },
+    "grade": {
+      "sat": 1.06,
+      "vig": 0.16
+    },
+    "look3d": "plastic"
+  },
+  "cast_palette": {
+    "body": "#F7F4EE",
+    "shade": "#9AA0AA",
+    "ink": "#0B0E13",
+    "rim": "#F7F4EE",
+    "accent": "#2EC4FF",
+    "strap": "#5A6270"
+  },
+  "html": {
+    "look": "sticker",
+    "font": "Baloo2-Variable.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#f3eee2",
+      "a": "#15369c",
+      "b": "#c9a04a",
+      "c": "#935a47",
+      "hot": "#FF5A3C"
+    },
+    "roles": {
+      "hot": "hot",
+      "cold": "b",
+      "accent": "a"
+    },
+    "type": {
+      "weight": 400,
+      "upper": true
+    }
+  },
+  "not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "atlas": {
+    "number": 27,
+    "id": "node-network",
+    "name": "Node Network",
+    "tag": "Explainer",
+    "fit": 3,
+    "duplicate_of": "flowchart-black",
+    "why": "Gần flowchart-black (2D) → tier 2.",
+    "frame_props": [
+      "ball",
+      "ice",
+      "beaker"
+    ]
+  },
+  "category": "diagrams",
+  "category_name": "Diagrams with depth",
+  "tier": 2,
+  "brand_fit": "ok",
+  "variant": "dark-stage",
+  "image_style_block": "3D porcelain-and-brass network model on a pure black stage (#000000): ivory porcelain tokens, cobalt enamel faces, brass rods and number plaques. Warm overhead spot, soft rod shadows on the wall, pool widening with the model. One accent colour (cobalt enamel) only on the key element. Leave blank number plaques on each ring empty (captions are added later).",
+  "video_motion_block": "Link-by-link growth: rod extends, token clicks in, light bead travels, token flips.",
+  "avoid_block": "Avoid: any text, letters or numbers, logos, bright backdrop, visible horizon, photoreal people.",
+  "materials": "ivory porcelain tokens, cobalt enamel faces, brass rods and number plaques",
+  "lighting": "warm overhead spot, soft rod shadows on the wall, pool widening with the model",
+  "camera": "long lens, close start on the first token, steady pull-back drifting left to right",
+  "text_style": {
+    "plate": "blank number plaques on each ring",
+    "font": "Baloo2-Variable.ttf",
+    "uppercase": true,
+    "rule": "chữ do text_fx / chữ 3D của engine; prompt ảnh chỉ chừa chỗ trống"
+  },
+  "good_for": "lan truyền, mạng lưới",
+  "what_it_is_not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "code_engine": "three",
+  "_generated": "vidlib/atlas.py từ config/atlas.json — sửa ở đó rồi chạy python scripts/atlas_import.py",
+  "_base": "plastic-toy3d-black"
+}

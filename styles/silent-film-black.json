@@ -1,0 +1,98 @@
+{
+  "name": "Silent Film (black)",
+  "description": "Phim câm: đơn sắc BẠC trên nền gần đen #0b0b0b (không sepia), grain/flicker/vết xước/gate weave, chạy trên twos, nét rung, iris, intertitle viền đôi; đỏ chỉ là accent có nghĩa. Dùng cho đoạn chèn SILENT_FILM và có thể làm style cả video.",
+  "assembly": "board_spine",
+  "font": "Caladea-Bold.ttf",
+  "size": 100,
+  "uppercase": false,
+  "fill": "#D9D9D4",
+  "number_fill": "#D9D9D4",
+  "stroke": 6,
+  "stroke_color": "#000000",
+  "intro": "write_on",
+  "intro_frames": 12,
+  "boil": {
+    "px": 1.2,
+    "every": 2
+  },
+  "sfx_role": {
+    "size_mult": 1.2,
+    "rotate": -5,
+    "fill": "#D0312D"
+  },
+  "board": {
+    "surface": "film",
+    "bg": "#0b0b0b",
+    "bg_noise": 8,
+    "grid": null,
+    "card": "#cfcfca",
+    "card_edge": "#7d7d78",
+    "card_border": [
+      16,
+      60
+    ],
+    "paper": "#1c1c1b",
+    "ink": "#d9d9d4",
+    "paper_kind": "dark",
+    "dark_card": "#121212",
+    "dark_card_edge": "#8c8c88",
+    "text_light": "#d9d9d4",
+    "text_dim": "#8c8c88",
+    "tape": "#0b0b0b",
+    "tape_edge": "#6f6f6a",
+    "tape_text": "#d9d9d4",
+    "pin": "#8c8c88",
+    "deco": "pin",
+    "film_ink": "#d9d9d4",
+    "film_mid": "#8c8c88",
+    "film_dark": "#3a3a38",
+    "film_fill": "#1e1e1d",
+    "film_tint": "#d6d8da",
+    "accent": "#d0312d",
+    "shadow": 0.6,
+    "grain": 13,
+    "vignette": 0.62,
+    "flicker": 0.07,
+    "film": true,
+    "twos": true,
+    "scratches": 2,
+    "weave": 1.6
+  },
+  "tags": [
+    "history",
+    "inventor",
+    "old",
+    "discovery",
+    "invention",
+    "1800s",
+    "century",
+    "ancient",
+    "first",
+    "victorian"
+  ],
+  "voice_tags": [
+    "storyteller",
+    "british",
+    "mature",
+    "wise"
+  ],
+  "html": {
+    "_doc": "Look của engine html cho shot motion (counter, graph, compare, scale…) trong video style này — bảng màu khớp style.",
+    "look": "sketch",
+    "font": "Caladea-Bold.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#D9D9D4",
+      "a": "#D9D9D4"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "ink",
+      "accent": "a"
+    },
+    "post": {
+      "grain": 0.12,
+      "vignette": 0.45
+    }
+  }
+}

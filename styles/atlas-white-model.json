@@ -1,0 +1,249 @@
+{
+  "name": "White Model · dark stage",
+  "description": "Biến thể dark-stage của style #17 \"White Model\" (Sơ đồ có chiều sâu) trong 3D Style Atlas: năng lượng/nước/nhiệt chạy qua một hệ thống. Viết lại bằng lời của tool trên sân khấu đen, một accent.",
+  "source": {
+    "repo": "3D Style Atlas (Futurepedia / HubSpot Media)",
+    "url": "https://www.futurepedia.io/resources/3d-style-atlas/view",
+    "sha": "#17",
+    "license": "HubSpot Website Terms of Use (cá nhân, phi thương mại) — chỉ lấy ý tưởng thị giác, chữ + mã viết mới; xem docs/CREDITS.md",
+    "from": "#17 White Model · Diagrams with depth · Explainer",
+    "how": "dark-stage: nền #000, look 3D `clay` của engine three.js, block Flow ngắn tự viết"
+  },
+  "code_only": true,
+  "tags": [
+    "solar",
+    "energy",
+    "power",
+    "grid",
+    "heating",
+    "insulation",
+    "house"
+  ],
+  "voice_tags": [
+    "energetic",
+    "curious",
+    "storyteller",
+    "playful"
+  ],
+  "black_min": 0.55,
+  "palette": {
+    "bg": "#000000",
+    "ink": "#f8f6f0",
+    "a": "#ff6a00",
+    "b": "#b9bec4",
+    "c": "#eef3f8",
+    "_doc": "sân khấu đen + accent vivid orange"
+  },
+  "pacing": {
+    "fps": "twos",
+    "easing": "stop-motion / claymation bật nảy có squash-and-stretch và overshoot nhẹ",
+    "bounce": true,
+    "camera": "long lens, shallow focus, single crane from the source up to the full path",
+    "cut_rule": "cắt đúng pha va chạm hoặc khoảnh khắc mô hình biến dạng"
+  },
+  "marks": {
+    "arrow": "mũi tên khối 3D nổi hoặc nét trắng dày",
+    "circle": "vòng sáng 3D bao quanh vật thể",
+    "label": "biển 3D trong cảnh hoặc chữ nổi viền đậm"
+  },
+  "transitions": [
+    "cut",
+    "whip"
+  ],
+  "sfx_pack": {
+    "pop": "pop",
+    "hit": "thunk",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ding"
+  },
+  "music": {
+    "mood": "nhịp plucky tactile, marimba + bass ấm kiểu mô hình sống động",
+    "bpm": 112
+  },
+  "voice_persona": "người kể chuyện tò mò, giàu năng lượng, nhấn nhá rõ",
+  "thumbnail": "một vật chủ đạo kiểu 3d architect's white presentation model nổi giữa nền đen, accent vivid orange trên chi tiết sắp xảy ra chuyện",
+  "flow": {
+    "is_3d": true,
+    "medium": "3D architect's white presentation model",
+    "look": "Architectural white model: card, foam, paper and plaster whites, crisp bevels; soft side daylight, real occlusion; only the accent emits light",
+    "motion": "static model; accent travels through conduits lighting parts in order",
+    "motion_block": "Static model; accent travels through conduits lighting parts in order.",
+    "plate": "small blank white flag labels at each stop",
+    "accent": "#ff6a00",
+    "accent_name": "vivid orange",
+    "camera": "Long lens, shallow focus, single crane from the source up to the full path",
+    "avoid_add": [
+      "bright backdrop",
+      "visible horizon",
+      "photoreal people"
+    ]
+  },
+  "font": "LuckiestGuy-Regular.ttf",
+  "size": 124,
+  "uppercase": true,
+  "fill": "#f8f6f0",
+  "stroke": 10,
+  "stroke_color": "#000000",
+  "shadow": {
+    "offset": [
+      8,
+      8
+    ],
+    "color": "#ff6a00"
+  },
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#eef3f8",
+  "sfx_role": {
+    "size_mult": 1.35,
+    "rotate": -6,
+    "fill": "#FF5A3C"
+  },
+  "world": {
+    "_doc": "Sân khấu 3D đất sét trên nền đen tuyền: 3 bậc sáng mịn, viền mực mảnh, rim light xanh điện nổi khối 3D.",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 8,
+    "fog_far": 28,
+    "toon_steps": [
+      125,
+      200,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#f8f6f0",
+      "grey": "#6E7887",
+      "water": "#3A88B8",
+      "accent": "#ff6a00",
+      "accent_hi": "#A9C0FF",
+      "accent_glow": "#ff6a00",
+      "danger": "#ff6a00",
+      "iron": "#323842",
+      "metal": "#9AA6B8",
+      "glass_line": "#D8E8FF",
+      "ink_text": "#0B0E13",
+      "chalk": "#F4F1EA",
+      "board": "#161C24",
+      "label": "#f8f6f0",
+      "dial": "#F4F1EA",
+      "bench": "#2B3440",
+      "bench_seam": "#11161C",
+      "bench_leg": "#1E252E",
+      "wall": "#161D26",
+      "feather": "#F4F1EA",
+      "orange": "#FF9A3D"
+    },
+    "lights": {
+      "hemi": 1.05,
+      "hemi_sky": "#DCE4FF",
+      "hemi_ground": "#22262E",
+      "key": 2.3,
+      "key_dir": [
+        -0.55,
+        1.0,
+        0.75
+      ],
+      "rim": 2.4,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.45,
+        0.55,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#F4F1EA",
+      "px": 1.4,
+      "rim": "#ff6a00",
+      "rim_px": 0,
+      "crease": 0.55
+    },
+    "grade": {
+      "sat": 1.06,
+      "vig": 0.16
+    },
+    "look3d": {
+      "kind": "clay",
+      "rough": 0.95
+    }
+  },
+  "cast_palette": {
+    "body": "#F4F1EA",
+    "shade": "#B8B4AC",
+    "ink": "#0B0E13",
+    "rim": "#F4F1EA",
+    "accent": "#3F6BFF",
+    "strap": "#6E7887"
+  },
+  "html": {
+    "look": "flat",
+    "font": "LuckiestGuy-Regular.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#f8f6f0",
+      "a": "#ff6a00",
+      "b": "#b9bec4",
+      "c": "#eef3f8"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    },
+    "type": {
+      "weight": 400,
+      "upper": true
+    }
+  },
+  "not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "atlas": {
+    "number": 17,
+    "id": "white-model",
+    "name": "White Model",
+    "tag": "Explainer",
+    "fit": 4,
+    "duplicate_of": "",
+    "why": "Mô hình trắng trên sân khấu đen rất nổi; luật một accent trùng luật kênh.",
+    "frame_props": [
+      "ball",
+      "ice",
+      "beaker"
+    ]
+  },
+  "category": "diagrams",
+  "category_name": "Diagrams with depth",
+  "tier": 1,
+  "brand_fit": "adapted",
+  "variant": "dark-stage",
+  "image_style_block": "3D architect's white presentation model on a pure black stage (#000000): architectural white model: card, foam, paper and plaster whites, crisp bevels. Soft side daylight, real occlusion; only the accent emits light. One accent colour (vivid orange) only on the key element. Leave small blank white flag labels at each stop empty (captions are added later).",
+  "video_motion_block": "Static model; accent travels through conduits lighting parts in order.",
+  "avoid_block": "Avoid: any text, letters or numbers, logos, bright backdrop, visible horizon, photoreal people.",
+  "materials": "architectural white model: card, foam, paper and plaster whites, crisp bevels",
+  "lighting": "soft side daylight, real occlusion; only the accent emits light",
+  "camera": "long lens, shallow focus, single crane from the source up to the full path",
+  "text_style": {
+    "plate": "small blank white flag labels at each stop",
+    "font": "LuckiestGuy-Regular.ttf",
+    "uppercase": true,
+    "rule": "chữ do text_fx / chữ 3D của engine; prompt ảnh chỉ chừa chỗ trống"
+  },
+  "good_for": "năng lượng/nước/nhiệt chạy qua một hệ thống",
+  "what_it_is_not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "code_engine": "three",
+  "_generated": "vidlib/atlas.py từ config/atlas.json — sửa ở đó rồi chạy python scripts/atlas_import.py",
+  "_base": "clay3d-black"
+}

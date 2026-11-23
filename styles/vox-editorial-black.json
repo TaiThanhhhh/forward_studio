@@ -1,0 +1,199 @@
+{
+  "name": "Vox Editorial Black",
+  "description": "Phong cách báo chí giải thích kiểu Vox phiên bản Dark-Mode: nền than chì tối (#0E1014) có lưới cột và vân giấy mảnh, font Serif báo chí Caladea + Mono chú thích nguồn, bút dạ quang vàng Vox (#F5D547) quẹt ngang từ khóa, chuyển cảnh trượt dứt khoát và phụ đề vox_highlight.",
+  "source": {
+    "repo": "studio — engine html + three (vòng 11)",
+    "url": "engines/html/looks.js · styles/vox-editorial-black.json",
+    "sha": "—",
+    "license": "mã của kênh; font Caladea (Apache-2.0) + RobotoMono (OFL-1.1)",
+    "from": "ngôn ngữ đồ họa báo chí giải thích (editorial data explainer, dark mode)",
+    "how": "look `vox` mới trên nền tối ấm + hiệu ứng bút dạ quang + world 3D matte editorial đồng bộ"
+  },
+  "code_engine": "html",
+  "code_only": true,
+  "captions": "vox_highlight",
+  "tags": [
+    "explainer",
+    "science",
+    "data",
+    "history",
+    "economy",
+    "policy",
+    "climate",
+    "health",
+    "running",
+    "marathon",
+    "research",
+    "study",
+    "news",
+    "journalism",
+    "map",
+    "vox"
+  ],
+  "black_min": 0.48,
+  "palette": {
+    "bg": "#0E1014",
+    "ink": "#F4EFE6",
+    "a": "#E5483B",
+    "b": "#4CA8D8",
+    "c": "#F5D547",
+    "_doc": "nền than chì tối ấm + kem báo chí + đỏ biên tập + xanh dữ liệu + vàng dạ quang Vox"
+  },
+  "pacing": {
+    "fps": "30 fps mượt, dừng sắc (snap)",
+    "easing": "snap — trượt báo chí dứt khoát, không nảy hoạt hình",
+    "bounce": false,
+    "cut_rule": "trượt cột / gạt trang / quẹt dạ quang đúng từ khóa",
+    "rule": "mọi số liệu đều có ngữ cảnh và dải highlight vàng cho điểm mấu chốt"
+  },
+  "marks": {
+    "arrow": "mũi tên biên tập chấm tròn gốc, đầu nhọn sắc",
+    "circle": "vòng khoanh vàng dạ quang nét sạch",
+    "label": "dải bút dạ quang vàng quẹt ngang, chữ đen đậm"
+  },
+  "transitions": [
+    "cut",
+    "dip"
+  ],
+  "sfx_pack": {
+    "pop": "click",
+    "hit": "thunk",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ding"
+  },
+  "music": {
+    "mood": "indie marimba + plucked synth báo chí thông minh, 108 BPM",
+    "bpm": 108
+  },
+  "voice_persona": "nhà báo khoa học thông minh, rõ ràng, lôi cuốn kiểu Vox Explainer",
+  "thumbnail": "biểu đồ/vật thể biên tập sắc nét trên nền than tối, một vệt bút dạ quang vàng Vox làm nổi 2–3 từ serif đậm",
+  "flow": {
+    "medium": "Dark-mode editorial motion graphics and photo collage",
+    "look": "Warm charcoal dark editorial canvas with crisp paper cutout data cards, serif typography space, subtle film grain, and signature Vox highlighter yellow (#F5D547) accents",
+    "motion": "crisp decelerating editorial slides, smooth highlighter sweeps, measured data reveals"
+  },
+  "font": "Caladea-Bold.ttf",
+  "size": 108,
+  "uppercase": false,
+  "fill": "#F4EFE6",
+  "stroke": 6,
+  "stroke_color": "#0E1014",
+  "intro": "write_on",
+  "intro_frames": 8,
+  "boil": {
+    "px": 0,
+    "every": 2
+  },
+  "number_fill": "#F5D547",
+  "sfx_role": {
+    "size_mult": 1.2,
+    "rotate": 0,
+    "fill": "#E5483B"
+  },
+  "html": {
+    "look": "vox",
+    "font": "Caladea-Bold.ttf",
+    "mono": "RobotoMono-Variable.ttf",
+    "palette": {
+      "bg": "#0E1014",
+      "ink": "#F4EFE6",
+      "a": "#E5483B",
+      "b": "#4CA8D8",
+      "c": "#F5D547"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    },
+    "type": {
+      "weight": 700,
+      "upper": false
+    }
+  },
+  "world": {
+    "_doc": "Sân khấu 3D biên tập tối ấm đồng bộ với look Vox: vật liệu matte mềm kiểu diorama báo chí, rim vàng dạ quang.",
+    "bg": "#0E1014",
+    "fog": "#0E1014",
+    "fog_near": 10,
+    "fog_far": 32,
+    "toon_steps": [
+      125,
+      205,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#F4EFE6",
+      "grey": "#6E7582",
+      "water": "#4CA8D8",
+      "accent": "#F5D547",
+      "accent_hi": "#FFF2A6",
+      "accent_glow": "#F5D547",
+      "danger": "#E5483B",
+      "iron": "#252A34",
+      "metal": "#9CA6B8",
+      "glass_line": "#F4EFE6",
+      "ink_text": "#0E1014",
+      "chalk": "#F4EFE6",
+      "board": "#151820",
+      "label": "#F4EFE6",
+      "dial": "#F4EFE6",
+      "bench": "#232833",
+      "bench_seam": "#101319",
+      "bench_leg": "#181C24",
+      "wall": "#141821",
+      "feather": "#F4EFE6",
+      "orange": "#F5D547"
+    },
+    "lights": {
+      "hemi": 1.15,
+      "hemi_sky": "#E9ECF5",
+      "hemi_ground": "#1E222B",
+      "key": 2.35,
+      "key_dir": [
+        -0.55,
+        1.0,
+        0.78
+      ],
+      "rim": 2.0,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.5,
+        0.55,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#0E1014",
+      "px": 1.3,
+      "rim": "#F5D547",
+      "rim_px": 0,
+      "crease": 0.45
+    },
+    "grade": {
+      "sat": 1.04,
+      "vig": 0.2
+    },
+    "look3d": {
+      "kind": "clay",
+      "rough": 0.85
+    }
+  },
+  "cast_palette": {
+    "body": "#F4EFE6",
+    "accent": "#F5D547",
+    "rim": "#F4EFE6"
+  },
+  "not": [
+    "không nền trắng chói toàn màn hình — giữ bản sắc dark-mode của kênh",
+    "không hoạt hình nảy nhí nhảnh — nhịp báo chí dứt khoát, rõ ràng"
+  ],
+  "voice_tags": [
+    "storyteller",
+    "curious",
+    "clear",
+    "journalist"
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "_doc": "Nguồn bên ngoài clone shallow vào vendor/<repo>/ (vòng 7). Thư mục clone KHÔNG đưa vào git của tool (.gitignore); dựng lại bằng: python scripts/vendor_fetch.py. Các thư mục tự kích hoạt agent (.claude, .claude-plugin, .agents, .codex*, .cursor*) bị loại khỏi working tree bằng sparse-checkout.",
+  "fetched": "2026-11-14",
+  "stripped": [
+    ".claude/",
+    ".claude-plugin/",
+    ".agents/",
+    ".codex/",
+    ".codex-plugin/",
+    ".cursor/",
+    ".cursor-plugin/"
+  ],
+  "sources": {
+    "lemo-opuscar": {
+      "url": "https://github.com/lemomo-ai/lemo-opuscar",
+      "sha": "3a7132b996be0241c1ea0ab180d519f06e6f10b6",
+      "commit_date": "2026-11-12T22:29:01+11:00",
+      "license": "MIT (code) + CC-BY-NC-4.0 (mọi *.md, prompt ảnh) + CC-BY-4.0 (phim, poster, still)",
+      "license_used": "MIT cho mã; tài liệu chỉ đọc để hiểu, tự viết lại + ghi công",
+      "stars": 15902,
+      "fetched": "2026-11-14"
+    },
+    "mg-styles-15": {
+      "url": "https://github.com/Vincentwei1021/mg-styles-15",
+      "sha": "269f6ed788cf60aaf9c276b110c548d6e7d353e1",
+      "commit_date": "2026-11-09T23:47:38+08:00",
+      "license": "MIT (font không kèm)",
+      "license_used": "MIT",
+      "stars": 3517,
+      "fetched": "2026-11-14"
+    },
+    "anything2explainer": {
+      "url": "https://github.com/Vincentwei1021/anything2explainer",
+      "sha": "0b85f6c7bfc4ef094ee1afb6c68c06fcf329cfab",
+      "commit_date": "2026-11-09T23:26:15+08:00",
+      "license": "PolyForm Noncommercial 1.0.0 (font: OFL)",
+      "license_used": "KHÔNG dùng mã (cấm thương mại) — chỉ tham khảo",
+      "stars": 3308,
+      "fetched": "2026-11-14"
+    },
+    "huashu-art-motion": {
+      "url": "https://github.com/alchaincyf/huashu-art-motion",
+      "sha": "1468196505a51728686db118d52561aa27a25124",
+      "commit_date": "2026-11-09T15:38:22-10:00",
+      "license": "MIT (ảnh nhân vật Huashu, frame library, clip Clawd KHÔNG thuộc MIT)",
+      "license_used": "MIT cho mã/ngữ pháp; không dùng tài sản nhân vật",
+      "stars": 6890,
+      "fetched": "2026-11-14"
+    },
+    "dashi-animationstyle": {
+      "url": "https://github.com/chuspeeism/dashi-animationstyle",
+      "sha": "aa620f3b859aa5d191b783b2eb0fb59263731c76",
+      "commit_date": "2026-10-13T01:10:22-07:00",
+      "license": "MIT (file giọng mẫu 口播.wav không thuộc license)",
+      "license_used": "MIT",
+      "stars": 195,
+      "fetched": "2026-11-14"
+    },
+    "hyperframes": {
+      "url": "https://github.com/heygen-com/hyperframes",
+      "sha": "ff9c3b7619c6c46c3145b287914cd09b377174f9",
+      "commit_date": "2026-11-14T10:28:28Z",
+      "license": "Apache-2.0",
+      "license_used": "Apache-2.0 — chỉ benchmark, không đưa vào pipeline",
+      "stars": 84143,
+      "fetched": "2026-11-14",
+      "npm_test_install": "hyperframes@0.9.45 (vendor/_hf_run, --ignore-scripts, telemetry tắt) — chỉ để benchmark"
+    },
+    "claude-animation-skills": {
+      "url": "https://github.com/artemnovitckii/claude-animation-skills",
+      "sha": "5dbea55c23aa6a5c93dc3cfb5583840513b56b94",
+      "commit_date": "2026-11-01T15:53:30+13:00",
+      "license": "MIT (font kit: OFL)",
+      "license_used": "MIT — chỉ tham khảo",
+      "stars": 746,
+      "fetched": "2026-11-14"
+    },
+    "awesome-claude-video-skills": {
+      "url": "https://github.com/zhuyansen/awesome-claude-video-skills",
+      "sha": "d51e496fa8c6404af526144faeeaa3b75324f4a9",
+      "commit_date": "2026-11-13T15:50:01Z",
+      "license": "CC0-1.0 (danh sách)",
+      "license_used": "CC0 — chỉ tra cứu",
+      "stars": 2047,
+      "fetched": "2026-11-14"
+    }
+  },
+  "files": {
+    "three-addons": {
+      "_doc": "Addon three.js r160 (tag r160 = commit d04539a7673693dbefdc1efd3eb2ffd1cfd1fb89) — dùng để nạp mô hình glTF/GLB trong engines/three/models.js",
+      "repo": "mrdoob/three.js",
+      "tag": "r160",
+      "sha": "d04539a7673693dbefdc1efd3eb2ffd1cfd1fb89",
+      "license": "MIT (vendor/three/LICENSE)",
+      "fetched": "2026-11-22",
+      "items": [
+        {
+          "path": "vendor/three/addons/loaders/GLTFLoader.js",
+          "url": "https://raw.githubusercontent.com/mrdoob/three.js/d04539a7673693dbefdc1efd3eb2ffd1cfd1fb89/examples/jsm/loaders/GLTFLoader.js",
+          "sha256": "d073b438e6a07e1359741dd5d6c76c953420cc0d4fd84eb1bdde94315540e6a3"
+        },
+        {
+          "path": "vendor/three/addons/utils/SkeletonUtils.js",
+          "url": "https://raw.githubusercontent.com/mrdoob/three.js/d04539a7673693dbefdc1efd3eb2ffd1cfd1fb89/examples/jsm/utils/SkeletonUtils.js",
+          "sha256": "83748c5072a5ce96e9d68d8efda908a1f1a06c0b5fd2618edc3e54a361a8fd5b"
+        },
+        {
+          "path": "vendor/three/addons/utils/BufferGeometryUtils.js",
+          "url": "https://raw.githubusercontent.com/mrdoob/three.js/d04539a7673693dbefdc1efd3eb2ffd1cfd1fb89/examples/jsm/utils/BufferGeometryUtils.js",
+          "sha256": "9be041e96308775d00e2695cc607645b9a9b64fd7c0e759dd8f7c00a8d92becb"
+        }
+      ]
+    }
+  }
+}

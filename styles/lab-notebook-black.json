@@ -1,0 +1,104 @@
+{
+  "name": "Lab Notebook (black)",
+  "description": "Sổ thí nghiệm: giấy ô li tông tối, chữ đánh máy, kẹp giấy, công thức viết tay; thẻ clip kẹp vào trang; đỏ chỉ cho ý nghĩa.",
+  "assembly": "board_spine",
+  "font": "FreeMonoBold.ttf",
+  "size": 90,
+  "fill": "#E6E9EC",
+  "number_fill": "#E6E9EC",
+  "uppercase": true,
+  "stroke": 8,
+  "stroke_color": "#000000",
+  "intro": "write_on",
+  "intro_frames": 10,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "sfx_role": {
+    "size_mult": 1.25,
+    "rotate": -6,
+    "fill": "#D0312D"
+  },
+  "frost_color": "#C9D6E8",
+  "heat_color": "#D0312D",
+  "board": {
+    "surface": "notebook",
+    "bg": "#121518",
+    "bg_noise": 6,
+    "grid": {
+      "step": 40,
+      "color": "#1b2026",
+      "px": 1.2,
+      "major_every": 5,
+      "major_color": "#252c34"
+    },
+    "card": "#cdd1d4",
+    "card_edge": "#8a9096",
+    "card_border": [
+      14,
+      58
+    ],
+    "paper": "#1a1f24",
+    "paper_grid": "#232a31",
+    "paper_grid_step": 24,
+    "ink": "#e6e9ec",
+    "paper_kind": "dark",
+    "dark_card": "#171b1f",
+    "dark_card_edge": "#5d6670",
+    "text_light": "#e6e9ec",
+    "text_dim": "#9aa3ab",
+    "tape": "#0d0f11",
+    "tape_edge": "#56606a",
+    "tape_text": "#e6e9ec",
+    "clip": "#b9c0c6",
+    "pin": "#9aa3ab",
+    "deco": "clip",
+    "hand_role": "hand",
+    "accent": "#d0312d",
+    "shadow": 0.7,
+    "grain": 5.5,
+    "vignette": 0.4,
+    "flicker": 0.015
+  },
+  "tags": [
+    "lab",
+    "measurement",
+    "data",
+    "chemistry",
+    "observation",
+    "record",
+    "test",
+    "sample",
+    "acid",
+    "chemical",
+    "vinegar",
+    "soda",
+    "baking",
+    "mix",
+    "fizz",
+    "bottle",
+    "dissolve"
+  ],
+  "voice_tags": [
+    "teacher",
+    "calm",
+    "informative",
+    "clear"
+  ],
+  "html": {
+    "_doc": "Look của engine html cho shot motion (counter, graph, compare, scale…) trong video style này — bảng màu khớp style.",
+    "look": "sketch",
+    "font": "FreeMonoBold.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#E6E9EC",
+      "a": "#D0312D"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "ink",
+      "accent": "a"
+    }
+  }
+}

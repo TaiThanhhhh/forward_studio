@@ -1,0 +1,45 @@
+{
+  "meta": {
+    "date": "14/11/2026",
+    "board": "projects/steel-ball-1000c-board/work/board/board.json",
+    "frames": 1237,
+    "size": "1080×1920",
+    "style": "board-black",
+    "items": 12,
+    "marks": 7,
+    "inserts": 1,
+    "cpu": "13th Gen Intel(R) Core(TM) i7-13620H",
+    "cores": 16,
+    "platform": "Windows-11-10.0.26300-SP0"
+  },
+  "rows": [
+    {
+      "frames": 1237,
+      "workers": 1,
+      "sec": 171.0,
+      "sec_per_frame": 0.1382,
+      "sec_per_frame_per_worker": 0.1382
+    },
+    {
+      "frames": 1237,
+      "workers": 4,
+      "sec": 69.63,
+      "sec_per_frame": 0.0563,
+      "sec_per_frame_per_worker": 0.2252
+    },
+    {
+      "frames": 1237,
+      "workers": 8,
+      "sec": 58.38,
+      "sec_per_frame": 0.0472,
+      "sec_per_frame_per_worker": 0.3775
+    },
+    {
+      "frames": 1237,
+      "workers": 12,
+      "sec": 55.21,
+      "sec_per_frame": 0.0446,
+      "sec_per_frame_per_worker": 0.5356
+    }
+  ]
+}

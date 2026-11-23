@@ -1,0 +1,243 @@
+{
+  "name": "Paper Pop-Up · dark stage",
+  "description": "Biến thể dark-stage của style #02 \"Paper Pop-Up\" (Thế giới chất liệu) trong 3D Style Atlas: chuyện kể theo bước, mỗi trang mở một bước. Viết lại bằng lời của tool trên sân khấu đen, một accent.",
+  "source": {
+    "repo": "3D Style Atlas (Futurepedia / HubSpot Media)",
+    "url": "https://www.futurepedia.io/resources/3d-style-atlas/view",
+    "sha": "#02",
+    "license": "HubSpot Website Terms of Use (cá nhân, phi thương mại) — chỉ lấy ý tưởng thị giác, chữ + mã viết mới; xem docs/CREDITS.md",
+    "from": "#02 Paper Pop-Up · Material worlds · Story",
+    "how": "dark-stage: nền #000, look 3D `paper` của engine three.js, block Flow ngắn tự viết"
+  },
+  "code_only": false,
+  "black_min": 0.5,
+  "voice_persona": "người kể chuyện ấm, như đọc sách pop-up",
+  "thumbnail": "một vật chủ đạo kiểu stylized 3d pop-up paper book nổi giữa nền đen, accent honey amber trên chi tiết sắp xảy ra chuyện",
+  "font": "Baloo2-Variable.ttf",
+  "size": 118,
+  "uppercase": true,
+  "fill": "#f5ecd9",
+  "stroke": 10,
+  "stroke_color": "#000000",
+  "shadow": {
+    "offset": [
+      8,
+      8
+    ],
+    "color": "#e8a33d"
+  },
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#cbe0aa",
+  "sfx_role": {
+    "size_mult": 1.35,
+    "rotate": -6,
+    "fill": "#E8553E"
+  },
+  "tags": [
+    "story",
+    "fable",
+    "book",
+    "bee",
+    "honey",
+    "steps"
+  ],
+  "voice_tags": [
+    "storyteller",
+    "warm",
+    "friendly"
+  ],
+  "palette": {
+    "bg": "#000000",
+    "ink": "#f5ecd9",
+    "a": "#e8a33d",
+    "b": "#22364e",
+    "c": "#cbe0aa",
+    "_doc": "sân khấu đen + accent honey amber"
+  },
+  "pacing": {
+    "fps": "twos",
+    "easing": "gấp/mở như sách pop-up",
+    "bounce": true,
+    "camera": "long lens down the book gutter (~25°), slow lateral drift, a breath per page turn",
+    "cut_rule": "cắt khi trang mở xong"
+  },
+  "marks": {
+    "arrow": "mũi tên giấy cắt",
+    "circle": "vòng giấy",
+    "label": "nhãn giấy dán"
+  },
+  "transitions": [
+    "cut",
+    "whip"
+  ],
+  "sfx_pack": {
+    "pop": "pop",
+    "hit": "thunk",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ding"
+  },
+  "music": {
+    "mood": "pizzicato strings, paper rustle, light percussion",
+    "bpm": 104
+  },
+  "flow": {
+    "is_3d": true,
+    "medium": "Stylized 3D pop-up paper book",
+    "look": "Die-cut card layers, matt flat inks, cream fibre at cut edges, hinged folds; single warm desk lamp top-left, layer-on-layer shadows, faint cool back rim",
+    "motion": "page turns only; old spread presses flat, next scene rises out of the fold",
+    "motion_block": "Page turns only; old spread presses flat, next scene rises out of the fold.",
+    "plate": "a blank paper ribbon across the bottom of the spread",
+    "accent": "#e8a33d",
+    "accent_name": "honey amber",
+    "camera": "Long lens down the book gutter (~25°), slow lateral drift, a breath per page turn",
+    "avoid_add": [
+      "bright backdrop",
+      "visible horizon",
+      "photoreal people"
+    ]
+  },
+  "world": {
+    "_doc": "Sân khấu đen, look 3D 'paper' (engines/three/main.js → LOOK3D).",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 8,
+    "fog_far": 28,
+    "toon_steps": [
+      125,
+      200,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#f5ecd9",
+      "grey": "#6E7887",
+      "water": "#3E7CB1",
+      "accent": "#e8a33d",
+      "accent_hi": "#F2C14E",
+      "accent_glow": "#e8a33d",
+      "danger": "#e8a33d",
+      "iron": "#323842",
+      "metal": "#9AA6B8",
+      "glass_line": "#D8E8FF",
+      "ink_text": "#0B0E13",
+      "chalk": "#F5EBDD",
+      "board": "#161C24",
+      "label": "#f5ecd9",
+      "dial": "#F5EBDD",
+      "bench": "#2B3440",
+      "bench_seam": "#11161C",
+      "bench_leg": "#1E252E",
+      "wall": "#161D26",
+      "feather": "#F5EBDD",
+      "orange": "#F2C14E"
+    },
+    "lights": {
+      "hemi": 1.05,
+      "hemi_sky": "#DCE4FF",
+      "hemi_ground": "#22262E",
+      "key": 2.3,
+      "key_dir": [
+        -0.55,
+        1.0,
+        0.75
+      ],
+      "rim": 2.4,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.45,
+        0.55,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#F5EBDD",
+      "px": 1.6,
+      "rim": "#e8a33d",
+      "rim_px": 0,
+      "crease": 0.4
+    },
+    "grade": {
+      "sat": 1.06,
+      "vig": 0.16
+    },
+    "look3d": "paper"
+  },
+  "cast_palette": {
+    "body": "#F5EBDD",
+    "shade": "#9AA0AA",
+    "ink": "#0B0E13",
+    "rim": "#F5EBDD",
+    "accent": "#3E7CB1",
+    "strap": "#5A6270"
+  },
+  "html": {
+    "look": "sticker",
+    "font": "Baloo2-Variable.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#f5ecd9",
+      "a": "#e8a33d",
+      "b": "#22364e",
+      "c": "#cbe0aa"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    },
+    "type": {
+      "weight": 400,
+      "upper": true
+    }
+  },
+  "not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "atlas": {
+    "number": 2,
+    "id": "paper-pop-up",
+    "name": "Paper Pop-Up",
+    "tag": "Story",
+    "fit": 3,
+    "duplicate_of": "papercraft3d-black",
+    "why": "Gần papercraft3d-black; bàn gỗ ánh đèn mất khi đổi sang nền đen nhưng trang sách vẫn nhận ra.",
+    "frame_props": [
+      "ball",
+      "ice",
+      "beaker"
+    ]
+  },
+  "category": "material",
+  "category_name": "Material worlds",
+  "tier": 2,
+  "brand_fit": "adapted",
+  "variant": "dark-stage",
+  "image_style_block": "Stylized 3D pop-up paper book on a pure black stage (#000000): die-cut card layers, matt flat inks, cream fibre at cut edges, hinged folds. Single warm desk lamp top-left, layer-on-layer shadows, faint cool back rim. One accent colour (honey amber) only on the key element. Leave a blank paper ribbon across the bottom of the spread empty (captions are added later).",
+  "video_motion_block": "Page turns only; old spread presses flat, next scene rises out of the fold.",
+  "avoid_block": "Avoid: any text, letters or numbers, logos, bright backdrop, visible horizon, photoreal people.",
+  "materials": "die-cut card layers, matt flat inks, cream fibre at cut edges, hinged folds",
+  "lighting": "single warm desk lamp top-left, layer-on-layer shadows, faint cool back rim",
+  "camera": "long lens down the book gutter (~25°), slow lateral drift, a breath per page turn",
+  "text_style": {
+    "plate": "a blank paper ribbon across the bottom of the spread",
+    "font": "Baloo2-Variable.ttf",
+    "uppercase": true,
+    "rule": "chữ do text_fx / chữ 3D của engine; prompt ảnh chỉ chừa chỗ trống"
+  },
+  "good_for": "chuyện kể theo bước, mỗi trang mở một bước",
+  "what_it_is_not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "_generated": "vidlib/atlas.py từ config/atlas.json — sửa ở đó rồi chạy python scripts/atlas_import.py",
+  "_base": "papercraft3d-black"
+}

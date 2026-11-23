@@ -1,0 +1,77 @@
+{
+  "name": "Blueprint",
+  "description": "Chú thích kỹ thuật: chữ mono mảnh, gạch chân, đường dẫn và nút tròn chỉ vào vật, gõ dần từng ký tự.",
+  "font": "RobotoMono-Variable.ttf",
+  "variation": "SemiBold",
+  "size": 88,
+  "uppercase": true,
+  "fill": "#A9C4FF",
+  "stroke": 0,
+  "underline": true,
+  "leader_line": {
+    "color": "#A9C4FF",
+    "width": 4,
+    "node": 9
+  },
+  "intro": "type",
+  "intro_frames": 16,
+  "boil": {
+    "px": 0.4,
+    "every": 2
+  },
+  "number_fill": "#FFFFFF",
+  "sfx_role": {
+    "size_mult": 1.2,
+    "rotate": 0,
+    "fill": "#FF6A5C"
+  },
+  "flow": {
+    "_doc": "Chất liệu trong prompt Flow (thay 'Flat 2D vector' + câu nét/màu của brand). Nền đen, accent, bố cục, AVOID giữ nguyên.",
+    "medium": "Technical blueprint 2D",
+    "look": "Thin pale-blue technical line art with construction lines and dimension ticks, flat dark-grey fills"
+  },
+  "tags": [
+    "engineering",
+    "machine",
+    "build",
+    "design",
+    "structure",
+    "bridge",
+    "invention",
+    "mechanism",
+    "engine",
+    "motor",
+    "robot",
+    "tool"
+  ],
+  "voice_tags": [
+    "calm",
+    "informative",
+    "teacher",
+    "clear"
+  ],
+  "html": {
+    "_doc": "Look của engine html cho shot motion (counter, graph, compare, scale…) trong video style này — bảng màu khớp style.",
+    "look": "hud",
+    "font": "RobotoMono-Variable.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#A9C4FF",
+      "a": "#FF6A5C",
+      "b": "#FFFFFF"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "ink",
+      "accent": "b"
+    },
+    "pen": {
+      "glow": 0
+    },
+    "post": {
+      "scanlines": 0,
+      "grain": 0.04,
+      "vignette": 0.3
+    }
+  }
+}

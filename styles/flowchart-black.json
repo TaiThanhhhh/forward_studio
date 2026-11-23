@@ -1,0 +1,111 @@
+{
+  "name": "Flowchart Black",
+  "description": "Infographic quy trình phẳng bản tối: băng tiêu đề hổ phách chữ gần đen rất đậm, huy hiệu số có mũi nhọn, mũi tên vòng cung đuôi trong suốt, bóng lệch không nhoè, vành đồng hồ thị sai ở nền; đọc từng trạm.",
+  "source": {
+    "repo": "dashi-animationstyle",
+    "url": "https://github.com/chuspeeism/dashi-animationstyle",
+    "sha": "aa620f3b859a",
+    "license": "MIT",
+    "from": "styles/扁平流程图/风格卡.md + 模板.html (MIT)",
+    "how": "port ý tưởng kỹ thuật từ mã MIT, viết lại thành module của engine html (không chạy repo gốc); bỏ toàn bộ xử lý chữ Trung, bố cục lại 9:16"
+  },
+  "code_engine": "html",
+  "code_only": true,
+  "tags": [
+    "process",
+    "steps",
+    "cause",
+    "chain",
+    "recipe",
+    "manufacturing",
+    "time",
+    "cycle",
+    "make",
+    "made",
+    "produce",
+    "become"
+  ],
+  "black_min": 0.55,
+  "palette": {
+    "bg": "#000000",
+    "ink": "#FCF9EC",
+    "a": "#FBBF2F",
+    "b": "#D41928",
+    "_doc": "ĐẢO từ nền kem: đen + kem + hổ phách; đỏ chỉ cho một điểm nhấn"
+  },
+  "pacing": {
+    "fps": "ones",
+    "easing": "ease-out; huy hiệu bật",
+    "bounce": true,
+    "camera": "đi từng trạm một, nền thị sai 0.5",
+    "rule": "một màn hình chỉ một chủ thể + một hộp chú giải",
+    "cut_rule": "cắt khi sang trạm kế"
+  },
+  "marks": {
+    "arrow": "vòng cung gradient: đuôi trong suốt → đầu hổ phách",
+    "circle": "huy hiệu số tròn có mũi nhọn",
+    "label": "hộp hổ phách bo góc + đường dẫn mảnh"
+  },
+  "transitions": [
+    "cut",
+    "whip"
+  ],
+  "sfx_pack": {
+    "pop": "pop",
+    "hit": "thunk",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ding"
+  },
+  "music": {
+    "mood": "ukulele/pluck ấm, đều",
+    "bpm": 106
+  },
+  "voice_persona": "người hướng dẫn kiên nhẫn, từng bước",
+  "thumbnail": "băng hổ phách + 3 huy hiệu số nối mũi tên",
+  "flow": {
+    "medium": "Flat process infographic",
+    "look": "Amber title band with very heavy near-black type, numbered amber badges, arc arrows fading from transparent to amber, flat shapes with offset un-blurred shadows, black ground",
+    "motion": "the view travels station by station, badges pop in, arrows draw toward the next step"
+  },
+  "font": "Montserrat-Variable.ttf",
+  "size": 116,
+  "uppercase": false,
+  "fill": "#FCF9EC",
+  "stroke": 8,
+  "stroke_color": "#000000",
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#FBBF2F",
+  "sfx_role": {
+    "size_mult": 1.3,
+    "rotate": -5,
+    "fill": "#D41928"
+  },
+  "variation": "Black",
+  "html": {
+    "look": "flow",
+    "font": "Montserrat-Variable.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#FCF9EC",
+      "a": "#FBBF2F",
+      "b": "#D41928"
+    }
+  },
+  "not": [
+    "không phải sơ đồ kỹ thuật (blueprint)",
+    "không phải pictogram (có chiều đọc theo trạm, có mũi tên)",
+    "không hợp ý kiến/cảm xúc/chuyện người — chỉ cho thứ có TRƯỚC–SAU"
+  ],
+  "voice_tags": [
+    "teacher",
+    "warm",
+    "friendly",
+    "clear"
+  ]
+}

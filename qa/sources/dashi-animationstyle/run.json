@@ -1,0 +1,28 @@
+{
+ "repo": "dashi-animationstyle",
+ "page": "styles/黑底科技/示例_Token.html",
+ "size": [
+  1920,
+  1080
+ ],
+ "times": [
+  7.6,
+  13.7,
+  20.9
+ ],
+ "frames": [
+  "qa/sources/dashi-animationstyle/t_07.60.jpg",
+  "qa/sources/dashi-animationstyle/t_13.70.jpg",
+  "qa/sources/dashi-animationstyle/t_20.90.jpg"
+ ],
+ "boot_sec": 0.25,
+ "sec_per_frame": [
+  0.42,
+  0.247,
+  0.126
+ ],
+ "blocked_requests": [],
+ "missing_files": [],
+ "page_errors": [],
+ "ok": true
+}

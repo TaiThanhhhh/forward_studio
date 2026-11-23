@@ -1,0 +1,200 @@
+{
+  "name": "Glass 3D Black",
+  "description": "Kính mờ / pha lê 3D trên nền đen: vật thể trong suốt khúc xạ, cạnh sáng fresnel, dải rim màu cyan-hồng, bloom nhẹ. Toàn bộ bằng code (three.js MeshPhysicalMaterial transmission).",
+  "source": {
+    "repo": "studio — engine three.js (look3d)",
+    "url": "https://github.com/mrdoob/three.js",
+    "license": "MIT",
+    "from": "engines/three/main.js → LOOK3D (chất liệu + env map studio + hậu kỳ ACES/bloom/grain)",
+    "how": "preset chất liệu 3D của engine three.js trên sân khấu đen; prompt Flow 3D cùng look cho ngày có Flow"
+  },
+  "code_only": true,
+  "black_min": 0.5,
+  "voice_persona": "giọng trầm, rõ, chậm rãi như phim tài liệu khoa học",
+  "thumbnail": "một vật pha lê khúc xạ ánh sáng cyan-hồng giữa nền đen, cạnh sáng rực",
+  "font": "Montserrat-Variable.ttf",
+  "size": 118,
+  "uppercase": true,
+  "fill": "#EAF6FF",
+  "stroke": 10,
+  "stroke_color": "#000000",
+  "shadow": {
+    "offset": [
+      8,
+      8
+    ],
+    "color": "#7FD8FF"
+  },
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#C9B8FF",
+  "sfx_role": {
+    "size_mult": 1.35,
+    "rotate": -6,
+    "fill": "#FF7AC8"
+  },
+  "tags": [
+    "water",
+    "ice",
+    "glass",
+    "crystal",
+    "light",
+    "prism",
+    "lens",
+    "liquid",
+    "transparent",
+    "drink",
+    "bottle",
+    "diamond",
+    "bubble"
+  ],
+  "voice_tags": [
+    "calm",
+    "warm",
+    "curious"
+  ],
+  "palette": {
+    "ink": "#EAF6FF",
+    "a": "#7FD8FF",
+    "b": "#FF7AC8",
+    "c": "#C9B8FF",
+    "bg": "#000000"
+  },
+  "pacing": {
+    "fps": "full",
+    "easing": "mượt, chậm vào chậm ra",
+    "bounce": false,
+    "camera": "quay chậm quanh vật",
+    "cut_rule": "cắt lúc ánh sáng loé qua cạnh kính"
+  },
+  "marks": {
+    "arrow": "tia sáng mảnh",
+    "circle": "vòng sáng mảnh",
+    "label": "nhãn chữ mảnh sáng"
+  },
+  "transitions": [
+    "cut",
+    "fade"
+  ],
+  "sfx_pack": {
+    "pop": "pop",
+    "hit": "thunk",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ding"
+  },
+  "music": {
+    "mood": "glassy pads, soft bells, airy pulse",
+    "bpm": 96
+  },
+  "flow": {
+    "is_3d": true,
+    "medium": "Stylized 3D glass render",
+    "look": "Frosted and clear glass objects with refraction, bright fresnel edges, cyan and pink rim light strips, soft bloom, floating in pure black space",
+    "motion": "slow elegant rotations, smooth push-ins, liquid easing"
+  },
+  "world": {
+    "_doc": "Sân khấu đen, look 3D 'glass' (engines/three/main.js → LOOK3D).",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 8,
+    "fog_far": 28,
+    "toon_steps": [
+      125,
+      200,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#EAF6FF",
+      "grey": "#6E7887",
+      "water": "#7FD8FF",
+      "accent": "#7FD8FF",
+      "accent_hi": "#C9B8FF",
+      "accent_glow": "#7FD8FF",
+      "danger": "#FF7AC8",
+      "iron": "#323842",
+      "metal": "#9AA6B8",
+      "glass_line": "#D8E8FF",
+      "ink_text": "#0B0E13",
+      "chalk": "#EAF6FF",
+      "board": "#161C24",
+      "label": "#EAF6FF",
+      "dial": "#EAF6FF",
+      "bench": "#2B3440",
+      "bench_seam": "#11161C",
+      "bench_leg": "#1E252E",
+      "wall": "#161D26",
+      "feather": "#EAF6FF",
+      "orange": "#C9B8FF"
+    },
+    "lights": {
+      "hemi": 1.05,
+      "hemi_sky": "#DCE4FF",
+      "hemi_ground": "#22262E",
+      "key": 2.3,
+      "key_dir": [
+        -0.55,
+        1.0,
+        0.75
+      ],
+      "rim": 2.4,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.45,
+        0.55,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#EAF6FF",
+      "px": 1.6,
+      "rim": "#7FD8FF",
+      "rim_px": 0,
+      "crease": 0.4
+    },
+    "grade": {
+      "sat": 1.06,
+      "vig": 0.16
+    },
+    "look3d": "glass"
+  },
+  "cast_palette": {
+    "body": "#EAF6FF",
+    "shade": "#9AA0AA",
+    "ink": "#0B0E13",
+    "rim": "#EAF6FF",
+    "accent": "#7FD8FF",
+    "strap": "#5A6270"
+  },
+  "html": {
+    "look": "flat",
+    "font": "Montserrat-Variable.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#EAF6FF",
+      "a": "#FF7AC8",
+      "b": "#7FD8FF",
+      "c": "#C9B8FF"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    },
+    "type": {
+      "weight": 700,
+      "upper": true
+    }
+  },
+  "not": [
+    "không phải kính thật chụp ảnh",
+    "không nền gradient (nền đen #000000)",
+    "không vật đục mờ không trong suốt"
+  ],
+  "code_engine": "three"
+}

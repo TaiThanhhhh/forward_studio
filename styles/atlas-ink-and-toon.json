@@ -1,0 +1,245 @@
+{
+  "name": "Ink and Toon · dark stage",
+  "description": "Biến thể dark-stage của style #20 \"Ink and Toon\" (Bộ lọc trên 3D) trong 3D Style Atlas: công thức, các bước trên một vật chính. Viết lại bằng lời của tool trên sân khấu đen, một accent.",
+  "code_only": true,
+  "font": "LuckiestGuy-Regular.ttf",
+  "size": 124,
+  "uppercase": true,
+  "fill": "#f7ecd6",
+  "stroke": 10,
+  "stroke_color": "#0B0E13",
+  "shadow": {
+    "offset": [
+      8,
+      8
+    ],
+    "color": "#1c7376"
+  },
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.6,
+    "every": 2
+  },
+  "number_fill": "#12565c",
+  "sfx_role": {
+    "size_mult": 1.35,
+    "rotate": -7,
+    "fill": "#FF6A3D"
+  },
+  "world": {
+    "_doc": "Sân khấu lab tối: khối xám xanh than, nét mực TRẮNG (ngược với forward), rim light accent xanh từ sau, bóng đổ thật, DOF.",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 6,
+    "fog_far": 26,
+    "toon_steps": [
+      110,
+      190,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#f7ecd6",
+      "grey": "#56657A",
+      "water": "#2E6E96",
+      "accent": "#1c7376",
+      "accent_hi": "#A9C0FF",
+      "accent_glow": "#1c7376",
+      "danger": "#FF5A3C",
+      "iron": "#2B2F36",
+      "metal": "#8C99AB",
+      "glass_line": "#CFE3FF",
+      "ink_text": "#0B0E13",
+      "chalk": "#F3F1EA",
+      "board": "#141B22",
+      "label": "#f7ecd6",
+      "dial": "#E8EDF3",
+      "bench": "#2B3440",
+      "bench_seam": "#11161C",
+      "bench_leg": "#1E252E",
+      "wall": "#161D26",
+      "feather": "#F2EFE6",
+      "orange": "#FF9A3D"
+    },
+    "lights": {
+      "hemi": 0.9,
+      "hemi_sky": "#B9C8FF",
+      "hemi_ground": "#20262E",
+      "key": 2.4,
+      "key_dir": [
+        -0.6,
+        1.0,
+        0.7
+      ],
+      "rim": 2.2,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.4,
+        0.5,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#F2F2F2",
+      "px": 2.8,
+      "rim": "#1c7376",
+      "rim_px": 0,
+      "crease": 0.7
+    },
+    "grade": {
+      "sat": 1.05,
+      "vig": 0.18
+    },
+    "look3d": "toon"
+  },
+  "cast_palette": {
+    "body": "#E9EEF4",
+    "shade": "#AAB6C6",
+    "ink": "#0B0E13",
+    "rim": "#F2F2F2",
+    "accent": "#3F6BFF",
+    "strap": "#56657A"
+  },
+  "tags": [
+    "recipe",
+    "coffee",
+    "how-to",
+    "cooking",
+    "kitchen"
+  ],
+  "voice_tags": [
+    "energetic",
+    "playful",
+    "curious"
+  ],
+  "flow": {
+    "is_3d": true,
+    "medium": "3D cel-shaded toon with ink lines",
+    "look": "Textureless: lit tone, shadow tone and one hard glint per glossy surface; hard low side sun placed for shadow shape, no fill, cool shadow tints",
+    "motion": "held poses on twos, smear in-betweens, overshoot and settle, drawn speed lines",
+    "motion_block": "Held poses on twos, smear in-betweens, overshoot and settle, drawn speed lines.",
+    "plate": "a blank hand-drawn caption box",
+    "accent": "#1c7376",
+    "accent_name": "teal",
+    "camera": "Long-lens tabletop framing, drift on holds, whip pans between framings",
+    "avoid_add": [
+      "bright backdrop",
+      "visible horizon",
+      "photoreal people"
+    ]
+  },
+  "html": {
+    "_doc": "Look của engine html cho shot motion (counter, graph, compare, scale…) trong video style này — bảng màu khớp style.",
+    "look": "flat",
+    "font": "LuckiestGuy-Regular.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#f7ecd6",
+      "a": "#1c7376",
+      "b": "#c99766",
+      "c": "#12565c",
+      "hot": "#FF5A3C"
+    },
+    "roles": {
+      "hot": "hot",
+      "cold": "b",
+      "accent": "a"
+    },
+    "type": {
+      "weight": 400,
+      "upper": true
+    }
+  },
+  "transitions": [
+    "cut",
+    "whip"
+  ],
+  "sfx_pack": {
+    "pop": "pop",
+    "hit": "thunk",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ding"
+  },
+  "music": {
+    "mood": "nhịp plucky tactile, marimba + bass ấm kiểu mô hình sống động",
+    "bpm": 112
+  },
+  "voice_persona": "người kể chuyện tò mò, giàu năng lượng, nhấn nhá rõ",
+  "marks": {
+    "arrow": "mũi tên khối 3D nổi hoặc nét trắng dày",
+    "circle": "vòng sáng 3D bao quanh vật thể",
+    "label": "biển 3D trong cảnh hoặc chữ nổi viền đậm"
+  },
+  "pacing": {
+    "fps": "twos",
+    "easing": "stop-motion / claymation bật nảy có squash-and-stretch và overshoot nhẹ",
+    "bounce": true,
+    "camera": "long-lens tabletop framing, drift on holds, whip pans between framings",
+    "cut_rule": "cắt đúng pha va chạm hoặc khoảnh khắc mô hình biến dạng"
+  },
+  "source": {
+    "repo": "3D Style Atlas (Futurepedia / HubSpot Media)",
+    "url": "https://www.futurepedia.io/resources/3d-style-atlas/view",
+    "sha": "#20",
+    "license": "HubSpot Website Terms of Use (cá nhân, phi thương mại) — chỉ lấy ý tưởng thị giác, chữ + mã viết mới; xem docs/CREDITS.md",
+    "from": "#20 Ink and Toon · Filters over 3D · Explainer",
+    "how": "dark-stage: nền #000, look 3D `toon` của engine three.js, block Flow ngắn tự viết"
+  },
+  "atlas": {
+    "number": 20,
+    "id": "ink-and-toon",
+    "name": "Ink and Toon",
+    "tag": "Explainer",
+    "fit": 4,
+    "duplicate_of": "toon3d-lab",
+    "why": "Trùng toon3d-lab (đã là style 3D gốc của kênh) → tier 2; giấy ấm gốc mất khi về nền đen.",
+    "frame_props": [
+      "ball",
+      "ice",
+      "beaker"
+    ]
+  },
+  "category": "filters",
+  "category_name": "Filters over 3D",
+  "tier": 2,
+  "brand_fit": "adapted",
+  "variant": "dark-stage",
+  "image_style_block": "3D cel-shaded toon with ink lines on a pure black stage (#000000): textureless: lit tone, shadow tone and one hard glint per glossy surface. Hard low side sun placed for shadow shape, no fill, cool shadow tints. One accent colour (teal) only on the key element. Leave a blank hand-drawn caption box empty (captions are added later).",
+  "video_motion_block": "Held poses on twos, smear in-betweens, overshoot and settle, drawn speed lines.",
+  "avoid_block": "Avoid: any text, letters or numbers, logos, bright backdrop, visible horizon, photoreal people.",
+  "palette": {
+    "bg": "#000000",
+    "ink": "#f7ecd6",
+    "a": "#1c7376",
+    "b": "#c99766",
+    "c": "#12565c",
+    "_doc": "sân khấu đen + accent teal"
+  },
+  "materials": "textureless: lit tone, shadow tone and one hard glint per glossy surface",
+  "lighting": "hard low side sun placed for shadow shape, no fill, cool shadow tints",
+  "camera": "long-lens tabletop framing, drift on holds, whip pans between framings",
+  "text_style": {
+    "plate": "a blank hand-drawn caption box",
+    "font": "LuckiestGuy-Regular.ttf",
+    "uppercase": true,
+    "rule": "chữ do text_fx / chữ 3D của engine; prompt ảnh chỉ chừa chỗ trống"
+  },
+  "good_for": "công thức, các bước trên một vật chính",
+  "what_it_is_not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "black_min": 0.5,
+  "thumbnail": "một vật chủ đạo kiểu 3d cel-shaded toon with ink lines nổi giữa nền đen, accent teal trên chi tiết sắp xảy ra chuyện",
+  "code_engine": "three",
+  "_generated": "vidlib/atlas.py từ config/atlas.json — sửa ở đó rồi chạy python scripts/atlas_import.py",
+  "_base": "toon3d-lab"
+}

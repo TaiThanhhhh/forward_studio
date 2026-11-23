@@ -1,0 +1,245 @@
+{
+  "name": "Museum Gallery · dark stage",
+  "description": "Biến thể dark-stage của style #24 \"Museum Gallery\" (Không gian và hành trình) trong 3D Style Atlas: dòng thời gian 3–5 mốc. Viết lại bằng lời của tool trên sân khấu đen, một accent.",
+  "source": {
+    "repo": "3D Style Atlas (Futurepedia / HubSpot Media)",
+    "url": "https://www.futurepedia.io/resources/3d-style-atlas/view",
+    "sha": "#24",
+    "license": "HubSpot Website Terms of Use (cá nhân, phi thương mại) — chỉ lấy ý tưởng thị giác, chữ + mã viết mới; xem docs/CREDITS.md",
+    "from": "#24 Museum Gallery · Spaces and journeys · Explainer",
+    "how": "dark-stage: nền #000, look 3D `plastic` của engine three.js, block Flow ngắn tự viết"
+  },
+  "code_only": false,
+  "black_min": 0.5,
+  "voice_persona": "người kể vui nhộn, nhanh, nhấn từ như đang chơi",
+  "thumbnail": "một vật chủ đạo kiểu 3d dark museum gallery nổi giữa nền đen, accent warm spot gold trên chi tiết sắp xảy ra chuyện",
+  "font": "Baloo2-Variable.ttf",
+  "size": 118,
+  "uppercase": true,
+  "fill": "#f6f2e8",
+  "stroke": 10,
+  "stroke_color": "#000000",
+  "shadow": {
+    "offset": [
+      8,
+      8
+    ],
+    "color": "#ffdfb8"
+  },
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#ffd9aa",
+  "sfx_role": {
+    "size_mult": 1.35,
+    "rotate": -6,
+    "fill": "#FF4F6D"
+  },
+  "tags": [
+    "timeline",
+    "museum",
+    "moments",
+    "milestones",
+    "evolution"
+  ],
+  "voice_tags": [
+    "playful",
+    "bright",
+    "energetic"
+  ],
+  "palette": {
+    "bg": "#000000",
+    "ink": "#f6f2e8",
+    "a": "#ffdfb8",
+    "b": "#0f4a4d",
+    "c": "#ffd9aa",
+    "_doc": "sân khấu đen + accent warm spot gold"
+  },
+  "pacing": {
+    "fps": "full",
+    "easing": "bật nảy squash-and-stretch",
+    "bounce": true,
+    "camera": "low never-stopping dolly, focus pulled exhibit to exhibit",
+    "cut_rule": "cắt ở pha bật nảy"
+  },
+  "marks": {
+    "arrow": "mũi tên nhựa 3D bo tròn",
+    "circle": "vòng nhựa sáng",
+    "label": "nhãn dán sticker bo tròn"
+  },
+  "transitions": [
+    "cut",
+    "whip"
+  ],
+  "sfx_pack": {
+    "pop": "pop",
+    "hit": "thunk",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ding"
+  },
+  "music": {
+    "mood": "toy-box plucks, glockenspiel, bouncy bass",
+    "bpm": 118
+  },
+  "flow": {
+    "is_3d": true,
+    "medium": "3D dark museum gallery",
+    "look": "Framed flat prints, gilt-and-black frames, engraved brass plaques, rope barrier; tight warm overhead spot per exhibit and plaque, darkness between pools",
+    "motion": "single unbroken move: wide on the first piece, tracking the middle, pushing in on the last",
+    "motion_block": "Single unbroken move: wide on the first piece, tracking the middle, pushing in on the last.",
+    "plate": "blank brass plaques beside each frame",
+    "accent": "#ffdfb8",
+    "accent_name": "warm spot gold",
+    "camera": "Low never-stopping dolly, focus pulled exhibit to exhibit",
+    "avoid_add": [
+      "bright backdrop",
+      "visible horizon",
+      "photoreal people"
+    ]
+  },
+  "world": {
+    "_doc": "Sân khấu đen, look 3D 'plastic' (engines/three/main.js → LOOK3D).",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 8,
+    "fog_far": 28,
+    "toon_steps": [
+      125,
+      200,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#f6f2e8",
+      "grey": "#6E7887",
+      "water": "#2EC4FF",
+      "accent": "#ffdfb8",
+      "accent_hi": "#FFD23F",
+      "accent_glow": "#ffdfb8",
+      "danger": "#ffd9aa",
+      "iron": "#323842",
+      "metal": "#9AA6B8",
+      "glass_line": "#D8E8FF",
+      "ink_text": "#0B0E13",
+      "chalk": "#F7F4EE",
+      "board": "#161C24",
+      "label": "#f6f2e8",
+      "dial": "#F7F4EE",
+      "bench": "#2B3440",
+      "bench_seam": "#11161C",
+      "bench_leg": "#1E252E",
+      "wall": "#161D26",
+      "feather": "#F7F4EE",
+      "orange": "#FFD23F"
+    },
+    "lights": {
+      "hemi": 1.05,
+      "hemi_sky": "#DCE4FF",
+      "hemi_ground": "#22262E",
+      "key": 2.3,
+      "key_dir": [
+        -0.55,
+        1.0,
+        0.75
+      ],
+      "rim": 2.4,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.45,
+        0.55,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#F7F4EE",
+      "px": 1.6,
+      "rim": "#ffdfb8",
+      "rim_px": 0,
+      "crease": 0.4
+    },
+    "grade": {
+      "sat": 1.06,
+      "vig": 0.16
+    },
+    "look3d": {
+      "kind": "plastic",
+      "rough": 0.45
+    }
+  },
+  "cast_palette": {
+    "body": "#F7F4EE",
+    "shade": "#9AA0AA",
+    "ink": "#0B0E13",
+    "rim": "#F7F4EE",
+    "accent": "#2EC4FF",
+    "strap": "#5A6270"
+  },
+  "html": {
+    "look": "sticker",
+    "font": "Baloo2-Variable.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#f6f2e8",
+      "a": "#ffdfb8",
+      "b": "#0f4a4d",
+      "c": "#ffd9aa"
+    },
+    "roles": {
+      "hot": "c",
+      "cold": "b",
+      "accent": "a"
+    },
+    "type": {
+      "weight": 400,
+      "upper": true
+    }
+  },
+  "not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "atlas": {
+    "number": 24,
+    "id": "museum-gallery",
+    "name": "Museum Gallery",
+    "tag": "Explainer",
+    "fit": 3,
+    "duplicate_of": "",
+    "why": "Phòng tối giữ bản sắc; dòng thời gian ít gặp ở kênh → tier 2.",
+    "frame_props": [
+      "ball",
+      "ice",
+      "beaker"
+    ]
+  },
+  "category": "spaces",
+  "category_name": "Spaces and journeys",
+  "tier": 2,
+  "brand_fit": "ok",
+  "variant": "dark-stage",
+  "image_style_block": "3D dark museum gallery on a pure black stage (#000000): framed flat prints, gilt-and-black frames, engraved brass plaques, rope barrier. Tight warm overhead spot per exhibit and plaque, darkness between pools. One accent colour (warm spot gold) only on the key element. Leave blank brass plaques beside each frame empty (captions are added later).",
+  "video_motion_block": "Single unbroken move: wide on the first piece, tracking the middle, pushing in on the last.",
+  "avoid_block": "Avoid: any text, letters or numbers, logos, bright backdrop, visible horizon, photoreal people.",
+  "materials": "framed flat prints, gilt-and-black frames, engraved brass plaques, rope barrier",
+  "lighting": "tight warm overhead spot per exhibit and plaque, darkness between pools",
+  "camera": "low never-stopping dolly, focus pulled exhibit to exhibit",
+  "text_style": {
+    "plate": "blank brass plaques beside each frame",
+    "font": "Baloo2-Variable.ttf",
+    "uppercase": true,
+    "rule": "chữ do text_fx / chữ 3D của engine; prompt ảnh chỉ chừa chỗ trống"
+  },
+  "good_for": "dòng thời gian 3–5 mốc",
+  "what_it_is_not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "_generated": "vidlib/atlas.py từ config/atlas.json — sửa ở đó rồi chạy python scripts/atlas_import.py",
+  "_base": "plastic-toy3d-black"
+}

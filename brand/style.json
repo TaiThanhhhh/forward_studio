@@ -1,0 +1,49 @@
+{
+  "_doc": "Token màu/nét của brand — nguồn duy nhất. Đo từ assets/brand/avatar.png. Xem brand/style-bible.md.",
+  "colors": {
+    "bg": "#000000",
+    "bg_avatar": "#110F10",
+    "ink": "#FFFFFF",
+    "fill": "#8A8A8A",
+    "accent": "#1849F7",
+    "accent_glow": "#3F6BFF",
+    "danger": "#FF2D2D",
+    "text_stroke": "#000000"
+  },
+  "accent_name": "electric blue",
+  "danger_name": "alarm red",
+  "stroke": {
+    "ratio_of_short_side": 0.039,
+    "frame_px": 12,
+    "cap": "square"
+  },
+  "motif": "a small solid electric-blue dot placed just before the start of a thick white line",
+  "character": "a simple 2D character: round head, big expressive eyes (white circles with black pupils), body and limbs drawn as thick white lines, exaggerated emotion",
+  "fonts": {
+    "black": [
+      "BeVietnamPro-Black.ttf",
+      "Montserrat-Variable.ttf:Black",
+      "InterDisplay-Black.otf"
+    ],
+    "extrabold": [
+      "BeVietnamPro-ExtraBold.ttf",
+      "Montserrat-Variable.ttf:ExtraBold",
+      "InterDisplay-Bold.otf"
+    ],
+    "bold": [
+      "BeVietnamPro-Bold.ttf",
+      "Montserrat-Variable.ttf:Bold",
+      "Inter-Bold.otf"
+    ],
+    "semibold": [
+      "BeVietnamPro-SemiBold.ttf",
+      "Montserrat-Variable.ttf:SemiBold",
+      "Inter-SemiBold.otf"
+    ],
+    "display": [
+      "Anton-Regular.ttf",
+      "Montserrat-Variable.ttf:Black"
+    ],
+    "_doc": "display = chữ KHÁN GIẢ thấy (thumbnail, outro, end screen) — font tiếng Anh đậm; black/extrabold/bold/semibold = chữ giao diện cho người làm (QA, contact sheet) — có dấu tiếng Việt."
+  }
+}

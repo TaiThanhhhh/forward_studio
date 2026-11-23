@@ -1,0 +1,1 @@
+Motion starts on the very first frame and keeps constant energy to the last frame — no slow start, no settling at the end. Snappy cartoon timing: quick anticipation, fast action, slight overshoot, squash-and-stretch, smear frames on fast moves. No floaty slow motion.

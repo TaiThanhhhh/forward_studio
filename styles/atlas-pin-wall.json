@@ -1,0 +1,245 @@
+{
+  "name": "Pin Wall · dark stage",
+  "description": "Biến thể dark-stage của style #21 \"Pin Wall\" (Nội dung phẳng thành vật thật) trong 3D Style Atlas: địa hình, sóng, núi lửa, thứ trồi lên. Viết lại bằng lời của tool trên sân khấu đen, một accent.",
+  "source": {
+    "repo": "3D Style Atlas (Futurepedia / HubSpot Media)",
+    "url": "https://www.futurepedia.io/resources/3d-style-atlas/view",
+    "sha": "#21",
+    "license": "HubSpot Website Terms of Use (cá nhân, phi thương mại) — chỉ lấy ý tưởng thị giác, chữ + mã viết mới; xem docs/CREDITS.md",
+    "from": "#21 Pin Wall · Flat content made physical · Explainer",
+    "how": "dark-stage: nền #000, look 3D `chrome` của engine three.js, block Flow ngắn tự viết"
+  },
+  "code_only": true,
+  "black_min": 0.5,
+  "voice_persona": "giọng trầm, chắc, nhịp mạnh",
+  "thumbnail": "một vật chủ đạo kiểu 3d pin-art relief wall nổi giữa nền đen, accent lava orange trên chi tiết sắp xảy ra chuyện",
+  "font": "Anton-Regular.ttf",
+  "size": 118,
+  "uppercase": true,
+  "fill": "#c3c7cf",
+  "stroke": 10,
+  "stroke_color": "#000000",
+  "shadow": {
+    "offset": [
+      8,
+      8
+    ],
+    "color": "#ff5a12"
+  },
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#ffc890",
+  "sfx_role": {
+    "size_mult": 1.35,
+    "rotate": -6,
+    "fill": "#8FB8FF"
+  },
+  "tags": [
+    "volcano",
+    "lava",
+    "earthquake",
+    "wave",
+    "terrain",
+    "tsunami",
+    "magma"
+  ],
+  "voice_tags": [
+    "deep",
+    "confident",
+    "documentary"
+  ],
+  "palette": {
+    "bg": "#000000",
+    "ink": "#c3c7cf",
+    "a": "#ff5a12",
+    "b": "#46689e",
+    "c": "#ffc890",
+    "_doc": "sân khấu đen + accent lava orange"
+  },
+  "pacing": {
+    "fps": "full",
+    "easing": "nặng, dừng gắt",
+    "bounce": false,
+    "camera": "low raised three-quarter crane rising and orbiting until the relief reads",
+    "cut_rule": "cắt ở va chạm kim loại"
+  },
+  "marks": {
+    "arrow": "mũi tên thép",
+    "circle": "vòng sáng cam",
+    "label": "nhãn khắc chữ"
+  },
+  "transitions": [
+    "cut",
+    "whip"
+  ],
+  "sfx_pack": {
+    "pop": "ting",
+    "hit": "impact",
+    "whoosh": "whoosh",
+    "tick": "click",
+    "ding": "ting"
+  },
+  "music": {
+    "mood": "industrial pulse, metallic hits, low synth",
+    "bpm": 100
+  },
+  "flow": {
+    "is_3d": true,
+    "medium": "3D pin-art relief wall",
+    "look": "Domed steel pins on tinted shafts in a black bolted frame; low raking key far left, long soft shadows, blue fill opposite, warm glow where hot",
+    "motion": "living height field: travelling swells, shapes pushing up, rings, pins lagging slightly",
+    "motion_block": "Living height field: travelling swells, shapes pushing up, rings, pins lagging slightly.",
+    "plate": "a blank small plate at the bottom of the frame",
+    "accent": "#ff5a12",
+    "accent_name": "lava orange",
+    "camera": "Low raised three-quarter crane rising and orbiting until the relief reads",
+    "avoid_add": [
+      "bright backdrop",
+      "visible horizon",
+      "photoreal people"
+    ]
+  },
+  "world": {
+    "_doc": "Sân khấu đen, look 3D 'chrome' (engines/three/main.js → LOOK3D).",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 8,
+    "fog_far": 28,
+    "toon_steps": [
+      125,
+      200,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#c3c7cf",
+      "grey": "#6E7887",
+      "water": "#46689e",
+      "accent": "#ff5a12",
+      "accent_hi": "#FFD27A",
+      "accent_glow": "#ff5a12",
+      "danger": "#ff5a12",
+      "iron": "#323842",
+      "metal": "#9AA6B8",
+      "glass_line": "#D8E8FF",
+      "ink_text": "#0B0E13",
+      "chalk": "#F2F4F8",
+      "board": "#161C24",
+      "label": "#c3c7cf",
+      "dial": "#F2F4F8",
+      "bench": "#2B3440",
+      "bench_seam": "#11161C",
+      "bench_leg": "#1E252E",
+      "wall": "#161D26",
+      "feather": "#F2F4F8",
+      "orange": "#FFD27A"
+    },
+    "lights": {
+      "hemi": 1.05,
+      "hemi_sky": "#DCE4FF",
+      "hemi_ground": "#22262E",
+      "key": 2.3,
+      "key_dir": [
+        -0.55,
+        1.0,
+        0.75
+      ],
+      "rim": 2.4,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.45,
+        0.55,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#F2F4F8",
+      "px": 1.6,
+      "rim": "#ff5a12",
+      "rim_px": 0,
+      "crease": 0.4
+    },
+    "grade": {
+      "sat": 1.06,
+      "vig": 0.16
+    },
+    "look3d": "chrome"
+  },
+  "cast_palette": {
+    "body": "#F2F4F8",
+    "shade": "#9AA0AA",
+    "ink": "#0B0E13",
+    "rim": "#F2F4F8",
+    "accent": "#FF9A3D",
+    "strap": "#5A6270"
+  },
+  "html": {
+    "look": "swiss",
+    "font": "Anton-Regular.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#c3c7cf",
+      "a": "#ff5a12",
+      "b": "#46689e",
+      "c": "#ffc890"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    },
+    "type": {
+      "weight": 400,
+      "upper": true
+    }
+  },
+  "not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "code_engine": "three",
+  "atlas": {
+    "number": 21,
+    "id": "pin-wall",
+    "name": "Pin Wall",
+    "tag": "Explainer",
+    "fit": 4,
+    "duplicate_of": "",
+    "why": "Khung tối + ghim kim loại hợp nền đen; núi lửa/sóng/động đất là chủ đề 'what happens if' quen.",
+    "frame_props": [
+      "ball",
+      "ice",
+      "beaker"
+    ]
+  },
+  "category": "flat-physical",
+  "category_name": "Flat content made physical",
+  "tier": 1,
+  "brand_fit": "ok",
+  "variant": "dark-stage",
+  "image_style_block": "3D pin-art relief wall on a pure black stage (#000000): domed steel pins on tinted shafts in a black bolted frame. Low raking key far left, long soft shadows, blue fill opposite, warm glow where hot. One accent colour (lava orange) only on the key element. Leave a blank small plate at the bottom of the frame empty (captions are added later).",
+  "video_motion_block": "Living height field: travelling swells, shapes pushing up, rings, pins lagging slightly.",
+  "avoid_block": "Avoid: any text, letters or numbers, logos, bright backdrop, visible horizon, photoreal people.",
+  "materials": "domed steel pins on tinted shafts in a black bolted frame",
+  "lighting": "low raking key far left, long soft shadows, blue fill opposite, warm glow where hot",
+  "camera": "low raised three-quarter crane rising and orbiting until the relief reads",
+  "text_style": {
+    "plate": "a blank small plate at the bottom of the frame",
+    "font": "Anton-Regular.ttf",
+    "uppercase": true,
+    "rule": "chữ do text_fx / chữ 3D của engine; prompt ảnh chỉ chừa chỗ trống"
+  },
+  "good_for": "địa hình, sóng, núi lửa, thứ trồi lên",
+  "what_it_is_not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "_generated": "vidlib/atlas.py từ config/atlas.json — sửa ở đó rồi chạy python scripts/atlas_import.py",
+  "_base": "chrome3d-black"
+}

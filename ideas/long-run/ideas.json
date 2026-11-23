@@ -1,0 +1,198 @@
+{
+  "theme": "long run",
+  "ideas": [
+    {
+      "title": "Your Brain Burns Its Own Wiring Mid-Marathon",
+      "hook": "During a marathon, the insulation on parts of your brain's wiring starts to thin out.",
+      "twist": "Two months later it's all back, and scientists still can't say for sure why it happened.",
+      "visual": [
+        "glowing brain whose nerve 'cables' dim as a fuel gauge empties",
+        "runner crossing mile 20 as the brain flickers",
+        "insulation slowly re-growing over a calendar"
+      ],
+      "truth": "Disputed",
+      "truth_note": "Small 2025 Nature Metabolism study (10 runners): myelin dropped and recovered in ~2 months; 'used as fuel' is the authors' hypothesis.",
+      "sources": [
+        "https://www.livescience.com/health/neuroscience/your-brain-starts-eating-itself-during-a-marathon-study-finds",
+        "https://www.news-medical.net/news/20250325/Marathon-running-temporarily-reduces-brain-myelin-levels.aspx"
+      ],
+      "code_shots": "brain icon + fuel gauge emptying, calendar for the 2-month recovery (html beats: callout, gauge counter)",
+      "score": 9,
+      "why": "A scary-sounding but true-ish fact with an honest 'we don't fully know' twist keeps people to the end."
+    },
+    {
+      "title": "The Marathon Danger Hiding in Your Water Bottle",
+      "hook": "At one Boston Marathon, about one in eight finishers had dangerously diluted blood from drinking too much.",
+      "twist": "The runners in trouble weren't dehydrated: many actually finished heavier than they started.",
+      "visual": [
+        "water bottles stacking up beside a runner",
+        "blood cells swelling as salt levels drop",
+        "scale at the finish showing the runner GAINED weight"
+      ],
+      "truth": "True",
+      "truth_note": "Almond et al., NEJM 2005: 13% of 488 sampled 2002 Boston finishers had hyponatremia; weight gain was a key risk factor.",
+      "sources": [
+        "https://asprtracie.hhs.gov/technical-resources/resource/3307/hyponatremia-among-runners-in-the-boston-marathon",
+        "https://www.healthday.com/health-news/exercise-and-fitness/too-much-water-gets-runners-in-trouble-525111.html"
+      ],
+      "code_shots": "counter 13%, balance/scale at the finish, bottle icons (html: counter, compare)",
+      "score": 9,
+      "why": "Flips the 'drink more water' rule everyone believes, with a clean physical payoff on a scale."
+    },
+    {
+      "title": "Why Marathoners Hit a Wall at Mile Twenty",
+      "hook": "Your body stores enough quick fuel for about twenty miles, and a marathon is twenty-six.",
+      "twist": "Slow runners who burn more fat might never hit the wall at all.",
+      "visual": [
+        "battery icon draining mile by mile",
+        "runner slamming into a literal wall at mile 20",
+        "slow runner jogging past the wall untouched"
+      ],
+      "truth": "True",
+      "truth_note": "Rough estimate: ~1,800–2,000 kcal of glycogen at ~100 kcal per mile empties around mile 18–20; varies with pace and body size.",
+      "sources": [
+        "https://www.livescience.com/health/exercise/what-happens-when-you-hit-the-wall",
+        "https://en.wikipedia.org/wiki/Hitting_the_wall"
+      ],
+      "code_shots": "battery/fuel graph vs miles (html: graph, counter), runner icon",
+      "score": 8,
+      "why": "Every runner has heard of 'the wall'; seeing the math makes it click."
+    },
+    {
+      "title": "You Finish a Long Run Shorter",
+      "hook": "You end a long run a few millimeters shorter than you started it.",
+      "twist": "You grow it back overnight, and long-time runners actually have thicker spinal discs.",
+      "visual": [
+        "spine discs squishing like sponges with each stride",
+        "ruler against the runner before and after",
+        "discs refilling while the runner sleeps"
+      ],
+      "truth": "True",
+      "truth_note": "Studies measure a few mm of height loss from disc compression during running; recovered with sleep; runners showed ~20% greater disc height.",
+      "sources": [
+        "https://pubmed.ncbi.nlm.nih.gov/18796880/",
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC7034897"
+      ],
+      "code_shots": "ruler + bone/disc callout, bed for overnight recovery",
+      "score": 8,
+      "why": "Weird, personal, measurable — viewers immediately want to check their own height."
+    },
+    {
+      "title": "Every Step Crushes Your Red Blood Cells",
+      "hook": "Every footstrike of a long run destroys a few of your red blood cells.",
+      "twist": "Cycling for the same hour destroys only about a quarter as many.",
+      "visual": [
+        "foot slamming down on a capillary full of blood cells",
+        "cells popping with each step counter",
+        "same athlete on a bike, far fewer pops"
+      ],
+      "truth": "True",
+      "truth_note": "Telford et al. 2003: plasma free hemoglobin rose ~4x more after running than cycling at the same effort; small studies.",
+      "sources": [
+        "https://pubmed.ncbi.nlm.nih.gov/12391035/",
+        "https://journals.ku.edu/kjm/article/download/22673/20572/74984"
+      ],
+      "code_shots": "bloodcell + footprint icons, compare beat running vs cycling",
+      "score": 8,
+      "why": "A hidden mechanical effect with a clear A-vs-B comparison twist."
+    },
+    {
+      "title": "Same Pace, Faster Heart: Cardiac Drift",
+      "hook": "Run at exactly the same pace for two hours, and your heart beats faster anyway.",
+      "twist": "Part of the fix isn't more training: it's staying cool and drinking enough.",
+      "visual": [
+        "flat pace line next to a rising heart-rate line",
+        "blood volume shrinking as sweat drips",
+        "heart pumping harder to keep up"
+      ],
+      "truth": "True",
+      "truth_note": "Cardiovascular drift: heart rate rises during steady exercise from fluid loss and heat; reports of up to ~15%.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Cardiovascular_drift",
+        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7043260/"
+      ],
+      "code_shots": "graph with two lines (pace flat, HR rising), ecg + heart icons",
+      "score": 7,
+      "why": "Explains a number every watch-wearing runner has seen and wondered about."
+    },
+    {
+      "title": "How Much Water a Marathoner Sweats",
+      "hook": "A marathoner can sweat out more than a liter of water every single hour.",
+      "twist": "Elite winners often cross the line lighter by almost a tenth of their body weight, and still win.",
+      "visual": [
+        "bucket filling under a running figure",
+        "liters counter climbing hour by hour",
+        "scale dropping at the finish"
+      ],
+      "truth": "True",
+      "truth_note": "Typical endurance-runner sweat rates ~1–1.5 L/h, range under 0.5 to over 2.5 L/h; one summary reports elite winners ~8.8% lighter at the finish.",
+      "sources": [
+        "https://runnersconnect.net/sweat-rate/",
+        "https://sciencedaily.com/releases/2007/04/070421202623.htm"
+      ],
+      "code_shots": "counter liters, bottle/beaker filling, scale",
+      "score": 7,
+      "why": "Huge relatable quantities visualised as buckets of water."
+    },
+    {
+      "title": "The Runner's High Isn't Endorphins",
+      "hook": "The famous runner's high probably isn't caused by endorphins.",
+      "twist": "Runners given a drug that blocks endorphins still got high, and their cannabis-like chemicals rose instead.",
+      "visual": [
+        "endorphin molecules blocked by a lock",
+        "runner still smiling past the block",
+        "a different molecule lighting up the brain"
+      ],
+      "truth": "Disputed",
+      "truth_note": "2021 study (63 runners, naloxone) found the high persisted; endocannabinoids rose; their full role is still debated.",
+      "sources": [
+        "https://runningmagazine.ca/?p=79208",
+        "https://www.discovermagazine.com/mind/getting-high-on-your-own-supply"
+      ],
+      "code_shots": "lock + brain + molecule icons (html: process)",
+      "score": 8,
+      "why": "Debunks a 'fact' everyone repeats, with a clever experiment as proof."
+    },
+    {
+      "title": "The First Marathon Story Is Probably Wrong",
+      "hook": "The original marathon runner probably never ran from Marathon to Athens.",
+      "twist": "The oldest account says he ran about two hundred forty kilometers to Sparta, and people still race that route today.",
+      "visual": [
+        "map line Marathon to Athens fading out",
+        "a much longer line to Sparta drawing in",
+        "modern runners on the same ancient route"
+      ],
+      "truth": "Disputed",
+      "truth_note": "Herodotus describes an Athens–Sparta run (~240 km); the Marathon–Athens run appears centuries later and is generally treated as legend.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Pheidippides",
+        "https://www.nationalgeographic.com/history/article/marathon-ancient-history-modern-origins"
+      ],
+      "code_shots": "evidence-board/silent-film style; compare 42 km vs 240 km",
+      "score": 7,
+      "why": "A myth-busting history twist inside a running topic."
+    },
+    {
+      "title": "Marathons Make Your Blood Look Like a Heart Attack",
+      "hook": "After a marathon, most runners' blood shows a marker doctors use to spot heart damage.",
+      "twist": "Within a day it's back to normal, and in healthy runners it seems to be the heart simply working hard.",
+      "visual": [
+        "blood test tube glowing red at the finish",
+        "ECG staying calm next to the alarming number",
+        "number dropping back overnight"
+      ],
+      "truth": "True",
+      "truth_note": "Transient cardiac troponin rises after marathons are well documented (e.g., 78% detectable at London; back to baseline within 24 h in a Belgian study).",
+      "sources": [
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC1769089",
+        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7151175/"
+      ],
+      "code_shots": "testtube + ecg + heart icons, counter for the marker, calendar/clock for 24 h",
+      "score": 8,
+      "why": "Alarming setup, reassuring and surprising payoff — strong retention arc."
+    }
+  ],
+  "picked": [
+    2
+  ]
+}

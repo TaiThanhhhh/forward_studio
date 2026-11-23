@@ -1,0 +1,195 @@
+{
+  "name": "Sprite 8-bit Black",
+  "description": "Sprite 8-bit kiểu máy console đời đầu: lưới 1/10, bảng 16 màu, mỗi vật ≤ 4 màu kể cả đen, viền đen 1 khối, hoạt hoạ bậc on 2s, rung màn theo lưới khi va chạm; chữ Press Start 2P đúng lưới pixel.",
+  "source": {
+    "repo": "studio — engine html (looks.js + post2d.js, vòng 10)",
+    "url": "engines/html/looks.js · engines/html/post2d.js (mã trong repo)",
+    "sha": "—",
+    "license": "mã của kênh; font OFL/Apache ghi ở docs/round10/H1.md",
+    "from": "bài tham khảo '10 Claude animation styles' (chỉ tên phong cách); kỹ thuật in tram/Bayer/rối bóng viết mới",
+    "how": "look html mới (bút + hậu kỳ WebGL một pass) trên sân khấu đen; không chép mã/tài sản bên ngoài"
+  },
+  "code_engine": "html",
+  "code_only": true,
+  "tags": [
+    "8-bit",
+    "arcade",
+    "chiptune",
+    "coin",
+    "score",
+    "high-score",
+    "lives",
+    "platformer",
+    "glitch",
+    "cheat",
+    "1980s",
+    "sprite",
+    "pixel-art",
+    "retro",
+    "insert",
+    "joystick"
+  ],
+  "black_min": 0.6,
+  "palette": {
+    "bg": "#000000",
+    "ink": "#FCFCFC",
+    "a": "#E83A3A",
+    "b": "#3CBCFC",
+    "c": "#F8B800",
+    "_doc": "bảng kiểu console 8-bit: trắng + đỏ + xanh trời + vàng cam, mỗi màu 3 nấc"
+  },
+  "pacing": {
+    "fps": "on 2s (giữ khung), hoạt hoạ bậc 4 frame",
+    "easing": "steps — nhảy bậc",
+    "bounce": false,
+    "cut_rule": "cắt cứng như đổi màn",
+    "rule": "≤ 4 màu mỗi vật"
+  },
+  "marks": {
+    "arrow": "mũi tên khối",
+    "circle": "4 góc con trỏ menu",
+    "label": "hộp thoại viền đôi"
+  },
+  "transitions": [
+    "cut",
+    "glitch"
+  ],
+  "sfx_pack": {
+    "pop": "pop",
+    "hit": "crash",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ting"
+  },
+  "music": {
+    "mood": "chiptune 8-bit 3 kênh, nhịp nhanh, 140 BPM",
+    "bpm": 140
+  },
+  "voice_persona": "người dẫn arcade hào hứng, câu ngắn như dòng chữ trên màn game",
+  "thumbnail": "một sprite 8-bit 4 màu cực to trên nền sao đen + chữ PRESS START-style 2 từ",
+  "flow": {
+    "medium": "8-bit sprite art",
+    "look": "Very low-resolution 8-bit console sprites, at most four colours per sprite including black, 1-pixel black outlines, on a pure black background with blocky stars",
+    "motion": "stepped animation on twos, screen shake snapped to the pixel grid"
+  },
+  "font": "PressStart2P-Regular.ttf",
+  "size": 96,
+  "uppercase": true,
+  "fill": "#FCFCFC",
+  "stroke": 8,
+  "stroke_color": "#000000",
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#F8B800",
+  "sfx_role": {
+    "size_mult": 1.3,
+    "rotate": -5,
+    "fill": "#E83A3A"
+  },
+  "html": {
+    "look": "sprite8",
+    "font": "PressStart2P-Regular.ttf",
+    "mono": "PressStart2P-Regular.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#FCFCFC",
+      "a": "#E83A3A",
+      "b": "#3CBCFC",
+      "c": "#F8B800"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    },
+    "type": {
+      "weight": 400
+    }
+  },
+  "world": {
+    "_doc": "Sân khấu đen tối thiểu cho shot 3D trong style này (màu suy từ palette 2D để không lệch tông). Hậu kỳ 3D theo look 2D (pixel/halftone/silhouette…) do WP-X thêm vào look3d.post.",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 10,
+    "fog_far": 34,
+    "toon_steps": [
+      120,
+      200,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#FCFCFC",
+      "grey": "#6E7480",
+      "water": "#3CBCFC",
+      "accent": "#F8B800",
+      "accent_hi": "#FCFCFC",
+      "accent_glow": "#F8B800",
+      "danger": "#E83A3A",
+      "iron": "#30343C",
+      "metal": "#A0A8B4",
+      "glass_line": "#FCFCFC",
+      "ink_text": "#0B0C10",
+      "chalk": "#FCFCFC",
+      "board": "#14161A",
+      "label": "#FCFCFC",
+      "dial": "#FCFCFC",
+      "bench": "#262A31",
+      "bench_seam": "#0E1013",
+      "bench_leg": "#1B1E23",
+      "wall": "#14171C",
+      "feather": "#FCFCFC",
+      "orange": "#F8B800"
+    },
+    "lights": {
+      "hemi": 1.1,
+      "hemi_sky": "#E8ECFF",
+      "hemi_ground": "#22252B",
+      "key": 2.4,
+      "key_dir": [
+        -0.55,
+        1.0,
+        0.75
+      ],
+      "rim": 2.0,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.45,
+        0.55,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#000000",
+      "px": 4.0,
+      "rim": "#FCFCFC",
+      "rim_px": 3,
+      "crease": 0.6
+    },
+    "grade": {
+      "sat": 1.05,
+      "vig": 0.18
+    },
+    "look3d": "lowpoly"
+  },
+  "cast_palette": {
+    "body": "#FCFCFC",
+    "accent": "#F8B800",
+    "rim": "#FCFCFC"
+  },
+  "not": [
+    "không nhân vật/logo game có bản quyền — sprite tự dựng",
+    "không phải 16-bit (không dither, ≤ 4 màu/vật, lưới thô hơn)",
+    "không chuyển động mượt — mọi thứ nhảy bậc"
+  ],
+  "voice_tags": [
+    "energetic",
+    "playful",
+    "hype",
+    "character"
+  ]
+}

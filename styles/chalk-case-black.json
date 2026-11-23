@@ -1,0 +1,87 @@
+{
+  "name": "Chalk Case (black)",
+  "description": "Biến thể 'Chalk Case Board' nhìn từ trên xuống: nền gần đen có vệt phấn lau dở, thẻ dán băng dính trắng, ghi chú viết phấn; đỏ chỉ cho ý nghĩa.",
+  "assembly": "board_spine",
+  "font": "PatrickHand-Regular.ttf",
+  "size": 120,
+  "fill": "#F1F0EA",
+  "number_fill": "#F1F0EA",
+  "texture": "chalk",
+  "uppercase": true,
+  "stroke": 8,
+  "stroke_color": "#000000",
+  "intro": "write_on",
+  "intro_frames": 10,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "sfx_role": {
+    "size_mult": 1.25,
+    "rotate": -6,
+    "fill": "#D0312D"
+  },
+  "frost_color": "#C9D6E8",
+  "heat_color": "#D0312D",
+  "board": {
+    "surface": "chalk",
+    "bg": "#0c0d0d",
+    "bg_noise": 7,
+    "grid": null,
+    "card": "#e6e5df",
+    "card_edge": "#a9a8a2",
+    "card_border": [
+      14,
+      56
+    ],
+    "tape_piece": "#f1f0ea",
+    "paper": "#1a1b1b",
+    "ink": "#f1f0ea",
+    "paper_kind": "dark",
+    "dark_card": "#131414",
+    "dark_card_edge": "#cfcec8",
+    "text_light": "#f1f0ea",
+    "text_dim": "#b4b3ad",
+    "tape": "#f1f0ea",
+    "tape_edge": "#bdbcb6",
+    "tape_text": "#111111",
+    "pin": "#c9c8c2",
+    "deco": "tape",
+    "accent": "#d0312d",
+    "shadow": 0.6,
+    "grain": 7.5,
+    "vignette": 0.5,
+    "flicker": 0.025
+  },
+  "tags": [
+    "math",
+    "puzzle",
+    "proof",
+    "paradox",
+    "riddle",
+    "logic",
+    "infinity",
+    "probability"
+  ],
+  "voice_tags": [
+    "storyteller",
+    "mature",
+    "wise",
+    "curious"
+  ],
+  "html": {
+    "_doc": "Look của engine html cho shot motion (counter, graph, compare, scale…) trong video style này — bảng màu khớp style.",
+    "look": "boil",
+    "font": "PatrickHand-Regular.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#F1F0EA",
+      "a": "#D0312D"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "ink",
+      "accent": "a"
+    }
+  }
+}

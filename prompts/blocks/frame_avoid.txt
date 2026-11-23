@@ -1,0 +1,1 @@
+Avoid: any text, letters, numbers, watermark, logo, photorealism, 3D render, gradient or textured background, extra characters, clutter.

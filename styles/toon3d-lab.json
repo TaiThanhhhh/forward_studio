@@ -1,0 +1,147 @@
+{
+  "name": "Toon 3D Lab",
+  "description": "Toàn bộ bằng code (không cần Flow): phòng thí nghiệm dựng từ primitive + texture vẽ tay trên nền đen, nhân vật card 2D, nét mực trắng, rim light accent, DOF, camera lướt. Chữ: Luckiest Guy, viền đậm, bóng xanh.",
+  "code_only": true,
+  "font": "LuckiestGuy-Regular.ttf",
+  "size": 124,
+  "uppercase": true,
+  "fill": "#FFFFFF",
+  "stroke": 10,
+  "stroke_color": "#0B0E13",
+  "shadow": {
+    "offset": [
+      8,
+      8
+    ],
+    "color": "#3F6BFF"
+  },
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.6,
+    "every": 2
+  },
+  "number_fill": "#FFD27A",
+  "sfx_role": {
+    "size_mult": 1.35,
+    "rotate": -7,
+    "fill": "#FF6A3D"
+  },
+  "world": {
+    "_doc": "Sân khấu lab tối: khối xám xanh than, nét mực TRẮNG (ngược với forward), rim light accent xanh từ sau, bóng đổ thật, DOF.",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 6,
+    "fog_far": 26,
+    "toon_steps": [
+      110,
+      190,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#D6DEE8",
+      "grey": "#56657A",
+      "water": "#2E6E96",
+      "accent": "#3F6BFF",
+      "accent_hi": "#A9C0FF",
+      "accent_glow": "#3F6BFF",
+      "danger": "#FF5A3C",
+      "iron": "#2B2F36",
+      "metal": "#8C99AB",
+      "glass_line": "#CFE3FF",
+      "ink_text": "#0B0E13",
+      "chalk": "#F3F1EA",
+      "board": "#141B22",
+      "label": "#F3F1EA",
+      "dial": "#E8EDF3",
+      "bench": "#2B3440",
+      "bench_seam": "#11161C",
+      "bench_leg": "#1E252E",
+      "wall": "#161D26",
+      "feather": "#F2EFE6",
+      "orange": "#FF9A3D"
+    },
+    "lights": {
+      "hemi": 0.9,
+      "hemi_sky": "#B9C8FF",
+      "hemi_ground": "#20262E",
+      "key": 2.4,
+      "key_dir": [
+        -0.6,
+        1.0,
+        0.7
+      ],
+      "rim": 2.2,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.4,
+        0.5,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#F2F2F2",
+      "px": 2.8,
+      "rim": "#000000",
+      "rim_px": 0,
+      "crease": 0.7
+    },
+    "grade": {
+      "sat": 1.05,
+      "vig": 0.18
+    }
+  },
+  "cast_palette": {
+    "body": "#E9EEF4",
+    "shade": "#AAB6C6",
+    "ink": "#0B0E13",
+    "rim": "#F2F2F2",
+    "accent": "#3F6BFF",
+    "strap": "#56657A"
+  },
+  "tags": [
+    "lab",
+    "vacuum",
+    "gravity",
+    "measurement",
+    "experiment",
+    "feather",
+    "bowling",
+    "chamber",
+    "pressure",
+    "balance"
+  ],
+  "voice_tags": [
+    "energetic",
+    "playful",
+    "curious"
+  ],
+  "flow": {
+    "is_3d": true,
+    "medium": "Stylized 3D cel-shaded toon render",
+    "look": "Three-step cel-shaded 3D geometry with crisp white ink outlines, electric blue rim lighting, and soft cast shadows on a dark lab stage",
+    "motion": "snappy 3D keyframe motion with camera orbit, subtle push-in, and impact shake"
+  },
+  "html": {
+    "_doc": "Look của engine html cho shot motion (counter, graph, compare, scale…) trong video style này — bảng màu khớp style.",
+    "look": "flat",
+    "font": "LuckiestGuy-Regular.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#FFFFFF",
+      "a": "#FF6A3D",
+      "b": "#3F6BFF",
+      "c": "#FFD27A"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    },
+    "type": {
+      "weight": 400,
+      "upper": true
+    }
+  }
+}

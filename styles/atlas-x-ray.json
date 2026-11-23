@@ -1,0 +1,244 @@
+{
+  "name": "X-Ray · dark stage",
+  "description": "Biến thể dark-stage của style #10 \"X-Ray\" (Bộ lọc trên 3D) trong 3D Style Atlas: giải phẫu, bên trong máy móc, dòng nhiệt/khí xuyên qua. Viết lại bằng lời của tool trên sân khấu đen, một accent.",
+  "source": {
+    "repo": "3D Style Atlas (Futurepedia / HubSpot Media)",
+    "url": "https://www.futurepedia.io/resources/3d-style-atlas/view",
+    "sha": "#10",
+    "license": "HubSpot Website Terms of Use (cá nhân, phi thương mại) — chỉ lấy ý tưởng thị giác, chữ + mã viết mới; xem docs/CREDITS.md",
+    "from": "#10 X-Ray · Filters over 3D · Explainer",
+    "how": "dark-stage: nền #000, look 3D `xray` của engine three.js, block Flow ngắn tự viết"
+  },
+  "code_only": true,
+  "black_min": 0.5,
+  "voice_persona": "giọng bác sĩ điềm tĩnh, rõ ràng",
+  "thumbnail": "một vật chủ đạo kiểu 3d radiograph view nổi giữa nền đen, accent warm orange trên chi tiết sắp xảy ra chuyện",
+  "font": "Montserrat-Variable.ttf",
+  "size": 118,
+  "uppercase": true,
+  "fill": "#b0d0ec",
+  "stroke": 10,
+  "stroke_color": "#000000",
+  "shadow": {
+    "offset": [
+      8,
+      8
+    ],
+    "color": "#ff9a22"
+  },
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#ffffff",
+  "sfx_role": {
+    "size_mult": 1.35,
+    "rotate": -6,
+    "fill": "#FF4D5E"
+  },
+  "tags": [
+    "bone",
+    "anatomy",
+    "skeleton",
+    "scan",
+    "organ",
+    "inside-body"
+  ],
+  "voice_tags": [
+    "calm",
+    "documentary",
+    "curious"
+  ],
+  "palette": {
+    "bg": "#000000",
+    "ink": "#b0d0ec",
+    "a": "#ff9a22",
+    "b": "#c4c8ce",
+    "c": "#ffffff",
+    "_doc": "sân khấu đen + accent warm orange"
+  },
+  "pacing": {
+    "fps": "full",
+    "easing": "mượt, nhịp tim",
+    "bounce": false,
+    "camera": "long lens, low three-quarter rising to plan view, then a steady push",
+    "cut_rule": "cắt theo nhịp tim"
+  },
+  "marks": {
+    "arrow": "mũi tên sáng mảnh",
+    "circle": "vòng quét đỏ",
+    "label": "nhãn y khoa mảnh"
+  },
+  "transitions": [
+    "cut",
+    "fade"
+  ],
+  "sfx_pack": {
+    "pop": "pop",
+    "hit": "heartbeat",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ding"
+  },
+  "music": {
+    "mood": "heartbeat pulse, soft drones, clinical blips",
+    "bpm": 88
+  },
+  "flow": {
+    "is_3d": true,
+    "medium": "3D radiograph view",
+    "look": "Steel and black plastic becoming glowing film where thickness accumulates; soft overhead key pre-scan; afterwards emitted light only from film, accent and grid",
+    "motion": "scan plane sweep, glowing cross-section, interior parts lighting in sequence",
+    "motion_block": "Scan plane sweep, glowing cross-section, interior parts lighting in sequence.",
+    "plate": "a blank scanner label strip along the bottom edge",
+    "accent": "#ff9a22",
+    "accent_name": "warm orange",
+    "camera": "Long lens, low three-quarter rising to plan view, then a steady push",
+    "avoid_add": [
+      "bright backdrop",
+      "visible horizon",
+      "photoreal people"
+    ]
+  },
+  "world": {
+    "_doc": "Sân khấu đen, look 3D 'xray' (engines/three/main.js → LOOK3D).",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 8,
+    "fog_far": 28,
+    "toon_steps": [
+      125,
+      200,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#b0d0ec",
+      "grey": "#6E7887",
+      "water": "#49C6FF",
+      "accent": "#ff9a22",
+      "accent_hi": "#FFE08A",
+      "accent_glow": "#ff9a22",
+      "danger": "#ff9a22",
+      "iron": "#323842",
+      "metal": "#9AA6B8",
+      "glass_line": "#D8E8FF",
+      "ink_text": "#0B0E13",
+      "chalk": "#E6F7FF",
+      "board": "#161C24",
+      "label": "#b0d0ec",
+      "dial": "#E6F7FF",
+      "bench": "#2B3440",
+      "bench_seam": "#11161C",
+      "bench_leg": "#1E252E",
+      "wall": "#161D26",
+      "feather": "#E6F7FF",
+      "orange": "#FFE08A"
+    },
+    "lights": {
+      "hemi": 1.05,
+      "hemi_sky": "#DCE4FF",
+      "hemi_ground": "#22262E",
+      "key": 2.3,
+      "key_dir": [
+        -0.55,
+        1.0,
+        0.75
+      ],
+      "rim": 2.4,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.45,
+        0.55,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#E6F7FF",
+      "px": 1.6,
+      "rim": "#ff9a22",
+      "rim_px": 0,
+      "crease": 0.4
+    },
+    "grade": {
+      "sat": 1.06,
+      "vig": 0.16
+    },
+    "look3d": "xray"
+  },
+  "cast_palette": {
+    "body": "#E6F7FF",
+    "shade": "#9AA0AA",
+    "ink": "#0B0E13",
+    "rim": "#E6F7FF",
+    "accent": "#49C6FF",
+    "strap": "#5A6270"
+  },
+  "html": {
+    "look": "flat",
+    "font": "Montserrat-Variable.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#b0d0ec",
+      "a": "#ff9a22",
+      "b": "#c4c8ce",
+      "c": "#ffffff"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    },
+    "type": {
+      "weight": 700,
+      "upper": true
+    }
+  },
+  "not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "code_engine": "three",
+  "atlas": {
+    "number": 10,
+    "id": "x-ray",
+    "name": "X-Ray",
+    "tag": "Explainer",
+    "fit": 5,
+    "duplicate_of": "xray3d-black",
+    "why": "Vốn nền tối, accent ấm duy nhất = luật một màu của kênh. Gộp thông số vào xray3d-black (bản tier 1 thêm accent ấm).",
+    "frame_props": [
+      "ball",
+      "ice",
+      "beaker"
+    ]
+  },
+  "category": "filters",
+  "category_name": "Filters over 3D",
+  "tier": 1,
+  "brand_fit": "ok",
+  "variant": "dark-stage",
+  "image_style_block": "3D radiograph view on a pure black stage (#000000): steel and black plastic becoming glowing film where thickness accumulates. Soft overhead key pre-scan; afterwards emitted light only from film, accent and grid. One accent colour (warm orange) only on the key element. Leave a blank scanner label strip along the bottom edge empty (captions are added later).",
+  "video_motion_block": "Scan plane sweep, glowing cross-section, interior parts lighting in sequence.",
+  "avoid_block": "Avoid: any text, letters or numbers, logos, bright backdrop, visible horizon, photoreal people.",
+  "materials": "steel and black plastic becoming glowing film where thickness accumulates",
+  "lighting": "soft overhead key pre-scan; afterwards emitted light only from film, accent and grid",
+  "camera": "long lens, low three-quarter rising to plan view, then a steady push",
+  "text_style": {
+    "plate": "a blank scanner label strip along the bottom edge",
+    "font": "Montserrat-Variable.ttf",
+    "uppercase": true,
+    "rule": "chữ do text_fx / chữ 3D của engine; prompt ảnh chỉ chừa chỗ trống"
+  },
+  "good_for": "giải phẫu, bên trong máy móc, dòng nhiệt/khí xuyên qua",
+  "what_it_is_not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "_generated": "vidlib/atlas.py từ config/atlas.json — sửa ở đó rồi chạy python scripts/atlas_import.py",
+  "_base": "xray3d-black"
+}

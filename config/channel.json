@@ -1,0 +1,379 @@
+{
+  "_doc": "Cấu hình kênh. Mọi hằng số nhịp/âm thanh/safe-zone/outro/thumbnail nằm ở đây. Model Flow: xem config/flow-models.json.",
+  "name": "forward.",
+  "_doc_language": "Ngôn ngữ: language = khán giả thấy/nghe (VO, text_fx, outro, thumbnail, tiêu đề, .srt); locale = định dạng số; ui_language = giao diện cho người làm. Đổi ngôn ngữ kênh: sửa 2 dòng này.",
+  "language": "en",
+  "locale": "en-US",
+  "ui_language": "vi",
+  "format_label": "\"what happens if…\" science experiment shorts — minimal 2D animation on a pure black background",
+  "universe": "ABCD",
+  "universes": {
+    "A": [
+      "RUNNING & HUMAN PERFORMANCE",
+      "Chạy bộ, 5K–42K, sức bền, pace, cadence, nhịp tim, VO2max, mệt mỏi, hệ năng lượng hiếu khí/kỵ khí, hồi phục, giấc ngủ, nước, dinh dưỡng khi chạy, chiến thuật thi đấu, nóng, phòng chấn thương."
+    ],
+    "B": [
+      "STRENGTH & FITNESS",
+      "Tập tạ, phì đại cơ, progressive overload, set/rep, volume, gần thất bại, cơ chế bài tập, mông, bắp chân, đùi sau, core, mobility, hồi phục, tập kết hợp."
+    ],
+    "C": [
+      "AI VISUAL & MOTION DESIGN",
+      "Google Flow, tạo video AI, image-to-video, prompt, 2D/2.5D, animation, ngôn ngữ camera, VFX, nhất quán chuyển động, kể chuyện bằng hình, sound design."
+    ],
+    "D": [
+      "DEVELOPER TECH & AI TOOLS",
+      "Lập trình, kỹ thuật phần mềm, OCR, computer vision, tự động hoá, công cụ dev, AI hỗ trợ code, API, giải thích công nghệ thực tế."
+    ]
+  },
+  "format": {
+    "aspect": "9:16",
+    "width": 1080,
+    "height": 1920,
+    "fps": 30
+  },
+  "duration": {
+    "target_sec": 40,
+    "min_sec": 30,
+    "max_sec": 45
+  },
+  "pacing": {
+    "hook_max_sec": 1.5,
+    "shot_avg_min": 1.5,
+    "shot_avg_max": 2.5,
+    "shot_max_sec": 3.5,
+    "change_every_sec": 1.2,
+    "punch_in_scale": [
+      1.08,
+      1.12
+    ],
+    "punch_in_frames": 3,
+    "speed_ramp_max": 1.35,
+    "vcam_max_scale": 1.12,
+    "vcam_base_scale": 1.03,
+    "vcam_creep_per_sec": [
+      0.005,
+      0.015
+    ],
+    "vcam_kick_roll_deg": 2.0,
+    "vcam_kick_px": 14,
+    "vcam_carry_frames": 8,
+    "vcam_carry_max_px": 9.0,
+    "_doc_vcam": "Camera ảo hậu kỳ (vidlib/vcam.py): upscale ≤ 112%, creep 0.5–1.5%/s, kick 7 frame roll ±2° ở mỗi SFX hit, giữ quán tính qua điểm cắt.",
+    "code_shot_max_sec": 5.0
+  },
+  "flow": {
+    "video_model": "Omni Flash 1.2",
+    "image_model": "Nano Banana Pro",
+    "gen_margin_sec": 1.5,
+    "aspect": "9:16"
+  },
+  "trim": {
+    "_doc": "Auto-trim: năng lượng = trung bình |Δ| của các điểm ảnh đổi > diff_threshold (bỏ nhiễu nén). head/tail_ratio là ngưỡng tương đối.",
+    "analysis_size": [
+      108,
+      192
+    ],
+    "diff_threshold": 10,
+    "min_activity": 0.02,
+    "smooth_frames": 3,
+    "head_ratio": 0.2,
+    "tail_ratio": 0.8,
+    "max_head_frac": 0.45,
+    "max_tail_frac": 0.4,
+    "scene_cut_ratio": 6.0,
+    "scene_cut_min": 4.0
+  },
+  "transitions": {
+    "_doc": "flash: 2 frame trắng rồi tắt dần; giới hạn an toàn ≤3 flash/giây (WCAG 2.3.1, TikTok tự bỏ qua video nhấp nháy).",
+    "flash_frames": 2,
+    "flash_decay_frames": 3,
+    "max_flashes_per_sec": 3,
+    "whip_frames": 5,
+    "glitch_frames": 3,
+    "max_crossfade_frames": 4
+  },
+  "lint": {
+    "_doc": "Block cố định MOTION+STYLE+AUDIO+AVOID ≈ 100 từ, nên giới hạn tổng = 100 + phần cảnh (≤ 70).",
+    "video_max_words": 175,
+    "scene_min_words": 10,
+    "scene_max_words": 70
+  },
+  "vo": {
+    "_doc": "Giọng đọc: config/voice.json (ElevenLabs). speed = atempo hậu kỳ (giữ cao độ; ≤1.15 nghe tự nhiên) — cần vì eleven_v3 bỏ qua voice_settings.speed. Cắt lặng > max_silence_ms còn keep_silence_ms; giữ một nhịp ngừng trước câu payoff.",
+    "speed": 1.12,
+    "max_silence_ms": 150,
+    "keep_silence_ms": 70,
+    "pre_payoff_pause_ms": 350,
+    "line_gap_min_ms": 120,
+    "start_by_frame": 6,
+    "react_lead_frames": [
+      0,
+      3
+    ],
+    "react_lead_default": 2,
+    "speed_auto": true,
+    "speed_min": 1.0,
+    "speed_max": 1.15,
+    "target_wps": 3.7,
+    "_doc_speed_auto": "Vòng 7b: mỗi video một giọng → atempo tự tính = target_wps / nhịp nói thật của bản TTS, kẹp [speed_min, speed_max] (giọng chậm/nhanh đều ra cùng nhịp). Chỉ áp cho video có voice_resolved; video cũ giữ speed cố định."
+  },
+  "audio": {
+    "_doc": "Mức SFX tính theo đỉnh VO (dB âm = nhỏ hơn VO). Không có VO thì tham chiếu -6 dBFS.",
+    "sample_rate": 48000,
+    "sfx_db": {
+      "hit": -5,
+      "boom": -4,
+      "whoosh": -10,
+      "pop": -16,
+      "tick": -15,
+      "default": -10,
+      "typing": -17,
+      "scratch": -19,
+      "stamp": -6,
+      "projector": -15,
+      "whoosh_soft": -13
+    },
+    "music_db": -20,
+    "duck_db": 6,
+    "duck_attack_ms": 40,
+    "duck_release_ms": 300,
+    "lufs": -14,
+    "true_peak": -1.0,
+    "beat_snap_frames": 2,
+    "auto_sfx": {
+      "whip": "whoosh",
+      "flash": "hit",
+      "glitch": "glitch",
+      "label": "pop",
+      "counter": "tick",
+      "compare": "hit",
+      "outro": "pop"
+    }
+  },
+  "timeouts": {
+    "_doc": "AUD-204: giây tối đa cho tiến trình con. render_stall = không có frame mới quá N giây → dừng worker (RESUME lần sau).",
+    "ffmpeg": 3600,
+    "ffprobe": 120,
+    "render_stall": 240
+  },
+  "safe_zone": {
+    "_doc": "Vùng chữ an toàn 9:16 (tổng hợp TikTok/Reels/Shorts 2026). Không đặt chữ ở 20% đáy và cột icon bên phải. Overlay vẽ trong preview.",
+    "_doc_v8": "Vòng 9 (AUD-502): top 270 + lề 65 = đạt Shorts/TikTok và đỉnh/cạnh Reels. Đáy Reels (35% = y ≤ 1248) cần dời caption_band lên — chờ chủ kênh quyết định (DECISIONS D-009); cổng QA báo vàng cho preset Reels.",
+    "top": 270,
+    "bottom": 384,
+    "left": 65,
+    "right_icons_x": 940,
+    "right_icons_from_y": 700,
+    "caption_band": [
+      1150,
+      1450
+    ]
+  },
+  "captions": {
+    "_doc": "Auto-captions kiểu CapCut (vidlib/autocaptions.py): preset = capcut_pop | capcut_pill | capcut_box | vox_highlight | off. Dùng word timestamps của ElevenLabs.",
+    "enabled": true,
+    "preset": "capcut_pop",
+    "max_words": 3,
+    "max_chars": 22,
+    "y": 1420
+  },
+  "outro": {
+    "_doc": "Research 2026: CTA 'follow' ở cuối không có dữ liệu chứng minh hiệu quả và làm gãy loop → giữ ngắn (≤2.5s) và nối frame cuối về frame đầu. Chữ CTA lấy từ copy.<language> (next_prefix, follow). code=true: outro dựng bằng engine (engines/three/scenes/outro.js); false: template 2D cũ.",
+    "enabled": true,
+    "loop": true,
+    "duration_sec": 2.2,
+    "youtube_duration_sec": 15,
+    "bg_clip": "assets/brand/outro/outro_bg.mp4",
+    "code": true
+  },
+  "thumbnail": {
+    "max_words": 3,
+    "youtube": [
+      1280,
+      720
+    ],
+    "vertical": [
+      1080,
+      1920
+    ],
+    "_doc": "YouTube Test & Compare: tối đa 3 biến thể, KHÔNG dùng cho Shorts, mọi biến thể ≥1280x720 (thấp hơn → cả bộ bị hạ 480p). Lưới Instagram là 3:4 từ 01/2025.",
+    "crops": {
+      "4x5": [
+        1080,
+        1350
+      ],
+      "3x4": [
+        1080,
+        1440
+      ],
+      "1x1": [
+        1080,
+        1080
+      ]
+    },
+    "title_band_9x16": [
+      420,
+      1500
+    ],
+    "contact_widths": [
+      120,
+      168,
+      320
+    ]
+  },
+  "hashtags": [
+    "science",
+    "experiment",
+    "physics",
+    "whathappensif",
+    "shorts"
+  ],
+  "copy": {
+    "_doc": "Chuỗi khán giả thấy, theo language. Thêm ngôn ngữ mới = thêm một khối.",
+    "en": {
+      "next_prefix": "Next:",
+      "follow": "Follow for the next experiment",
+      "experiment_tag": "EXPERIMENT #{n}",
+      "endscreen_title": "MORE EXPERIMENTS",
+      "dont_try": "DON'T TRY THIS AT HOME"
+    },
+    "vi": {
+      "next_prefix": "Tiếp theo:",
+      "follow": "Follow để xem thí nghiệm tiếp",
+      "experiment_tag": "THÍ NGHIỆM #{n}",
+      "endscreen_title": "XEM TIẾP THÍ NGHIỆM",
+      "dont_try": "ĐỪNG THỬ Ở NHÀ"
+    }
+  },
+  "script": {
+    "_doc": "Quy tắc viết script tiếng Anh (cartoon-short-kit): ~3.7 từ/giây, câu 8–15 từ, dạng rút gọn, số viết bằng chữ, câu đầu là hook nghịch lý, kết bằng twist.",
+    "words_per_sec": 3.7,
+    "words_per_sec_min": 3.0,
+    "words_per_sec_max": 4.3,
+    "sentence_words": [
+      8,
+      15
+    ],
+    "sentence_words_hard_max": 20,
+    "structure": [
+      "hook",
+      "setup",
+      "escalate",
+      "escalate",
+      "escalate",
+      "payoff",
+      "twist",
+      "outro"
+    ]
+  },
+  "styles": {
+    "_doc": "Thư viện style (styles/*.json). default 'auto' = chọn style THEO CHỦ ĐỀ (tags trong styles/<id>.json) trong số style chưa dùng ở avoid_recent video gần nhất. flow_share: tỉ lệ mong muốn video dùng clip Flow trong balance_window video gần nhất — bên đang thiếu (Flow hay toàn code) được cộng điểm, nên có hôm dùng Flow, có hôm không; chủ đề khớp rõ vẫn thắng. Ép tay: --style <id> · --flow · --no-flow. Style có 'special': true chỉ dùng khi chỉ định.",
+    "default": "auto",
+    "avoid_recent": 3,
+    "flow_share": 0.5,
+    "balance_window": 6
+  },
+  "code_render": {
+    "_doc": "Engine code-shot (three.js trong Edge/Chromium headless). Đo trên máy này (docs/PERF.md): GPU rời + 2 worker nhanh nhất (~0.03 s/frame); nhiều worker hơn chỉ tranh GPU. gpu: high (ép card rời, không có thì dùng card sẵn) | auto | off (swiftshader CPU). workers 0 = 2.",
+    "browser_channel": "msedge",
+    "workers": 0,
+    "gpu": "high",
+    "resume": true,
+    "jpeg_quality": 0.95
+  },
+  "qa": {
+    "blocking": ["kích thước", "fps", "số audio track", "codec", "loudness", "true peak", "freeze", "black frame",
+                 "chữ đúng chính tả", "màu BT.709", "pix_fmt", "faststart", "audio 48 kHz", "file hỏng", "nền tảng",
+                 "quyền thương mại BỊ CẤM"],
+    "_doc_blocking": "Cổng QA (vidlib/qagate.py): dòng kiểm không đạt mà nhãn bắt đầu bằng một mục ở đây → ĐỎ, chặn publish/deliver, exit 12. Còn lại → VÀNG.",
+    "true_peak_max": -1.0,
+    "max_mbps": 20,
+    "freeze_max_sec": 0.4,
+    "freeze_noise": 0.0005,
+    "black_min_sec": 0.05,
+    "ocr_required": true,
+    "black_pic_th": 0.997,
+    "_doc_black": "Frame 'đen' = ≥ black_pic_th điểm ảnh tối (luma ≤ 10%). Kênh toàn nền đen: đồ thị/nét mảnh hợp lệ chỉ có ~1–3% điểm sáng, nên dùng 99.7% (ffmpeg mặc định 98% báo nhầm). Frame trống thật vẫn bị bắt. Style có thể ghi đè bằng qa_black_pic_th.",
+    "motion_red": 0.035,
+    "motion_yellow": 0.06,
+    "_doc_motion": "Cổng chuyển động (vidlib/motiongate.py, học từ film_gate của huashu-art-motion): tỉ lệ cặp frame chuyển động nhanh < motion_red → CẦN XEM (video như slide), < motion_yellow → cảnh báo."
+  },
+  "board": {
+    "_doc": "Engine board (engines/board/, vòng 6). Nhịp Shorts: beat 1.5–2.5s, nhãn mờ sau 2.5–3.5s, vòng tròn/gạch chân vẽ trong 6–10 frame và BẮT ĐẦU 0–3 frame trước từ khoá (react_lead_frames). Camera: 'di chuyển ngắn' move_sec rồi 'trôi chậm' drift_zoom_per_sec (không bao giờ đứng yên). Đơn vị world = 1 px ở zoom 1. size = null → theo format kênh; [1920, 1080] để xuất 16:9 (video dài YouTube).",
+    "size": null,
+    "media_photo_w": 480,
+    "cell": [
+      780,
+      1150
+    ],
+    "cell_landscape": [
+      1000,
+      720
+    ],
+    "margin": 260,
+    "beat_sec": [
+      1.5,
+      2.5
+    ],
+    "tag_fade_sec": 3.0,
+    "tag_fade_range": [
+      2.5,
+      3.5
+    ],
+    "mark_draw_frames": 8,
+    "mark_draw_range": [
+      6,
+      10
+    ],
+    "react_lead_frames": 2,
+    "move_sec": [
+      0.38,
+      0.62
+    ],
+    "network_move_sec": 0.9,
+    "drift_zoom_per_sec": 0.035,
+    "fill_overscan": 1.025,
+    "frame_frac": [
+      0.86,
+      0.68
+    ],
+    "tag_px": 46,
+    "stamp_px": 0.6,
+    "max_stamps": 2,
+    "string_sec": 0.6,
+    "anim": {
+      "drop_sec": 0.45,
+      "stamp_sec": 0.2,
+      "tag_cps": 22,
+      "tag_fade": 0.4,
+      "return_sec": 0.5,
+      "thesis_cps_old": 18,
+      "thesis_cps_new": 14,
+      "strike_sec": 0.28
+    },
+    "workers": 0,
+    "crf": 17,
+    "_doc_render": "Render chia đoạn: workers 0 = số luồng CPU − 2 (tối đa 12), mỗi đoạn một tiến trình, nối bằng concat -c copy. CRF 17 (master upload 16–18); mix/master vẫn do vidlib/mix.py.",
+    "tag_offset_px": [
+      96,
+      -150
+    ],
+    "min_read_sec": 0.7,
+    "max_cps": 45
+  },
+  "motion": {
+    "_doc": "Bộ não motion (vòng 10, vidlib/motionplan.py): chống lặp khuôn giữa các video. avoid_recent = số video SINH TRƯỚC được nhớ (bố cục, kiểu bay spine, cơ chế); apply_since = dự án sinh trước ngày này giữ cách chọn bố cục/kiểu bay cũ (video đã đăng không đổi hình); generic_beats = thẻ chung chung; generic_max_share = tỉ lệ tối đa thẻ chung chung; min_mechanism_shots = số shot tối thiểu cho thấy cơ chế (mechanism_scenes, cảnh 3D, clip Flow nếu flow_is_mechanism, shot khai `mechanism`); skeleton_sim_max = độ giống khung xương tối đa với một video gần đây; metaphors_top_k = số cơ chế gợi ý trong brief; metaphor_min_score = điểm khớp tối thiểu để gợi ý trong brief (mỗi từ của cụm khớp = 1 điểm, cơ chế tổng quát ×0.75); shot_hint_min_score = điểm tối thiểu để linter gợi ý cơ chế cho một câu VO; block = true → vượt ngưỡng là LỖI (dừng), false = cảnh báo.",
+    "avoid_recent": 3,
+    "apply_since": "2026-11-20",
+    "generic_beats": ["title", "counter", "compare", "fact"],
+    "mechanism_scenes": ["scene", "drop", "process", "callout", "scale", "stage", "vectors", "units", "timeline", "split", "meter", "zoomin"],
+    "flow_is_mechanism": true,
+    "generic_max_share": 0.45,
+    "min_mechanism_shots": 3,
+    "skeleton_sim_max": 0.6,
+    "metaphors_top_k": 6,
+    "metaphor_min_score": 1,
+    "shot_hint_min_score": 2,
+    "block": false
+  }
+}

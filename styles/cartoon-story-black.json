@@ -1,0 +1,193 @@
+{
+  "name": "Cartoon Story Black",
+  "description": "Hoạt hình kể chuyện 2D viền đen sắc nét trên nền dark-mode (cảm hứng kênh ammedia9192): nhân vật đầu tròn biểu cảm, khung cảnh chân trời chạng vạng tối giản, hộp banner chữ đen bo tròn nhấn vàng và phụ đề capcut_box.",
+  "source": {
+    "repo": "studio — engine html + three (vòng 11)",
+    "url": "engines/html/looks.js · styles/cartoon-story-black.json",
+    "sha": "—",
+    "license": "mã của kênh; font Baloo2 / BeVietnamPro (OFL-1.1)",
+    "from": "phong cách 2D cartoon storytelling viền đen đậm + caption banner trên nền dark-mode",
+    "how": "look `story` mới với viền đen 5px, nền chạng vạng tối giản, hộp thoại banner đen và world 3D toon đồng bộ"
+  },
+  "code_engine": "html",
+  "code_only": true,
+  "captions": "capcut_box",
+  "tags": [
+    "story",
+    "mindset",
+    "habit",
+    "fitness",
+    "running",
+    "training",
+    "human",
+    "life",
+    "discipline",
+    "motivation",
+    "workout",
+    "recovery",
+    "cartoon"
+  ],
+  "black_min": 0.45,
+  "palette": {
+    "bg": "#0B0D12",
+    "ink": "#F8F5EE",
+    "a": "#E84D3D",
+    "b": "#2EBFA5",
+    "c": "#F9C74F",
+    "_doc": "nền chạng vạng dark-mode + kem sáng + đỏ san hô + xanh ngọc áo hoodie + vàng nhấn"
+  },
+  "pacing": {
+    "fps": "30 fps mượt, chuyển động nhân vật rõ ràng",
+    "easing": "bounce — bật nảy vui mắt nhẹ nhàng",
+    "bounce": true,
+    "cut_rule": "trượt khung sang cảnh kế tiếp (pan/truck) như đọc truyện tranh cuộn",
+    "rule": "mọi nhân vật đứng trên mặt đất rõ ràng trong bối cảnh tối giản, không trơ trọi trong hư không"
+  },
+  "marks": {
+    "arrow": "mũi tên đậm viền đen",
+    "circle": "vòng nhấn vàng đậm",
+    "label": "hộp banner đen bo tròn viền trắng + thanh nhấn vàng"
+  },
+  "transitions": [
+    "cut",
+    "dip"
+  ],
+  "sfx_pack": {
+    "pop": "pop",
+    "hit": "thud",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ding"
+  },
+  "music": {
+    "mood": "lo-fi upbeat acoustic + synth kể chuyện truyền cảm hứng, 110 BPM",
+    "bpm": 110
+  },
+  "voice_persona": "người kể chuyện gần gũi, truyền năng lượng tích cực, gãy gọn",
+  "thumbnail": "nhân vật hoạt hình 2D viền đen đậm trong khung cảnh tương phản mạnh, hộp tiêu đề đen chữ trắng-vàng 2–3 từ",
+  "flow": {
+    "medium": "Clean 2D bold-outline cartoon storytelling",
+    "look": "Expressive round-headed 2D cartoon characters with crisp thick black outlines and flat cel fills inside a moody twilight dark-mode park or running track panel",
+    "motion": "snappy 2D character poses, clean side-scrolling camera pans, expressive reactions"
+  },
+  "font": "BeVietnamPro-ExtraBold.ttf",
+  "size": 112,
+  "uppercase": false,
+  "fill": "#F8F5EE",
+  "stroke": 8,
+  "stroke_color": "#0B0D12",
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0,
+    "every": 2
+  },
+  "number_fill": "#F9C74F",
+  "sfx_role": {
+    "size_mult": 1.25,
+    "rotate": -4,
+    "fill": "#E84D3D"
+  },
+  "html": {
+    "look": "story",
+    "font": "BeVietnamPro-ExtraBold.ttf",
+    "mono": "RobotoMono-Variable.ttf",
+    "palette": {
+      "bg": "#0B0D12",
+      "ink": "#F8F5EE",
+      "a": "#E84D3D",
+      "b": "#2EBFA5",
+      "c": "#F9C74F"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    },
+    "type": {
+      "weight": 800,
+      "upper": false
+    }
+  },
+  "world": {
+    "_doc": "Sân khấu 3D hoạt hình viền đen sắc trên nền dark-mode đồng bộ với look `story`.",
+    "bg": "#0B0D12",
+    "fog": "#0B0D12",
+    "fog_near": 11,
+    "fog_far": 34,
+    "toon_steps": [
+      135,
+      215,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#F8F5EE",
+      "grey": "#6E7685",
+      "water": "#2EBFA5",
+      "accent": "#F9C74F",
+      "accent_hi": "#FFE58A",
+      "accent_glow": "#F9C74F",
+      "danger": "#E84D3D",
+      "iron": "#222630",
+      "metal": "#9EA7B8",
+      "glass_line": "#F8F5EE",
+      "ink_text": "#0B0D12",
+      "chalk": "#F8F5EE",
+      "board": "#141820",
+      "label": "#F8F5EE",
+      "dial": "#F8F5EE",
+      "bench": "#252B36",
+      "bench_seam": "#0F1218",
+      "bench_leg": "#191E26",
+      "wall": "#141923",
+      "feather": "#F8F5EE",
+      "orange": "#F9C74F"
+    },
+    "lights": {
+      "hemi": 1.2,
+      "hemi_sky": "#DCE6FF",
+      "hemi_ground": "#1E2530",
+      "key": 2.3,
+      "key_dir": [
+        -0.5,
+        1.0,
+        0.8
+      ],
+      "rim": 1.8,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.5,
+        0.55,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#090B0E",
+      "px": 2.2,
+      "rim": "#F9C74F",
+      "rim_px": 0,
+      "crease": 0.65
+    },
+    "grade": {
+      "sat": 1.08,
+      "vig": 0.16
+    },
+    "look3d": "toon"
+  },
+  "cast_palette": {
+    "body": "#F8F5EE",
+    "accent": "#2EBFA5",
+    "rim": "#F9C74F"
+  },
+  "not": [
+    "không nền sáng chói toàn màn — giữ nền tối dark-mode chạng vạng",
+    "không tô bóng 3D thực tế nặng nề — giữ nét hoạt hình phẳng, viền đen rõ"
+  ],
+  "voice_tags": [
+    "energetic",
+    "friendly",
+    "playful",
+    "young"
+  ]
+}

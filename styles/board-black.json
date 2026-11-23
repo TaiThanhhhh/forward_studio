@@ -1,0 +1,95 @@
+{
+  "name": "Board Black (evidence board)",
+  "description": "Bảng điều tra giấy đen nhám, lưới mờ, thẻ viền xám nhạt, clip Flow ghim như polaroid; một camera chạy liên tục; đỏ #d0312d CHỈ cho ý nghĩa (khoanh, dây, dấu, nhãn chính, tiêu đề cuối).",
+  "assembly": "board_spine",
+  "font": "FreeMonoBold.ttf",
+  "size": 92,
+  "fill": "#ECEBE4",
+  "number_fill": "#ECEBE4",
+  "uppercase": true,
+  "stroke": 8,
+  "stroke_color": "#000000",
+  "intro": "write_on",
+  "intro_frames": 10,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "sfx_role": {
+    "size_mult": 1.25,
+    "rotate": -6,
+    "fill": "#D0312D"
+  },
+  "frost_color": "#C9D6E8",
+  "heat_color": "#D0312D",
+  "board": {
+    "_doc": "Token màu (hex) cho engine board. surface: board|chalk|notebook|film. deco: pin|tape|clip. card_border = [viền cạnh, viền đáy polaroid] (world).",
+    "surface": "board",
+    "bg": "#0f0f0f",
+    "bg_noise": 9,
+    "grid": {
+      "step": 200,
+      "color": "#1b1b1b",
+      "px": 1.6
+    },
+    "card": "#d2d2cc",
+    "card_edge": "#8f8f8a",
+    "card_border": [
+      16,
+      64
+    ],
+    "paper": "#d6d4cc",
+    "paper_rule": "#c2bfb6",
+    "paper_rule_step": 34,
+    "ink": "#1b1b1b",
+    "paper_kind": "paper",
+    "dark_card": "#161616",
+    "dark_card_edge": "#6a6a65",
+    "text_light": "#ecebe4",
+    "text_dim": "#a3a29b",
+    "tape": "#0b0b0b",
+    "tape_edge": "#55554f",
+    "tape_text": "#ecebe4",
+    "pin": "#9a9a95",
+    "deco": "pin",
+    "accent": "#d0312d",
+    "shadow": 0.75,
+    "grain": 6.5,
+    "vignette": 0.42,
+    "flicker": 0.02
+  },
+  "tags": [
+    "mystery",
+    "crime",
+    "evidence",
+    "myth",
+    "conspiracy",
+    "disaster",
+    "investigation",
+    "true-story",
+    "case",
+    "unsolved",
+    "accident"
+  ],
+  "voice_tags": [
+    "storyteller",
+    "deep",
+    "dramatic",
+    "serious"
+  ],
+  "html": {
+    "_doc": "Look của engine html cho shot motion (counter, graph, compare, scale…) trong video style này — bảng màu khớp style.",
+    "look": "swiss",
+    "font": "FreeMonoBold.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#ECEBE4",
+      "a": "#D0312D"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "ink",
+      "accent": "a"
+    }
+  }
+}

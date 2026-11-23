@@ -1,0 +1,253 @@
+{
+  "name": "Retro 90s Low-poly 3D Black",
+  "description": "3D đa giác thời cuối thập niên 90 (kiểu console N64/PS1, tự dựng — không nhân vật có bản quyền) trên sân khấu đen: khối ít đỉnh nhưng đổ bóng Gouraud mượt theo đỉnh, texture vẽ bằng code độ phân giải thấp lọc mờ, màu bão hoà cam/xanh lá/xanh trời, không viền, render nội bộ thấp + dither 15-bit, bóng tròn dưới vật. Nhân vật con vật 3D có mặt vẽ trên texture + bối cảnh đảo cỏ nổi (meadow) tan vào đen.",
+  "source": {
+    "repo": "studio — engine three.js (look3d retro90)",
+    "url": "https://github.com/mrdoob/three.js",
+    "sha": "r160",
+    "license": "MIT",
+    "from": "engines/three/main.js → LOOK3D.retro90 (Gouraud theo đỉnh + hậu kỳ retro) · engines/three/creatures.js · props.js setScene",
+    "how": "tự viết shader Gouraud + pass lượng tử/Bayer dither/phóng ảnh cho three.js r160 (không chép mã ngoài); nhân vật sinh thủ tục từ bảng loài"
+  },
+  "code_engine": "three",
+  "code_only": false,
+  "tags": [
+    "animal",
+    "animals",
+    "pet",
+    "pets",
+    "dog",
+    "puppy",
+    "cat",
+    "kitten",
+    "nostalgia",
+    "nostalgic",
+    "retro",
+    "90s",
+    "gaming",
+    "game",
+    "videogame",
+    "console",
+    "childhood",
+    "nature",
+    "farm",
+    "zoo",
+    "cartoon",
+    "wildlife",
+    "meadow",
+    "garden",
+    "bird",
+    "fish",
+    "frog",
+    "rabbit",
+    "fox",
+    "dinosaur",
+    "horse",
+    "cow",
+    "pig",
+    "sheep"
+  ],
+  "voice_tags": [
+    "warm",
+    "playful",
+    "friendly",
+    "storyteller",
+    "upbeat",
+    "young"
+  ],
+  "black_min": 0.25,
+  "palette": {
+    "bg": "#080D16",
+    "ink": "#FFF4DC",
+    "a": "#FF8A2A",
+    "b": "#3FA9F5",
+    "c": "#FFD23F",
+    "_doc": "nền darkmode xanh đêm sâu #080D16 + kem sáng + cam console + xanh trời + vàng hoa — giữ chất darkmode của kênh nhưng có không gian/bầu trời đêm thời 90"
+  },
+  "pacing": {
+    "fps": "full (30fps)",
+    "easing": "nảy tròn, hơi bậc kiểu game thời 90 (hop, squash nhẹ)",
+    "bounce": true,
+    "camera": "camera bám nhân vật kiểu game 3D thời 90: orbit chậm + đẩy vào nhẹ",
+    "cut_rule": "cắt khi nhân vật xong một hành động nhỏ (hít, nhảy, vẫy đuôi)"
+  },
+  "marks": {
+    "arrow": "mũi tên khối đa giác màu vàng",
+    "circle": "vòng nhẫn xoay kiểu vật phẩm game",
+    "label": "biển gỗ/nhãn bo tròn chữ dày"
+  },
+  "transitions": [
+    "cut",
+    "whip",
+    "iris"
+  ],
+  "sfx_pack": {
+    "pop": "pop",
+    "hit": "thunk",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ding"
+  },
+  "music": {
+    "mood": "chiptune-ish marimba + synth bass vui, giai điệu game phiêu lưu thời 90 (tự tổng hợp)",
+    "bpm": 118
+  },
+  "voice_persona": "người kể chuyện ấm áp, tinh nghịch, hoài niệm tuổi thơ",
+  "thumbnail": "một chú chó low-poly cam đang hít bông hoa vàng trên đảo cỏ nổi giữa nền đen, ánh sáng mềm, mép đảo tan vào bóng tối",
+  "flow": {
+    "is_3d": true,
+    "medium": "Late-1990s console-era low-polygon 3D render",
+    "look": "Chunky low-polygon models with smooth per-vertex (Gouraud) shading, small blurry hand-painted textures, saturated orange, grass-green and sky-blue colours, no outlines, slightly soft low-resolution image with subtle colour banding, a small floating grass island on a pure black void",
+    "motion": "bouncy game-like character animation, simple looping walk and hop cycles, gentle camera orbit"
+  },
+  "font": "LuckiestGuy-Regular.ttf",
+  "size": 122,
+  "uppercase": true,
+  "fill": "#FFF4DC",
+  "stroke": 10,
+  "stroke_color": "#000000",
+  "shadow": {
+    "offset": [
+      7,
+      7
+    ],
+    "color": "#FF8A2A"
+  },
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#FFD23F",
+  "sfx_role": {
+    "size_mult": 1.35,
+    "rotate": -6,
+    "fill": "#3FA9F5"
+  },
+  "world": {
+    "_doc": "Darkmode 3D (nền tối + bầu trời chuyển sắc xanh đêm + bãi cỏ/đồi sâu có sương tối), look 3D 'retro90' (Gouraud theo đỉnh, res_div, color_bits, dither).",
+    "bg": "#080D16",
+    "fog": "#0B1424",
+    "fog_near": 6,
+    "fog_far": 19,
+    "darkmode_env": true,
+    "sky": {
+      "top": "#070B16",
+      "horizon": "#193052",
+      "bottom": "#080D14"
+    },
+    "toon_steps": [
+      140,
+      210,
+      255
+    ],
+    "shadows": false,
+    "colors": {
+      "white": "#FFF4DC",
+      "grey": "#8E96A3",
+      "water": "#3FA9F5",
+      "accent": "#FF8A2A",
+      "accent_hi": "#FFD23F",
+      "accent_glow": "#FF8A2A",
+      "danger": "#F2452E",
+      "iron": "#3A3F4A",
+      "metal": "#A8B2C2",
+      "glass_line": "#D8ECFF",
+      "ink_text": "#141018",
+      "chalk": "#FFF4DC",
+      "board": "#1B2230",
+      "label": "#FFF4DC",
+      "dial": "#FFF4DC",
+      "bench": "#7A5234",
+      "bench_seam": "#3E2A1C",
+      "bench_leg": "#4A3424",
+      "wall": "#3A4C78",
+      "feather": "#FFF4DC",
+      "orange": "#FFB23F",
+      "grass": "#4CB83C",
+      "tuft": "#6BD04A",
+      "dirt": "#7A4E2C",
+      "flower": "#FFD23F",
+      "flower_center": "#F7861E",
+      "stem": "#3FA032",
+      "rock": "#9C968C",
+      "hill": "#2F8A6A",
+      "leaf": "#4CB83C",
+      "trunk": "#7A4E2C",
+      "wood": "#B8743E",
+      "wood_dark": "#6A4024",
+      "asphalt": "#3C4048",
+      "road_line": "#FFD23F",
+      "brick": "#C47A52",
+      "window": "#24304A",
+      "window_lit": "#FFD27A"
+    },
+    "lights": {
+      "hemi": 1.25,
+      "hemi_sky": "#D6E8FF",
+      "hemi_ground": "#3C5A2E",
+      "key": 2.7,
+      "key_color": "#FFF0D6",
+      "key_dir": [
+        -0.55,
+        1.0,
+        0.7
+      ],
+      "rim": 1.3,
+      "rim_color": "#9CCCFF",
+      "rim_dir": [
+        0.45,
+        0.6,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#000000",
+      "px": 0,
+      "rim": "#FFF4DC",
+      "rim_px": 0,
+      "crease": 0
+    },
+    "grade": {
+      "sat": 1.12,
+      "vig": 0.12
+    },
+    "look3d": "retro90"
+  },
+  "cast_palette": {
+    "body": "#FFF4DC",
+    "shade": "#B7AE9C",
+    "ink": "#141018",
+    "rim": "#FFF4DC",
+    "accent": "#FF8A2A",
+    "strap": "#5A6270"
+  },
+  "html": {
+    "_doc": "look pixel16 khớp chất độ phân giải thấp + bảng màu console thời 90 của phần 3D",
+    "look": "pixel16",
+    "font": "LuckiestGuy-Regular.ttf",
+    "palette": {
+      "bg": "#080D16",
+      "ink": "#FFF4DC",
+      "a": "#FF8A2A",
+      "b": "#3FA9F5",
+      "c": "#FFD23F"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    },
+    "type": {
+      "weight": 700,
+      "upper": true
+    }
+  },
+  "not": [
+    "không low-poly hiện đại mặt phẳng gắt + nét viền (đó là lowpoly3d-black)",
+    "không nền ban ngày chói sáng — giữ chất darkmode (nền tối sâu / bầu trời đêm chuyển sắc)",
+    "không nhân vật game có bản quyền (Mario, Crash, Pikachu…) — chỉ phong cách thời 90, nhân vật tự dựng",
+    "không ảnh thật, không người thật"
+  ]
+}

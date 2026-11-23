@@ -1,0 +1,64 @@
+# môi trường
+.venv/
+.venv-*/
+__pycache__/
+*.pyc
+.DS_Store
+.ruff_cache/
+
+# dữ liệu dự án (clip, ảnh, render) — nặng, không đưa vào git
+projects/*
+!projects/.gitkeep
+
+# file sinh tự động
+assets/sfx/_builtin/
+*.part.mp4
+
+# khoá API cục bộ
+.env
+.env.*
+
+# dữ liệu OCR (tải bằng ocr.setup(); ~15 MB mỗi ngôn ngữ)
+assets/tessdata/*.traineddata
+
+# vòng 7: repo tham khảo clone về (nặng, có license riêng) — dựng lại bằng scripts/vendor_fetch.py theo vendor/SOURCES.json
+vendor/lemo-opuscar/
+vendor/mg-styles-15/
+vendor/anything2explainer/
+vendor/huashu-art-motion/
+vendor/dashi-animationstyle/
+vendor/hyperframes/
+vendor/claude-animation-skills/
+vendor/awesome-claude-video-skills/
+vendor/_hf_run/
+# file làm việc của QA (ảnh/clip sinh lại được)
+qa/html/_work/
+qa/manim/_work/
+qa/_labels/
+qa/styles/_work/
+qa/icons/_work/
+qa/icons/_peek*.jpg
+qa/style-compare/vo/
+qa/*.log
+qa/style-compare/*.log
+qa/styles/*.jpg
+qa/props3d/_work/
+qa/physics/_work/
+qa/userassets/_work/
+
+# vòng 8: bản chụp 3D Style Atlas (Futurepedia/HubSpot — cá nhân, phi thương mại) chỉ lưu cục bộ
+vendor/3d-style-atlas/raw/
+vendor/3d-style-atlas/shots/
+vendor/3d-style-atlas/cards/
+
+# Phần C: clip Flow giả do scripts/ui_e2e.py sinh (dựng lại được)
+qa/ui/_fake_clips/
+
+# vòng 10: kho mô hình 3D glTF & SVG thư viện (dựng lại bằng `studio.py assets fetch`) + thư mục làm việc QA tạm
+assets/lib/3d/
+assets/lib/svg/phosphor/
+qa/beats2d/_work/
+qa/retro90/_work/
+qa/creatures/_work/
+qa/assets3d/_work/
+qa/hybrid/_work/

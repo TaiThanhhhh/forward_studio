@@ -1,0 +1,1 @@
+Centered, subject fills ~55% of frame; keep top 12% and bottom 30% empty for captions.

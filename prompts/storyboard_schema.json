@@ -1,0 +1,178 @@
+{
+  "slug": "<slug>",
+  "topic": "What happens if …?",
+  "title": "Video title (English)",
+  "hook": "Hook line — a paradox stated as fact",
+  "truth": "True | Disputed | Hypothetical",
+  "universe": "A",
+  "experiment_no": 1,
+  "style": "auto",
+  "voice": "auto",
+  "narrative": "classic",
+  "assembly": "auto",
+  "flow": {
+    "video_model": "<tool fills>",
+    "image_model": "<tool fills>"
+  },
+  "ingredients": [
+    {
+      "id": "REF_HERO",
+      "desc": "a simple 2D scientist: round head, big white eyes with black pupils, thick white line body, oversized safety goggles with electric-blue lenses",
+      "accent_on": "the goggle lenses"
+    }
+  ],
+  "objects": {
+    "ball": {
+      "color": "red"
+    },
+    "glass": {
+      "color": "white",
+      "near": [
+        0.5,
+        0.6
+      ]
+    }
+  },
+  "shots": [
+    {
+      "id": "C01",
+      "beat": "hook",
+      "vo": "[excited] A steel ball at one thousand degrees drops into ice water, and the water won't touch it.",
+      "text_fx": [
+        {
+          "text": "1,000°C",
+          "anchor": "above:ball",
+          "layer": "front",
+          "behavior": [
+            "pop_from",
+            "heat_wobble"
+          ],
+          "t_in": 0.2,
+          "sync": "vo_word:thousand"
+        }
+      ],
+      "target_sec": 1.5,
+      "mode": "auto",
+      "subject": "the glowing steel ball",
+      "accent_on": "the ice cubes",
+      "camera": "Fast 10 percent push-in",
+      "start_frame": {
+        "desc": "A glowing red steel ball hangs in white tongs above a glass of ice water."
+      },
+      "action": [
+        {
+          "t": [
+            0,
+            1.5
+          ],
+          "do": "The glowing ball drops and splashes into the water."
+        }
+      ],
+      "transition_in": "cut",
+      "sfx": [
+        "sizzle"
+      ],
+      "hold": false,
+      "beat_recipe": "REVEAL_PHOTO",
+      "board": {
+        "marks": [
+          {
+            "kind": "tag",
+            "text": "1,000°C STEEL",
+            "at": [
+              0.5,
+              0.4
+            ],
+            "sync": "vo_word:steel"
+          }
+        ]
+      }
+    },
+    {
+      "id": "C02",
+      "beat": "payoff",
+      "vo": "A hundred grams of glowing steel can melt nearly twice its weight in ice.",
+      "mode": "code",
+      "mechanism": "hot_ball_ice",
+      "code": {
+        "scene": "scale",
+        "params": {
+          "ball_g": 100,
+          "cube_g": 25,
+          "cubes": 7,
+          "hot": 0.8
+        }
+      },
+      "target_sec": 3.5,
+      "transition_in": "whip",
+      "beat_recipe": "CONNECT",
+      "board": {
+        "from": "C01",
+        "to": "self",
+        "sync": "vo_word:melt"
+      }
+    },
+    {
+      "id": "C03",
+      "beat": "twist",
+      "vo": "You'd think the water boils away, but the glass stays at zero.",
+      "beat_recipe": "THESIS",
+      "target_sec": 2.6,
+      "board": {
+        "old": "You'd think the water heats up.",
+        "new": "It stays at 0°C",
+        "strike_sync": "vo_word:but",
+        "new_sync": "vo_word:stays"
+      }
+    }
+  ],
+  "outro": {
+    "teaser": "Next experiment, short",
+    "mode": "code"
+  },
+  "thumbnail": {
+    "variants": [
+      {
+        "id": "T1",
+        "archetype": "before_disaster",
+        "text": "IT WON'T TOUCH?!",
+        "scene": "English background description, no text"
+      },
+      {
+        "id": "T2",
+        "archetype": "big_number",
+        "text": "",
+        "number": "1,000°C",
+        "scene": "…"
+      },
+      {
+        "id": "T3",
+        "archetype": "red_circle",
+        "text": "STILL 0°C?!",
+        "scene": "…",
+        "focus": [
+          0.55,
+          0.4
+        ]
+      }
+    ]
+  },
+  "publish": {
+    "titles": [
+      "≤ 60 chars",
+      "≤ 60 chars",
+      "≤ 60 chars"
+    ],
+    "description": "Exactly two sentences.",
+    "hashtags": [
+      "science",
+      "physics",
+      "experiment",
+      "shorts",
+      "leidenfrost"
+    ]
+  },
+  "sources": [
+    "https://… (one source per number)"
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "engine": "html",
+  "page": "engines/html/index.html",
+  "scene": "compare",
+  "params": {
+    "title": "Which wins?",
+    "left": {
+      "icon": "ball",
+      "icon_role": "hot",
+      "label": "Steel ball",
+      "value": 1000,
+      "unit": "°C"
+    },
+    "right": {
+      "icon": "ice",
+      "label": "Ice water",
+      "value": 0,
+      "unit": "°C"
+    },
+    "vs": "VS",
+    "result": "Heat wins"
+  },
+  "frames": 30,
+  "fps": 30,
+  "width": 1080,
+  "height": 1920,
+  "look": {
+    "look": "pixel16",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#F7F1E3",
+      "a": "#F2544B",
+      "b": "#3D8BEF",
+      "c": "#F9C846"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    },
+    "type": {
+      "weight": 600
+    }
+  },
+  "fonts": [
+    {
+      "family": "StyleFont",
+      "url": "/assets/fonts/PixelifySans-Variable.ttf",
+      "file": "PixelifySans-Variable.ttf",
+      "weight": "100 900"
+    },
+    {
+      "family": "StyleMono",
+      "url": "/assets/fonts/PressStart2P-Regular.ttf",
+      "file": "PressStart2P-Regular.ttf"
+    }
+  ],
+  "safe": {
+    "top": 270,
+    "bottom": 384,
+    "left": 65,
+    "right_icons_x": 940,
+    "right_icons_from_y": 700,
+    "caption_band": [
+      1150,
+      1450
+    ]
+  },
+  "locale": "en-US",
+  "style": "pixel16-black",
+  "shot": "compare",
+  "beat": null,
+  "engine_rev": "56deca315c03"
+}

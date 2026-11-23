@@ -1,0 +1,389 @@
+{
+  "_doc": "Dữ liệu mẫu cho từng beat (tools.styleframes, scripts/html_sheet.py, test). Chỉ là phép thử — nội dung video thật đến từ storyboard.",
+  "title": {
+    "kicker": "experiment 12",
+    "title": "What happens if…",
+    "sub": "1,000°C steel ball",
+    "icon": "ball",
+    "icon_role": "hot"
+  },
+  "drop": {
+    "title": "Drop it in",
+    "a": {
+      "icon": "ball",
+      "label": "1,000°C steel",
+      "role": "hot"
+    },
+    "b": {
+      "icon": "glass",
+      "label": "ice water"
+    },
+    "result": "Instant steam",
+    "hit": 0.45,
+    "sfx": "splash"
+  },
+  "counter": {
+    "title": "Surface heat",
+    "from": 20,
+    "to": 1000,
+    "suffix": "°C",
+    "unit": "red hot",
+    "label": "Hotter than lava",
+    "icon": "flame"
+  },
+  "compare": {
+    "title": "Which wins?",
+    "left": {
+      "icon": "ball",
+      "icon_role": "hot",
+      "label": "Steel ball",
+      "value": 1000,
+      "unit": "°C"
+    },
+    "right": {
+      "icon": "ice",
+      "label": "Ice water",
+      "value": 0,
+      "unit": "°C"
+    },
+    "vs": "VS",
+    "result": "Heat wins"
+  },
+  "graph": {
+    "title": "Cooling curve",
+    "x_label": "seconds",
+    "y_label": "°C",
+    "y_unit": "°C",
+    "points": [
+      [
+        0,
+        1000
+      ],
+      [
+        1,
+        620
+      ],
+      [
+        2,
+        330
+      ],
+      [
+        4,
+        140
+      ],
+      [
+        7,
+        60
+      ],
+      [
+        10,
+        20
+      ]
+    ],
+    "marks": [
+      {
+        "x": 2,
+        "label": "vapor layer breaks"
+      }
+    ],
+    "y_min": 0
+  },
+  "process": {
+    "title": "Leidenfrost effect",
+    "steps": [
+      {
+        "icon": "ball",
+        "role": "hot",
+        "label": "Steel hits water"
+      },
+      {
+        "icon": "steam",
+        "label": "Vapor shield forms"
+      },
+      {
+        "icon": "bubble",
+        "label": "Shield collapses"
+      },
+      {
+        "icon": "snow",
+        "label": "Violent boiling"
+      }
+    ]
+  },
+  "scale": {
+    "title": "How thin is it?",
+    "items": [
+      {
+        "label": "Steel ball",
+        "size": 50,
+        "unit": "mm",
+        "icon": "ball",
+        "role": "hot"
+      },
+      {
+        "label": "Water droplet",
+        "size": 2,
+        "unit": "mm",
+        "icon": "drop"
+      },
+      {
+        "label": "Vapor layer",
+        "size": 0.1,
+        "unit": "mm",
+        "icon": "dot",
+        "decimals": 1
+      }
+    ]
+  },
+  "callout": {
+    "title": "Inside the glass",
+    "icon": "glass",
+    "labels": [
+      {
+        "text": "Steam jacket",
+        "side": "l",
+        "y": -0.9
+      },
+      {
+        "text": "Ice melts",
+        "side": "r",
+        "y": -0.3
+      },
+      {
+        "text": "Ball sinks",
+        "side": "l",
+        "y": 0.8
+      }
+    ]
+  },
+  "fact": {
+    "kicker": "the twist",
+    "text": "The water never touches the steel",
+    "em": "at first"
+  },
+  "outro": {
+    "next_prefix": "next experiment",
+    "teaser": "Lava vs ice?",
+    "follow": "Follow for more"
+  },
+  "scene": {
+    "title": "Water floods in",
+    "actors": [
+      {
+        "id": "runner",
+        "icon": "runner",
+        "x": 0.22,
+        "y": 0.42,
+        "size": 230,
+        "keys": [
+          {
+            "u": 0.55,
+            "x": 0.18
+          }
+        ]
+      },
+      {
+        "id": "bottle",
+        "icon": "bottle",
+        "x": 0.42,
+        "y": 0.36,
+        "size": 120,
+        "role": "cold",
+        "rot": -20,
+        "keys": [
+          {
+            "u": 0.3,
+            "rot": -70,
+            "p": 0.2
+          }
+        ]
+      },
+      {
+        "id": "drop1",
+        "icon": "drop",
+        "x": 0.38,
+        "y": 0.4,
+        "size": 70,
+        "role": "cold",
+        "in": 0.28,
+        "keys": [
+          {
+            "u": 0.62,
+            "x": 0.7,
+            "y": 0.66,
+            "ease": "in"
+          }
+        ],
+        "out": 0.66
+      },
+      {
+        "id": "drop2",
+        "icon": "drop",
+        "x": 0.38,
+        "y": 0.4,
+        "size": 60,
+        "role": "cold",
+        "in": 0.36,
+        "keys": [
+          {
+            "u": 0.7,
+            "x": 0.7,
+            "y": 0.66,
+            "ease": "in"
+          }
+        ],
+        "out": 0.74
+      },
+      {
+        "id": "cell",
+        "icon": "cell",
+        "x": 0.7,
+        "y": 0.68,
+        "size": 200,
+        "role": "cold",
+        "keys": [
+          {
+            "u": 0.62,
+            "size": 200
+          },
+          {
+            "u": 0.9,
+            "size": 330,
+            "ease": "spring"
+          }
+        ]
+      }
+    ],
+    "labels": [
+      {
+        "text": "Cell swells",
+        "of": "cell",
+        "u": 0.78,
+        "tag": true
+      }
+    ],
+    "arrows": [
+      {
+        "from": "bottle",
+        "to": "cell",
+        "u": 0.2
+      }
+    ],
+    "fx": [
+      {
+        "kind": "splash",
+        "at": "cell",
+        "u": 0.64
+      }
+    ]
+  },
+  "title__left": {
+    "kicker": "experiment 12",
+    "title": "What happens if…",
+    "sub": "1,000°C steel ball",
+    "icon": "ball",
+    "icon_role": "hot",
+    "layout": "left"
+  },
+  "title__hero": {
+    "kicker": "experiment 12",
+    "title": "What happens if…",
+    "sub": "1,000°C steel ball",
+    "icon": "ball",
+    "icon_role": "hot",
+    "layout": "hero"
+  },
+  "counter__giant": {
+    "title": "Surface heat",
+    "from": 20,
+    "to": 1000,
+    "suffix": "°C",
+    "unit": "red hot",
+    "label": "Hotter than lava",
+    "icon": "flame",
+    "layout": "giant"
+  },
+  "counter__bar": {
+    "title": "Surface heat",
+    "from": 20,
+    "to": 1000,
+    "suffix": "°C",
+    "unit": "red hot",
+    "label": "Hotter than lava",
+    "icon": "flame",
+    "layout": "bar"
+  },
+  "compare__split": {
+    "title": "Which wins?",
+    "left": {
+      "icon": "ball",
+      "icon_role": "hot",
+      "label": "Steel ball",
+      "value": 1000,
+      "unit": "°C"
+    },
+    "right": {
+      "icon": "ice",
+      "label": "Ice water",
+      "value": 0,
+      "unit": "°C"
+    },
+    "vs": "VS",
+    "result": "Heat wins",
+    "layout": "split"
+  },
+  "compare__balance": {
+    "title": "Which wins?",
+    "left": {
+      "icon": "ball",
+      "icon_role": "hot",
+      "label": "Steel ball",
+      "value": 1000,
+      "unit": "°C"
+    },
+    "right": {
+      "icon": "ice",
+      "label": "Ice water",
+      "value": 0,
+      "unit": "°C"
+    },
+    "vs": "VS",
+    "result": "Heat wins",
+    "layout": "balance"
+  },
+  "fact__stamp": {
+    "kicker": "the twist",
+    "text": "The water never touches the steel",
+    "em": "at first",
+    "layout": "stamp"
+  },
+  "fact__left": {
+    "kicker": "the twist",
+    "text": "The water never touches the steel",
+    "em": "at first",
+    "layout": "left"
+  },
+  "process__path": {
+    "title": "Leidenfrost effect",
+    "steps": [
+      {
+        "icon": "ball",
+        "role": "hot",
+        "label": "Steel hits water"
+      },
+      {
+        "icon": "steam",
+        "label": "Vapor shield forms"
+      },
+      {
+        "icon": "bubble",
+        "label": "Shield collapses"
+      },
+      {
+        "icon": "snow",
+        "label": "Violent boiling"
+      }
+    ],
+    "layout": "path"
+  }
+}

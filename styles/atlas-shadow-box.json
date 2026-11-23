@@ -1,0 +1,243 @@
+{
+  "name": "Shadow Box · dark stage",
+  "description": "Biến thể dark-stage của style #28 \"Shadow Box\" (Nội dung phẳng thành vật thật) trong 3D Style Atlas: dòng thời gian theo chiều sâu, trước/sau. Viết lại bằng lời của tool trên sân khấu đen, một accent.",
+  "source": {
+    "repo": "3D Style Atlas (Futurepedia / HubSpot Media)",
+    "url": "https://www.futurepedia.io/resources/3d-style-atlas/view",
+    "sha": "#28",
+    "license": "HubSpot Website Terms of Use (cá nhân, phi thương mại) — chỉ lấy ý tưởng thị giác, chữ + mã viết mới; xem docs/CREDITS.md",
+    "from": "#28 Shadow Box · Flat content made physical · Explainer",
+    "how": "dark-stage: nền #000, look 3D `paper` của engine three.js, block Flow ngắn tự viết"
+  },
+  "code_only": true,
+  "black_min": 0.5,
+  "voice_persona": "người kể chuyện ấm, như đọc sách pop-up",
+  "thumbnail": "một vật chủ đạo kiểu 3d paper-cut light box nổi giữa nền đen, accent warm glow trên chi tiết sắp xảy ra chuyện",
+  "font": "Baloo2-Variable.ttf",
+  "size": 118,
+  "uppercase": true,
+  "fill": "#f6e6c8",
+  "stroke": 10,
+  "stroke_color": "#000000",
+  "shadow": {
+    "offset": [
+      8,
+      8
+    ],
+    "color": "#ffb547"
+  },
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0.5,
+    "every": 2
+  },
+  "number_fill": "#12161c",
+  "sfx_role": {
+    "size_mult": 1.35,
+    "rotate": -6,
+    "fill": "#E8553E"
+  },
+  "tags": [
+    "era",
+    "before-after",
+    "shrink",
+    "silhouette",
+    "layers"
+  ],
+  "voice_tags": [
+    "storyteller",
+    "warm",
+    "friendly"
+  ],
+  "palette": {
+    "bg": "#000000",
+    "ink": "#f6e6c8",
+    "a": "#ffb547",
+    "b": "#3a4fa6",
+    "c": "#12161c",
+    "_doc": "sân khấu đen + accent warm glow"
+  },
+  "pacing": {
+    "fps": "twos",
+    "easing": "gấp/mở như sách pop-up",
+    "bounce": true,
+    "camera": "wide-aperture long lens, sideways slide for parallax, pull-back to square-on",
+    "cut_rule": "cắt khi trang mở xong"
+  },
+  "marks": {
+    "arrow": "mũi tên giấy cắt",
+    "circle": "vòng giấy",
+    "label": "nhãn giấy dán"
+  },
+  "transitions": [
+    "cut",
+    "whip"
+  ],
+  "sfx_pack": {
+    "pop": "pop",
+    "hit": "thunk",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ding"
+  },
+  "music": {
+    "mood": "pizzicato strings, paper rustle, light percussion",
+    "bpm": 104
+  },
+  "flow": {
+    "is_3d": true,
+    "medium": "3D paper-cut light box",
+    "look": "Cream paper silhouettes with bright cut edges, deep walnut frame; warm back-wall lamp, lit gaps between sheets, front sheets in silhouette",
+    "motion": "sheets arrive one by one from different directions, each lighting the gap behind it",
+    "motion_block": "Sheets arrive one by one from different directions, each lighting the gap behind it.",
+    "plate": "a blank cut-out label in each layer",
+    "accent": "#ffb547",
+    "accent_name": "warm glow",
+    "camera": "Wide-aperture long lens, sideways slide for parallax, pull-back to square-on",
+    "avoid_add": [
+      "bright backdrop",
+      "visible horizon",
+      "photoreal people"
+    ]
+  },
+  "world": {
+    "_doc": "Sân khấu đen, look 3D 'paper' (engines/three/main.js → LOOK3D).",
+    "bg": "#000000",
+    "fog": "#000000",
+    "fog_near": 8,
+    "fog_far": 28,
+    "toon_steps": [
+      125,
+      200,
+      255
+    ],
+    "shadows": true,
+    "colors": {
+      "white": "#f6e6c8",
+      "grey": "#6E7887",
+      "water": "#3E7CB1",
+      "accent": "#ffb547",
+      "accent_hi": "#F2C14E",
+      "accent_glow": "#ffb547",
+      "danger": "#ffb547",
+      "iron": "#323842",
+      "metal": "#9AA6B8",
+      "glass_line": "#D8E8FF",
+      "ink_text": "#0B0E13",
+      "chalk": "#F5EBDD",
+      "board": "#161C24",
+      "label": "#f6e6c8",
+      "dial": "#F5EBDD",
+      "bench": "#2B3440",
+      "bench_seam": "#11161C",
+      "bench_leg": "#1E252E",
+      "wall": "#161D26",
+      "feather": "#F5EBDD",
+      "orange": "#F2C14E"
+    },
+    "lights": {
+      "hemi": 1.05,
+      "hemi_sky": "#DCE4FF",
+      "hemi_ground": "#22262E",
+      "key": 2.3,
+      "key_dir": [
+        -0.55,
+        1.0,
+        0.75
+      ],
+      "rim": 2.4,
+      "rim_color": "accent",
+      "rim_dir": [
+        0.45,
+        0.55,
+        -1.0
+      ]
+    },
+    "ink": {
+      "color": "#F5EBDD",
+      "px": 1.6,
+      "rim": "#ffb547",
+      "rim_px": 0,
+      "crease": 0.4
+    },
+    "grade": {
+      "sat": 1.06,
+      "vig": 0.16
+    },
+    "look3d": "paper"
+  },
+  "cast_palette": {
+    "body": "#F5EBDD",
+    "shade": "#9AA0AA",
+    "ink": "#0B0E13",
+    "rim": "#F5EBDD",
+    "accent": "#3E7CB1",
+    "strap": "#5A6270"
+  },
+  "html": {
+    "look": "sticker",
+    "font": "Baloo2-Variable.ttf",
+    "palette": {
+      "bg": "#000000",
+      "ink": "#f6e6c8",
+      "a": "#ffb547",
+      "b": "#3a4fa6",
+      "c": "#12161c"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    },
+    "type": {
+      "weight": 400,
+      "upper": true
+    }
+  },
+  "not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "atlas": {
+    "number": 28,
+    "id": "shadow-box",
+    "name": "Shadow Box",
+    "tag": "Explainer",
+    "fit": 3,
+    "duplicate_of": "papercraft3d-black",
+    "why": "Ánh sáng ấm sau lưng trên nền tối giữ bản sắc; gần papercraft3d-black → tier 2.",
+    "frame_props": [
+      "ball",
+      "ice",
+      "beaker"
+    ]
+  },
+  "category": "flat-physical",
+  "category_name": "Flat content made physical",
+  "tier": 2,
+  "brand_fit": "ok",
+  "variant": "dark-stage",
+  "image_style_block": "3D paper-cut light box on a pure black stage (#000000): cream paper silhouettes with bright cut edges, deep walnut frame. Warm back-wall lamp, lit gaps between sheets, front sheets in silhouette. One accent colour (warm glow) only on the key element. Leave a blank cut-out label in each layer empty (captions are added later).",
+  "video_motion_block": "Sheets arrive one by one from different directions, each lighting the gap behind it.",
+  "avoid_block": "Avoid: any text, letters or numbers, logos, bright backdrop, visible horizon, photoreal people.",
+  "materials": "cream paper silhouettes with bright cut edges, deep walnut frame",
+  "lighting": "warm back-wall lamp, lit gaps between sheets, front sheets in silhouette",
+  "camera": "wide-aperture long lens, sideways slide for parallax, pull-back to square-on",
+  "text_style": {
+    "plate": "a blank cut-out label in each layer",
+    "font": "Baloo2-Variable.ttf",
+    "uppercase": true,
+    "rule": "chữ do text_fx / chữ 3D của engine; prompt ảnh chỉ chừa chỗ trống"
+  },
+  "good_for": "dòng thời gian theo chiều sâu, trước/sau",
+  "what_it_is_not": [
+    "không phải ảnh chụp thật / CGI quảng cáo",
+    "không có phông nền sáng hay đường chân trời — sân khấu luôn đen",
+    "không để AI vẽ chữ hay số: chữ do text_fx / engine thêm sau"
+  ],
+  "code_engine": "three",
+  "_generated": "vidlib/atlas.py từ config/atlas.json — sửa ở đó rồi chạy python scripts/atlas_import.py",
+  "_base": "papercraft3d-black"
+}

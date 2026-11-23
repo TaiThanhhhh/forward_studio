@@ -1,0 +1,62 @@
+/* Design tokens — forward. studio (Phần D, docs/DESIGN_SYSTEM.md). Mọi màu/khoảng cách/chữ của UI lấy từ đây.
+   Giao diện tối kiểu phần mềm dựng phim: xám than nhiều tầng (KHÔNG đen tuyệt đối) để vùng video đen thật của kênh nổi
+   lên; MỘT accent cho hành động chính + vùng đang chọn; màu trạng thái riêng, dùng giống nhau ở mọi nơi. */
+
+@font-face { font-family: "Inter"; font-weight: 400 500; font-display: swap; src: url("/fonts/Inter-Medium.otf") format("opentype"); }
+@font-face { font-family: "Inter"; font-weight: 600; font-display: swap; src: url("/fonts/Inter-SemiBold.otf") format("opentype"); }
+@font-face { font-family: "Inter"; font-weight: 700; font-display: swap; src: url("/fonts/Inter-Bold.otf") format("opentype"); }
+@font-face { font-family: "Roboto Mono"; font-weight: 100 700; font-display: swap; src: url("/fonts/RobotoMono-Variable.ttf") format("truetype"); }
+
+:root {
+  /* bề mặt — tầng càng cao càng sáng */
+  --s0: #111111;           /* nền app */
+  --s1: #161616;           /* panel */
+  --s2: #1c1c1c;           /* ô nhập, thẻ, hàng hover */
+  --s3: #232323;           /* nổi / đang chọn */
+  --s4: #2c2c2c;           /* nhấn giữ */
+  --canvas: #000000;       /* CHỈ vùng video / khung hình */
+  --line: #2a2a2a;         /* viền mảnh thay bóng đổ */
+  --line-2: #3a3a3a;
+  /* chữ (tương phản trên --s1: t1 15.3:1 · t2 7.6:1 · t3 5.0:1 — đạt WCAG AA cho 13 px) */
+  --t1: #ececec;
+  --t2: #a8a8a8;
+  --t3: #8a8a8a;
+  --t-inv: #ffffff;
+  /* accent duy nhất (brand xanh điện, sáng lên cho nền tối) */
+  --accent: #3a64ff;          /* nền nút chính — chữ trắng 4.7:1 (AA) */
+  --accent-hi: #5a7dff;       /* hover */
+  --accent-text: #7f9bff;     /* chữ/viền accent trên nền tối — 6.2:1 */
+  --accent-soft: rgba(58, 100, 255, 0.16);  /* hàng/ô đang chọn */
+  /* trạng thái — một bảng cho cả app (badge, cổng QA, job, dot) */
+  --ok: #3fb950;    --ok-soft: rgba(63, 185, 80, 0.14);
+  --warn: #d6a01e;  --warn-soft: rgba(214, 160, 30, 0.14);
+  --err: #f2554b;   --err-soft: rgba(242, 85, 75, 0.14);
+  --proc: #35b6c9;  --proc-soft: rgba(53, 182, 201, 0.14);
+  /* engine (chỉ chấm/viền nhỏ, không nền lớn) */
+  --eng-flow: #8b7cf6; --eng-three: #35b6c9; --eng-html: #3fb950; --eng-manim: #d6a01e; --eng-board: #f2554b;
+
+  /* chữ */
+  --font-sans: "Inter", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "Roboto Mono", "Cascadia Mono", Consolas, ui-monospace, monospace;
+  --fs-11: 11px; --fs-12: 12px; --fs-13: 13px; --fs-14: 14px; --fs-16: 16px; --fs-20: 20px;
+  --lh: 18px;
+
+  /* lưới 4 px */
+  --u1: 4px; --u2: 8px; --u3: 12px; --u4: 16px; --u5: 20px; --u6: 24px; --u8: 32px;
+  --row: 28px;              /* compact */
+  --ctl: 26px;              /* chiều cao nút/ô nhập */
+  --topbar: 40px; --statusbar: 24px;
+
+  --r1: 2px; --r2: 4px; --r3: 6px;
+
+  --t-fast: 120ms; --t-mid: 160ms; --t-slow: 180ms;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --focus: 0 0 0 2px var(--s0), 0 0 0 4px var(--accent-text);
+  color-scheme: dark;
+}
+
+:root[data-density="comfortable"] { --row: 36px; --ctl: 32px; }
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --t-fast: 0ms; --t-mid: 0ms; --t-slow: 0ms; }
+}
