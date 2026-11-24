@@ -116,8 +116,8 @@
     "_doc": "Sân khấu 3D biên tập tối ấm đồng bộ với look Vox: vật liệu matte mềm kiểu diorama báo chí, rim vàng dạ quang.",
     "bg": "#0E1014",
     "fog": "#0E1014",
-    "fog_near": 10,
-    "fog_far": 32,
+    "fog_near": 9,
+    "fog_far": 28,
     "toon_steps": [
       125,
       205,
@@ -148,21 +148,22 @@
       "orange": "#F5D547"
     },
     "lights": {
-      "hemi": 1.15,
-      "hemi_sky": "#E9ECF5",
-      "hemi_ground": "#1E222B",
-      "key": 2.35,
+      "hemi": 0.55,
+      "hemi_sky": "#C9D6EC",
+      "hemi_ground": "#0B0E16",
+      "key": 3.15,
+      "key_color": "#FFF8EE",
       "key_dir": [
-        -0.55,
+        -0.62,
         1.0,
-        0.78
+        0.65
       ],
-      "rim": 2.0,
+      "rim": 3.4,
       "rim_color": "accent",
       "rim_dir": [
-        0.5,
-        0.55,
-        -1.0
+        0.62,
+        0.52,
+        -0.95
       ]
     },
     "ink": {
@@ -173,12 +174,13 @@
       "crease": 0.45
     },
     "grade": {
-      "sat": 1.04,
-      "vig": 0.2
+      "sat": 1.06,
+      "vig": 0.28
     },
     "look3d": {
       "kind": "clay",
-      "rough": 0.85
+      "rough": 0.82,
+      "exposure": 1.08
     }
   },
   "cast_palette": {

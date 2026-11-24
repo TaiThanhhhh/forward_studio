@@ -1181,8 +1181,56 @@ function cliff(THREE, rim, depth, seed) {
   return geo;
 }
 
+/** Nón ánh sáng sân khấu volumetric mềm (kiểu Fern / Blender Cycles): mép mềm theo Fresnel, không ảnh hưởng Box3 hay nét ink. */
+export function volumetricSpotlight(ctx, { parent = ctx.world, x = 0, y = 0, z = 0, rTop = 0.28, rBot = 1.9, h = 4.6, color = null, opacity = 0.085, pool = true } = {}) {
+  const { THREE } = ctx, g = ctx.group(parent, x, y, z);
+  g.userData.noFrame = true; g.userData.ndSkip = true;
+  const baseCol = new THREE.Color('#E6EEFA');
+  const accRaw = ctx.C ? ctx.C('accent') : '#F5D547';
+  const col = color ? new THREE.Color(ctx.C ? ctx.C(color) : color)
+    : (/^#[0-9a-fA-F]{6}$/.test(String(accRaw)) ? baseCol.clone().lerp(new THREE.Color(accRaw), 0.18) : baseCol);
+  const op = Math.max(0.02, Math.min(0.22, Number(opacity) || 0.085));
+  const coneGeo = new THREE.CylinderGeometry(rTop, rBot, h, 36, 1, true);
+  const coneMat = new THREE.ShaderMaterial({
+    uniforms: { uColor: { value: col }, uOpacity: { value: op } },
+    vertexShader: `varying vec2 vUv; varying vec3 vN; varying vec3 vV;
+      void main(){ vUv = uv; vec4 mv = modelViewMatrix * vec4(position, 1.); vN = normalize(normalMatrix * normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix * mv; }`,
+    fragmentShader: `uniform vec3 uColor; uniform float uOpacity; varying vec2 vUv; varying vec3 vN; varying vec3 vV;
+      void main(){
+        float ndv = abs(dot(normalize(vN), normalize(vV)));
+        float radial = pow(ndv, 1.75);
+        float vert = smoothstep(0.0, 0.18, vUv.y) * smoothstep(1.0, 0.84, vUv.y) * (0.28 + 0.72 * pow(vUv.y, 0.8));
+        float a = radial * vert * uOpacity;
+        gl_FragColor = vec4(uColor * a, a);
+      }`,
+    transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, fog: false, side: THREE.FrontSide,
+  });
+  const cone = new THREE.Mesh(coneGeo, coneMat);
+  cone.position.set(0, h / 2 + 0.02, 0);
+  cone.castShadow = false; cone.receiveShadow = false; cone.renderOrder = 4;
+  cone.userData.noFrame = true; cone.userData.ndSkip = true;
+  g.add(cone);
+  if (pool) {
+    const poolGeo = new THREE.CircleGeometry(rBot * 0.92, 40);
+    poolGeo.rotateX(-Math.PI / 2);
+    const poolMat = new THREE.ShaderMaterial({
+      uniforms: { uColor: { value: col }, uOpacity: { value: op * 0.75 } },
+      vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }`,
+      fragmentShader: `uniform vec3 uColor; uniform float uOpacity; varying vec2 vUv;
+        void main(){ float d = length(vUv * 2. - 1.); float k = exp(-d * d * 3.2) * smoothstep(1., 0.15, d); float a = k * uOpacity; gl_FragColor = vec4(uColor * a, a); }`,
+      transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, fog: false,
+    });
+    const pl = new THREE.Mesh(poolGeo, poolMat);
+    pl.position.set(0, 0.009, 0);
+    pl.castShadow = false; pl.receiveShadow = false; pl.renderOrder = 3;
+    pl.userData.noFrame = true; pl.userData.ndSkip = true;
+    g.add(pl);
+  }
+  return { g, cone };
+}
+
 /**
- * Dựng bối cảnh. name: meadow | tabletop | street (black/lab/track dựng ở stage như cũ).
+ * Dựng bối cảnh. name: black | meadow | tabletop | street | track | stadium | diorama (lab dựng ở stage như cũ).
  * ext = {cx, cz, sx, sz}: tâm + cỡ vùng đặt prop (stage đo) để bối cảnh tự vừa. o = set_opts.
  * → {root, base, frame (gợi ý góc máy), table?}
  */
@@ -1191,6 +1239,25 @@ export function setScene(ctx, name, o = {}, ext = { cx: 0, cz: 0, sx: 1, sz: 1 }
   const tx = (painter, ...a) => (HAS_DOM && ctx.P && ctx.P[painter] ? ctx.P[painter](...a) : null);
   const px = Math.min(128, ctx.texPx || 128);
   const mapMat = (t, k, extra = {}) => ctx.toon(t ? '#ffffff' : setCol(ctx, o, k), { vertexColors: true, ...(t ? { map: t } : {}), ...extra });
+  const isEditorial = ((ctx.job && ctx.job.world && ctx.job.world.character_style) || '') === 'editorial';
+  const addSpotlight = (y0, rBot, h = 4.6, defOp = 0.085) => {
+    const sp = o.spotlight;
+    if (sp === false) return;
+    const cfg = typeof sp === 'object' && sp !== null ? sp : {};
+    volumetricSpotlight(ctx, {
+      parent: root, x: cfg.x ?? 0, y: y0, z: cfg.z ?? 0,
+      rTop: cfg.rTop ?? Math.max(0.22, rBot * 0.16), rBot: cfg.rBot ?? rBot, h: cfg.h ?? h,
+      color: cfg.color ?? o.spotlight_color ?? null, opacity: cfg.opacity ?? defOp, pool: cfg.pool !== false,
+    });
+  };
+  if (name === 'black') {
+    if (o.spotlight === true || (typeof o.spotlight === 'object' && o.spotlight !== null) || (isEditorial && o.spotlight !== false)) {
+      root.position.set(o.at ? o.at[0] : ext.cx, 0, o.at ? o.at[1] : ext.cz);
+      const span = Math.max(1.2, ext.sx || 1, ext.sz || 1);
+      addSpotlight(0, Math.min(2.6, Math.max(1.35, span * 0.72 + 0.75)), 4.8, 0.085);
+    }
+    return { root, base: 0 };
+  }
   if (name === 'meadow') {
     const span = Math.max(ext.sx, ext.sz);
     const full = o.full === true || (ctx.job && ctx.job.world && ctx.job.world.darkmode_env === true);
@@ -1223,6 +1290,9 @@ export function setScene(ctx, name, o = {}, ext = { cx: 0, cz: 0, sx: 1, sz: 1 }
       const hx = (i - (nH - 1) / 2) * (hw * 1.15) + (hsh(i, seed) - 0.5) * r * 0.4;
       const hm = setMesh(ctx, hg, ctx.toon(hc, { vertexColors: true }), root, hx, -hh * 0.4, -(r * 0.9 + 2.2 + 1.8 * hsh(i, seed + 10)));
       hm.scale.set(hw, hh, hw * 0.5);
+    }
+    if (isEditorial || o.spotlight === true || (typeof o.spotlight === 'object' && o.spotlight !== null)) {
+      addSpotlight(0, Math.min(2.6, Math.max(1.3, r * 0.55)), 4.6, 0.075);
     }
     return { root, base: 0, frame: { elev: full ? 10 : 9, margin: full ? 1.2 : 1.3 }, r };
   }
@@ -1289,33 +1359,41 @@ export function setScene(ctx, name, o = {}, ext = { cx: 0, cz: 0, sx: 1, sz: 1 }
     const inD = isStad ? 3.2 : 2.2;
     const totalD = D + inD + 0.9;
     root.position.set(o.at ? o.at[0] : ext.cx, 0, o.at ? o.at[1] : ext.cz);
-    const kx = (x) => 1 - 0.65 * sstep(0.36 * W, 0.52 * W, Math.abs(x));
-    // bệ diorama dày (cạnh cắt đá/bê tông tối — đúng chất mô hình thu nhỏ Futurepedia 3D Style Atlas)
+    const kx = (x) => 1 - 0.92 * sstep(0.32 * W, 0.50 * W, Math.abs(x));
+    const kf = (z) => 1 - 0.72 * sstep(0.28 * D, 0.52 * D, z);
+    // bệ diorama dày (cạnh cắt đá/bê tông tối — mép tan sâu vào sân khấu tối dark-mode)
     const slabH = 0.28;
-    const baseG = fadeGeo(ctx, new THREE.BoxGeometry(W + 0.2, slabH, totalD, 14, 2, 6), (x, y) => kx(x) * (0.45 + 0.55 * sstep(-slabH / 2, slabH / 2, y)));
+    const baseG = fadeGeo(ctx, new THREE.BoxGeometry(W + 0.2, slabH, totalD, 14, 2, 6), (x, y) => kx(x) * (0.08 + 0.84 * sstep(-slabH / 2, slabH / 2, y)));
     setMesh(ctx, baseG, ctx.toon(setCol(ctx, o, 'stadium_base'), { vertexColors: true }), root, 0, -slabH / 2 - 0.002, -inD / 2 + 0.15);
-    // mặt đường chạy tartan cao su terracotta (4 làn + vạch trắng)
+    // mặt đường chạy tartan cao su terracotta (4 làn + vạch trắng, tối dần mượt về 2 đầu)
     const lanes = Math.max(2, Math.round(o.lanes ?? 4));
     const tTex = stex(ctx, tx('tartanTrack', seed, setCol(ctx, o, 'tartan'), setCol(ctx, o, 'track_line'), 256, lanes), Math.max(1, Math.round(W / 2.2)), 1);
     const trackG = new THREE.PlaneGeometry(W, D, 18, 6); trackG.rotateX(-Math.PI / 2);
-    fadeGeo(ctx, trackG, (x) => kx(x));
+    fadeGeo(ctx, trackG, (x, y, z) => kx(x) * kf(z));
     setMesh(ctx, trackG, mapMat(tTex, 'tartan'), root, 0, 0.003, 0);
-    // vạch xuất phát / về đích ô cờ (checkered finish line)
+    // vạch xuất phát / về đích ô cờ (checkered finish line) + dải viền tinh tế
     if (o.finish !== false) {
       const fx = o.finish_x ?? (W * 0.22);
       const cTex = stex(ctx, tx('checkeredStrip', 128, 8), 1, 2);
       const fg = new THREE.PlaneGeometry(0.26, D * 0.98); fg.rotateX(-Math.PI / 2);
       setMesh(ctx, fg, ctx.toon('#ffffff', { map: cTex }), root, fx, 0.007, 0);
+      const fline = new THREE.PlaneGeometry(0.025, D * 0.98); fline.rotateX(-Math.PI / 2);
+      const fm = setMesh(ctx, fline, ctx.flat('accent', { transparent: true, opacity: 0.45 }), root, fx - 0.145, 0.008, 0);
+      fm.userData.noFrame = true;
     }
     // gờ trắng phân cách sân cỏ (inner raised curb) + mép ngoài
     for (const cz of [-D / 2 - 0.04, D / 2 + 0.04]) {
-      const cg = fadeGeo(ctx, new THREE.BoxGeometry(W, 0.075, 0.08, 12, 1, 1), (x) => kx(x) * 0.92);
+      const cg = fadeGeo(ctx, new THREE.BoxGeometry(W, 0.075, 0.08, 12, 1, 1), (x) => kx(x) * 0.88);
       setMesh(ctx, cg, ctx.toon(setCol(ctx, o, 'track_line'), { vertexColors: true }), root, 0, 0.037, cz);
     }
-    // sân cỏ infield cắt sọc xanh đậm phía sau đường chạy
+    // viền sáng chân trời tinh tế dọc gờ sau đường chạy (rim edge polish)
+    const rimStripG = fadeGeo(ctx, new THREE.BoxGeometry(W * 0.94, 0.016, 0.022, 14, 1, 1), (x) => kx(x));
+    const rimStripM = setMesh(ctx, rimStripG, new THREE.MeshBasicMaterial({ color: ctx.C ? ctx.C('accent') : '#F5D547', vertexColors: true, transparent: true, opacity: 0.28, depthWrite: false }), root, 0, 0.08, -D / 2 - 0.04);
+    rimStripM.userData.noFrame = true;
+    // sân cỏ infield cắt sọc xanh đậm phía sau đường chạy (tan sâu vào tối ở đường chân trời)
     const infTex = stex(ctx, tx('stadiumGrass', seed + 1, setCol(ctx, o, 'infield'), 256, 6), Math.max(2, Math.round(W / 2.0)), 1);
     const infG = new THREE.PlaneGeometry(W, inD, 14, 6); infG.rotateX(-Math.PI / 2);
-    fadeGeo(ctx, infG, (x, y, z) => kx(x) * (1 - 0.55 * sstep(0.1 * inD, 0.5 * inD, -z)));
+    fadeGeo(ctx, infG, (x, y, z) => kx(x) * (1 - 0.82 * sstep(0.05 * inD, 0.5 * inD, -z)));
     setMesh(ctx, infG, mapMat(infTex, 'infield'), root, 0, 0.002, -D / 2 - 0.08 - inD / 2);
     // cọc tiêu / cột mốc khoảng cách (marker cones) dọc mép đường chạy
     if (o.cones !== false) {
@@ -1331,10 +1409,10 @@ export function setScene(ctx, name, o = {}, ext = { cx: 0, cz: 0, sx: 1, sz: 1 }
       const sc = setCol(ctx, o, 'stand'), z0 = -D / 2 - inD + 0.15;
       for (let t = 0; t < 4; t++) {
         const tw = W * (0.94 - t * 0.03), th = 0.22 + t * 0.2, tz = z0 - t * 0.36;
-        const sg = fadeGeo(ctx, new THREE.BoxGeometry(tw, th, 0.34, 10, 1, 1), (x) => kx(x) * (0.78 - t * 0.14));
+        const sg = fadeGeo(ctx, new THREE.BoxGeometry(tw, th, 0.34, 10, 1, 1), (x) => kx(x) * (0.68 - t * 0.15));
         setMesh(ctx, sg, ctx.toon(sc, { vertexColors: true }), root, 0, th / 2, tz);
         // dải ghế mảnh nổi khối
-        const rg = fadeGeo(ctx, new THREE.BoxGeometry(tw * 0.96, 0.03, 0.08, 8, 1, 1), (x) => kx(x) * (0.65 - t * 0.1));
+        const rg = fadeGeo(ctx, new THREE.BoxGeometry(tw * 0.96, 0.03, 0.08, 8, 1, 1), (x) => kx(x) * (0.58 - t * 0.12));
         setMesh(ctx, rg, ctx.toon(t === 1 ? 'accent' : '#4E586C', { vertexColors: true }), root, 0, th + 0.015, tz + 0.08);
       }
     }
@@ -1343,35 +1421,46 @@ export function setScene(ctx, name, o = {}, ext = { cx: 0, cz: 0, sx: 1, sz: 1 }
       const zL = -D / 2 - inD - 0.6;
       for (const sx of [-1, 1]) {
         const lx = sx * W * 0.34;
-        const pole = fadeGeo(ctx, new THREE.CylinderGeometry(0.04, 0.06, 3.0, 6, 4), (x, y) => 0.35 + 0.5 * sstep(-1.5, 1.5, y));
-        setMesh(ctx, pole, ctx.toon('#4C5566', { vertexColors: true }), root, lx, 1.5, zL);
-        const head = ctx.add(new THREE.BoxGeometry(0.56, 0.24, 0.12), '#2C323E', lx, 3.05, zL + 0.05, root);
+        const pole = fadeGeo(ctx, new THREE.CylinderGeometry(0.036, 0.052, 3.0, 6, 4), (x, y) => 0.22 + 0.55 * sstep(-1.5, 1.5, y));
+        setMesh(ctx, pole, ctx.toon('#2D3442', { vertexColors: true }), root, lx, 1.5, zL);
+        const head = ctx.add(new THREE.BoxGeometry(0.56, 0.22, 0.12), '#1E232E', lx, 3.05, zL + 0.05, root);
         head.rotation.x = 0.35; head.castShadow = false;
-        const bulb = ctx.add(new THREE.PlaneGeometry(0.48, 0.18), ctx.flat(setCol(ctx, o, 'lamp')), lx, 3.03, zL + 0.12, root);
+        const bulb = ctx.add(new THREE.PlaneGeometry(0.48, 0.16), ctx.flat(setCol(ctx, o, 'lamp')), lx, 3.03, zL + 0.12, root);
         bulb.rotation.x = 0.35; bulb.castShadow = false;
-        ctx.glow(setCol(ctx, o, 'lamp'), 1.35, root, lx, 3.0, zL + 0.16, 0.42);
+        ctx.glow(setCol(ctx, o, 'lamp'), 1.35, root, lx, 3.0, zL + 0.16, 0.38);
       }
+    }
+    if (isEditorial || o.spotlight !== false) {
+      addSpotlight(0, Math.min(2.4, Math.max(1.5, D * 0.82)), 4.8, 0.085);
     }
     return { root, base: 0, frame: { elev: 17, azim: 26, margin: 1.14, push: 0.06, orbit: 5, headroom: 0.2 } };
   }
   if (name === 'diorama') {
-    // Tiny Diorama trưởng thành dark-mode: đảo đất đá phiến cắt vát, đường mòn trầm, cây thông kiến trúc, viền tối mềm
+    // Tiny Diorama trưởng thành dark-mode: đảo đất đá phiến cắt vát, đường mòn trầm, cây thông kiến trúc, viền tối mềm + rim sắc
     const W = o.w ?? Math.max(4.4, ext.sx + 2.4), D = o.d ?? Math.max(3.2, ext.sz + 1.8), H = 0.48;
     root.position.set(o.at ? o.at[0] : ext.cx, 0, o.at ? o.at[1] : ext.cz);
-    // khối đất cắt vát (cut soil-and-rock bevel slab)
+    const edgeFade = (x, z) => 1 - 0.68 * Math.max(sstep(0.32 * W, 0.52 * W, Math.abs(x)), sstep(0.32 * D, 0.52 * D, Math.abs(z)));
+    // khối đất cắt vát (cut soil-and-rock bevel slab) tan sâu vào khoảng tối bên dưới
     const soilT = stex(ctx, tx('dirt', seed + 1, setCol(ctx, o, 'dirt'), 64), 3, 1);
-    const slabG = fadeGeo(ctx, new THREE.BoxGeometry(W, H, D, 8, 3, 6), (x, y) => 0.36 + 0.62 * sstep(-H / 2, H / 2, y));
+    const slabG = fadeGeo(ctx, new THREE.BoxGeometry(W, H, D, 10, 3, 8), (x, y, z) => (0.06 + 0.86 * sstep(-H / 2, H / 2, y)) * (0.45 + 0.55 * edgeFade(x, z)));
     setMesh(ctx, slabG, mapMat(soilT, 'dirt'), root, 0, -H / 2 - 0.02, 0, true);
     // lớp cỏ rêu đêm phủ trên mặt (có viền tối mềm hòa mượt vào không gian dark-mode)
     const grT = stex(ctx, tx('grass', seed, setCol(ctx, o, 'grass'), px), Math.max(2, Math.round(W / 1.5)), Math.max(2, Math.round(D / 1.5)));
-    const topG = new THREE.BoxGeometry(W + 0.06, 0.09, D + 0.06, 10, 1, 8);
-    fadeGeo(ctx, topG, (x, y, z) => 0.96 - 0.34 * Math.max(sstep(0.36 * W, 0.52 * W, Math.abs(x)), sstep(0.36 * D, 0.52 * D, Math.abs(z))));
+    const topG = new THREE.BoxGeometry(W + 0.06, 0.09, D + 0.06, 12, 1, 10);
+    fadeGeo(ctx, topG, (x, y, z) => 0.95 * edgeFade(x, z));
     setMesh(ctx, topG, mapMat(grT, 'grass'), root, 0, -0.02, 0, true);
+    // đường viền rim kiến trúc siêu mảnh quanh mép trên diorama (studio edge polish)
+    const rimMat = new THREE.MeshBasicMaterial({ color: ctx.C ? ctx.C('accent') : '#F5D547', vertexColors: true, transparent: true, opacity: 0.24, depthWrite: false });
+    for (const sz of [-1, 1]) {
+      const rg = fadeGeo(ctx, new THREE.BoxGeometry(W + 0.07, 0.014, 0.018, 12, 1, 1), (x) => 1 - 0.85 * sstep(0.3 * W, 0.52 * W, Math.abs(x)));
+      const rm = setMesh(ctx, rg, rimMat, root, 0, 0.028, sz * (D / 2 + 0.032));
+      rm.userData.noFrame = true;
+    }
     // lối chạy đất nén băng ngang qua giữa đảo (trail)
     if (o.trail !== false) {
-      const trG = new THREE.PlaneGeometry(W * 0.98, Math.min(1.1, D * 0.36), 12, 2); trG.rotateX(-Math.PI / 2);
+      const trG = new THREE.PlaneGeometry(W * 0.98, Math.min(1.1, D * 0.36), 14, 2); trG.rotateX(-Math.PI / 2);
       const trT = stex(ctx, tx('dirt', seed + 3, setCol(ctx, o, 'trail'), 64), 4, 1);
-      fadeGeo(ctx, trG, (x) => 0.92 * (1 - 0.34 * sstep(0.36 * W, 0.5 * W, Math.abs(x))));
+      fadeGeo(ctx, trG, (x) => 0.92 * (1 - 0.72 * sstep(0.32 * W, 0.5 * W, Math.abs(x))));
       setMesh(ctx, trG, mapMat(trT, 'trail'), root, 0, 0.028, 0.15);
     }
     // rải cây + bụi + đá xung quanh mép đảo (tránh vùng chạy giữa)
@@ -1388,6 +1477,9 @@ export function setScene(ctx, name, o = {}, ext = { cx: 0, cz: 0, sx: 1, sz: 1 }
     for (let i = 0; i < 5; i++) {
       const rx = (hsh(i, seed + 20) - 0.5) * W * 0.8, rz = (i % 2 ? 0.36 : -0.3) * D;
       rock(ctx, { parent: root, x: rx, y: 0.02, z: rz, r: 0.09 + 0.06 * hsh(i, seed + 21), seed: i + 1 });
+    }
+    if (isEditorial || o.spotlight !== false) {
+      addSpotlight(0.025, Math.min(2.3, Math.max(1.4, Math.min(W, D) * 0.58)), 4.6, 0.085);
     }
     return { root, base: 0.025, frame: { elev: 24, azim: 32, margin: 1.15, push: 0.07, orbit: 7, headroom: 0.2 } };
   }
