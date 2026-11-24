@@ -21,6 +21,7 @@ prompts from the semantic fields you write. **Do not write long prompts**: descr
 - Pace ≈ **{wps} words per second**: 20 s ≈ 75 words, 30 s ≈ 110, 45 s ≈ 165. Count only spoken words.
 - {narrative_block}
   Every shot still maps to a `beat` tag (`hook`, `setup`, `escalate`, `payoff`, `twist`, `outro`), and the twist is the LAST spoken line: short, ironic, set up earlier. End with `outro.teaser` (or a seamless loop back to Shot 1 when `outro.mode` is `"loop"`).
+- {format_block}
 - {archetype_block}
 
 ### The 5 Viral Agency Screenwriting Laws (MANDATORY — 3-Second & Rewatch Test)

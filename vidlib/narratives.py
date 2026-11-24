@@ -310,3 +310,147 @@ def archetype_block(aid):
         f"  - **Audio Identity (`music_mood`):** `{d['music_mood']}`\n"
         f"  - **Ending:** {outro_rule}{hud_line}"
     )
+
+
+# ---------------------------------------------------------------------------
+# Format Families (Vòng 14 — config/formats.json: Medium + Assembly + POV)
+# ---------------------------------------------------------------------------
+
+
+@cache
+def formats_config():
+    return load_json(os.path.join(CONFIG_DIR, "formats.json"))
+
+
+def format_ids():
+    return list(formats_config()["formats"])
+
+
+def get_format(fid):
+    return formats_config()["formats"].get(fid or "")
+
+
+def format_history(exclude=None):
+    """[(mtime, slug, format_family)] mới nhất trước — đọc từ storyboard hoặc plan.json."""
+    out = []
+    if not os.path.isdir(PROJECTS):
+        return out
+    valid = formats_config()["formats"]
+    for slug in os.listdir(PROJECTS):
+        if slug.startswith(("_", ".", "cmp-")) or slug == exclude:
+            continue
+        d = os.path.join(PROJECTS, slug)
+        paths = [os.path.join(d, n) for n in ("out/final.mp4", "storyboard.json", "plan.json")]
+        have = [p for p in paths if os.path.exists(p)]
+        if not have:
+            continue
+        sb = load_json(paths[1], {}) if os.path.exists(paths[1]) else {}
+        pl = load_json(paths[2], {}) if os.path.exists(paths[2]) else {}
+        fid = sb.get("format_family_resolved") or sb.get("format_family") or pl.get("format_family")
+        if not fid and (sb.get("assembly_resolved") == "board_spine" or sb.get("assembly") == "board_spine"):
+            fid = "evidence_board_doc"
+        if fid in valid:
+            out.append((os.path.getmtime(have[0]), slug, fid))
+    return sorted(out, reverse=True)
+
+
+def recent_formats(n=None, exclude=None):
+    n = n or int(formats_config().get("avoid_recent", 3))
+    return [x for _, _, x in format_history(exclude)[:n]]
+
+
+def is_strong_format(fid, text):
+    return any(re.search(p, text, re.I) for p in (get_format(fid) or {}).get("strong") or [])
+
+
+def score_format(fid, text, stems=None):
+    d = get_format(fid) or {}
+    stems = stems if stems is not None else styles._stems(text)
+    tags = [t for t in d.get("tags") or [] if styles.score_tag(t, text, stems)]
+    return float(d.get("base", 0)) + len(tags) + (3 if is_strong_format(fid, text) else 0), tags
+
+
+def ranked_formats(text, slug=None, hint=None):
+    """[(id, điểm, nhãn khớp)] — bỏ Format Family vừa dùng trong `avoid_recent` video gần nhất."""
+    text_l = (text or "").lower()
+    rec_list = recent_formats(exclude=slug)
+    rec = set(rec_list)
+    last_used = rec_list[0] if rec_list else None
+    stems = styles._stems(text_l)
+    seed = slug or text_l
+    all_ids = format_ids()
+    rows = []
+    for fid in all_ids:
+        if fid in rec and fid != hint and not (is_strong_format(fid, text_l) and fid != last_used):
+            continue
+        sc, tags = score_format(fid, text_l, stems)
+        rows.append((fid, sc + (4 if fid == hint else 0) + _jitter(seed, f"fmt:{fid}"), tags))
+    if not rows:
+        pool = [fid for fid in all_ids if fid != last_used] or all_ids
+        for fid in pool:
+            sc, tags = score_format(fid, text_l, stems)
+            rows.append((fid, sc + _jitter(seed, f"fmt:{fid}"), tags))
+    return sorted(rows, key=lambda r: (-r[1], all_ids.index(r[0])))
+
+
+def plan_format(topic, slug=None, want=None, idea=None):
+    """{format_family, format_reason, format_alternatives} cho plan.json."""
+    all_ids = format_ids()
+    if want and want != "auto":
+        if want not in all_ids:
+            raise StudioError(f"Không có format_family '{want}' (có: {', '.join(all_ids)}).")
+        return {"format_family": want, "format_reason": "chỉ định tay (--format)"}
+    idea = idea or {}
+    text = " ".join(str(x) for x in (topic, idea.get("title"), idea.get("hook")) if x)
+    hint = idea.get("format_family") if idea.get("format_family") in all_ids else None
+    rk = ranked_formats(text, slug, hint)
+    fid, _, tags = rk[0]
+    if fid == hint:
+        why = "ý tưởng gợi ý format family này (idea.json)"
+    elif is_strong_format(fid, text.lower()):
+        why = "chủ đề khớp mạnh hình thức kể chuyện này"
+    elif tags:
+        why = f"chủ đề khớp nhãn {', '.join(tags)}"
+    else:
+        why = "xoay vòng Format Family chống lặp khuôn"
+    rec = recent_formats(exclude=slug)
+    if rec:
+        why += f" · tránh lặp {len(rec)} video gần nhất: {', '.join(rec)}"
+    return {"format_family": fid, "format_reason": why, "format_alternatives": [r[0] for r in rk[1:4]]}
+
+
+def resolve_format(sb, plan=None):
+    """(id|None, ghi chú|None) cho storyboard đã viết."""
+    want = (sb or {}).get("format_family")
+    if want and want != "auto":
+        if want in format_ids():
+            return want, None
+        return None, (f"format_family '{want}' không có trong config/formats.json "
+                      f"(có: {', '.join(format_ids())}) — bỏ qua.")
+    p = (plan or {}).get("format_family")
+    return (p, None) if p in format_ids() else (None, None)
+
+
+def format_block(fid):
+    """Đoạn brief Format Family (tiếng Anh) khóa Medium + Assembly + POV khác biệt hẳn nhau."""
+    d = get_format(fid)
+    if not d:
+        items = []
+        for k, v in formats_config()["formats"].items():
+            studios = " / ".join(v.get("reference_studios") or [])
+            st = ", ".join(f"`{s}`" for s in (v.get("styles") or [])[:3])
+            items.append(
+                f"  - `{k}` ({studios}; assembly `{v['assembly']}`; styles {st}): {v['pov']}"
+            )
+        return ("**FORMAT FAMILY (Medium + Assembly + POV)** — pick ONE distinct format family and write its id "
+                "in `\"format_family\"` (the channel rotates across 5 genuinely different media & storytelling "
+                "formats so consecutive videos NEVER share the same skeleton):\n" + "\n".join(items))
+    studios = " / ".join(d.get("reference_studios") or [])
+    st = ", ".join(f"`{s}`" for s in (d.get("styles") or []))
+    return (
+        f"**FORMAT FAMILY FOR THIS VIDEO:** `{fid}` ({studios}) — write `\"format_family\": \"{fid}\"` "
+        f"and `\"assembly\": \"{d['assembly']}\"`. Recommended styles: {st}.\n"
+        f"  - **Storytelling POV:** {d['pov']}\n"
+        f"  - **Visual Grammar:** {d['visual_grammar']}\n"
+        f"  - **Forbidden Habits:** {d['forbidden_habits']}"
+    )
