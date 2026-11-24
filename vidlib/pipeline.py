@@ -21,7 +21,7 @@ import sys
 
 from . import audio as audiolib
 from . import (boardplan, boardqa, brief, codeshot, compiler, fakes, ingest, lang, linter, mix, motion, narratives, outro,
-               page, qa, render, styles, textfx, textstyle, thumbs, timeline, tts, vcam, vo, voices)
+               page, qa, render, spine, styles, textfx, textstyle, thumbs, timeline, tts, vcam, vo, voices)
 from . import storyboard as sbm
 from .common import (BRAND_DIR, CONFIG_DIR, FPS, PROJECTS, PROMPTS_DIR, ROOT, StudioError, channel, env, flow_models,
                      load_json, save_json, save_text, slugify, valid_media)
@@ -83,10 +83,118 @@ def _fp(*parts):
     return h.hexdigest()[:16]
 
 
+def _parse_hud_clock(val):
+    """Đọc mốc đồng hồ ('MM:SS', 'HH:MM:SS' hoặc số giây) → (seconds, show_hours, is_clock_str) hoặc None."""
+    if isinstance(val, (int, float)) and not isinstance(val, bool):
+        return float(val), False, False
+    if not isinstance(val, str):
+        return None
+    s = val.strip()
+    if ":" in s:
+        parts = s.split(":")
+        try:
+            nums = [float(p) for p in parts]
+        except ValueError:
+            return None
+        if len(nums) == 2:
+            return nums[0] * 60.0 + nums[1], False, True
+        if len(nums) == 3:
+            return nums[0] * 3600.0 + nums[1] * 60.0 + nums[2], True, True
+        return None
+    try:
+        return float(s), False, False
+    except ValueError:
+        return None
+
+
+def _fmt_hud_clock(sec, show_hours=False):
+    tot = max(0, int(round(sec)))
+    h = tot // 3600
+    m = (tot % 3600) // 60
+    s = tot % 60
+    if show_hours or h > 0:
+        return f"{h:02d}:{m:02d}:{s:02d}"
+    return f"{m:02d}:{s:02d}"
+
+
+def _hud_decimals(a, b, given=None):
+    if given is not None and not isinstance(given, bool):
+        try:
+            return max(0, min(3, int(given)))
+        except (TypeError, ValueError):
+            pass
+
+    def _d(v):
+        s = str(v)
+        return min(2, len(s.split(".")[1])) if "." in s else 0
+
+    return max(_d(a), _d(b))
+
+
+def interpolate_story_hud(sb, tl, shot, seg):
+    """Tính `story_hud` nội suy tuyến tính trên trục nội dung [0..content_end] cho một shot code.
+    Trả về None nếu là outro, shot tắt `"story_hud": false`, hoặc cả storyboard lẫn shot đều không khai story_hud."""
+    if seg is None or seg.get("sid") == "OUTRO" or not shot or shot.get("beat") == "outro":
+        return None
+    if shot.get("story_hud") is False:
+        return None
+    top_hud = sb.get("story_hud") if isinstance((sb or {}).get("story_hud"), dict) else None
+    shot_hud = shot.get("story_hud") if isinstance(shot.get("story_hud"), dict) else None
+    if not top_hud and not shot_hud:
+        return None
+    content_segs = [s for s in (tl or {}).get("segments", []) if s.get("sid") != "OUTRO"]
+    content_end = max((int(s.get("start_f", 0)) + int(s.get("n", 0)) for s in content_segs), default=1)
+    content_end = max(1, content_end)
+    p0 = max(0.0, min(1.0, int(seg.get("start_f", 0)) / content_end))
+    p1 = max(p0, min(1.0, (int(seg.get("start_f", 0)) + int(seg.get("n", 0))) / content_end))
+
+    out = dict(top_hud or {})
+    if shot_hud:
+        out.update(shot_hud)
+    has_shot_range = bool(shot_hud and ("from" in shot_hud or "to" in shot_hud))
+    has_shot_prog = bool(shot_hud and ("progress_from" in shot_hud or "progress_to" in shot_hud))
+
+    base_p0 = float((top_hud or {}).get("progress_from", 0.0))
+    base_p1 = float((top_hud or {}).get("progress_to", 1.0))
+    if not has_shot_prog:
+        out["progress_from"] = round(base_p0 + (base_p1 - base_p0) * p0, 4)
+        out["progress_to"] = round(base_p0 + (base_p1 - base_p0) * p1, 4)
+
+    if not has_shot_range and top_hud and ("from" in top_hud or "to" in top_hud):
+        kind = str(out.get("kind") or "meter").lower()
+        raw_a = top_hud.get("from", top_hud.get("to"))
+        raw_b = top_hud.get("to", top_hud.get("from"))
+        if kind == "clock":
+            pa, pb = _parse_hud_clock(raw_a), _parse_hud_clock(raw_b)
+            if pa and pb:
+                va, hrs_a, str_a = pa
+                vb, hrs_b, str_b = pb
+                v0 = va + (vb - va) * p0
+                v1 = va + (vb - va) * p1
+                if str_a or str_b:
+                    out["from"] = _fmt_hud_clock(v0, hrs_a or hrs_b)
+                    out["to"] = _fmt_hud_clock(v1, hrs_a or hrs_b)
+                else:
+                    out["from"] = round(v0, 2)
+                    out["to"] = round(v1, 2)
+        else:
+            try:
+                va, vb = float(raw_a), float(raw_b)
+            except (TypeError, ValueError):
+                pass
+            else:
+                dec = _hud_decimals(raw_a, raw_b, out.get("decimals"))
+                if "decimals" not in out:
+                    out["decimals"] = dec
+                out["from"] = round(va + (vb - va) * p0, max(dec, 2))
+                out["to"] = round(va + (vb - va) * p1, max(dec, 2))
+    return out
+
+
 class Run:
     def __init__(self, arg, frm=None, only=None, dry=False, model=None, ai=None, yes=False, no_open=False, log=print,
                  look_ok=False, tts_force=False, style=None, voice=None, flow=None, narrative=None, accept_qa=False,
-                 platforms=None, captions=None):
+                 platforms=None, captions=None, archetype=None):
         self.proj, self.idea, self.new = project_for(arg)
         self.slug = os.path.basename(self.proj)
         self.frm, self.only = resolve_stage(frm), resolve_stage(only)
@@ -94,6 +202,7 @@ class Run:
         self.look_ok, self.tts_force = look_ok, tts_force
         self.want_style, self.want_voice, self.want_flow = style, voice, flow   # cờ --style / --voice / --flow|--no-flow
         self.want_narrative = narrative                                       # cờ --narrative
+        self.want_archetype = archetype                                       # cờ --archetype (Vòng 13)
         self.want_captions = captions                  # cờ --captions (capcut_pop/pill/box, vox_highlight, off)
         self.accept_qa = accept_qa                     # --accept-qa: người làm duyệt tay video bị cổng QA chặn
         self.platforms = platforms                     # --platforms youtube_shorts,tiktok… (mặc định delivery.default)
@@ -140,9 +249,13 @@ class Run:
     def code_shots(self):
         return [s for s in self.csb["shots"] if s.get("mode_resolved") == "code" and codeshot.is_3d(s)]
 
+    def is_loop_outro(self):
+        return timeline.is_seamless_loop(getattr(self, "csb", None) or getattr(self, "sb", None))
+
     def outro_code(self):
         o = self.csb.get("outro", {})
-        return o.get("enabled", True) and o.get("mode", "code") == "code" and not self.spine()
+        return (o.get("enabled", True) and o.get("mode", "code") == "code"
+                and not self.is_loop_outro() and not self.spine())
 
     def spine(self):
         return self.sb.get("assembly_resolved") == "board_spine"
@@ -162,14 +275,19 @@ class Run:
             self.head("idea", f"tạo dự án {os.path.relpath(self.proj, ROOT)}")
 
     def make_plan(self):
-        """plan.json: style + giọng + dạng kịch bản chọn cho ý tưởng TRƯỚC khi viết kịch bản (biết hôm nay có Flow hay
-        toàn code, kể theo khung nào)."""
+        """plan.json: style + giọng + dạng kịch bản + archetype đạo diễn chọn TRƯỚC khi viết kịch bản."""
         pp = self.p("plan.json")
         plan = load_json(pp, {}) if os.path.exists(pp) else {}
         idea = load_json(self.p("idea.json"), {}) if os.path.exists(self.p("idea.json")) else {}
         if plan and self.want_style is None and self.want_flow is None and self.want_voice is None:
+            dirty = False
             if self.want_narrative is not None or "narrative" not in plan:     # plan.json cũ (trước khi có dạng kịch bản)
                 plan.update(narratives.plan(self.idea, self.slug, want=self.want_narrative, idea=idea))
+                dirty = True
+            if self.want_archetype is not None or "archetype" not in plan:     # plan.json cũ (trước Vòng 13)
+                plan.update(narratives.plan_archetype(self.idea, self.slug, want=self.want_archetype, idea=idea))
+                dirty = True
+            if dirty:
                 save_json(pp, plan)
             return plan
         plan = styles.plan(self.idea, self.slug, flow=self.want_flow, style=self.want_style)
@@ -178,6 +296,7 @@ class Run:
         if v:
             plan["voice"], plan["voice_reason"] = v, why or "chỉ định tay (--voice)"
         plan.update(narratives.plan(self.idea, self.slug, want=self.want_narrative, idea=idea))
+        plan.update(narratives.plan_archetype(self.idea, self.slug, want=self.want_archetype, idea=idea))
         save_json(pp, plan)
         return plan
 
@@ -214,6 +333,10 @@ class Run:
             if plan.get("narrative"):
                 self.log(f"  · dạng kịch bản: {plan['narrative']} ({narratives.get(plan['narrative'])['name']}) — "
                          f"{plan.get('narrative_reason', '')}")
+            if plan.get("archetype") and narratives.get_archetype(plan["archetype"]):
+                self.log(f"  · archetype đạo diễn: {plan['archetype']} "
+                         f"({narratives.get_archetype(plan['archetype'])['name']}) — "
+                         f"{plan.get('archetype_reason', '')}")
             text = brief.build(self.idea, self.slug, self.model, self.proj, plan=plan)
             bp = self.p("brief.md")
             with open(bp, "w", encoding="utf-8", newline="\n") as f:
@@ -275,6 +398,11 @@ class Run:
             sb["narrative_resolved"] = nid
         if nnote:
             warns.append(nnote)
+        aid, anote = narratives.resolve_archetype(sb, plan)
+        if aid:
+            sb["archetype_resolved"] = aid
+        if anote:
+            warns.append(anote)
         if errs:
             raise Stop("storyboard_invalid", "storyboard.json còn lỗi:\n  ✖ " + "\n  ✖ ".join(errs))
         self.sb = sb
@@ -506,7 +634,7 @@ class Run:
             m = audiolib.sfxlib.decode(self.music, mono=True)
             self.bpm, beats = audiolib.detect_beats(m, channel()["audio"]["sample_rate"])
         o = self.csb.get("outro", {})
-        outro_sec = channel()["outro"]["duration_sec"] if o.get("enabled", True) else 0.0
+        outro_sec = 0.0 if self.is_loop_outro() else (channel()["outro"]["duration_sec"] if o.get("enabled", True) else 0.0)
         if self.spine() and outro_sec:
             outro_sec = boardplan.cfg().get("outro_sec", outro_sec)
         self.tl = timeline.build(self.csb, self.vo, beats, outro_sec)
@@ -552,9 +680,37 @@ class Run:
             oshot = {"id": "OUTRO", "beat": "outro", "code": {"scene": o.get("scene", "outro"), "params": params}}
         # engine html: các shot motion liền nhau = một cú máy liền (vidlib/spine.py); render.py bỏ transition giữa chúng
         codeshot.assign_layouts(self.csb, style, [oshot])   # biến thể bố cục xoay vòng (engine html)
-        self.html_spine = codeshot.spine_context(self.csb, self.tl, style, {"OUTRO": oshot} if oshot else None)
+        arch_id = self.csb.get("archetype_resolved") or (
+            self.csb.get("archetype") if self.csb.get("archetype") not in (None, "", "auto") else None
+        )
+        if arch_id:
+            extra_map = {"OUTRO": oshot} if oshot else {}
+            all_shots = {s["id"]: s for s in self.csb.get("shots", [])}
+            all_shots.update(extra_map)
+            shot_ids = [s["id"] for s in self.csb.get("shots", [])]
+
+            def _in_run(sh):
+                return codeshot.is_3d(sh) and codeshot.engine_of(sh, style) in codeshot.SPINE_ENGINES
+
+            def _entry(sh):
+                if codeshot.engine_of(sh, style) != "html":
+                    return {"scene": sh["code"]["scene"], "params": {}, "ghost": True}
+                p = dict((sh.get("code") or {}).get("params") or {})
+                if sh["id"] in shot_ids and "index" not in p:
+                    p["index"] = [shot_ids.index(sh["id"]) + 1, len(shot_ids)]
+                return {"scene": sh["code"]["scene"], "params": p}
+
+            self.html_spine = spine.context(
+                self.tl["segments"], all_shots, style,
+                self.csb.get("slug") or self.csb.get("topic", ""), _in_run, _entry,
+                prefer=narratives.moves(self.csb.get("narrative_resolved")),
+                archetype=arch_id,
+            )
+        else:
+            self.html_spine = codeshot.spine_context(self.csb, self.tl, style, {"OUTRO": oshot} if oshot else None)
         for s in self.csb["shots"]:
             s["spine_html"] = s["id"] in self.html_spine
+        shots_by_id = {s["id"]: s for s in self.csb["shots"]}
         for s in self.code_shots():
             seg = segs.get(s["id"])
             if seg:
@@ -566,12 +722,22 @@ class Run:
         for sid, job in self.code_jobs.items():
             jdata = load_json(job, {})
             want_cap = bool(self.csb["_captions_on"]) and sid != "OUTRO"
-            if isinstance(jdata, dict) and jdata and (
-                jdata.get("captions_on") != want_cap or jdata.get("layout_grid") != layout_grid
-            ):
-                jdata["captions_on"] = want_cap
-                jdata["layout_grid"] = layout_grid
-                save_json(job, jdata)
+            hud_val = interpolate_story_hud(self.csb, self.tl, shots_by_id.get(sid), segs.get(sid))
+            if isinstance(jdata, dict) and jdata:
+                changed = False
+                if jdata.get("captions_on") != want_cap or jdata.get("layout_grid") != layout_grid:
+                    jdata["captions_on"] = want_cap
+                    jdata["layout_grid"] = layout_grid
+                    changed = True
+                if hud_val is not None:
+                    if jdata.get("story_hud") != hud_val:
+                        jdata["story_hud"] = hud_val
+                        changed = True
+                elif "story_hud" in jdata:
+                    jdata.pop("story_hud", None)
+                    changed = True
+                if changed:
+                    save_json(job, jdata)
             meta = self._code_meta(sid, job)
             t0 = segs[sid]["start_f"] / FPS
             pack = textstyle.load_style(style).get("sfx_pack") or {}    # gói SFX của style: cue chung → âm cụ thể
@@ -601,6 +767,10 @@ class Run:
         return m
 
     def s_outro(self):
+        if self.is_loop_outro():
+            bf = int((self.csb.get("outro") or {}).get("bridge_frames") or 8)
+            self.head("outro", f"Shorts: seamless_loop ({bf}f bridge về frame 0, bỏ thẻ outro tĩnh)")
+            return
         es = self.p("out", "endscreen_16x9.mp4")
         fp = _fp(self.csb.get("outro", {}), channel()["outro"], channel().get("copy"), os.path.join(ROOT, "assets", "brand"))
         if self.fresh("outro", fp, [es]):

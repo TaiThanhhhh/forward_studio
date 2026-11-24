@@ -100,6 +100,12 @@ def guard_flashes(trans, starts):
     return out, dropped
 
 
+def is_seamless_loop(sb):
+    """True khi outro chạy chế độ vòng lặp liền mạch (không thẻ outro tĩnh)."""
+    o = (sb or {}).get("outro") or {}
+    return o.get("mode") == "loop" or (o.get("enabled") is False and bool(o.get("loop")))
+
+
 def build(sb, vo=None, beats=None, outro_sec=0.0):
     durs, notes = shot_durations(sb, vo)
     starts, t = [], 0.0
@@ -133,10 +139,13 @@ def build(sb, vo=None, beats=None, outro_sec=0.0):
                      "transition": trans[i], "punches": punches, "zoom_base": round(base, 4),
                      "shake": s.get("beat") in ("payoff",) and trans[i] == "flash"})
     total_f = fb[-1]
-    if outro_sec > 0:
+    seamless_loop = is_seamless_loop(sb)
+    bridge_frames = int(((sb or {}).get("outro") or {}).get("bridge_frames") or 8) if seamless_loop else 0
+    if outro_sec > 0 and not seamless_loop:
         n = int(round(outro_sec * FPS))
         segs.append({"sid": "OUTRO", "index": len(segs), "start_f": total_f, "n": n, "dur": n / FPS, "scale": 1.0,
                      "transition": "whip", "punches": [], "zoom_base": 1.0, "shake": False})
         total_f += n
     return {"fps": FPS, "frames": total_f, "duration": round(total_f / FPS, 3), "segments": segs,
-            "auto_punches": autos, "notes": notes, "beats_used": beats is not None}
+            "auto_punches": autos, "notes": notes, "beats_used": beats is not None,
+            "seamless_loop": seamless_loop, "loop_bridge_frames": bridge_frames}
