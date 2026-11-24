@@ -36,7 +36,7 @@ DEFAULTS = {
     "tag_px": 36, "tag_fade_sec": 3.0, "mark_draw_frames": 8, "react_lead_frames": 2,
     "move_sec": [0.38, 0.62], "network_move_sec": 0.9, "drift_zoom_per_sec": 0.035, "fill_overscan": 1.025,
     "frame_frac": [0.84, 0.6], "string_sec": 0.6, "min_read_sec": 0.7, "max_cps": 45, "stamp_px": 0.6, "max_stamps": 2,
-    "crf": 17, "workers": 0,
+    "crf": 19, "maxrate": "10M", "workers": 0,
     "size": None, "anim": {"drop_sec": 0.45, "stamp_sec": 0.2, "tag_cps": 22},
 }
 

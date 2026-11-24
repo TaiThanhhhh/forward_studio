@@ -368,7 +368,8 @@
       "strike_sec": 0.28
     },
     "workers": 0,
-    "crf": 17,
+    "crf": 19,
+    "maxrate": "10M",
     "_doc_render": "Render chia đoạn: workers 0 = số luồng CPU − 2 (tối đa 12), mỗi đoạn một tiến trình, nối bằng concat -c copy. CRF 17 (master upload 16–18); mix/master vẫn do vidlib/mix.py.",
     "tag_offset_px": [
       96,

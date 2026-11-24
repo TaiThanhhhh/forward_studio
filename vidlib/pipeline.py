@@ -933,9 +933,21 @@ class Run:
         vid = os.path.join(self.work, "video.mp4")
         if self.spine():
             from engines.board import render as brender  # noqa: PLC0415
+            from . import autocaptions  # noqa: PLC0415
             boardplan.media_sources(self.proj, self.csb, self.tl, self.trims, self.ingested, extract=True, log=self.log)
             bc = boardplan.cfg()
-            st = brender.render_full(self.board_path, vid, workers=bc.get("workers", 0), crf=bc.get("crf", 17))
+            cap_preset = getattr(self, "cap_preset", None) or autocaptions.resolve_preset(
+                self.csb, self.want_captions, self.sb["style_resolved"]
+            )
+            cap_cfg = (
+                {"vo": self.vo, "preset": cap_preset, "style": self.sb["style_resolved"]}
+                if cap_preset != "off" and self.vo
+                else None
+            )
+            st = brender.render_full(
+                self.board_path, vid, workers=bc.get("workers", 0), crf=bc.get("crf", 19),
+                captions=cap_cfg, maxrate=bc.get("maxrate", "10M"),
+            )
             self.board_stats = st
             save_json(os.path.join(self.work, "board_stats.json"), st)
             self.render_events = []

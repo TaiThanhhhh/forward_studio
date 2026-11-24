@@ -46,14 +46,39 @@ def encoder(out, W, H, fps, crf, kind="master"):
                              "-r", str(fps), out], stdin=subprocess.PIPE)
 
 
-def render_range(board_path, f0, f1, out, crf=17, kind="master"):
+def _apply_caption_bgr(bgr, cap_layer, t_abs):
+    """Đốt phụ đề auto-captions (Zone C) trực tiếp lên frame BGR của board khi có từ đang đọc."""
+    if cap_layer is None:
+        return bgr
+    _, ch = cap_layer._active_chunk_with_idx(t_abs)
+    if not ch:
+        return bgr
+    import numpy as np  # noqa: PLC0415
+    from PIL import Image  # noqa: PLC0415
+
+    im = Image.fromarray(bgr[:, :, ::-1])
+    im = cap_layer.draw(im, t_abs)
+    return np.ascontiguousarray(np.asarray(im)[:, :, ::-1])
+
+
+def render_range(board_path, f0, f1, out, crf=19, kind="master", captions_json=None):
     b = load(board_path)
     sc = Scene(b)
+    cap_layer = None
+    if captions_json and os.path.exists(captions_json):
+        cfg_cap = load(captions_json)
+        if cfg_cap.get("preset") and cfg_cap["preset"] != "off" and cfg_cap.get("vo"):
+            from vidlib import autocaptions  # noqa: PLC0415
+
+            cap_layer = autocaptions.Layer(cfg_cap["vo"], cfg_cap["preset"], cfg_cap.get("style"))
     t0 = time.time()
     enc = encoder(out, sc.W, sc.H, sc.fps, crf, kind)
     try:
         for fi in range(f0, f1):
-            enc.stdin.write(sc.frame(fi).tobytes())
+            fr = sc.frame(fi)
+            if cap_layer is not None:
+                fr = _apply_caption_bgr(fr, cap_layer, fi / sc.fps)
+            enc.stdin.write(fr.tobytes())
     finally:
         enc.stdin.close()
         if enc.wait() != 0:
@@ -61,7 +86,7 @@ def render_range(board_path, f0, f1, out, crf=17, kind="master"):
     return {"frames": f1 - f0, "sec": round(time.time() - t0, 2)}
 
 
-def render_full(board_path, out, workers=0, crf=17, log=print):
+def render_full(board_path, out, workers=0, crf=19, log=print, captions=None, maxrate=None):
     """Chia [0, frames) thành `workers` đoạn → mỗi đoạn một tiến trình → nối bằng concat (-c copy)."""
     b = load(board_path)
     n = int(b["frames"])
@@ -70,6 +95,11 @@ def render_full(board_path, out, workers=0, crf=17, log=print):
     tmp = os.path.join(os.path.dirname(os.path.abspath(out)), "_parts")
     shutil.rmtree(tmp, ignore_errors=True)
     os.makedirs(tmp, exist_ok=True)
+    cap_file = None
+    if isinstance(captions, dict) and captions.get("preset") and captions["preset"] != "off" and captions.get("vo"):
+        cap_file = os.path.join(tmp, "captions.json")
+        with open(cap_file, "w", encoding="utf-8") as cf:
+            json.dump(captions, cf, ensure_ascii=False)
     bounds = [round(n * k / workers) for k in range(workers + 1)]
     t0 = time.time()
     procs = []
@@ -77,10 +107,11 @@ def render_full(board_path, out, workers=0, crf=17, log=print):
         part = os.path.join(tmp, f"part_{k:02d}.mp4")
         env = {**os.environ, "OMP_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1", "MKL_NUM_THREADS": "1",
                "BOARD_CV_THREADS": "1"}  # nhiều tiến trình: mỗi tiến trình 1 luồng, tránh tranh CPU
-        procs.append((part, subprocess.Popen([sys.executable, "-m", "engines.board.render", os.path.abspath(board_path),
-                                              "range", str(bounds[k]), str(bounds[k + 1]), part, "--crf", str(crf),
-                                              "--kind", "intermediate"],
-                                             cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)))
+        cmd = [sys.executable, "-m", "engines.board.render", os.path.abspath(board_path),
+               "range", str(bounds[k]), str(bounds[k + 1]), part, "--crf", str(crf), "--kind", "intermediate"]
+        if cap_file:
+            cmd += ["--captions", cap_file]
+        procs.append((part, subprocess.Popen(cmd, cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)))
     errs = []
     limit = max(600.0, n * 3.0)                          # AUD-204: tối đa ~3 s/frame rồi dừng, không treo vô hạn
     for _part, p in procs:
@@ -109,10 +140,9 @@ def render_full(board_path, out, workers=0, crf=17, log=print):
                         *encode.mux_args(), joined], cwd=tmp, capture_output=True)
     if r.returncode != 0:
         raise RuntimeError(r.stderr.decode("utf-8", "replace")[-1500:])
-    # encode master MỘT lượt trên cả video: trần bitrate VBV tính liền mạch. Encode từng đoạn ~1 s với VBV riêng thì
-    # mỗi đoạn được "vốn" bộ đệm ban đầu → bitrate trung bình vượt trần nền tảng (24.9 Mb/s > 20).
+    # encode master MỘT lượt trên cả video: trần bitrate VBV tính liền mạch (≤ 10 Mb/s giúp video 40s ~35 MB chuẩn TikTok).
     r = subprocess.run([ffmpeg(), "-y", "-v", "error", "-i", joined, "-map", "0:v:0", "-an",
-                        *encode.video_args("master", fps, crf), "-r", str(fps), "-frames:v", str(n),
+                        *encode.video_args("master", fps, crf, maxrate=maxrate), "-r", str(fps), "-frames:v", str(n),
                         *encode.mux_args(), part_out], cwd=tmp, capture_output=True)
     if r.returncode != 0:
         raise RuntimeError(r.stderr.decode("utf-8", "replace")[-1500:])
@@ -173,11 +203,12 @@ def main(argv=None):
     if len(a) < 2:
         print(__doc__)
         return 2
-    crf = 17
+    crf = 19
     workers = 0
     sec = None
     kind = "master"
-    for flag in ("--crf", "--workers", "--sec", "--kind"):
+    captions_json = None
+    for flag in ("--crf", "--workers", "--sec", "--kind", "--captions"):
         if flag in a:
             i = a.index(flag)
             v = a[i + 1]
@@ -188,13 +219,15 @@ def main(argv=None):
                 workers = int(v)
             elif flag == "--kind":
                 kind = v
+            elif flag == "--captions":
+                captions_json = v
             else:
                 sec = float(v)
     bp, mode = a[0], a[1]
     if os.environ.get("BOARD_CV_THREADS"):
         cv2.setNumThreads(int(os.environ["BOARD_CV_THREADS"]))
     if mode == "range":
-        print(json.dumps(render_range(bp, int(a[2]), int(a[3]), a[4], crf, kind)))
+        print(json.dumps(render_range(bp, int(a[2]), int(a[3]), a[4], crf, kind, captions_json=captions_json)))
     elif mode == "full":
         print(json.dumps(render_full(bp, a[2], workers, crf)))
     elif mode == "stills":

@@ -42,7 +42,7 @@ def _has_channel():
         return False
 
 
-def video_args(kind="master", fps=30, crf=None):
+def video_args(kind="master", fps=30, crf=None, maxrate=None):
     """Đối số ffmpeg cho luồng video H.264 (đặt sau -i …, trước tên file)."""
     c = cfg()
     k = c[kind]
@@ -51,8 +51,12 @@ def video_args(kind="master", fps=30, crf=None):
             "-pix_fmt", "yuv420p", "-profile:v", "high", "-level:v", str(k["level"]),
             "-g", str(gop), "-keyint_min", str(gop), "-bf", str(c.get("bframes", 2)), "-sc_threshold", "0",
             "-x264-params", VUI, *TAGS]
-    if k.get("maxrate"):
-        args += ["-maxrate", k["maxrate"], "-bufsize", k.get("bufsize") or k["maxrate"]]
+    mr = maxrate or k.get("maxrate")
+    if mr:
+        bs = k.get("bufsize") if not maxrate else (
+            f"{int(mr[:-1]) * 2}{mr[-1]}" if mr[:-1].isdigit() else mr
+        )
+        args += ["-maxrate", mr, "-bufsize", bs or mr]
     return args
 
 
