@@ -94,6 +94,50 @@ def channel():
     return load_json(os.path.join(CONFIG_DIR, "channel.json"))
 
 
+def duration_profile(sb_or_name=None):
+    """Trả về cấu hình thời lượng/nhịp ('short' 30–45s hoặc 'deep' 62–95s cho TikTok 1min+ & YT Extended Shorts)."""
+    cfg = channel()
+    profs = cfg.get("duration_profiles") or {}
+    name = "short"
+    if isinstance(sb_or_name, str) and sb_or_name.strip().lower() in profs:
+        name = sb_or_name.strip().lower()
+    elif isinstance(sb_or_name, dict):
+        lp = (
+            sb_or_name.get("length_profile")
+            or (sb_or_name.get("format") or {}).get("length_profile")
+            or ""
+        ).strip().lower()
+        if lp in profs:
+            name = lp
+        else:
+            tsec = (sb_or_name.get("format") or {}).get("target_sec")
+            try:
+                if tsec is not None and float(tsec) >= 60:
+                    name = "deep" if "deep" in profs else "short"
+            except (TypeError, ValueError):
+                pass
+    d = cfg.get("duration") or {}
+    p = cfg.get("pacing") or {}
+    b = cfg.get("board") or {}
+    base = {
+        "name": name,
+        "label": "Standard Short (30–45s)",
+        "target_sec": d.get("target_sec", 40),
+        "min_sec": d.get("min_sec", 30),
+        "max_sec": d.get("max_sec", 45),
+        "shot_avg_min": p.get("shot_avg_min", 2.2),
+        "shot_avg_max": p.get("shot_avg_max", 3.8),
+        "shot_max_sec": p.get("shot_max_sec", 4.8),
+        "code_shot_max_sec": p.get("code_shot_max_sec", 5.5),
+        "board_crf": b.get("crf", 19),
+        "board_maxrate": b.get("maxrate", "10M"),
+        "rehooks": "1 mid-video pattern interrupt around 12–16s",
+    }
+    base.update(profs.get(name) or {})
+    base["name"] = name
+    return base
+
+
 def env(name):
     """Biến môi trường, hoặc dòng NAME=... trong file .env ở gốc repo (đã gitignore). Không có → None."""
     v = os.environ.get(name)

@@ -6,7 +6,7 @@ import re
 
 from . import compiler
 from . import lang, tts
-from .common import block, channel, spoken_syllables
+from .common import block, channel, duration_profile, spoken_syllables
 
 TEXT_RISK = re.compile(
     r"(\"[^\"]{2,}\"|“[^”]{2,}”|(?<![A-Za-z])'[A-Za-z][^']{3,}'(?![A-Za-z])|\b(text|texts|caption|subtitle|subtitles|letters?|words?|"
@@ -115,7 +115,7 @@ def lint_shot(sb, s, caps, img_caps):
 def lint_pacing(sb):
     out = []
     p = channel()["pacing"]
-    d = channel()["duration"]
+    prof = duration_profile(sb)
     shots = sb["shots"]
     if not shots:
         return [_issue("error", "storyboard", "Chưa có shot nào.")]
@@ -123,17 +123,17 @@ def lint_pacing(sb):
         out.append(_issue("warn", shots[0]["id"], f"Hook dài {shots[0]['target_sec']}s > {p['hook_max_sec']}s."))
     durs = [s["target_sec"] for s in shots]
     avg = sum(durs) / len(durs)
-    if not p["shot_avg_min"] - 1e-6 <= avg <= p["shot_avg_max"] + 1e-6:
-        out.append(_issue("warn", "nhịp", f"Shot trung bình {avg:.2f}s — mục tiêu {p['shot_avg_min']}–"
-                                         f"{p['shot_avg_max']}s."))
+    avg_min, avg_max = prof["shot_avg_min"], prof["shot_avg_max"]
+    if not avg_min - 1e-6 <= avg <= avg_max + 1e-6:
+        out.append(_issue("warn", "nhịp", f"Shot trung bình {avg:.2f}s — mục tiêu {avg_min}–{avg_max}s."))
     for s in shots:
-        mx = p.get("code_shot_max_sec", 5.0) if s.get("mode_resolved") == "code" else p["shot_max_sec"]
+        mx = prof["code_shot_max_sec"] if s.get("mode_resolved") == "code" else prof["shot_max_sec"]
         if s["target_sec"] > mx + 1e-6:  # shot code có chuyển động liên tục bên trong (camera + đạo cụ) → được dài hơn
             out.append(_issue("error", s["id"], f"Shot dài {s['target_sec']}s > tối đa {mx}s."))
     total = sum(durs)
-    if not d["min_sec"] <= total <= d["max_sec"]:
-        out.append(_issue("warn", "nhịp", f"Tổng {total:.1f}s ngoài khoảng {d['min_sec']}–{d['max_sec']}s "
-                                         f"(chưa tính outro)."))
+    if not prof["min_sec"] <= total <= prof["max_sec"]:
+        out.append(_issue("warn", "nhịp", f"Tổng {total:.1f}s ngoài khoảng {prof['min_sec']}–{prof['max_sec']}s "
+                                         f"(profile '{prof['name']}', chưa tính outro)."))
     out += lint_script(sb)
     if shots[0].get("beat") != "hook":
         out.append(_issue("warn", shots[0]["id"], "Shot đầu nên là beat 'hook'."))
@@ -163,7 +163,7 @@ def lint_script(sb):
     chữ, câu đầu là hook nghịch lý nói như sự thật, không tả lại hình. Mật độ tính theo từ ĐỌC (số đã đổi sang chữ)."""
     out = []
     shots = sb["shots"]
-    d = channel()["duration"]
+    d = duration_profile(sb)
     sc = channel().get("script", {})
     if not lang.language().startswith("en"):  # kênh tiếng Việt cũ: đếm âm tiết như trước
         return _lint_vo_density_vi(sb)

@@ -8,6 +8,7 @@ Channel universes (pick ONE that fits the idea):
 {idea_extra}
 **SLUG:** {slug}
 **LENGTH:** {min_sec}–{max_sec}s, target about {target_sec}s (outro {outro_sec}s not included).
+{length_block}
 **AUDIENCE LANGUAGE:** {language} ({locale}). Everything the viewer sees or hears is in natural, native {language_name}:
 VO, text_fx, outro teaser, thumbnail text, titles, description, hashtags. Write it natively — never translate.
 **FLOW MODEL:** video = {video_model} (valid lengths: {durations}s; first+last frame ≤ {first_last_max}s), image = {image_model}.

@@ -11,6 +11,7 @@
   "narrative": "classic",
   "archetype": "auto",
   "assembly": "auto",
+  "length_profile": "short",
   "captions": "studio_clean",
   "story_hud": {
     "kind": "temp",

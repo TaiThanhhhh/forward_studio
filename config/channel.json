@@ -36,6 +36,34 @@
     "min_sec": 30,
     "max_sec": 45
   },
+  "duration_profiles": {
+    "short": {
+      "label": "Standard Short (30–45s)",
+      "target_sec": 40,
+      "min_sec": 30,
+      "max_sec": 45,
+      "shot_avg_min": 2.2,
+      "shot_avg_max": 3.8,
+      "shot_max_sec": 4.8,
+      "code_shot_max_sec": 5.5,
+      "board_crf": 19,
+      "board_maxrate": "10M",
+      "rehooks": "1 mid-video pattern interrupt around 12–16s"
+    },
+    "deep": {
+      "label": "Mini Deep-Dive (65–90s · TikTok Creator Rewards 1min+ & YT Extended Shorts)",
+      "target_sec": 75,
+      "min_sec": 62,
+      "max_sec": 95,
+      "shot_avg_min": 2.6,
+      "shot_avg_max": 4.5,
+      "shot_max_sec": 6.0,
+      "code_shot_max_sec": 7.0,
+      "board_crf": 21,
+      "board_maxrate": "6M",
+      "rehooks": "2 pattern-interrupt re-hooks (at ~20s and ~48s) to sustain 60s+ retention and unlock TikTok Creator Rewards"
+    }
+  },
   "pacing": {
     "hook_max_sec": 2.2,
     "shot_avg_min": 2.2,

@@ -9,7 +9,7 @@ import copy
 import os
 import re
 
-from .common import channel, flow_models, load_json, save_json
+from .common import channel, duration_profile, flow_models, load_json, save_json
 
 BEATS = ("hook", "setup", "escalate", "payoff", "twist", "outro")
 MODES = ("auto", "frames_start", "frames_start_end", "ingredients", "code")
@@ -145,7 +145,10 @@ def normalize(sb, model_override=None):
     f = sb.setdefault("format", {})
     f.setdefault("aspect", cfg["format"]["aspect"])
     f.setdefault("fps", cfg["format"]["fps"])
-    f.setdefault("target_sec", cfg["duration"]["target_sec"])
+    prof = duration_profile(sb)
+    f.setdefault("target_sec", prof["target_sec"])
+    if prof["name"] != "short":
+        sb.setdefault("length_profile", prof["name"])
     fl = sb.setdefault("flow", {})
     fl.setdefault("image_model", cfg["flow"].get("image_model") or fm.get("default_image_model"))
     fl.setdefault("video_model", cfg["flow"].get("video_model") or fm.get("default_video_model"))
