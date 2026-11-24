@@ -41,6 +41,33 @@ const base = {
 };
 
 // ---------- các look ----------
+const editorialStageGlow = (c, opts = {}) => {       // chiều sâu sân khấu biên tập (radial spotlight mềm sau Zone B + 4 góc định vị tinh tế, tất định 100%)
+  const g = c.g, role = opts.role || 'cold', str = opts.strength ?? 0.085;
+  const cx = c.A.cx + Math.sin(c.f * 0.014) * 26;
+  const cy = (c.A.stageTop + c.A.bottom) * 0.5 + Math.cos(c.f * 0.011) * 18;
+  const r = Math.min(c.W * 0.48, (c.A.bottom - c.A.stageTop) * 0.62);
+  g.save();
+  const gr = g.createRadialGradient(cx, cy, r * 0.06, cx, cy, r);
+  gr.addColorStop(0, c.mix(c.pal.bg, c.col(role), str));
+  gr.addColorStop(0.55, c.mix(c.pal.bg, c.col(role), str * 0.35));
+  gr.addColorStop(1, 'rgba(0,0,0,0)');
+  g.globalAlpha = 0.72;
+  g.fillStyle = gr;
+  g.beginPath(); g.arc(cx, cy, r, 0, TAU); g.fill();
+  // 4 dấu góc định vị biên tập nhẹ (opacity 0.15 — giữ nền tối sâu đạt chuẩn black_min)
+  const x0 = c.A.x0 - 16, x1 = c.A.x1 + 16, y0 = c.A.top - 26, y1 = c.A.bottom + 24, arm = 18;
+  g.strokeStyle = c.col('dim'); g.lineWidth = 1.5; g.globalAlpha = opts.tickAlpha ?? 0.15;
+  g.beginPath();
+  for (const [x, y, dx, dy] of [[x0, y0, 1, 1], [x1, y0, -1, 1], [x0, y1, 1, -1], [x1, y1, -1, -1]]) {
+    g.moveTo(x + dx * arm, y); g.lineTo(x, y); g.lineTo(x, y + dy * arm);
+  }
+  const midY = (c.A.stageTop + c.A.bottom) * 0.5;
+  g.moveTo(x0, midY); g.lineTo(x0 + 8, midY);
+  g.moveTo(x1, midY); g.lineTo(x1 - 8, midY);
+  g.stroke();
+  g.restore();
+};
+
 const editorialGrid = (c) => {                       // lưới điểm kiến trúc + đường dẫn dọc mảnh (Vox/Cleo Abram/Stripe)
   const g = c.g, step = 72, ox = (c.f * 0.35) % step, oy = (c.f * 0.2) % step;
   g.save();
@@ -67,7 +94,7 @@ const flat = {
   tokens: { palette: { ink: '#FFF6E9', a: '#FF5A4E', b: '#4B5BFF', c: '#FFC62B' }, roles: { hot: 'a', cold: 'b', accent: 'c' },
             type: { weight: 800, upper: false, enter: 'pop' }, motion: { ease: 'bounce', enter: 'pop', stagger: 3 },
             post: { grain: 0.03, vignette: 0.15 }, rig: { editorial: true } },
-  bg(c) { editorialGrid(c); },
+  bg(c) { editorialStageGlow(c, { role: 'cold', strength: 0.08 }); editorialGrid(c); },
   tag(c, str, x, y, k, role = 'accent') {            // viên thuốc màu, chữ nền đen
     if (k <= 0) return null;
     const b = c.text(str, x, y, { size: 64, k: 0, maxW: 800 }), w = b.x1 - b.x0 + 70, h = b.y1 - b.y0 + 34;
@@ -110,6 +137,7 @@ const iso = {
     g.stroke();
     const gr = g.createLinearGradient(0, 700, 0, 1500); gr.addColorStop(0, 'rgba(0,0,0,1)'); gr.addColorStop(0.3, 'rgba(0,0,0,0)'); gr.addColorStop(0.8, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,1)');
     g.globalAlpha = 1; g.fillStyle = gr; g.fillRect(0, 0, c.W, c.H);
+    editorialStageGlow(c, { role: 'accent', strength: 0.08 });
   },
   prism(c, x, y, w, h, role) {                       // lăng trụ đẳng trục: đáy tâm (x,y), cạnh w, cao h
     const a = w * 0.866, b = w * 0.5, top = c.col(role), g = c.g;
@@ -127,6 +155,7 @@ const hud = {
             pen: { fill: false, stroke: 3.5, glow: 14, tint: 0.16, cap: 'butt', join: 'miter' }, type: { weight: 700, upper: true, enter: 'type', glow: 12, track: 0.06 },
             motion: { ease: 'out', enter: 'lock', creep: 0.015 }, post: { grain: 0.06, scanlines: 0.22, vignette: 0.45 }, rig: { editorial: true } },
   bg(c) {
+    editorialStageGlow(c, { role: 'ink', strength: 0.075, tickAlpha: 0.14 });
     const g = c.g, cx = c.A.cx, cy = 880;
     g.strokeStyle = c.col('ink'); g.lineWidth = 1.5; g.globalAlpha = 0.13; g.beginPath();      // lưới lục giác
     const R = 46, hx = R * 1.732, hy = R * 1.5;
@@ -219,6 +248,7 @@ const swiss = {
             pen: { fill: true, stroke: 0, line: 6, cap: 'butt', join: 'miter' }, type: { weight: 800, upper: false, align: 'left', enter: 'mask', track: -0.02, lh: 0.98 },
             motion: { ease: 'snap', enter: 'wipe', creep: 0.03 }, post: { grain: 0.025, vignette: 0 }, rig: { editorial: true } },   // hạt rất nhẹ: quy tắc kênh 'không đứng hình' thắng 'không grain'
   bg(c) {                                            // lưới 4 cột + hàng chú thích mono có kẻ 1px
+    editorialStageGlow(c, { role: 'ink', strength: 0.06, tickAlpha: 0.14 });
     const g = c.g, x0 = c.A.x0, x1 = c.A.x1, cw = (x1 - x0) / 4; g.strokeStyle = c.col('dim'); g.globalAlpha = 0.3; g.lineWidth = 1; g.beginPath();
     for (let i = 0; i <= 4; i++) { g.moveTo(x0 + i * cw, c.A.top - 40); g.lineTo(x0 + i * cw, c.A.bottom + 30); }
     g.stroke(); g.globalAlpha = 0.8; g.fillStyle = c.col('ink'); g.fillRect(x0, c.A.top - 40, x1 - x0, 2);
@@ -633,15 +663,19 @@ const vox = {
             type: { weight: 700, upper: false, align: 'left', enter: 'mask', lh: 1.08, track: -0.01 },
             motion: { ease: 'snap', enter: 'wipe', creep: 0.02, stagger: 3 }, post: { grain: 0.045, vignette: 0.22 }, rig: { editorial: true } },
   bg(c) {
+    editorialStageGlow(c, { role: 'cold', strength: 0.085, tickAlpha: 0.16 });
     const g = c.g, x0 = c.A.x0, x1 = c.A.x1, cw = (x1 - x0) / 3;
     // lưới cột báo chí mờ + dải chấm biên tập trôi rất nhẹ (đảm bảo luôn có chuyển động mịn)
     g.strokeStyle = c.col('dim'); g.globalAlpha = 0.16; g.lineWidth = 1.5; g.beginPath();
     for (let i = 0; i <= 3; i++) { g.moveTo(x0 + i * cw, c.A.top - 56); g.lineTo(x0 + i * cw, c.A.bottom + 36); }
     for (let y = c.A.top; y < c.A.bottom; y += 160) { g.moveTo(x0, y); g.lineTo(x1, y); }
     g.stroke();
-    // thanh trên kiểu tiêu đề chuyên mục Vox (vạch vàng dạ quang + dateline)
-    g.globalAlpha = 0.92; g.fillStyle = c.col('accent'); g.fillRect(x0, c.A.top - 58, 120 + 60 * c.u, 6);
-    g.fillStyle = c.col('dim'); g.globalAlpha = 0.45; g.fillRect(x0, c.A.top - 44, x1 - x0, 1.5);
+    // thanh trên kiểu tiêu đề chuyên mục Vox (vạch vàng dạ quang + dateline; nhường chỗ gọn gàng khi bật story_hud)
+    if (!c.A.hasHud) {
+      g.globalAlpha = 0.92; g.fillStyle = c.col('accent'); g.fillRect(x0, c.A.top - 58, 120 + 60 * c.u, 6);
+      g.fillStyle = c.col('dim'); g.globalAlpha = 0.45; g.fillRect(x0, c.A.top - 44, x1 - x0, 1.5);
+    }
+    g.fillStyle = c.col('dim'); g.globalAlpha = 0.45;
     g.fillRect(x0, c.A.bottom + 14, (x1 - x0) * c.u, 3);
   },
   header(c, h, k) {

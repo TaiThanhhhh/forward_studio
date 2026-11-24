@@ -444,16 +444,20 @@ function textImpl(str, x, y, o = {}) {
 const LEAD = L.motion.lead ?? 9;
 const SAFE = JOB.safe || { top: 220, bottom: 384, left: 60, right_icons_x: 940, right_icons_from_y: 700 };
 const GRID = JOB.layout_grid || { header: [250, 370], stage: [390, 1240], captions: [1340, 1460] };
+const STORY_HUD = (JOB.story_hud && typeof JOB.story_hud === 'object') ? JOB.story_hud : null;
+const HUD_BOX = { y0: 256, y1: 304, h: 48 };
 const CAPTIONS_ON = JOB.captions_on !== false;
 const STAGE_BOTTOM = CAPTIONS_ON
   ? Math.min(H - SAFE.bottom - 20, (GRID.stage && GRID.stage[1]) || 1240)
   : H - SAFE.bottom - 20;
+const BASE_TOP = SAFE.top + 20;
 const A = {
   x0: Math.max(84, SAFE.left + 24), x1: W - Math.max(84, SAFE.left + 24),
-  top: SAFE.top + 20, bottom: STAGE_BOTTOM, stageBottom: STAGE_BOTTOM,
+  top: STORY_HUD ? Math.max(BASE_TOP, HUD_BOX.y1 + 40) : BASE_TOP,
+  bottom: STAGE_BOTTOM, stageBottom: STAGE_BOTTOM,
   stageTop: (GRID.stage && GRID.stage[0]) || 390,
   header: GRID.header || [250, 370], captions: GRID.captions || [1340, 1460],
-  captionsOn: CAPTIONS_ON, cx: W / 2,
+  captionsOn: CAPTIONS_ON, hasHud: !!STORY_HUD, hudBottom: STORY_HUD ? HUD_BOX.y1 : BASE_TOP, cx: W / 2,
   xr: (y) => (y > SAFE.right_icons_from_y ? Math.min(W - 84, SAFE.right_icons_x - 10) : W - 84),
 };
 function enter(k, box, fn, kind) {
@@ -518,6 +522,91 @@ function makeCtx(f, n = N, p = P) {
            k: (f0, dur, stepped = true) => clamp(((stepped ? fs : f) + LEAD - f0) / Math.max(1, dur)) };
 }
 
+// ---------- Persistent Story HUD (Zone A: y 256..304 — không bao giờ chồng lên kicker/title) ----------
+function parseHudClock(v) {
+  if (typeof v === 'number' && Number.isFinite(v)) return v;
+  const s = String(v ?? '').trim();
+  const parts = s.split(':').map((x) => Number(x));
+  if (parts.length === 2 && parts.every(Number.isFinite)) return parts[0] * 60 + parts[1];
+  if (parts.length === 3 && parts.every(Number.isFinite)) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+  const n = Number(s);
+  return Number.isFinite(n) ? n : null;
+}
+function fmtHudClock(sec, showHours = false) {
+  const tot = Math.max(0, Math.round(sec));
+  const h = Math.floor(tot / 3600), m = Math.floor((tot % 3600) / 60), s = tot % 60;
+  return (showHours || h > 0)
+    ? `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+    : `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+function hudDecimals(a, b, given) {
+  if (given !== undefined && Number.isFinite(Number(given))) return Math.max(0, Math.min(3, Number(given) | 0));
+  const dOf = (v) => (String(v ?? '').includes('.') ? Math.min(2, String(v).split('.')[1].length) : 0);
+  return Math.max(dOf(a), dOf(b));
+}
+function drawStoryHud(c) {
+  if (!STORY_HUD) return;
+  const hud = STORY_HUD, u = clamp(c.f / Math.max(1, N - 1));
+  const kind = String(hud.kind || 'meter').toLowerCase();
+  const role = hud.role || ((kind === 'temp' || kind === 'bpm') ? 'hot' : 'accent');
+  const prog = (hud.progress_from !== undefined || hud.progress_to !== undefined)
+    ? clamp(lerp(Number(hud.progress_from ?? 0), Number(hud.progress_to ?? 1), u))
+    : u;
+  let readout = '';
+  if (hud.from !== undefined || hud.to !== undefined) {
+    if (kind === 'clock') {
+      const s0 = parseHudClock(hud.from ?? 0), s1 = parseHudClock(hud.to ?? hud.from ?? 0);
+      if (s0 !== null && s1 !== null) {
+        const hrs = String(hud.from || '').split(':').length === 3 || String(hud.to || '').split(':').length === 3;
+        readout = fmtHudClock(lerp(s0, s1, u), hrs) + (hud.unit ? ` ${hud.unit}` : '');
+      }
+    }
+    if (!readout) {
+      const v0 = Number(hud.from ?? hud.to ?? 0), v1 = Number(hud.to ?? hud.from ?? 0);
+      const dec = hudDecimals(hud.from, hud.to, hud.decimals);
+      const unit = hud.unit ? String(hud.unit) : '';
+      const sep = unit && !unit.startsWith('°') && unit !== '%' ? ' ' : '';
+      readout = `${fmtNum(lerp(v0, v1, u), dec)}${sep}${unit}`;
+    }
+  } else if (hud.text !== undefined && hud.text !== null && String(hud.text).trim() !== '') {
+    readout = String(hud.text);
+  } else {
+    readout = `${Math.round(prog * 100)}%`;
+  }
+  const label = String(hud.label || kind.toUpperCase());
+  const x0 = A.x0, x1 = A.x1, w = x1 - x0, y0 = HUD_BOX.y0, h = HUD_BOX.h;
+  const rc = col(role);
+  const pulse = kind === 'bpm'
+    ? 0.45 + 0.55 * Math.pow(Math.max(0, Math.sin(c.t * Math.PI * clamp(Number(hud.to ?? hud.from ?? 90), 30, 220) / 60)), 2)
+    : 0.55 + 0.45 * Math.sin(c.f * 0.22);
+
+  g.save();
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  g.globalAlpha = 1;
+  g.fillStyle = 'rgba(13, 16, 23, 0.86)';
+  g.beginPath(); g.roundRect(x0, y0, w, h, 10); g.fill();
+  g.strokeStyle = col('dim'); g.globalAlpha = 0.42; g.lineWidth = 1.25;
+  g.stroke();
+
+  // chấm trạng thái phát nhịp góc trái
+  g.globalAlpha = 0.28 * pulse; g.fillStyle = rc;
+  g.beginPath(); g.arc(x0 + 22, y0 + 21, 9.5, 0, TAU); g.fill();
+  g.globalAlpha = 0.95;
+  g.beginPath(); g.arc(x0 + 22, y0 + 21, 4.4, 0, TAU); g.fill();
+
+  // nhãn mono + chỉ số nội suy mượt (quiet: true → không ảnh hưởng OCR/overlapPairs)
+  textImpl(label, x0 + 40, y0 + 28, { size: 22, font: 'mono', weight: 700, align: 'left', role: 'dim', quiet: true, enter: 'none', maxW: w * 0.52, bare: true });
+  textImpl(readout, x1 - 18, y0 + 29, { size: 25, font: 'mono', weight: 800, align: 'right', role, quiet: true, enter: 'none', maxW: w * 0.42, bare: true });
+
+  // thanh tiến trình siêu mảnh 3px sát mép dưới HUD
+  const bx = x0 + 12, bw = w - 24, by = y0 + h - 5;
+  g.globalAlpha = 0.26; g.fillStyle = col('dim');
+  g.beginPath(); g.roundRect(bx, by, bw, 3, 1.5); g.fill();
+  g.globalAlpha = 0.94; g.fillStyle = rc;
+  g.beginPath(); g.roundRect(bx, by, Math.max(4, bw * prog), 3, 1.5); g.fill();
+  g.restore();
+}
+
 // ---------- hậu kỳ theo look ----------
 const grainTile = (() => {
   const c = document.createElement('canvas'); c.width = c.height = 256; const x = c.getContext('2d'), d = x.createImageData(256, 256);
@@ -532,8 +621,9 @@ function post(c) {
     const gr = g.createRadialGradient(W / 2, H / 2, H * 0.32, W / 2, H / 2, H * 0.72);
     gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, `rgba(0,0,0,${po.vignette})`); g.fillStyle = gr; g.fillRect(0, 0, W, H);
   }
-  if (po.grain) {                                     // hạt đổi mỗi frame → không frame nào trùng frame trước
-    g.save(); g.globalAlpha = po.grain; g.globalCompositeOperation = 'overlay';
+  const grain = po.grain ?? (L.rig && L.rig.editorial ? 0.02 : 0);
+  if (grain) {                                        // hạt đổi mỗi frame → không frame nào trùng frame trước
+    g.save(); g.globalAlpha = grain; g.globalCompositeOperation = 'overlay';
     const ox = Math.floor(hash(c.f, 3) * 256), oy = Math.floor(hash(c.f, 5) * 256);
     for (let y = -oy; y < H; y += 256) for (let x = -ox; x < W; x += 256) g.drawImage(grainTile, x, y);
     g.restore();
@@ -627,7 +717,7 @@ function drawTile(T, beat, lf, ln, lp, cam, kk, alpha, fill, isSelf) {
 
 window.meta = { cues: [...(S.cues || []).map((q) => ({ f: q.f, name: q.name })), ...(NEXT ? [{ f: Math.max(0, N - SPL), name: 'whoosh' }] : [])],
                 texts: S.texts || [], frames: N, scene: JOB.scene, engine: 'html', look: L.look, spine: !!SP, media: MEDIA.info,
-                post2d: GLP ? GLP.info : null, hold: HOLD, captions_on: CAPTIONS_ON, stage_bottom: STAGE_BOTTOM };
+                post2d: GLP ? GLP.info : null, hold: HOLD, captions_on: CAPTIONS_ON, stage_bottom: STAGE_BOTTOM, story_hud: !!STORY_HUD };
 window.renderFrame = (f0) => {
   boxes = []; overlaps = []; deferred = [];
   const f = HOLD > 1 ? Math.floor(f0 / HOLD) * HOLD : f0;
@@ -680,6 +770,7 @@ window.renderFrame = (f0) => {
   if (lookMod.fg) { g.save(); lookMod.fg(c); g.restore(); }
   if (GLP) GLP.apply(canvas, g);
   if (deferred.length) replay();
+  if (STORY_HUD) drawStoryHud(c);
   post(c);
 };
 window.textBoxes = () => boxes.map((b) => {         // + texture phẳng trắng/trong suốt của chữ để OCR không phụ thuộc hiệu ứng
