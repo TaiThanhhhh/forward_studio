@@ -272,11 +272,23 @@ def ask(provider, prompt):
         return "".join(b.text for b in msg.content if getattr(b, "type", "") == "text")
     if provider == "gemini":
         from google import genai  # noqa: PLC0415
-        client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
-        model = os.environ.get("GEMINI_TEXT_MODEL", "gemini-flash-latest")
-        r = client.models.generate_content(model=model, contents=prompt)
-        um = getattr(r, "usage_metadata", None)
-        LAST_USAGE.update({"provider": "gemini", "model": model, "tokens_in": getattr(um, "prompt_token_count", 0) or 0,
-                           "tokens_out": getattr(um, "candidates_token_count", 0) or 0})
-        return r.text
+
+        from .common import env  # noqa: PLC0415
+        api_key = env("GEMINI_API_KEY") or os.environ.get("GEMINI_API_KEY")
+        if not api_key:
+            raise StudioError("Thiếu GEMINI_API_KEY trong .env (lấy miễn phí/credit Pro tại https://aistudio.google.com/apikey).")
+        client = genai.Client(api_key=api_key)
+        model = os.environ.get("GEMINI_TEXT_MODEL", "gemini-4-hydrogen")
+        interaction = client.interactions.create(model=model, input=prompt)
+        usage = getattr(interaction, "usage", None)
+        LAST_USAGE.update({
+            "provider": "gemini",
+            "model": model,
+            "tokens_in": getattr(usage, "total_input_tokens", 0) or 0,
+            "tokens_out": getattr(usage, "total_output_tokens", 0) or 0,
+        })
+        text = getattr(interaction, "output_text", None) or ""
+        if not text:
+            raise StudioError("Gemini không trả về nội dung văn bản — thử lại hoặc đổi GEMINI_TEXT_MODEL.")
+        return text
     raise StudioError(f"--ai {provider} không hỗ trợ (dùng claude hoặc gemini).")
