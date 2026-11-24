@@ -133,6 +133,8 @@ def run_project_tool(cmd, argv):
         print(json.dumps(cost.summary(proj), ensure_ascii=False, indent=2))
         return 0
     from vidlib import cleanup  # noqa: PLC0415
+    if "--all" in argv:
+        return cleanup.run_all(apply="--yes" in argv)
     return cleanup.run(proj, apply="--yes" in argv)
 
 

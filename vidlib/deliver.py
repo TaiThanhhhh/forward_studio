@@ -152,26 +152,48 @@ def verify(video, p):
     return out
 
 
+def _link_or_remux(src, dst, meta, prev_9x16=None):
+    """Dùng hard-link giữa các gói 9:16 cùng metadata để tiết kiệm 3× dung lượng ổ cứng; lỗi thì remux như cũ."""
+    if prev_9x16 and os.path.exists(prev_9x16):
+        try:
+            if os.path.exists(dst):
+                os.remove(dst)
+            os.link(prev_9x16, dst)
+            return
+        except OSError:
+            pass
+    _remux(src, dst, meta)
+
+
 def build(proj, names=None, meta=None, log=print, sb=None):
     """Xuất mọi preset → {preset: {"dir", "video", "cover", "srt", "caption", "checks": {...}, "ok"}}; ghi deliver.json."""
     from . import qareport  # noqa: PLC0415
     from . import storyboard as sbm  # noqa: PLC0415
+    from .common import slugify  # noqa: PLC0415
     final = os.path.join(proj, "out", "final.mp4")
     if not os.path.exists(final):
         raise StudioError("Chưa có out/final.mp4 để xuất.")
     if sb is None:
         sb = sbm.load(proj) or {}
+    slug = slugify(sb.get("slug") or os.path.basename(os.path.abspath(proj))) or "video"
+    fname = f"{slug}.mp4"
     srt = os.path.join(proj, "out", "captions.srt")
     endscreen = os.path.join(proj, "out", "endscreen_16x9.mp4")
     c = cfg()
     res = {}
+    first_9x16 = None
     for name in preset_names(names):
         p = c["presets"][name]
         d = os.path.join(proj, "out", "deliver", name)
         os.makedirs(d, exist_ok=True)
-        video = os.path.join(d, "video.mp4")
+        video = os.path.join(d, fname)
+        legacy = os.path.join(d, "video.mp4")
+        if legacy != video and os.path.exists(legacy):
+            os.remove(legacy)
         if p["aspect"] == "9:16":
-            _remux(final, video, meta)
+            _link_or_remux(final, video, meta, prev_9x16=first_9x16)
+            if first_9x16 is None and os.path.exists(video):
+                first_9x16 = video
         else:
             _pillarbox(final, video, p, endscreen if p.get("append_endscreen") else None, meta)
         cov, cov_note = cover(proj, p, os.path.join(d, "cover.jpg"))

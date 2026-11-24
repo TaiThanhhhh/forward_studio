@@ -266,7 +266,7 @@ class Run:
     # ---------------------------------------------------------------- stages
     def s_idea(self):
         os.makedirs(self.proj, exist_ok=True)
-        for d in ("clips", "frames", "refs", "audio", "thumbnails", "out", "qa", "work"):
+        for d in ("audio", "thumbnails", "out", "qa", "work"):
             os.makedirs(self.p(d), exist_ok=True)
         ip = self.p("idea.txt")
         if not os.path.exists(ip):
@@ -454,8 +454,12 @@ class Run:
         merged["shots"] = [dict(s) for s in self.csb["shots"]]
         if raw != merged:
             sbm.save(self.proj, merged)
-        page.export_text(self.csb, self.p("prompts.txt"))
-        page.write_json_prompts(self.csb, os.path.join(self.work, "prompts.json"))
+        has_flow = any(s.get("mode_resolved") != "code" for s in self.csb["shots"])
+        if has_flow:
+            for d in ("clips", "frames", "refs"):
+                os.makedirs(self.p(d), exist_ok=True)
+            page.export_text(self.csb, self.p("prompts.txt"))
+            page.write_json_prompts(self.csb, os.path.join(self.work, "prompts.json"))
         n_err = len(linter.errors(self.issues))
         if self.state.get("prompts") != fp or n_err:
             n_code = sum(s.get("mode_resolved") == "code" for s in self.csb["shots"])
@@ -474,10 +478,14 @@ class Run:
     def s_page(self, quiet=False):
         self.scan()
         self.seed_from_code()
-        real = {k: v for k, v in self.clip_map.items() if "_dryrun" not in v}  # clip giả không tính là "đã xong"
-        out = page.build(self.csb, self.proj, self.issues, real)
-        if not quiet:
-            self.head("page", os.path.relpath(out, ROOT))
+        has_flow = any(s.get("mode_resolved") != "code" for s in self.csb["shots"])
+        if has_flow or self.only == "page":
+            real = {k: v for k, v in self.clip_map.items() if "_dryrun" not in v}  # clip giả không tính là "đã xong"
+            out = page.build(self.csb, self.proj, self.issues, real)
+            if not quiet:
+                self.head("page", os.path.relpath(out, ROOT))
+        elif not quiet:
+            self.head("page", "bỏ qua scripts.html (100% shot code, không cần Flow)")
         if linter.errors(self.issues):
             raise Stop("lint_failed", "Linter còn lỗi — sửa storyboard.json (trường do người viết) rồi chạy lại.")
 
@@ -783,6 +791,13 @@ class Run:
         if self.is_loop_outro():
             bf = int((self.csb.get("outro") or {}).get("bridge_frames") or 8)
             self.head("outro", f"Shorts: seamless_loop ({bf}f bridge về frame 0, bỏ thẻ outro tĩnh)")
+            return
+        from . import deliver  # noqa: PLC0415
+        want_16x9 = "youtube_16x9" in deliver.preset_names(self.platforms)
+        if not want_16x9:
+            self.head("outro", "Shorts: " + ("TITLE_GLITCH trên bảng (engine board)" if self.spine() else
+                                              "cảnh code engine" if self.outro_code() else "template 2D")
+                      + " · bỏ qua endscreen_16x9 (không xuất 16:9)")
             return
         es = self.p("out", "endscreen_16x9.mp4")
         fp = _fp(self.csb.get("outro", {}), channel()["outro"], channel().get("copy"), os.path.join(ROOT, "assets", "brand"))
