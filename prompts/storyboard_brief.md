@@ -126,8 +126,10 @@ keyword, the twist is a crossed-out thesis. Other styles ignore it, so always fi
 - `thumbnail.variants`: 3 variants; `text` ≤ {thumb_words} English words, a question or curiosity claim ("IT FLOATS?!"),
   never the title. Archetypes: before_disaster, split, big_number, vs, red_circle. `scene` = background, no text.
 - `outro`: either `"mode": "loop"` with `"bridge_frames": 8` (preferred for seamless AVD > 100% loops — no static CTA card; bridge the last line straight into Shot 1), or `"mode": "code"` with a short `outro.teaser` ("Liquid nitrogen vs boiling water").
-- `publish`: 3 `titles` (≤ 60 characters, how English-speaking viewers search), `description` (exactly 2 sentences),
-  `hashtags` (5–8, no "#"). Check search phrasing with a web search.
+- `publish`: write **platform-specific SEO** (do NOT recycle identical captions/hashtags across YouTube & TikTok):
+  - `publish.youtube_shorts`: 3 search-friendly `titles` (40–55 chars, ≤ 60 max, lead keyword in first 40 chars), `description` (2–4 natural keyword-rich sentences + source), 3 focused niche `hashtags` (no "#"), `tags` (8–12 YouTube Studio search keywords), and `pinned_comment` (1 curiosity/debate question to boost replies & AVD).
+  - `publish.tiktok`: `caption` (≤ 260 chars: 1-line hook + natural TikTok Search keywords + comment/save question CTA), 3–5 `hashtags` (**NEVER `#shorts`**), `search_query` (main TikTok search phrase), and `comment_hook`.
+  - Also keep top-level `publish.titles`, `publish.description`, `publish.hashtags` populated for backwards compatibility. Check search phrasing with a web search.
 
 ## 7. Schema (return exactly these keys)
 {schema}

@@ -352,26 +352,182 @@ def json_load(p):
 
 
 # ------------------------------------------------------------------ publish.md
+YT_ONLY_TAGS = frozenset({"shorts", "short", "ytshorts", "youtubeshorts"})
+TIKTOK_ONLY_TAGS = frozenset({"fyp", "foryou", "foryoupage", "tiktok", "tiktokviral"})
+
+
+def _clean_tags(raw, drop=()):
+    seen, out = set(), []
+    drop_l = {d.lower() for d in drop}
+    for t in raw or []:
+        s = re.sub(r"[^a-zA-Z0-9_]", "", str(t or "").lstrip("#").strip())
+        if not s:
+            continue
+        low = s.lower()
+        if low in drop_l or low in seen:
+            continue
+        seen.add(low)
+        out.append(s)
+    return out
+
+
+def platform_seo(sb):
+    """Tách gói SEO riêng cho YouTube Shorts, TikTok và Instagram Reels (Vòng 15).
+    Tương thích ngược hoàn toàn với storyboard cũ chỉ có `publish.{titles,description,hashtags}`."""
+    sb = sb or {}
+    pub = sb.get("publish") or {}
+    base_titles = [str(t).strip() for t in (pub.get("titles") or []) if str(t).strip()]
+    if not base_titles:
+        base_titles = [str(sb.get("title") or sb.get("topic") or "").strip()]
+    base_desc = (pub.get("description") or "").strip()
+    base_cap = (sb.get("caption") or "").strip()
+    base_tags = _clean_tags(pub.get("hashtags") or sb.get("hashtags") or channel().get("hashtags", []))
+
+    yt_raw = pub.get("youtube_shorts") or {}
+    tt_raw = pub.get("tiktok") or {}
+    ig_raw = pub.get("instagram_reels") or {}
+
+    yt_titles = [str(t).strip() for t in (yt_raw.get("titles") or base_titles) if str(t).strip()]
+    yt_desc = (yt_raw.get("description") or base_desc).strip()
+    yt_tags_src = yt_raw.get("hashtags") if yt_raw.get("hashtags") is not None else base_tags
+    yt_hashtags = _clean_tags(yt_tags_src, drop=TIKTOK_ONLY_TAGS)[:4]
+    if len(yt_hashtags) > 3 and yt_raw.get("hashtags") is None:
+        yt_hashtags = _clean_tags(base_tags, drop=YT_ONLY_TAGS | TIKTOK_ONLY_TAGS)[:3] or yt_hashtags[:3]
+    yt_studio_tags = [str(x).strip() for x in (yt_raw.get("tags") or []) if str(x).strip()]
+    if not yt_studio_tags:
+        yt_studio_tags = _clean_tags(base_tags, drop=YT_ONLY_TAGS | TIKTOK_ONLY_TAGS)[:8]
+    yt_pinned = (yt_raw.get("pinned_comment") or "").strip()
+
+    tt_cap = (tt_raw.get("caption") or base_cap or (base_titles[0] if base_titles else "")).strip()
+    tt_tags_src = tt_raw.get("hashtags") if tt_raw.get("hashtags") is not None else base_tags
+    tt_hashtags = _clean_tags(tt_tags_src, drop=YT_ONLY_TAGS)[:5]
+    tt_search = (tt_raw.get("search_query") or "").strip()
+    tt_comment = (tt_raw.get("comment_hook") or yt_pinned).strip()
+
+    ig_cap = (ig_raw.get("caption") or tt_cap or base_desc).strip()
+    ig_tags_src = ig_raw.get("hashtags") if ig_raw.get("hashtags") is not None else tt_hashtags
+    ig_hashtags = _clean_tags(ig_tags_src, drop=YT_ONLY_TAGS | TIKTOK_ONLY_TAGS)[:5]
+
+    return {
+        "youtube_shorts": {
+            "titles": yt_titles,
+            "description": yt_desc,
+            "hashtags": yt_hashtags,
+            "tags": yt_studio_tags,
+            "pinned_comment": yt_pinned,
+        },
+        "tiktok": {
+            "caption": tt_cap,
+            "hashtags": tt_hashtags,
+            "search_query": tt_search,
+            "comment_hook": tt_comment,
+        },
+        "instagram_reels": {
+            "caption": ig_cap,
+            "hashtags": ig_hashtags,
+        },
+    }
+
+
+def render_platform_caption(sb, preset):
+    """Văn bản copy-paste sạch sẵn cho `out/deliver/<preset>/caption.txt`."""
+    seo = platform_seo(sb)
+    if preset in ("youtube_shorts", "youtube_16x9"):
+        y = seo["youtube_shorts"]
+        lines = ["TITLE OPTIONS (<= 60 chars):"]
+        lines += [f"{k + 1}. {t}" for k, t in enumerate(y["titles"])]
+        lines += ["", "DESCRIPTION:", y["description"] or ""]
+        if y["hashtags"]:
+            lines += ["", " ".join(f"#{t}" for t in y["hashtags"])]
+        if y["tags"]:
+            lines += ["", "YOUTUBE STUDIO TAGS:", ", ".join(y["tags"])]
+        if y["pinned_comment"]:
+            lines += ["", "PINNED COMMENT:", y["pinned_comment"]]
+        return "\n".join(lines).strip() + "\n"
+    if preset == "tiktok":
+        t = seo["tiktok"]
+        lines = [t["caption"]]
+        if t["hashtags"]:
+            lines += ["", " ".join(f"#{x}" for x in t["hashtags"])]
+        if t["search_query"]:
+            lines += ["", f"TIKTOK SEARCH PHRASE: {t['search_query']}"]
+        if t["comment_hook"]:
+            lines += ["", f"SEED COMMENT: {t['comment_hook']}"]
+        return "\n".join(lines).strip() + "\n"
+    ig = seo["instagram_reels"]
+    lines = [ig["caption"]]
+    if ig["hashtags"]:
+        lines += ["", " ".join(f"#{x}" for x in ig["hashtags"])]
+    return "\n".join(lines).strip() + "\n"
+
+
 def write_publish(sb, path):
     pub = sb.get("publish") or {}
-    titles = pub.get("titles") or [sb.get("title") or sb.get("topic", "")]
-    desc = (pub.get("description") or "").strip()
-    tags = [t.lstrip("#") for t in (pub.get("hashtags") or sb.get("hashtags") or channel().get("hashtags", []))]
+    has_split = bool(pub.get("youtube_shorts") or pub.get("tiktok"))
+    seo = platform_seo(sb)
+    yt, tt, ig = seo["youtube_shorts"], seo["tiktok"], seo["instagram_reels"]
     warns = []
-    for t in titles:
-        if len(t) > 60:
-            warns.append(f"publish: tiêu đề dài {len(t)} ký tự (> 60): {t}")
-    if len(titles) < 3:
-        warns.append(f"publish: cần 3 phương án tiêu đề (có {len(titles)}).")
-    n_sent = len([s for s in re.split(r"[.!?]+", desc) if s.strip()])
-    if desc and n_sent != 2:
-        warns.append(f"publish: mô tả nên đúng 2 câu (có {n_sent}).")
-    if not 5 <= len(tags) <= 8:
-        warns.append(f"publish: hashtag nên 5–8 (có {len(tags)}).")
-    L = ["# Publish", "", "## Titles (≤ 60 chars)"]
-    L += [f"{k + 1}. {t}  _({len(t)} chars)_" for k, t in enumerate(titles)]
-    L += ["", "## Description", "", desc or "_(chưa có — thêm publish.description vào storyboard.json)_", "",
-          "## Hashtags", "", " ".join(f"#{t}" for t in tags), ""]
+
+    if has_split:
+        for t in yt["titles"]:
+            if len(t) > 60:
+                warns.append(f"publish(youtube_shorts): tiêu đề dài {len(t)} ký tự (> 60): {t}")
+        if len(yt["titles"]) < 3:
+            warns.append(f"publish(youtube_shorts): cần 3 phương án tiêu đề (có {len(yt['titles'])}).")
+        n_sent = len([s for s in re.split(r"[.!?]+", yt["description"]) if s.strip()])
+        if yt["description"] and not 2 <= n_sent <= 4:
+            warns.append(f"publish(youtube_shorts): mô tả SEO nên 2–4 câu (có {n_sent}).")
+        if not 2 <= len(yt["hashtags"]) <= 5:
+            warns.append(f"publish(youtube_shorts): hashtag nên 2–5 thẻ tập trung (có {len(yt['hashtags'])}).")
+        raw_tt_tags = [str(x).lstrip("#").strip().lower() for x in ((pub.get("tiktok") or {}).get("hashtags") or [])]
+        bad_tt = [x for x in raw_tt_tags if x in YT_ONLY_TAGS]
+        if bad_tt:
+            warns.append(f"publish(tiktok): không dùng hashtag YouTube ({', '.join('#' + x for x in bad_tt)}) trên TikTok.")
+        if not tt["caption"]:
+            warns.append("publish(tiktok): thiếu caption TikTok.")
+        elif len(tt["caption"]) > 400:
+            warns.append(f"publish(tiktok): caption dài {len(tt['caption'])} ký tự (> 400).")
+        if not 3 <= len(tt["hashtags"]) <= 5:
+            warns.append(f"publish(tiktok): hashtag nên 3–5 thẻ (có {len(tt['hashtags'])}).")
+    else:
+        titles = pub.get("titles") or [sb.get("title") or sb.get("topic", "")]
+        desc = (pub.get("description") or "").strip()
+        tags = [t.lstrip("#") for t in (pub.get("hashtags") or sb.get("hashtags") or channel().get("hashtags", []))]
+        for t in titles:
+            if len(t) > 60:
+                warns.append(f"publish: tiêu đề dài {len(t)} ký tự (> 60): {t}")
+        if len(titles) < 3:
+            warns.append(f"publish: cần 3 phương án tiêu đề (có {len(titles)}).")
+        n_sent = len([s for s in re.split(r"[.!?]+", desc) if s.strip()])
+        if desc and n_sent != 2:
+            warns.append(f"publish: mô tả nên đúng 2 câu (có {n_sent}).")
+        if not 5 <= len(tags) <= 8:
+            warns.append(f"publish: hashtag nên 5–8 (có {len(tags)}).")
+
+    L = ["# Publish (Platform-Specific SEO)", ""]
+    L += ["## 1. YouTube Shorts SEO", "", "### Titles (≤ 60 chars)"]
+    L += [f"{k + 1}. {t}  _({len(t)} chars)_" for k, t in enumerate(yt["titles"])]
+    L += ["", "### Description (2–4 SEO sentences + source)", "",
+          yt["description"] or "_(chưa có — thêm publish.youtube_shorts.description)_", "",
+          "### Hashtags (2–4 focused tags)", "", " ".join(f"#{t}" for t in yt["hashtags"]), ""]
+    if yt["tags"]:
+        L += ["### YouTube Studio Tags (copy-paste)", "", f"`{', '.join(yt['tags'])}`", ""]
+    if yt["pinned_comment"]:
+        L += ["### Pinned Comment (kéo thảo luận / tăng AVD)", "", f"> {yt['pinned_comment']}", ""]
+
+    L += ["## 2. TikTok SEO", "", "### Caption (Hook + Search Keywords + Question CTA)", "",
+          tt["caption"] or "_(chưa có — thêm publish.tiktok.caption)_", "",
+          "### Hashtags (3–5 tags · không dùng #shorts)", "", " ".join(f"#{t}" for t in tt["hashtags"]), ""]
+    if tt["search_query"]:
+        L += [f"- **TikTok Search Phrase:** `{tt['search_query']}`"]
+    if tt["comment_hook"]:
+        L += [f"- **Seed Comment:** {tt['comment_hook']}"]
+    if tt["search_query"] or tt["comment_hook"]:
+        L.append("")
+
+    L += ["## 3. Instagram Reels", "", ig["caption"] or "—", "",
+          " ".join(f"#{t}" for t in ig["hashtags"]), ""]
+
     if pub.get("search_notes"):
         L += ["## Search notes", "", pub["search_notes"], ""]
     with open(path, "w", encoding="utf-8", newline="\n") as f:

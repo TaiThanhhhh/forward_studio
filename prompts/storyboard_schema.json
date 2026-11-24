@@ -173,14 +173,45 @@
       "≤ 60 chars",
       "≤ 60 chars"
     ],
-    "description": "Exactly two sentences.",
+    "description": "2–3 natural SEO sentences + source.",
     "hashtags": [
       "science",
       "physics",
       "experiment",
-      "shorts",
-      "leidenfrost"
-    ]
+      "leidenfrost",
+      "explained"
+    ],
+    "youtube_shorts": {
+      "titles": [
+        "Lead keyword in first 40 chars (≤ 60)",
+        "Curiosity search title (≤ 60)",
+        "Direct question search title (≤ 60)"
+      ],
+      "description": "Hook sentence. Keyword-rich explanation sentence. Verified source — True.",
+      "hashtags": [
+        "physics",
+        "leidenfrost",
+        "science"
+      ],
+      "tags": [
+        "leidenfrost effect",
+        "hot steel ball in ice water",
+        "physics experiment",
+        "science explained"
+      ],
+      "pinned_comment": "Would you have guessed the water stays at 0°C?"
+    },
+    "tiktok": {
+      "caption": "Hook line with natural TikTok search phrase. Would you have guessed this?",
+      "hashtags": [
+        "science",
+        "physics",
+        "experiment",
+        "learnontiktok"
+      ],
+      "search_query": "hot steel ball in ice water physics",
+      "comment_hook": "Did you expect it to boil instantly?"
+    }
   },
   "sources": [
     "https://… (one source per number)"
