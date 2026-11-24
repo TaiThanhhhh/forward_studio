@@ -23,8 +23,8 @@ from . import audio as audiolib
 from . import (boardplan, boardqa, brief, codeshot, compiler, fakes, ingest, lang, linter, mix, motion, narratives, outro,
                page, qa, render, spine, styles, textfx, textstyle, thumbs, timeline, tts, vcam, vo, voices)
 from . import storyboard as sbm
-from .common import (BRAND_DIR, CONFIG_DIR, FPS, PROJECTS, PROMPTS_DIR, ROOT, StudioError, channel, env, flow_models,
-                     load_json, save_json, save_text, slugify, valid_media)
+from .common import (BRAND_DIR, CONFIG_DIR, FPS, PROJECTS, PROMPTS_DIR, ROOT, StudioError, channel, duration_profile, env,
+                     flow_models, load_json, save_json, save_text, slugify, valid_media)
 
 STAGES = ["idea", "script", "storyboard", "prompts", "page", "clips", "ingest", "trim", "voice", "assemble", "text",
           "outro", "audio", "look", "code", "render", "thumbnails", "qa", "publish", "deliver"]
@@ -194,7 +194,7 @@ def interpolate_story_hud(sb, tl, shot, seg):
 class Run:
     def __init__(self, arg, frm=None, only=None, dry=False, model=None, ai=None, yes=False, no_open=False, log=print,
                  look_ok=False, tts_force=False, style=None, voice=None, flow=None, narrative=None, accept_qa=False,
-                 platforms=None, captions=None, archetype=None):
+                 platforms=None, captions=None, archetype=None, length=None):
         self.proj, self.idea, self.new = project_for(arg)
         self.slug = os.path.basename(self.proj)
         self.frm, self.only = resolve_stage(frm), resolve_stage(only)
@@ -203,6 +203,7 @@ class Run:
         self.want_style, self.want_voice, self.want_flow = style, voice, flow   # cờ --style / --voice / --flow|--no-flow
         self.want_narrative = narrative                                       # cờ --narrative
         self.want_archetype = archetype                                       # cờ --archetype (Vòng 13)
+        self.want_length = length                                             # cờ --length short|deep (Vòng 18)
         self.want_captions = captions                  # cờ --captions (capcut_pop/pill/box, vox_highlight, off)
         self.accept_qa = accept_qa                     # --accept-qa: người làm duyệt tay video bị cổng QA chặn
         self.platforms = platforms                     # --platforms youtube_shorts,tiktok… (mặc định delivery.default)
@@ -290,6 +291,9 @@ class Run:
             if "format_family" not in plan:                                   # plan.json cũ (trước Vòng 14)
                 plan.update(narratives.plan_format(self.idea, self.slug, idea=idea))
                 dirty = True
+            if self.want_length is not None and plan.get("length_profile") != self.want_length:
+                plan["length_profile"] = self.want_length
+                dirty = True
             if dirty:
                 save_json(pp, plan)
             return plan
@@ -301,6 +305,7 @@ class Run:
         plan.update(narratives.plan(self.idea, self.slug, want=self.want_narrative, idea=idea))
         plan.update(narratives.plan_archetype(self.idea, self.slug, want=self.want_archetype, idea=idea))
         plan.update(narratives.plan_format(self.idea, self.slug, idea=idea))
+        plan["length_profile"] = self.want_length or "short"
         save_json(pp, plan)
         return plan
 
@@ -951,6 +956,10 @@ class Run:
             from . import autocaptions  # noqa: PLC0415
             boardplan.media_sources(self.proj, self.csb, self.tl, self.trims, self.ingested, extract=True, log=self.log)
             bc = boardplan.cfg()
+            prof = duration_profile(self.csb)
+            is_deep = prof["name"] == "deep"
+            b_crf = prof.get("board_crf", bc.get("crf", 19)) if is_deep else bc.get("crf", 19)
+            b_rate = prof.get("board_maxrate", bc.get("maxrate", "10M")) if is_deep else bc.get("maxrate", "10M")
             cap_preset = getattr(self, "cap_preset", None) or autocaptions.resolve_preset(
                 self.csb, self.want_captions, self.sb["style_resolved"]
             )
@@ -960,8 +969,8 @@ class Run:
                 else None
             )
             st = brender.render_full(
-                self.board_path, vid, workers=bc.get("workers", 0), crf=bc.get("crf", 19),
-                captions=cap_cfg, maxrate=bc.get("maxrate", "10M"),
+                self.board_path, vid, workers=bc.get("workers", 0), crf=b_crf,
+                captions=cap_cfg, maxrate=b_rate,
             )
             self.board_stats = st
             save_json(os.path.join(self.work, "board_stats.json"), st)

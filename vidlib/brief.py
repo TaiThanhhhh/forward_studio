@@ -194,6 +194,7 @@ def plan_block(plan):
 
 def build(idea, slug, video_model=None, proj=None, plan=None):
     from . import codeshot, lang, motionplan, narratives, styles  # noqa: PLC0415
+    from .common import duration_profile  # noqa: PLC0415
     cfg = channel()
     extra = ""
     d0 = {}
@@ -207,7 +208,25 @@ def build(idea, slug, video_model=None, proj=None, plan=None):
     caps = fm["video_models"][vm]
     im = cfg["flow"]["image_model"]
     p = cfg["pacing"]
-    d = cfg["duration"]
+    prof = duration_profile((plan or {}).get("length_profile"))
+    if prof["name"] == "deep":
+        length_block = (
+            "**MINI DEEP-DIVE MODE (65–90s · TikTok Creator Rewards 1min+ & YouTube Extended Shorts):**\n"
+            f"- Set `\"length_profile\": \"deep\"` and `\"format\": {{\"target_sec\": {prof['target_sec']}}}`.\n"
+            "- Total spoken duration MUST exceed **62 seconds** (~210–255 spoken words across 18–24 visual shots) "
+            "so the video qualifies for **TikTok Creator Rewards (>1 min)** while staying inside YouTube Shorts.\n"
+            "- Use a **3-Act Micro-Documentary Arc** with **2 Re-Hooks**:\n"
+            "  1. Act 1 (0–20s): Cold-open paradox hook + immediate stakes.\n"
+            "  2. **Re-Hook #1 (~20s)**: Twist the assumption (*'But that's not even the crazy part…'* / engine switch).\n"
+            "  3. Act 2 (20–48s): Deep mechanism breakdown with concrete literal visuals/numbers.\n"
+            "  4. **Re-Hook #2 (~48s)**: Real-world consequence or second layer reveal.\n"
+            "  5. Act 3 (48–75s+): Payoff + ironic final twist + seamless loop back to Shot 1."
+        )
+    else:
+        length_block = (
+            f"**STANDARD SHORT MODE ({prof['min_sec']}–{prof['max_sec']}s):** "
+            "Tight single-idea paradox with 1 mid-video re-hook around 12–16s."
+        )
     b = brand()
     with open(os.path.join(PROMPTS_DIR, "storyboard_brief.md"), encoding="utf-8") as f:
         tpl = f.read()
@@ -216,12 +235,13 @@ def build(idea, slug, video_model=None, proj=None, plan=None):
     unis = "\n".join(f"- {k}) {n}: {desc}" for k, (n, desc) in cfg["universes"].items() if k in cfg["universe"])
     vals = {
         "channel_name": cfg["name"], "format_label": cfg["format_label"], "universes": unis, "idea": idea, "slug": slug,
-        "min_sec": d["min_sec"], "max_sec": d["max_sec"], "target_sec": d["target_sec"],
+        "min_sec": prof["min_sec"], "max_sec": prof["max_sec"], "target_sec": prof["target_sec"],
         "outro_sec": cfg["outro"]["duration_sec"], "video_model": vm,
         "durations": ", ".join(str(x) for x in caps["durations_sec"]),
         "first_last_max": caps.get("first_last_max_sec", "—"), "image_model": im,
-        "hook_max": p["hook_max_sec"], "vo_speed": cfg["vo"]["speed"], "avg_min": p["shot_avg_min"],
-        "avg_max": p["shot_avg_max"], "shot_max": p["shot_max_sec"], "change_every": p["change_every_sec"],
+        "hook_max": p["hook_max_sec"], "vo_speed": cfg["vo"]["speed"], "avg_min": prof["shot_avg_min"],
+        "avg_max": prof["shot_avg_max"], "shot_max": prof["shot_max_sec"], "change_every": p["change_every_sec"],
+        "length_block": length_block,
         "accent_name": b["accent_name"], "accent": b["colors"]["accent"], "danger": b["colors"]["danger"],
         "character": b["character"], "max_refs": fm["image_models"].get(im, {}).get("max_refs", 1),
         "thumb_words": cfg["thumbnail"]["max_words"], "schema": schema.replace("<slug>", slug),
@@ -273,17 +293,32 @@ def ask(provider, prompt):
     if provider == "gemini":
         from google import genai  # noqa: PLC0415
 
+        from . import aireview  # noqa: PLC0415
         from .common import env  # noqa: PLC0415
         api_key = env("GEMINI_API_KEY") or os.environ.get("GEMINI_API_KEY")
         if not api_key:
             raise StudioError("Thiếu GEMINI_API_KEY trong .env (lấy miễn phí/credit Pro tại https://aistudio.google.com/apikey).")
-        client = genai.Client(api_key=api_key)
-        model = os.environ.get("GEMINI_TEXT_MODEL", "gemini-4-hydrogen")
-        interaction = client.interactions.create(model=model, input=prompt)
+        try:
+            client = genai.Client(api_key=api_key, http_options={"retry_options": {"attempts": 1}})
+        except TypeError:
+            client = genai.Client(api_key=api_key)
+        pref = os.environ.get("GEMINI_TEXT_MODEL")
+        candidates = [pref] if pref else list(aireview.FALLBACK_MODELS)
+        used_model = candidates[0]
+        interaction = None
+        for idx, cand in enumerate(candidates):
+            used_model = cand
+            try:
+                interaction = client.interactions.create(model=cand, input=prompt)
+                break
+            except Exception as ex:  # noqa: BLE001
+                if idx + 1 < len(candidates) and aireview._is_transient_err(ex):
+                    continue
+                raise StudioError(f"Gemini API lỗi với `{cand}`: {ex}") from ex
         usage = getattr(interaction, "usage", None)
         LAST_USAGE.update({
             "provider": "gemini",
-            "model": model,
+            "model": used_model,
             "tokens_in": getattr(usage, "total_input_tokens", 0) or 0,
             "tokens_out": getattr(usage, "total_output_tokens", 0) or 0,
         })

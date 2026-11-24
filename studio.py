@@ -79,6 +79,8 @@ def video_parser(prog="video"):
                                         "youtube_16x9 | all | default")
     ap.add_argument("--narrative", help="ép dạng kịch bản (countdown, timeline, myth_fact, versus…; xem: studio.py "
                                         "narratives); mặc định auto = xoay vòng theo chủ đề")
+    ap.add_argument("--length", choices=["short", "deep"],
+                    help="độ dài video 9:16: short (30–45s mặc định) hoặc deep (65–90s · TikTok Creator Rewards 1m+)")
     ap.add_argument("--captions",
                     choices=["studio_clean", "capcut_pop", "capcut_pill", "capcut_box", "vox_highlight", "off"],
                     help="phụ đề burn-in kiểu Studio/CapCut (studio_clean|capcut_pop|capcut_pill|capcut_box|"
@@ -96,7 +98,7 @@ def run_video(argv, prog="video"):
     r = pipeline.Run(a.target, frm=a.frm, only=a.only, dry=a.dry_run, model=a.model, ai=a.ai, yes=a.yes,
                      no_open=a.no_open or a.dry_run, look_ok=a.look_ok, tts_force=a.tts_force, style=a.style,
                      voice=a.voice, flow=a.flow, narrative=a.narrative, accept_qa=a.accept_qa, platforms=a.platforms,
-                     captions=a.captions)
+                     captions=a.captions, length=a.length)
     return r.run()
 
 

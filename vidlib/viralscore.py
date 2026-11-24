@@ -13,7 +13,7 @@ theo đúng Format Family của video (`evidence_board_doc`, `cinema_3d_film`, `
 import re
 
 from . import codeshot, lang, linter, narratives, tts
-from .common import channel
+from .common import channel, duration_profile
 
 MAX_AXES = {
     "hook_loop": 20,
@@ -599,18 +599,21 @@ def _score_audio_tension(sb, shots, suggestions):
 
 
 def _score_retention_pacing(sb, shots, suggestions):
+    prof = duration_profile(sb)
     spoken_shots = [s for s in shots if not (s.get("beat") == "outro" and not tts.strip_tags(s.get("vo", "")).strip())]
     durs = [float(s.get("target_sec") or 0) for s in (spoken_shots or shots)]
     total_sec = sum(durs)
     avg = total_sec / max(1, len(durs))
-    if 2.2 <= avg <= 4.0:
+    hi_ok = max(4.0, float(prof.get("shot_avg_max") or 4.0))
+    lo_ok = min(2.2, float(prof.get("shot_avg_min") or 2.2))
+    if lo_ok <= avg <= hi_ok:
         p1 = 4
-    elif 1.8 <= avg <= 4.5:
+    elif 1.8 <= avg <= hi_ok + 0.5:
         p1 = 2
-        suggestions.append(f"Thời lượng shot TB {avg:.2f}s hơi lệch vùng tối ưu 2.2–4.0s.")
+        suggestions.append(f"Thời lượng shot TB {avg:.2f}s hơi lệch vùng tối ưu {lo_ok:.1f}–{hi_ok:.1f}s.")
     else:
         p1 = 0
-        suggestions.append(f"Thời lượng shot TB {avg:.2f}s nằm ngoài chuẩn giữ chân 2.2–4.0s.")
+        suggestions.append(f"Thời lượng shot TB {avg:.2f}s nằm ngoài chuẩn giữ chân {lo_ok:.1f}–{hi_ok:.1f}s.")
 
     total_words = sum(lang.word_count(tts.strip_tags(s.get("vo", ""))) for s in (spoken_shots or shots))
     wps = total_words / max(total_sec, 0.1) if total_sec > 0 else 0.0

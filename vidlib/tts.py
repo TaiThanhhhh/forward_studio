@@ -14,10 +14,11 @@ import urllib.error
 import urllib.request
 
 from . import lang
-from .common import CONFIG_DIR, StudioError, env, load_json, save_json
+from .common import CONFIG_DIR, StudioError, env, load_json, probe, run, save_json
 
 TAG_RE = re.compile(r"\[([a-zA-Z ]{2,24})\]")
 API = "https://api.elevenlabs.io/v1"
+CHUNK_MAX_CHARS = 1400
 
 
 def voice_cfg():
@@ -119,6 +120,85 @@ def word_times(words, align):
     return out
 
 
+def _split_chunks(lines, cfg=None, max_chars=CHUNK_MAX_CHARS):
+    """Chia danh sách câu `lines` thành các đoạn ≤ max_chars (tách tại ranh giới câu) cho video 65–180s.
+    Trả về list[(start_line_idx, sub_lines)]. Video ngắn (≤ max_chars) luôn trả về đúng 1 đoạn."""
+    full_text, _ = build_text(lines, cfg)
+    if len(full_text) <= max_chars or len(lines) <= 1:
+        return [(0, list(lines))]
+    chunks, cur, cur_start = [], [], 0
+    for idx, ln in enumerate(lines):
+        cand = cur + [ln]
+        cand_text, _ = build_text(cand, cfg)
+        if cur and len(cand_text) > max_chars:
+            chunks.append((cur_start, cur))
+            cur = [ln]
+            cur_start = idx
+        else:
+            cur = cand
+    if cur:
+        chunks.append((cur_start, cur))
+    return chunks
+
+
+def _synth_chunked(adir, chunks, cfg, api_key, log=print):
+    """Gọi ElevenLabs theo từng đoạn (giữ ngữ điệu bằng previous_text/next_text), nối MP3 và cộng dồn mốc từ."""
+    import tempfile  # noqa: PLC0415
+
+    built = [(start_idx, *build_text(sub, cfg)) for start_idx, sub in chunks]
+    log(f"  · ElevenLabs (chia {len(built)} đoạn cho kịch bản dài): {cfg['voice']['name']} · {cfg['model_id']}")
+    part_paths, wt_all, offset = [], [], 0.0
+    tmp_dir = tempfile.mkdtemp(prefix="tts_chunks_", dir=adir)
+    try:
+        for i, (start_idx, ctext, cwords) in enumerate(built):
+            body = {"text": ctext, "model_id": cfg["model_id"], "voice_settings": cfg["voice_settings"]}
+            if i > 0:
+                body["previous_text"] = built[i - 1][1][-300:]
+            if i + 1 < len(built):
+                body["next_text"] = built[i + 1][1][:300]
+            r = _post(
+                f"/text-to-speech/{cfg['voice']['id']}/with-timestamps?output_format={cfg['output_format']}",
+                body,
+                api_key,
+            )
+            part_mp3 = os.path.join(tmp_dir, f"part_{i:02d}.mp3")
+            with open(part_mp3, "wb") as pf:
+                pf.write(base64.b64decode(r["audio_base64"]))
+            part_paths.append(part_mp3)
+            align = r.get("alignment") or r.get("normalized_alignment")
+            if not align or len(align.get("characters", [])) != len(ctext):
+                align = r.get("normalized_alignment") or align
+            cwt = word_times(cwords, align)
+            for w in cwt:
+                wt_all.append({
+                    "w": w["w"],
+                    "line": w["line"] + start_idx,
+                    "start": round(w["start"] + offset, 3),
+                    "end": round(w["end"] + offset, 3),
+                })
+            try:
+                cdur = float(probe(part_mp3)["duration"])
+            except Exception:  # noqa: BLE001
+                cdur = align["character_end_times_seconds"][-1] if align.get("character_end_times_seconds") else 0.0
+            offset += cdur
+
+        lst_path = os.path.join(tmp_dir, "concat.txt")
+        with open(lst_path, "w", encoding="utf-8", newline="\n") as lf:
+            for p in part_paths:
+                lf.write(f"file '{os.path.abspath(p).replace(chr(92), '/')}'\n")
+        merged = os.path.join(tmp_dir, "merged.mp3")
+        run(
+            ["ffmpeg", "-y", "-v", "error", "-f", "concat", "-safe", "0", "-i", lst_path, "-c", "copy", merged],
+            "ffmpeg (tts chunk concat)",
+        )
+        with open(merged, "rb") as mf:
+            audio = mf.read()
+        return audio, wt_all, round(offset, 3)
+    finally:
+        import shutil  # noqa: PLC0415
+        shutil.rmtree(tmp_dir, ignore_errors=True)
+
+
 def synthesize(proj, lines, log=print, force=False, voice=None):
     """Tạo audio/vo.mp3 + audio/vo_alignment.json nếu chưa có hoặc lời/giọng đã đổi. Trả về đường dẫn alignment.
     voice: giọng của video này (storyboard.voice_resolved, vidlib/voices.py); None = giọng mặc định trong voice.json."""
@@ -140,13 +220,19 @@ def synthesize(proj, lines, log=print, force=False, voice=None):
     api_key = env(cfg.get("api_key_env", "ELEVENLABS_API_KEY"))
     if not api_key:
         raise StudioError("Chưa có ELEVENLABS_API_KEY (biến môi trường hoặc file .env ở gốc repo).")
-    log(f"  · ElevenLabs: {cfg['voice']['name']} · {cfg['model_id']} · {len(text)} ký tự")
-    r = _post(f"/text-to-speech/{cfg['voice']['id']}/with-timestamps?output_format={cfg['output_format']}",
-              {"text": text, "model_id": cfg["model_id"], "voice_settings": cfg["voice_settings"]}, api_key)
-    audio = base64.b64decode(r["audio_base64"])
-    align = r.get("alignment") or r.get("normalized_alignment")
-    if not align or len(align.get("characters", [])) != len(text):
-        align = r.get("normalized_alignment") or align
+    chunks = _split_chunks(lines, cfg)
+    if len(chunks) > 1:
+        audio, wt, dur = _synth_chunked(adir, chunks, cfg, api_key, log=log)
+    else:
+        log(f"  · ElevenLabs: {cfg['voice']['name']} · {cfg['model_id']} · {len(text)} ký tự")
+        r = _post(f"/text-to-speech/{cfg['voice']['id']}/with-timestamps?output_format={cfg['output_format']}",
+                  {"text": text, "model_id": cfg["model_id"], "voice_settings": cfg["voice_settings"]}, api_key)
+        audio = base64.b64decode(r["audio_base64"])
+        align = r.get("alignment") or r.get("normalized_alignment")
+        if not align or len(align.get("characters", [])) != len(text):
+            align = r.get("normalized_alignment") or align
+        wt = word_times(words, align)
+        dur = align["character_end_times_seconds"][-1] if align.get("character_end_times_seconds") else 0
     from . import cost  # noqa: PLC0415
     cost.record(proj, "tts", provider="elevenlabs", chars=len(text), cached=False, model=cfg["model_id"],
                 voice=cfg["voice"].get("name"))
@@ -156,9 +242,7 @@ def synthesize(proj, lines, log=print, force=False, voice=None):
     if old and os.path.exists(mp3):  # giữ bản cũ để so sánh, không ghi đè mất
         os.replace(mp3, os.path.join(adir, f"vo.prev-{old.get('key', 'x')}.mp3"))
     os.replace(tmp, mp3)
-    wt = word_times(words, align)
     n_words = len(wt)
-    dur = align["character_end_times_seconds"][-1] if align.get("character_end_times_seconds") else 0
     # nhịp NÓI: tổng thời gian từng câu (bỏ khoảng ngừng giữa câu — hậu kỳ cắt lặng), nhân atempo vo.speed
     speak = sum(max(w["end"] for w in wt if w["line"] == k) - min(w["start"] for w in wt if w["line"] == k)
                 for k in {w["line"] for w in wt}) or dur
