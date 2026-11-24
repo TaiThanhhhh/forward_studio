@@ -4,8 +4,8 @@
   "narratives": {
     "classic": {
       "name": "Thí nghiệm kinh điển (mở → leo thang → bước ngoặt)",
-      "shape": "Experiment arc: the hook states the paradox → setup shows the normal case → the experiment starts → two or three escalating stages, each stranger than the last → payoff (the measured result) → twist (one ironic line set up earlier).",
-      "visual": "One clear visual change per stage; save the biggest number for the payoff.",
+      "shape": "Experiment arc: cold-open on the paradox in motion → setup shows the baseline → each beat pivots via But/Therefore causality (never linear 'and then') → mid-video re-hook at 12–16s flips the angle → payoff (the measured result) → twist (one ironic line set up earlier).",
+      "visual": "Mix 3D `stage` camera angles with cinema 2D beats (`xray_cutaway`, `dossier`, `hero_stat`); save the biggest `hero_stat` number for the payoff.",
       "tags": [],
       "strong": [],
       "moves": [],
@@ -21,16 +21,16 @@
     },
     "timeline": {
       "name": "Theo đồng hồ (từng phút / từng giờ)",
-      "shape": "Clock: walk through time in fixed jumps (seconds, minutes, hours, days or years — whatever fits the topic). Each stage opens on the time ('Minute ten.', 'Hour six.') and says what has changed by then. The jumps may grow (one minute → ten minutes → one hour → one day). The last stop is the payoff; the twist reframes the whole timeline.",
-      "visual": "Every shot's `kicker` is the time stamp (\"MIN 10\", \"HOUR 6\", \"DAY 3\") and the clock must visibly advance: clock / stopwatch / hourglass icons, a `graph` that grows, a `process` with layout `path`. Flow day: a text_fx time stamp on every stage.",
+      "shape": "Clock: walk through time in fixed jumps (seconds, minutes, hours, days or years — whatever fits the topic). Each stage opens on the time ('Minute ten.', 'Hour six.') and escalates pressure via But/Therefore causality. The jumps may grow (one minute → ten minutes → one hour → one day). The last stop is the payoff; the twist reframes the whole timeline.",
+      "visual": "Use persistent top-level `story_hud` (clock/temp/bpm) across every shot alongside `xray_cutaway`, `graph`, or 3D `dolly_zoom` as the clock visibly advances. Flow day: a text_fx time stamp on every stage.",
       "tags": ["minute", "hour", "day", "week", "year", "without", "stop", "quit", "after", "long", "sleep", "fast", "fasting", "marathon", "run", "hold", "awake", "forever", "age"],
       "strong": ["\\b(second|minute|hour|day|week|year)s?\\s+by\\s+(second|minute|hour|day|week|year)\\b", "\\bafter\\s+(\\d+|one|two|three|ten|a hundred)\\s+(seconds|minutes|hours|days|weeks|years)\\b", "\\bfor\\s+(\\d+|a|one|two|three|ten)\\s+(hours|days|weeks|months|years)\\b"],
       "moves": ["pan_r"]
     },
     "myth_fact": {
       "name": "Lật tẩy hiểu lầm (myth vs fact)",
-      "shape": "Myth vs fact: the hook states the belief everybody holds, as if it were true. Then bust it in rounds: two or three myths, each = the myth in one line → the test or evidence → the fact with one number. The payoff is what really happens; the twist is the one part of the myth that was secretly right (or why the myth exists at all).",
-      "visual": "Make every verdict visible: `fact` with layout `stamp` (MYTH → FACT), `compare` with layout `split` (what people think vs what happens), a `scene` that runs the test. Flow day: text_fx stamps MYTH / FACT over the test.",
+      "shape": "Myth vs fact: the hook states the belief everybody holds, as if it were true — then interrupts it abruptly (`tape_stop`) with counter-evidence. Bust it in But/Therefore rounds: the myth → the test or evidence → the real mechanism with one number. The payoff is what really happens; the twist is the hidden detail that makes the truth stranger.",
+      "visual": "Make every verdict visible: `dossier` with `stamp` (BUSTED / VERIFIED), `hero_stat`, `xray_cutaway` for the real mechanism, `compare` with layout `split`, or 3D `low_hero`. Flow day: text_fx stamps MYTH / FACT over the test.",
       "tags": ["myth", "really", "true", "actually", "believe", "safe", "dangerous", "healthy", "bad", "should", "need", "lie", "wrong", "fake", "real"],
       "strong": ["\\bmyths?\\b", "\\b(is|are) it (true|safe|bad|real)\\b", "\\bactually\\b"],
       "moves": ["spin", "pan_r", "pan_l"]
@@ -77,8 +77,8 @@
     },
     "mystery": {
       "name": "Bí ẩn có lời giải",
-      "shape": "Mystery: open with a strange documented fact that seems impossible. Offer the intuitive guess and kill it. Zoom into the real cause clue by clue (clue → clue → mechanism). The payoff is the mechanism; the twist adds the one detail that makes it even stranger.",
-      "visual": "Clues and close-ups: `callout` with labels pointing at the cause, `fact` with layout `left` for each clue, the camera dives into the object to reveal the mechanism. Flow day: macro close-ups, one clue per clip.",
+      "shape": "Mystery: open with a strange documented fact that seems impossible. Offer the intuitive guess and kill it via But/Therefore evidence. Zoom into the real cause clue by clue (evidence → re-hook reversal → mechanism). The payoff is the mechanism; the twist adds the one detail that makes it even stranger.",
+      "visual": "Archival clues and close-ups: `dossier` cards with highlighted evidence, `xray_cutaway` for the hidden mechanism, 3D `low_hero` spotlight reveals. Flow day: macro close-ups, one clue per clip.",
       "tags": ["why", "mystery", "strange", "weird", "impossible", "secret", "hidden", "nobody", "unknown", "paradox", "how"],
       "strong": ["^\\s*why\\b", "\\bmystery\\b", "\\bnobody knows\\b"],
       "moves": ["dive", "pan_r", "pull", "pan_d", "rack", "push_through"]

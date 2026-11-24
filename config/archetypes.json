@@ -1,0 +1,367 @@
+{
+  "_doc": "6 Phong Cách Đạo Diễn Viral (Director Archetypes — Vòng 13, vidlib/narratives.py). Mỗi archetype khóa đồng bộ 5 trục: cấu trúc kể chuyện (narrative_default + arc_rules), bộ beat hình ảnh giàu chiều sâu (required_beats), ngữ pháp camera 3D (camera_presets), chuyển cảnh agency (transitions), bản sắc âm thanh (music_mood) và kiểu kết (outro_mode). Xoay vòng theo lịch sử kênh với avoid_recent: 4 để 5 video liền kề không bao giờ trùng khuôn.",
+  "avoid_recent": 4,
+  "archetypes": {
+    "visceral_anatomy": {
+      "name": "Giải phẫu cận cảnh & nhân-quả sinh lý",
+      "reference_studios": [
+        "Zack D. Films"
+      ],
+      "narrative_default": "chain_reaction",
+      "arc_rules": "Cold-open at frame 0 on an extreme physical close-up already in motion (0–2s, zero lecture intro). Dive directly inside the body or object through a 3-layer physiological But/Therefore chain (trigger → internal mechanism → unexpected systemic consequence). Re-hook at 12–16s by diving one anatomical layer deeper with an iris_match into xray_cutaway. End on a seamless loop whose final clause flows directly back into shot 1's opening hook.",
+      "required_beats": [
+        "xray_cutaway",
+        "stage",
+        "hero_stat"
+      ],
+      "camera_presets": [
+        "ecu_macro",
+        "tracking_low",
+        "low_hero"
+      ],
+      "transitions": [
+        "iris_match",
+        "whip_match",
+        "cut"
+      ],
+      "moves": [
+        "push_through",
+        "dive",
+        "pan_d",
+        "truck_parallax"
+      ],
+      "music_mood": "visceral_thriller",
+      "outro_mode": "loop",
+      "tags": [
+        "body",
+        "heart",
+        "brain",
+        "lungs",
+        "blood",
+        "muscle",
+        "nerve",
+        "organ",
+        "pain",
+        "sweat",
+        "mouth",
+        "stomach",
+        "gut",
+        "cell",
+        "oxygen",
+        "lactate",
+        "fatigue",
+        "injury",
+        "skin",
+        "bone",
+        "anatomy",
+        "breathe"
+      ],
+      "strong": [
+        "\\binside (your|the) (body|brain|heart|lungs|muscles|blood|stomach)\\b",
+        "\\bwhat happens to your (heart|brain|lungs|muscles|stomach|nerves)\\b"
+      ],
+      "base": 0.3
+    },
+    "forensic_dossier": {
+      "name": "Hồ sơ điều tra & bằng chứng",
+      "reference_studios": [
+        "LEMMiNO",
+        "Fern"
+      ],
+      "narrative_default": "mystery",
+      "arc_rules": "Open with a calm, chilling real-world paradox stated as cold fact (0–2s). Lay out Evidence #1 and Evidence #2 via archival dossier cards and sharp data graphs, using But/Therefore pivots to demolish the obvious explanation around 12–16s (mid-video re-hook). Unveil the 'smoking gun' mechanism in dramatic low-key 3D spotlight (low_hero) and loop back smoothly into the opening paradox.",
+      "required_beats": [
+        "dossier",
+        "graph",
+        "stage"
+      ],
+      "camera_presets": [
+        "low_hero",
+        "over_shoulder",
+        "dolly_zoom"
+      ],
+      "transitions": [
+        "whip_match",
+        "iris_match",
+        "cut"
+      ],
+      "moves": [
+        "rack",
+        "pan_r",
+        "dive",
+        "pull"
+      ],
+      "music_mood": "investigative_pulse",
+      "outro_mode": "loop",
+      "tags": [
+        "study",
+        "experiment",
+        "secret",
+        "hidden",
+        "strange",
+        "mystery",
+        "paradox",
+        "evidence",
+        "proof",
+        "scientist",
+        "case",
+        "record",
+        "history",
+        "data",
+        "research",
+        "lab",
+        "test",
+        "discover",
+        "clue",
+        "unknown"
+      ],
+      "strong": [
+        "\\b(mystery|case file|unexplained|forensic|evidence|smoking gun)\\b",
+        "\\bnobody (knows|noticed|could explain)\\b"
+      ],
+      "base": 0.3
+    },
+    "editorial_clash": {
+      "name": "Đối đầu dữ liệu & biên tập tạp chí",
+      "reference_studios": [
+        "Vox",
+        "Cleo Abram"
+      ],
+      "narrative_default": "versus",
+      "arc_rules": "Put two opposing forces, methods, or contenders head-to-head at frame 0. Run 3 crisp data-driven rounds using architectural hero_stat callouts and compare/split visuals, where each round flips the lead via But/Therefore tension. Trigger a decisive mid-video upset at 12–16s with a whip_match into 3D over_shoulder action, then deliver an unexpected hidden-cost payoff.",
+      "required_beats": [
+        "hero_stat",
+        "compare",
+        "split",
+        "stage"
+      ],
+      "camera_presets": [
+        "over_shoulder",
+        "low_hero",
+        "tracking_low"
+      ],
+      "transitions": [
+        "whip_match",
+        "whip",
+        "cut"
+      ],
+      "moves": [
+        "pan_r",
+        "pan_l",
+        "whip_rot"
+      ],
+      "music_mood": "kinetic_editorial",
+      "outro_mode": "code",
+      "tags": [
+        "vs",
+        "versus",
+        "compare",
+        "faster",
+        "stronger",
+        "better",
+        "worse",
+        "winner",
+        "race",
+        "beat",
+        "tradeoff",
+        "cost",
+        "efficiency",
+        "speed",
+        "pace",
+        "strength",
+        "endurance",
+        "percent",
+        "ratio",
+        "duel"
+      ],
+      "strong": [
+        "\\bvs\\.?\\b",
+        "\\bversus\\b",
+        "\\bwhich is (better|faster|stronger|worse|safer)\\b"
+      ],
+      "base": 0.3
+    },
+    "ticking_clock": {
+      "name": "Đồng hồ đếm ngược áp lực leo thang",
+      "reference_studios": [
+        "Fern",
+        "Kurzgesagt"
+      ],
+      "narrative_default": "timeline",
+      "arc_rules": "Anchor the entire short to a relentless escalating metric (time, core temperature, heart rate, or fuel remaining) using a persistent top-level story_hud across every shot. Advance through tight time/threshold stamps (e.g., 00:00 → 00:10 → 01:00 → breaking point) where each milestone compounds stress via But/Therefore causality. Hit the mid-video threshold crack at 12–16s with an iris_match and 3D dolly_zoom, build to the breaking-point payoff, and loop cleanly back to 00:00.",
+      "required_beats": [
+        "xray_cutaway",
+        "stage",
+        "hero_stat"
+      ],
+      "camera_presets": [
+        "dolly_zoom",
+        "tracking_low",
+        "ecu_macro"
+      ],
+      "transitions": [
+        "iris_match",
+        "whip_match",
+        "cut"
+      ],
+      "moves": [
+        "pan_r",
+        "push_through",
+        "dive"
+      ],
+      "music_mood": "clockwork_tension",
+      "outro_mode": "loop",
+      "tags": [
+        "minute",
+        "hour",
+        "second",
+        "day",
+        "marathon",
+        "mile",
+        "kilometer",
+        "heat",
+        "temperature",
+        "overheat",
+        "exhaustion",
+        "wall",
+        "bonk",
+        "dehydration",
+        "sleep",
+        "fasting",
+        "hold",
+        "limit",
+        "collapse",
+        "countdown",
+        "clock"
+      ],
+      "strong": [
+        "\\b(second|minute|hour|day)s?\\s+by\\s+(second|minute|hour|day)\\b",
+        "\\bafter\\s+\\d+\\s+(seconds|minutes|hours|days|miles|km)\\b",
+        "\\b(runs out|breaking point|hit the wall|countdown)\\b"
+      ],
+      "base": 0.3
+    },
+    "myth_autopsy": {
+      "name": "Mổ xẻ lầm tưởng & phản chứng",
+      "reference_studios": [
+        "Veritasium",
+        "Johnny Harris"
+      ],
+      "narrative_default": "myth_fact",
+      "arc_rules": "Open by stating the universally believed myth with straight-faced authority (0–2.5s), then violently interrupt it with a tape_stop transition and hard counter-evidence. Dissect why the myth feels true via dossier evidence and xray_cutaway mechanics, deploy a second twist at 12–16s showing the real hidden mechanism in 3D low_hero, and loop the closing line back so the opening myth now sounds ironic.",
+      "required_beats": [
+        "hero_stat",
+        "dossier",
+        "xray_cutaway",
+        "stage"
+      ],
+      "camera_presets": [
+        "low_hero",
+        "ecu_macro",
+        "dolly_zoom"
+      ],
+      "transitions": [
+        "tape_stop",
+        "iris_match",
+        "cut"
+      ],
+      "moves": [
+        "dive",
+        "spin",
+        "rack",
+        "pan_r"
+      ],
+      "music_mood": "minimal_cinematic",
+      "outro_mode": "loop",
+      "tags": [
+        "myth",
+        "lie",
+        "wrong",
+        "actually",
+        "truth",
+        "true",
+        "false",
+        "believe",
+        "everyone",
+        "think",
+        "mistake",
+        "fake",
+        "real",
+        "busted",
+        "dangerous",
+        "safe",
+        "stretch",
+        "soreness",
+        "lactic",
+        "cramp"
+      ],
+      "strong": [
+        "\\bmyths?\\b",
+        "\\bwrong about\\b",
+        "\\bis (it|this) (true|safe|bad|a myth)\\b",
+        "\\blied to\\b"
+      ],
+      "base": 0.3
+    },
+    "one_object_odyssey": {
+      "name": "Hành trình một chủ thể (One-Shot Match Cut)",
+      "reference_studios": [
+        "Ordinary Folk",
+        "Giant Ant"
+      ],
+      "narrative_default": "journey",
+      "arc_rules": "Lock onto ONE unmistakable hero object (a single drop, sip, carb gel, shoe strike, nerve pulse, or packet) and carry it continuously across 100% of shots as its surrounding world transforms. Chain consecutive shots with iris_match and whip_match graphic match cuts so the short feels like one unbroken camera ride. Trigger a dramatic scale/world shift at 12–16s (e.g., 3D tracking_low diving straight into 2D xray_cutaway) and loop the final state seamlessly back into shot 1.",
+      "required_beats": [
+        "scene",
+        "xray_cutaway",
+        "stage"
+      ],
+      "camera_presets": [
+        "tracking_low",
+        "ecu_macro",
+        "over_shoulder"
+      ],
+      "transitions": [
+        "iris_match",
+        "whip_match",
+        "match"
+      ],
+      "moves": [
+        "truck_parallax",
+        "push_through",
+        "diag",
+        "pan_d"
+      ],
+      "music_mood": "minimal_cinematic",
+      "outro_mode": "loop",
+      "tags": [
+        "journey",
+        "travel",
+        "path",
+        "through",
+        "single",
+        "drop",
+        "sip",
+        "breath",
+        "shoe",
+        "footstrike",
+        "signal",
+        "carb",
+        "gel",
+        "caffeine",
+        "water",
+        "photon",
+        "molecule",
+        "packet",
+        "token",
+        "route"
+      ],
+      "strong": [
+        "\\bjourney of\\b",
+        "\\bwhere does\\b",
+        "\\bfollow (a|one|the)\\b"
+      ],
+      "base": 0.3
+    }
+  }
+}
