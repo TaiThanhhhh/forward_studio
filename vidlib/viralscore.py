@@ -33,7 +33,9 @@ AXIS_LABELS = {
     "retention_pacing": "Nhịp giữ chân & Visual Budget",
 }
 
-COLD_OPEN_SCENES = frozenset({"drop", "stage", "scene", "xray_cutaway", "dossier", "hero_stat"})
+COLD_OPEN_SCENES = frozenset({
+    "drop", "stage", "scene", "xray_cutaway", "dossier", "hero_stat", "code_terminal", "chat_prompt",
+})
 BOARD_HOOK_RECIPES = frozenset({
     "number_card", "reveal_photo", "doc_focus", "counter", "stamp", "title_glitch", "silent_film",
 })
@@ -41,9 +43,11 @@ BOARD_RICH_RECIPES = frozenset({
     "reveal_photo", "doc_focus", "counter", "thesis", "network_reveal", "silent_film", "stamp", "number_card",
 })
 BOARD_REHOOK_RECIPES = frozenset({"stamp", "connect", "counter", "reveal_photo", "thesis", "silent_film"})
-TECH_RICH_SCENES = frozenset({"process", "split", "xray_cutaway", "dossier", "hero_stat", "stage"})
+TECH_RICH_SCENES = frozenset({
+    "process", "split", "xray_cutaway", "dossier", "hero_stat", "stage", "code_terminal", "chat_prompt",
+})
 ZOOM_RICH_SCENES = frozenset({"scale", "timeline", "xray_cutaway", "stage"})
-RICH_SCENES = frozenset({"dossier", "xray_cutaway", "hero_stat", "stage"})
+RICH_SCENES = frozenset({"dossier", "xray_cutaway", "hero_stat", "stage", "code_terminal", "chat_prompt"})
 FLAT_CARDS = frozenset({"title", "fact", "counter", "compare"})
 PURPOSEFUL_TRANSITIONS = frozenset({"iris_match", "whip_match", "tape_stop", "match", "whip"})
 AGENCY_TRANSITIONS = frozenset({"iris_match", "whip_match", "tape_stop"})
