@@ -13,7 +13,8 @@ from .common import channel, flow_models, load_json, save_json
 
 BEATS = ("hook", "setup", "escalate", "payoff", "twist", "outro")
 MODES = ("auto", "frames_start", "frames_start_end", "ingredients", "code")
-TRANSITIONS = ("cut", "flash", "whip", "match", "glitch", "fade", "dip")
+TRANSITIONS = ("cut", "flash", "whip", "match", "glitch", "fade", "dip", "iris_match", "whip_match", "tape_stop")
+OUTRO_MODES = ("code", "loop", "template", "2d")
 ONSCREEN_KINDS = ("caption", "label", "counter", "arrow", "circle", "tag", "compare")
 ARCHETYPES = ("before_disaster", "split", "big_number", "vs", "red_circle")
 ID_RE = re.compile(r"^C\d{2,3}$")
@@ -226,6 +227,9 @@ def normalize(sb, model_override=None):
     from . import lang  # noqa: PLC0415
     o.setdefault("follow_text", lang.copy("follow"))
     o.setdefault("mode", "code" if cfg["outro"].get("code", True) else "2d")
+    if o.get("mode") == "loop":
+        o["loop"] = True
+        o.setdefault("bridge_frames", 8)
     o.setdefault("params", {})
     th = sb.setdefault("thumbnail", {})
     th["variants"] = _list(th.get("variants"))
@@ -315,9 +319,24 @@ def validate(sb):
                 errs.append(f"{tag}: onscreen kind '{o.get('kind')}' không hợp lệ ({'|'.join(ONSCREEN_KINDS)}).")
             if o.get("t", 0) < 0 or o.get("t", 0) > (s.get("target_sec") or 0) + 0.01:
                 warns.append(f"{tag}: chữ '{o.get('text', '')}' có t={o.get('t')} nằm ngoài shot ({s.get('target_sec')}s).")
+        if "story_hud" in s and s["story_hud"] is not None and not isinstance(s["story_hud"], (dict, bool)):
+            errs.append(f"{tag}: story_hud phải là object JSON hoặc false/null.")
         seen.add(tag)
     if sb.get("assembly", "auto") not in ASSEMBLIES:
         errs.append(f"assembly '{sb.get('assembly')}' không hợp lệ ({'|'.join(ASSEMBLIES)}).")
+    om = (sb.get("outro") or {}).get("mode")
+    if om and om not in OUTRO_MODES:
+        errs.append(f"outro.mode '{om}' không hợp lệ ({'|'.join(OUTRO_MODES)}).")
+    if "archetype" in sb and sb["archetype"] is not None:
+        if not isinstance(sb["archetype"], str):
+            errs.append("archetype phải là chuỗi (hoặc 'auto'/null).")
+        elif sb["archetype"] != "auto":
+            from . import narratives  # noqa: PLC0415
+            if sb["archetype"] not in narratives.archetype_ids():
+                warns.append(f"archetype '{sb['archetype']}' không có trong config/archetypes.json "
+                             f"(có: {', '.join(narratives.archetype_ids())}).")
+    if "story_hud" in sb and sb["story_hud"] is not None and not isinstance(sb["story_hud"], (dict, bool)):
+        errs.append("story_hud phải là object JSON hoặc false/null.")
     for v in sb.get("thumbnail", {}).get("variants", []):
         if v.get("archetype") not in ARCHETYPES:
             errs.append(f"Thumbnail {v.get('id')}: archetype '{v.get('archetype')}' không hợp lệ ({'|'.join(ARCHETYPES)}).")

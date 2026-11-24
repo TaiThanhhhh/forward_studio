@@ -105,12 +105,31 @@ def look_of(style):
     return (textstyle.load_style(style).get("html") or {}).get("look", "flat")
 
 
-def pool_for(style, prefer=None, legacy=False):
-    """Kho kiểu bay: ngữ pháp của look, giao với kiểu bay hợp dạng kịch bản (config/narratives.json → moves) nếu còn
-    lại ít nhất một (vd timeline + swiss → chỉ lia phải như dòng thời gian; escalation + swiss → giao rỗng → theo look).
-    legacy=True: bộ kiểu bay trước vòng 10 (dự án cũ)."""
+def _archetype_moves(archetype):
+    if not archetype:
+        return []
+    if isinstance(archetype, (list, tuple)):
+        return [m for m in archetype if m in MOVES]
+    if isinstance(archetype, str):
+        from . import narratives  # noqa: PLC0415
+        return [m for m in narratives.archetype_moves(archetype) if m in MOVES]
+    return []
+
+
+def pool_for(style, prefer=None, legacy=False, archetype=None):
+    """Kho kiểu bay: ngữ pháp của look, giao với kiểu bay hợp archetype (config/archetypes.json → moves) và dạng kịch
+    bản (config/narratives.json → moves) nếu còn lại ít nhất một. legacy=True: bộ kiểu bay trước vòng 10 (dự án cũ)."""
     looks, every = (LEGACY_LOOK_MOVES, LEGACY_ALL) if legacy else (LOOK_MOVES, ALL)
     pool = looks.get(look_of(style), every)
+    arch_moves = _archetype_moves(archetype)
+    if arch_moves:
+        arch_pool = [m for m in arch_moves if m in pool and m in MOVES]
+        if arch_pool:
+            if prefer:
+                both_all = [m for m in arch_pool if m in prefer]
+                if both_all:
+                    return both_all
+            return arch_pool
     if prefer:
         both = [m for m in prefer if m in pool and m in MOVES]
         if both:
@@ -129,10 +148,10 @@ def _fresh_first(pool, avoid, seed_text):
     return sorted(uniq, key=lambda m: (avoid.get(m, 0.0), (uniq.index(m) + h) % len(uniq))), False
 
 
-def sequence(n, style, seed_text, prefer=None, avoid=None, legacy=False):
+def sequence(n, style, seed_text, prefer=None, avoid=None, legacy=False, archetype=None):
     """n kiểu bay cho n-1 điểm nối (xáo theo video, không lặp liền nhau, không hai cú đổi cỡ — dive/pull/push_through…
     — liền nhau). avoid = {move: trọng số} của các video gần nhất (motionplan.recent_moves): kiểu chưa dùng đi trước."""
-    pool = pool_for(style, prefer, legacy)
+    pool = pool_for(style, prefer, legacy, archetype=archetype)
     h = int(hashlib.sha1(str(seed_text).encode()).hexdigest()[:8], 16)
     k = h % len(pool)
     if avoid:
@@ -192,10 +211,11 @@ def travel_matrix(sp, f, n, width, height):
     return [[a, b, cx - (a * px + b * py)], [c, d, cy - (c * px + d * py)]]
 
 
-def context(segments, shots, style, seed_text, is_html, entry, prefer=None):
+def context(segments, shots, style, seed_text, is_html, entry, prefer=None, archetype=None):
     """{sid: spine} cho mọi shot nằm trong một chuỗi liền nhau. segments = timeline (thứ tự + số frame),
     shots = {sid: shot}, is_html(shot) → bool (shot thuộc chuỗi: engine html, hoặc manim dưới dạng "ô ma"),
-    entry(shot) → {scene, params[, ghost]} (params đã có index), prefer = kiểu bay hợp dạng kịch bản (narratives.moves)."""
+    entry(shot) → {scene, params[, ghost]} (params đã có index), prefer = kiểu bay hợp dạng kịch bản (narratives.moves),
+    archetype = phong cách đạo diễn (config/archetypes.json → moves) được ưu tiên khi có."""
     if not enabled(style):
         return {}
     base_L = LOOK_L.get(look_of(style), 9)
@@ -217,7 +237,7 @@ def context(segments, shots, style, seed_text, is_html, entry, prefer=None):
     for ri, run in enumerate(runs):
         if len(run) < 2:
             continue
-        moves = sequence(len(run) - 1, style, f"{seed_text}:{ri}", prefer, avoid, legacy)
+        moves = sequence(len(run) - 1, style, f"{seed_text}:{ri}", prefer, avoid, legacy, archetype=archetype)
         # shot ngắn: chặng bay ngắn lại, không chồng nhau
         run_L = max(4, min(base_L, min(int(seg["n"]) for seg, _ in run) // 3))
         for i, (seg, _sh) in enumerate(run):
