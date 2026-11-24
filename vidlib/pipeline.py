@@ -523,7 +523,18 @@ class Run:
 
     def s_text(self):
         """Chữ trong thế giới phim (text_fx, Tầng 1) + .srt + job/metadata của shot code."""
+        from . import autocaptions  # noqa: PLC0415
+
         style = self.sb["style_resolved"]
+        cap_preset = autocaptions.resolve_preset(self.csb, self.want_captions, style)
+        self.cap_preset = cap_preset
+        self.csb["_captions_on"] = cap_preset != "off"
+        layout_grid = channel().get("layout_grid") or {
+            "header": [250, 370],
+            "stage": [390, 1240],
+            "captions": [1340, 1460],
+        }
+        self.csb["_layout_grid"] = layout_grid
         self.events = [] if self.spine() else textfx.build_events(self.csb, self.tl, self.vo,
                                                                    getattr(self, "analyses", {}), self.trims, style)
         self.text_report = textfx.timing_report(self.events)
@@ -553,6 +564,14 @@ class Run:
             self.code_jobs["OUTRO"] = codeshot.job_for(self.proj, self.csb, oshot, segs["OUTRO"]["n"], style,
                                                        self.html_spine.get("OUTRO"))
         for sid, job in self.code_jobs.items():
+            jdata = load_json(job, {})
+            want_cap = bool(self.csb["_captions_on"]) and sid != "OUTRO"
+            if isinstance(jdata, dict) and jdata and (
+                jdata.get("captions_on") != want_cap or jdata.get("layout_grid") != layout_grid
+            ):
+                jdata["captions_on"] = want_cap
+                jdata["layout_grid"] = layout_grid
+                save_json(job, jdata)
             meta = self._code_meta(sid, job)
             t0 = segs[sid]["start_f"] / FPS
             pack = textstyle.load_style(style).get("sfx_pack") or {}    # gói SFX của style: cue chung → âm cụ thể
@@ -625,7 +644,14 @@ class Run:
         self.cams = vcam.plan(self.tl, self.csb, [(x["t"], x["name"]) for x in self.mix["sfx"]], self.directions())
         layer = textfx.Layer(self.csb, textfx.build_events(self.csb, self.tl, self.vo, getattr(self, "analyses", {}),
                                                            self.trims, self.sb["style_resolved"]))
-        items = render.look_stills(self.proj, self.csb, self.tl, layer, self.trims, self.ingested, self.cams, stills_at)
+        from . import autocaptions  # noqa: PLC0415
+
+        cap_preset = getattr(self, "cap_preset", None) or autocaptions.resolve_preset(
+            self.csb, self.want_captions, self.sb["style_resolved"]
+        )
+        cap_layer = autocaptions.Layer(self.vo, cap_preset, self.sb["style_resolved"]) if cap_preset != "off" else None
+        items = render.look_stills(self.proj, self.csb, self.tl, layer, self.trims, self.ingested, self.cams,
+                                   stills_at, captions=cap_layer)
         render.sheet(items, sheet, cols=6)
         self.look_metrics = qa.look_metrics(self.proj, self.csb, self.tl, items)
         save_json(os.path.join(self.work, "look.json"), self.look_metrics)
@@ -742,7 +768,10 @@ class Run:
                                                  self.sb["style_resolved"])
         layer = textfx.Layer(self.csb, self.render_events)
         from . import autocaptions  # noqa: PLC0415
-        cap_preset = autocaptions.resolve_preset(self.csb, self.want_captions, self.sb["style_resolved"])
+
+        cap_preset = getattr(self, "cap_preset", None) or autocaptions.resolve_preset(
+            self.csb, self.want_captions, self.sb["style_resolved"]
+        )
         cap_layer = autocaptions.Layer(self.vo, cap_preset, self.sb["style_resolved"]) if cap_preset != "off" else None
         self.rinfo = render.render(self.proj, self.csb, self.tl, layer, self.trims, self.ingested, self.cams, vid,
                                    captions=cap_layer)
@@ -802,6 +831,7 @@ class Run:
             if ocr_rep["available"]:
                 checks["OCR đọc được (giống ≥ 70%)"] = (f"{ocr_rep['ok']}/{ocr_rep['total']}",
                                                        ocr_rep["ok"] == ocr_rep["total"])
+        checks.update(qa.studio_checks(self.csb, ocr_rep, captions_on=bool(self.csb.get("_captions_on", True))))
         self.rights_report, rrows = rights.write_project(self.proj, self.csb, self.dry)
         checks.update(rrows)
         rows = qagate.classify(checks)

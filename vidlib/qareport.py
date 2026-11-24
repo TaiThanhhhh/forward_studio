@@ -145,6 +145,8 @@ def ocr_report(events, proj, code_jobs, code_texts, out_dir):
     from . import codeshot, ocr  # noqa: PLC0415
     from .common import FONT_DIR  # noqa: PLC0415
     rows = []
+    all_overlaps = []
+    all_boxes = []
     os.makedirs(out_dir, exist_ok=True)
     avail = ocr.available()
 
@@ -188,7 +190,17 @@ def ocr_report(events, proj, code_jobs, code_texts, out_dir):
         font = os.path.join(FONT_DIR, os.path.basename(jd["fonts"][0]["url"])) if jd.get("fonts") else None
         best = {}
         qa_frames = jd.get("qa_frames") or sorted({n // 2, n - 1})   # cú máy liền: frame camera đứng yên
-        for f, want, crop, tex in codeshot.text_crops(job, qa_frames):  # engine báo khung bao từng chữ
+        audit_fn = getattr(codeshot, "text_audit", None)
+        if callable(audit_fn):
+            audit = audit_fn(job, qa_frames)
+            crops_list = audit.get("crops") or []
+            for ov in audit.get("overlaps") or []:
+                all_overlaps.append({"sid": sid, **ov})
+            for bx in audit.get("boxes") or []:
+                all_boxes.append({"sid": sid, **bx})
+        else:
+            crops_list = codeshot.text_crops(job, qa_frames)
+        for f, want, crop, tex in crops_list:  # engine báo khung bao từng chữ
             crop.save(os.path.join(out_dir, f"{sid}_scene_{f:04d}_{len(best):02d}.png"))
             lines = [ln for ln in want.split(chr(10)) if ocr.norm(ln)]
             miss = ocr.missing_glyphs(want.replace(chr(10), " "), font) if font else []
@@ -211,7 +223,83 @@ def ocr_report(events, proj, code_jobs, code_texts, out_dir):
                 best[want] = (s, f, miss, sims, found)
         for want, (_s, f, miss, sims, found) in best.items():
             row(f"{sid} chữ trong cảnh (code, frame {f})", want, miss, sims, found, layer="diegetic")
-    return {"available": avail, "total": len(rows), "ok": sum(r["ok"] for r in rows), "rows": rows}
+    return {"available": avail, "total": len(rows), "ok": sum(r["ok"] for r in rows), "rows": rows,
+            "overlaps": all_overlaps, "boxes": all_boxes}
+
+
+def _box_overlap_ratio(a, b):
+    iw = max(0.0, min(a[2], b[2]) - max(a[0], b[0]))
+    ih = max(0.0, min(a[3], b[3]) - max(a[1], b[1]))
+    if iw <= 0.0 or ih <= 0.0:
+        return 0.0
+    area_a = max(0.0, a[2] - a[0]) * max(0.0, a[3] - a[1])
+    area_b = max(0.0, b[2] - b[0]) * max(0.0, b[3] - b[1])
+    return (iw * ih) / max(1.0, min(area_a, area_b))
+
+
+def studio_checks(sb, ocr_rep=None, captions_on=True, overlap_th=0.05):
+    """3 cổng QC Studio Vòng 12:
+    1. không chồng chữ (text overlap) — ĐỎ chặn xuất bản nếu cặp chữ giao > 5%.
+    2. phụ đề tách vùng hình (caption clearance) — kiểm chữ không lấn vào Zone C (y > 1280) khi captions bật.
+    3. mật độ thị giác (less is more) — báo cáo tỉ lệ shot vượt ngân sách vật thể/chữ."""
+    from . import linter  # noqa: PLC0415
+    oc = ocr_rep or {}
+    overlaps = [o for o in (oc.get("overlaps") or []) if float(o.get("ratio", 0)) > overlap_th]
+    # Kiểm chéo thêm từ boxes[] phòng trường hợp engine (vd 3D overlay2d) không tự xuất overlapPairs()
+    by_sf = {}
+    for bx in oc.get("boxes") or []:
+        by_sf.setdefault((bx.get("sid", "?"), bx.get("frame", 0)), []).append(bx)
+    seen = {(o.get("sid", "?"), o.get("frame", 0), o.get("a", ""), o.get("b", "")) for o in overlaps}
+    for (sid, fr), items in by_sf.items():
+        for i in range(len(items)):
+            for j in range(i + 1, len(items)):
+                r = _box_overlap_ratio(items[i]["box"], items[j]["box"])
+                if r > overlap_th:
+                    a_txt, b_txt = str(items[i].get("text", "")), str(items[j].get("text", ""))
+                    if (sid, fr, a_txt, b_txt) not in seen and (sid, fr, b_txt, a_txt) not in seen:
+                        overlaps.append({"sid": sid, "frame": fr, "a": a_txt, "b": b_txt, "ratio": round(r, 3)})
+                        seen.add((sid, fr, a_txt, b_txt))
+
+    checks = {}
+    if overlaps:
+        sample = "; ".join(
+            f"{o.get('sid', '?')}@f{o.get('frame', 0)}: '{o.get('a', '')[:18]}' ∩ '{o.get('b', '')[:18]}' "
+            f"({float(o.get('ratio', 0)):.0%})"
+            for o in overlaps[:3]
+        )
+        checks["không chồng chữ (text overlap)"] = (f"{len(overlaps)} cặp chồng — {sample}", False)
+    else:
+        checks["không chồng chữ (text overlap)"] = ("0 cặp chồng chữ", True)
+
+    grid = channel().get("layout_grid") or {}
+    stage = grid.get("stage") or [390, 1240]
+    zone_c_y = float(stage[1]) + 40.0
+    if captions_on:
+        intrusions = []
+        for bx in oc.get("boxes") or []:
+            if bx.get("sid") == "OUTRO":
+                continue
+            box = bx.get("box") or [0, 0, 0, 0]
+            if float(box[3]) > zone_c_y:
+                intrusions.append(f"{bx.get('sid', '?')}@f{bx.get('frame', 0)} '{str(bx.get('text', ''))[:16]}' "
+                                  f"(y1={int(box[3])})")
+        if intrusions:
+            checks["phụ đề tách vùng hình (caption clearance)"] = (
+                f"{len(intrusions)} chữ lấn Zone C (>{int(zone_c_y)}px): " + "; ".join(intrusions[:3]), False,
+            )
+        else:
+            checks["phụ đề tách vùng hình (caption clearance)"] = (f"sạch Zone C (≤ {int(zone_c_y)}px)", True)
+
+    shots = (sb or {}).get("shots") or []
+    clutter = linter.lint_clutter(sb or {})
+    bad_sids = sorted({i["where"] for i in clutter})
+    if bad_sids:
+        checks["mật độ thị giác (less is more)"] = (
+            f"{len(bad_sids)}/{max(1, len(shots))} shot vượt ngân sách ({', '.join(bad_sids[:4])})", False,
+        )
+    else:
+        checks["mật độ thị giác (less is more)"] = (f"đạt (0/{max(1, len(shots))} shot rối)", True)
+    return checks
 
 
 def _similar(a, b):

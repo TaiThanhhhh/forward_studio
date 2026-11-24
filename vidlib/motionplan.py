@@ -270,7 +270,7 @@ FREE_TEXT = {"text", "label", "title", "kicker", "sub", "em", "result", "teaser"
              "x_label", "y_label", "y_unit", "follow", "next_prefix", "side", "id", "of", "at", "from", "to", "lines",
              "labels", "tag", "t_label", "per_label", "front", "by"}
 CREATURE_KEYS = {"type", "id", "species", "gait", "expr", "look", "color", "keys", "at", "rot", "scale", "hair", "face",
-                 "speed", "u", "visible", "do"}
+                 "speed", "u", "visible", "do", "heat"}
 ENUM_RX = re.compile(r"\b([a-z_]+)\s*:?\s+([a-z0-9_]+(?:\|[a-z0-9_]+)+)")
 
 

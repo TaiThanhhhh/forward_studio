@@ -2,7 +2,8 @@
 
 Luồng: audio/vo.* (một file) hoặc audio/vo_01.*, vo_02.* (mỗi câu một file)
   1. Tách câu: file đơn → N−1 khoảng lặng dài nhất (≥ line_gap_min_ms) làm ranh giới câu.
-  2. Cắt lặng: khoảng lặng > max_silence_ms rút còn keep_silence_ms; trước câu payoff giữ pre_payoff_pause_ms.
+  2. Cắt lặng: khoảng lặng > max_silence_ms rút còn keep_silence_ms; giữ nhịp thở tự nhiên giữa các câu (line_gap_min_ms),
+     chuyển beat (setup → escalate → payoff → twist) và khoảng ngừng rõ trước payoff/twist (pre_payoff_pause_ms).
      Lặng đầu file rút còn ~0.05s (VO phải bắt đầu trước frame 6).
   3. Tăng tốc: ffmpeg atempo (giữ cao độ).
   4. Mốc từng từ (vidlib/timing.py): timestamp ElevenLabs (audio/vo_alignment.json) → whisper → căn theo khoảng lặng
@@ -106,18 +107,64 @@ def split_lines(mono, sr, n, min_gap, weights=None):
     return list(zip(bounds, bounds[1:]))
 
 
-def compress(mono, sr, max_sil, keep, keep_at=None, lead=0.05):
-    """Rút các khoảng lặng dài. keep_at: {thời điểm gốc: độ dài giữ} cho khoảng lặng chứa thời điểm đó.
+def boundary_pause(prev_beat, next_beat, cfg=None):
+    """Khoảng lặng thở (giây) giữa hai câu VO theo bước chuyển beat — tránh dính câu nghẹt thở."""
+    cfg = cfg or channel()["vo"]
+    keep = float(cfg.get("keep_silence_ms", 140)) / 1000.0
+    line_gap = max(keep, float(cfg.get("line_gap_min_ms", 160)) / 1000.0)
+    pre_payoff = float(cfg.get("pre_payoff_pause_ms", 420)) / 1000.0
+    pre_twist_ms = cfg.get("pre_twist_pause_ms", min(320, max(240, int(round(pre_payoff * 720)))))
+    pre_twist = float(pre_twist_ms) / 1000.0
+    beat_gap_ms = cfg.get("beat_transition_pause_ms", max(220, int(round(line_gap * 1375))))
+    beat_gap = float(beat_gap_ms) / 1000.0
+    if next_beat == "payoff" and prev_beat != "payoff":
+        return max(line_gap, pre_payoff)
+    if next_beat == "twist" and prev_beat != "twist":
+        return max(line_gap, pre_twist)
+    if prev_beat and next_beat and prev_beat != next_beat:
+        return max(line_gap, beat_gap)
+    return line_gap
+
+
+def _run_overlap(a, b, key):
+    """Độ chồng lấn (>0 nếu khớp) giữa khoảng lặng [a, b] và mốc thời gian hoặc khoảng (g0, g1)."""
+    if isinstance(key, (tuple, list)) and len(key) == 2:
+        g0, g1 = float(key[0]), float(key[1])
+        if g1 < g0:
+            g0, g1 = g1, g0
+        if g1 - g0 < 1e-6:
+            return 1.0 if a <= g0 <= b else 0.0
+        return max(0.0, min(b, g1) - max(a, g0))
+    t0 = float(key)
+    return 1.0 if a <= t0 <= b else 0.0
+
+
+def compress(mono, sr, max_sil, keep, keep_at=None, lead=0.05, pad_at=None):
+    """Rút các khoảng lặng dài. keep_at: {thời điểm gốc|(g0,g1): độ dài giữ} cho khoảng lặng khớp.
+    pad_at: {thời điểm gốc|(g0,g1): độ dài tối thiểu} — mở rộng mượt khoảng lặng thật nếu quá gấp (trước payoff/twist).
     Trả về (audio mới, hàm warp(t_gốc) → t_mới)."""
     keep_at = keep_at or {}
+    pad_at = pad_at or {}
     dur = len(mono) / sr
     runs = silent_runs(mono, sr)
+    # mỗi ranh giới trong pad_at chỉ nới đúng 1 khoảng lặng nội bộ khớp nhất
+    pad_for = {}
+    for key, min_len in pad_at.items():
+        best_i, best_ov = None, 0.0
+        for idx, (a, b) in enumerate(runs):
+            if a <= 0.0001 or b >= dur - 0.0001:
+                continue
+            ov = _run_overlap(a, b, key)
+            if ov > best_ov:
+                best_i, best_ov = idx, ov
+        if best_i is not None:
+            pad_for[best_i] = max(pad_for.get(best_i, 0.0), float(min_len))
     cuts = []  # (orig_start, orig_end, new_len)
-    for a, b in runs:
+    for idx, (a, b) in enumerate(runs):
         want = keep
-        for t0, k in keep_at.items():
-            if a <= t0 <= b:
-                want = max(want, k)
+        for key, k in keep_at.items():
+            if _run_overlap(a, b, key) > 0:
+                want = max(want, float(k))
         if a <= 0.0001:  # lặng đầu file
             if b > lead:
                 cuts.append((0.0, b, lead))
@@ -125,18 +172,37 @@ def compress(mono, sr, max_sil, keep, keep_at=None, lead=0.05):
         if b >= dur - 0.0001:
             cuts.append((a, dur, min(b - a, 0.25)))
             continue
-        if b - a > max_sil and b - a > want:
+        pad_min = pad_for.get(idx, 0.0)
+        if pad_min > b - a + 0.01:
+            cuts.append((a, b, pad_min))
+        elif b - a > max_sil and b - a > want:
             cuts.append((a, b, want))
     pieces, xs, ys = [], [0.0], [0.0]
     pos, new = 0.0, 0.0
+    fade_max = max(1, int(0.005 * sr))
     for a, b, nl in cuts:
         pieces.append(mono[int(pos * sr):int(a * sr)])
         new += a - pos
         xs.append(a)
         ys.append(new)
-        h = nl / 2
-        pieces.append(mono[int(a * sr):int((a + h) * sr)])
-        pieces.append(mono[int((b - h) * sr):int(b * sr)])
+        if nl <= b - a:
+            h = nl / 2
+            pieces.append(mono[int(a * sr):int((a + h) * sr)])
+            pieces.append(mono[int((b - h) * sr):int(b * sr)])
+        else:
+            mid = (a + b) / 2
+            left = mono[int(a * sr):int(mid * sr)].copy()
+            right = mono[int(mid * sr):int(b * sr)].copy()
+            fade = min(fade_max, len(left), len(right))
+            if fade > 1:
+                ramp = np.linspace(1.0, 0.0, fade, dtype=np.float32)
+                left[-fade:] *= ramp
+                right[:fade] *= ramp[::-1]
+            pad_n = max(0, int(round(nl * sr)) - len(left) - len(right))
+            pieces.append(left)
+            if pad_n:
+                pieces.append(np.zeros(pad_n, np.float32))
+            pieces.append(right)
         new += nl
         xs.append(b)
         ys.append(new)
@@ -145,7 +211,8 @@ def compress(mono, sr, max_sil, keep, keep_at=None, lead=0.05):
     new += dur - pos
     xs.append(dur)
     ys.append(new)
-    out = np.concatenate([p for p in pieces if len(p)]) if pieces else mono
+    nonempty = [p for p in pieces if len(p)]
+    out = np.concatenate(nonempty) if nonempty else mono
     xs_a, ys_a = np.array(xs), np.array(ys)
     return out.astype(np.float32), (lambda t: float(np.interp(t, xs_a, ys_a)))
 
@@ -240,18 +307,17 @@ def process(proj, sb, sr=None, log=print):
         return None
     notes = []
     gap = cfg["keep_silence_ms"] / 1000
-    pause = cfg["pre_payoff_pause_ms"] / 1000
-    payoff_idx = next((k for k, ln in enumerate(lines) if ln["beat"] == "payoff"), None)
+    max_sil = cfg["max_silence_ms"] / 1000
     words_by_line = None
     how = "chia theo vùng có tiếng"
     if kind == "lines":
         parts, bounds, t = [], [], 0.0
         for k, p in enumerate(src):
             a = sfxlib.decode(p, sr, mono=True)
-            a, _ = compress(a, sr, cfg["max_silence_ms"] / 1000, gap, lead=0.0)
+            a, _ = compress(a, sr, max_sil, gap, lead=0.0)
             if k:
-                g = pause if k == payoff_idx else gap
-                parts.append(np.zeros(int(g * sr), np.float32))
+                g = boundary_pause(lines[k - 1]["beat"], lines[k]["beat"], cfg)
+                parts.append(np.zeros(int(round(g * sr)), np.float32))
                 t += g
             parts.append(a)
             bounds.append((t, t + len(a) / sr))
@@ -265,10 +331,18 @@ def process(proj, sb, sr=None, log=print):
         for k in range(len(lines)):
             ws = [w for w in words if w["line"] == k]
             raw_bounds.append((ws[0]["start"], ws[-1]["end"]) if ws else None)
-        keep_at = {}
-        if payoff_idx and raw_bounds[payoff_idx] and raw_bounds[payoff_idx - 1]:
-            keep_at[(raw_bounds[payoff_idx - 1][1] + raw_bounds[payoff_idx][0]) / 2] = pause
-        mono, warp = compress(raw, sr, cfg["max_silence_ms"] / 1000, gap, keep_at)
+        keep_at, pad_at = {}, {}
+        for k in range(1, len(lines)):
+            if not (raw_bounds[k] and raw_bounds[k - 1]):
+                continue
+            prev_end, next_start = raw_bounds[k - 1][1], raw_bounds[k][0]
+            prev_beat, next_beat = lines[k - 1]["beat"], lines[k]["beat"]
+            want_gap = boundary_pause(prev_beat, next_beat, cfg)
+            key = (prev_end, next_start) if next_start > prev_end else (prev_end + next_start) / 2
+            keep_at[key] = max(keep_at.get(key, 0.0), want_gap)
+            if next_beat in ("payoff", "twist") and prev_beat != next_beat:
+                pad_at[key] = max(pad_at.get(key, 0.0), want_gap)
+        mono, warp = compress(raw, sr, max_sil, gap, keep_at, pad_at=pad_at)
         words_by_line = [[{"w": w["w"], "start": warp(w["start"]), "end": warp(w["end"])}
                           for w in words if w["line"] == k] for k in range(len(lines))]
         bounds = [((ws[0]["start"], ws[-1]["end"]) if ws else (0.0, 0.0)) for ws in words_by_line]

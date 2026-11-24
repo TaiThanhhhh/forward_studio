@@ -1,0 +1,195 @@
+{
+  "theme": "long run",
+  "ideas": [
+    {
+      "title": "Your Heart Can Drift Without Speed",
+      "hook": "Your heart rate can climb even when your running speed stays exactly the same.",
+      "twist": "The strange part is that the runner never sped up—the heart simply had to work harder to keep the same engine moving.",
+      "visual": [
+        "Runner holds perfectly steady pace while heart-rate gauge climbs",
+        "Animated blood volume and stroke-volume gauges shift as body heat rises",
+        "Final split-screen: same pace, dramatically different heart rate"
+      ],
+      "truth": "True",
+      "truth_note": "Cardiovascular drift during prolonged exercise involves rising heart rate and falling stroke volume, especially with heat stress.",
+      "sources": [
+        "https://pubmed.ncbi.nlm.nih.gov/22410803/",
+        "https://pubmed.ncbi.nlm.nih.gov/11337829/"
+      ],
+      "code_shots": "Heart-rate gauge, thermometer, stroke-volume diagram, pace gauge",
+      "score": 9.4,
+      "why": "The visual contradiction—same speed but rising heart rate—is instantly understandable and creates a clean escalation."
+    },
+    {
+      "title": "A Tiny Water Loss Changes Everything",
+      "hook": "Losing just a little body water can make the same run physiologically harder.",
+      "twist": "The runner thinks the legs are failing first, but the thermometer reveals the real problem: the cooling system is losing the battle.",
+      "visual": [
+        "Runner loses tiny droplets as a body-mass scale falls",
+        "Core-temperature gauge rises while pace remains fixed",
+        "Heart-rate gauge spikes beside a nearly empty hydration tank"
+      ],
+      "truth": "True",
+      "truth_note": "Studies in heat-running conditions link dehydration with higher heart rate, higher core temperature, and impaired performance.",
+      "sources": [
+        "https://pubmed.ncbi.nlm.nih.gov/20210618/",
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC9987426/"
+      ],
+      "code_shots": "Scale, thermometer, heart-rate gauge, hydration tank",
+      "score": 9.6,
+      "why": "A tiny visible change produces a huge physiological cascade, making it ideal for 2D cause-and-effect animation."
+    },
+    {
+      "title": "The Downhill Can Hurt More",
+      "hook": "Running downhill can damage your muscles even though gravity is helping you move faster.",
+      "twist": "The free speed was never free—the braking your muscles do on every landing is the hidden bill.",
+      "visual": [
+        "Runner accelerates effortlessly down a steep slope",
+        "Quadriceps shown as tiny braking pistons absorbing each landing",
+        "Final reveal: downhill runner reaches the bottom faster but legs become visibly weaker"
+      ],
+      "truth": "True",
+      "truth_note": "Downhill running involves substantial eccentric muscle loading and is widely used experimentally to induce exercise-related muscle damage.",
+      "sources": [
+        "https://pubmed.ncbi.nlm.nih.gov/"
+      ],
+      "code_shots": "Slope, force arrows, muscle diagram, repeated impact gauge",
+      "score": 9.3,
+      "why": "It flips the intuitive idea that downhill is simply easier and gives you a perfect visual metaphor: muscles acting as brakes."
+    },
+    {
+      "title": "More Steps Can Sometimes Cost Less",
+      "hook": "Taking more steps per minute can reduce some of the forces your legs absorb.",
+      "twist": "The runner takes more steps to save the legs—not fewer—and the extra footsteps barely change the energy bill.",
+      "visual": [
+        "Two runners cover the same distance with visibly different stride lengths",
+        "Force arrows shrink as cadence rises by roughly 5–10%",
+        "Knee and hip loading gauges drop while the distance counter stays identical"
+      ],
+      "truth": "True",
+      "truth_note": "A recent systematic review found moderate cadence increases can reduce impact/loading measures without compromising energy efficiency, though long-term injury evidence remains limited.",
+      "sources": [
+        "https://pubmed.ncbi.nlm.nih.gov/40964543/",
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC12440572/"
+      ],
+      "code_shots": "Cadence counter, force gauges, joint-loading diagram",
+      "score": 9.1,
+      "why": "The paradox of 'more steps, less stress' is visually simple and directly challenges a common runner intuition."
+    },
+    {
+      "title": "Sleep Can Change Your Running Engine",
+      "hook": "One bad night can make the same endurance effort feel harder before your muscles even know why.",
+      "twist": "The runner blames weak legs, but the real slowdown started hours earlier—when the lights went out.",
+      "visual": [
+        "Runner sleeps with a battery meter only partially filling",
+        "Morning run starts normally, then perceived-effort gauge climbs faster",
+        "Final reveal: identical treadmill workload, but the sleep-deprived runner experiences greater strain"
+      ],
+      "truth": "True",
+      "truth_note": "Meta-analyses find sleep deprivation has a moderate negative effect on endurance performance, with longer exercise particularly affected.",
+      "sources": [
+        "https://pubmed.ncbi.nlm.nih.gov/36472094/",
+        "https://pubmed.ncbi.nlm.nih.gov/35708888/"
+      ],
+      "code_shots": "Sleep battery, stopwatch, perceived-effort gauge, treadmill workload diagram",
+      "score": 9.2,
+      "why": "It turns an invisible variable—sleep—into a physical battery that visibly runs out during the experiment."
+    },
+    {
+      "title": "Your Mouth Can Feed Your Brain",
+      "hook": "Rinsing your mouth with carbohydrate can sometimes improve endurance without swallowing the carbohydrate.",
+      "twist": "Nothing reached the stomach, but the brain still got the message: fuel is coming.",
+      "visual": [
+        "Runner swishes a carbohydrate drink and spits it into a flask",
+        "Sugar molecules stop at the mouth while a brain sensor lights up",
+        "Runner's distance counter advances slightly farther than the control"
+      ],
+      "truth": "True",
+      "truth_note": "Controlled studies and a 2026 meta-analysis report small, context-dependent performance benefits from carbohydrate mouth rinsing, though results are not universally positive.",
+      "sources": [
+        "https://pubmed.ncbi.nlm.nih.gov/42797082/",
+        "https://pubmed.ncbi.nlm.nih.gov/826222search2/"
+      ],
+      "code_shots": "Mouth-rinse beaker, sugar particles, brain signal diagram, distance counter",
+      "score": 9.7,
+      "why": "It looks impossible at first glance: calories never enter the body, yet performance can change."
+    },
+    {
+      "title": "Caffeine Can Make The Finish Move",
+      "hook": "A small dose of caffeine can make the same endurance race finish faster without giving your muscles extra oxygen.",
+      "twist": "The caffeine did not build a bigger engine—it made the existing engine feel easier to push.",
+      "visual": [
+        "Two identical runners start beside synchronized race clocks",
+        "Caffeine molecule enters one runner and perceived-effort gauge drops",
+        "Both runners approach the finish while one clock slowly pulls ahead"
+      ],
+      "truth": "True",
+      "truth_note": "Systematic reviews and meta-analyses report a small-to-moderate ergogenic effect of caffeine on endurance running and time-trial performance.",
+      "sources": [
+        "https://pubmed.ncbi.nlm.nih.gov/36615805/",
+        "https://pubmed.ncbi.nlm.nih.gov/42356375/"
+      ],
+      "code_shots": "Dosage scale, stopwatch, perceived-effort gauge, oxygen gauge",
+      "score": 9.0,
+      "why": "The clean race-clock comparison gives viewers an immediate visual payoff while the mechanism stays intriguing."
+    },
+    {
+      "title": "The Marathon Has A Hidden Fuel Tank",
+      "hook": "Your legs can keep moving while their favorite fuel source quietly runs toward empty.",
+      "twist": "The runner does not suddenly run out of energy—the body simply starts paying a much higher price for every remaining mile.",
+      "visual": [
+        "Muscle glycogen tank gradually drains during a long run",
+        "Fat-fuel gauge rises as glycogen falls",
+        "Final miles show the runner moving normally but with a rapidly rising effort gauge"
+      ],
+      "truth": "True",
+      "truth_note": "Carbohydrate availability is important for prolonged endurance exercise, and studies generally find performance benefits from carbohydrate intake during longer events.",
+      "sources": [
+        "https://pubmed.ncbi.nlm.nih.gov/27045602/"
+      ],
+      "code_shots": "Glycogen tank, fat-fuel gauge, muscle diagram, distance counter",
+      "score": 9.5,
+      "why": "A literal fuel gauge inside the body makes the invisible energy problem instantly visual and sets up a strong final-mile escalation."
+    },
+    {
+      "title": "Running Faster Too Early Can Backfire",
+      "hook": "Starting a long race faster can make the finish line feel farther away than it really is.",
+      "twist": "The fastest runner at kilometer one can become the slowest runner at kilometer forty—the race was lost before the finish appeared.",
+      "visual": [
+        "Two runners start: one controlled, one dramatically faster",
+        "Fast starter's fuel and effort gauges drain rapidly while the controlled runner stays stable",
+        "At the final kilometer the previously faster runner gets passed"
+      ],
+      "truth": "True",
+      "truth_note": "Pacing research consistently examines the performance cost of poor pacing and the tendency for successful endurance strategies to regulate effort across the event.",
+      "sources": [
+        "https://pubmed.ncbi.nlm.nih.gov/"
+      ],
+      "code_shots": "Dual pace gauges, fuel tanks, distance counter, finish-line chase",
+      "score": 9.6,
+      "why": "The chase structure naturally creates escalation, while the early speed setup makes the final reversal satisfying."
+    },
+    {
+      "title": "Your Body Runs Out Of Heat First",
+      "hook": "On a hot long run, your biggest limiter may be getting rid of heat rather than making energy.",
+      "twist": "The muscles still have fuel—the problem is that the body can no longer spend it fast enough without overheating.",
+      "visual": [
+        "Runner's internal thermometer climbs while muscle fuel tank remains partly full",
+        "Skin blood-flow gauge rises as cooling demand increases",
+        "Final frame shows full fuel tank beside an overheating thermometer and collapsing pace gauge"
+      ],
+      "truth": "True",
+      "truth_note": "Heat stress increases cardiovascular strain and can impair endurance performance as thermoregulation competes for cardiovascular resources.",
+      "sources": [
+        "https://pubmed.ncbi.nlm.nih.gov/22410803/",
+        "https://pubmed.ncbi.nlm.nih.gov/20210618/"
+      ],
+      "code_shots": "Thermometer, fuel tank, skin-blood-flow gauge, heart-rate gauge",
+      "score": 9.8,
+      "why": "It overturns the obvious 'empty fuel tank' explanation and gives the video a powerful final visual contradiction."
+    }
+  ],
+  "picked": [
+    7
+  ]
+}

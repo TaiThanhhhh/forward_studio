@@ -11,12 +11,12 @@
 //          trees, colors: {grass, flower, dirt, hill, wood, wall, asphalt, brick…}} · blob: 0.5 = round contact shadow
 //          under every prop (default on in the 90s looks retro90/psx, which have no shadow maps; false = off)
 // props[]: {id, type, at:[x,y,z], rot:[x,y,z deg], scale (number|[x,y,z]), color, ...type params, keys:[...]}
-//   3D actors: mannequin{pose: idle|run|sprint|walk|squat|lift|curl|press|point|cheer|fall, armL, armR, color, accent, hot}
+//   3D actors: mannequin{pose: idle|run|sprint|walk|squat|lift|curl|press|point|cheer|fall, armL, armR, color, accent, hot, heat}
 //              (aliases: human3d, runner3d, lifter3d, scientist3d) · character{s,expr,armL,armR,prop: tongs|clipboard,look:[x,y]} (2D card)
 //   3D animals & people (procedural, face painted on texture, run in every 3D look):
 //     creature{species: dog|dachshund|cat|fox|wolf|bear|rabbit|mouse|pig|cow|horse|sheep|chicken|bird|duck|penguin|fish|frog
 //              |turtle|dino|kid|adult, gait: auto|idle|walk|trot|run|sniff|sit|jump|hop|wag|eat|sleep|fall|swim,
-//              expr: neutral|happy|shock|sad|angry|sleepy|sniff|love|wink, look:[x,y,z] world point | "camera",
+//              expr: neutral|happy|shock|sad|angry|sleepy|sniff|love|wink, look:[x,y,z] world point | "camera", heat: 0..1,
 //              color: token/hex (body) or {body, belly, snout, ear, paw, shirt, pants, hair, skin…}, hair (kid/adult):
 //              short|bob|pony|spiky|curly|bald, face: path|fixed}  — aliases: type = dog, puppy, dachshund, cat, kitten,
 //              fox, wolf, bear, rabbit, bunny, rat, pig, cow, horse, sheep, chicken, hen, duck, penguin, fish, frog, turtle,
@@ -55,13 +55,13 @@
 //           heartbeat, breathe, float, wag, fly_off…) composed onto the prop's pose.
 //   colors: white grey water accent accent_hi danger iron metal glass_line chalk board label dial orange (style palette)
 //   expr:   neutral shock grin worried stern excited smug · arms: hang hip wave up point hold shrug cheer think present
-//   keys:  [{t (s) | u (0..1 of the shot — preferred, shots are re-timed to the voice), at, rot, scale, value, hot,
+//   keys:  [{t (s) | u (0..1 of the shot — preferred, shots are re-timed to the voice), at, rot, scale, value, hot, heat,
 //            tilt, pose, text, visible, opacity, expr, armL, armR, ease: smooth|easeOut|easeIn|back|anticip|linear|spring
 //            |bounceOut|elastic|expoOut|circOut|sine|backIn|steps}]
 // fx[]:    [{kind: steam|smoke|sparks|burst|splash|bubbles|shockwave|fire, at:[x,y,z], of:"propId", u:[u0,u1], r, color}]
 // camera[]: [{t|u, pos, look, fov, roll, ease, path}] — LEAVE EMPTY to auto-frame every prop for 9:16 (safe margin,
 //           slow push-in + small orbit, never static). frame: {elev deg, azim deg, margin 1.15, push 0.08, orbit 6,
-//           headroom 0.2 = top 20% kept empty for text_fx}. Backdrop props (ground, sky objects) → "frame": false
+//           headroom 0.16, footroom 0.28 = bottom Zone C kept empty for auto-captions}. Backdrop props → "frame": false
 // kicks[]: [{t|u, a≈0.07}] 7-frame impact shake · cues[]: [{t|u, sfx}] · flash[]: [{t|u, frames}] · dof: {focus, cinf}
 // sfx: whoosh pop hit boom impact thud tick click riser ding thunk rumble crash scrape ting sting creak snap splash
 //      sizzle bubbles glitch sparkle heartbeat
@@ -99,6 +99,7 @@ export function build(ctx, params) {
     const m = PROPS.mannequin(ctx, { color: p.color || 'white', accent: p.accent || 'accent', pose: p.pose || defPose });
     if (p.value !== undefined) m.setValue(p.value);
     if (p.hot !== undefined) m.setHot(p.hot);
+    if (p.heat !== undefined && m.setHeat) m.setHeat(p.heat);
     if (p.armL) m.setArmL(p.armL);
     if (p.armR) m.setArmR(p.armR);
     return {
@@ -108,6 +109,7 @@ export function build(ctx, params) {
         pose: (v) => m.setPose(v),
         value: (v) => m.setValue(v),
         hot: (v) => m.setHot(v),
+        heat: (v) => m.setHeat && m.setHeat(v),
         armL: (v) => m.setArmL(v),
         armR: (v) => m.setArmR(v),
       },
@@ -246,7 +248,7 @@ export function build(ctx, params) {
     const make = resolveMake(p);
     if (!make) throw new Error(`stage: prop type '${p.type}' không có (có: ${Object.keys(mk).join(', ')})`);
     const o = make(p);
-    const base = { at: p.at || [0, 0, 0], rot: p.rot || [0, 0, 0], scale: p.scale ?? 1, value: p.value, hot: p.hot, tilt: p.tilt,
+    const base = { at: p.at || [0, 0, 0], rot: p.rot || [0, 0, 0], scale: p.scale ?? 1, value: p.value, hot: p.hot, heat: p.heat, tilt: p.tilt,
       pose: p.pose, text: p.text, visible: p.visible ?? true, opacity: p.opacity, expr: p.expr, armL: p.armL, armR: p.armR };
     const keys = [{ f: 0, ...base }, ...(p.keys || []).map((k) => ({ ...k, f: fOf(k) }))].sort((a, b) => a.f - b.f);
     return { p, o, keys, id: p.id || `${p.type}${i}` };
@@ -278,6 +280,20 @@ export function build(ctx, params) {
   // nhân vật: bảng pha/tốc độ/hướng/dáng tính MỘT LẦN từ keyframe (hàm thuần theo frame, worker nào cũng như nhau)
   items.forEach((it) => { if (it.o.bind) it.o.bind(it.keys, (f) => pose(it, f)); });
 
+  const _nb = new THREE.Box3();
+  const boxNoFx = (root, out) => {
+    out.makeEmpty();
+    root.traverse((o) => {
+      if (!o.visible || (o.userData && o.userData.noFrame)) return;
+      if (o.isMesh && o.geometry) {
+        if (!o.geometry.boundingBox) o.geometry.computeBoundingBox();
+        _nb.copy(o.geometry.boundingBox).applyMatrix4(o.matrixWorld);
+        out.union(_nb);
+      }
+    });
+    return out;
+  };
+
   // ---- bối cảnh track/stadium/diorama/meadow/tabletop/street: tự vừa vùng đặt prop (đo theo keyframe, chưa tính vật lý)
   let SET = null;
   if (PROPS.setScene && ['track', 'stadium', 'diorama', 'meadow', 'tabletop', 'street'].includes(P.set)) {
@@ -289,7 +305,7 @@ export function build(ctx, params) {
         const ps = pose(it, f);
         if (!it.o.g) { eb.expandByPoint(new THREE.Vector3(ps.at[0], ps.at[1], ps.at[2])); return; }
         it.o.g.position.set(...ps.at); it.o.g.scale.set(...ps.sc); it.o.g.updateMatrixWorld(true);
-        tb.setFromObject(it.o.g); if (!tb.isEmpty()) eb.union(tb);
+        boxNoFx(it.o.g, tb); if (!tb.isEmpty()) eb.union(tb);
       });
     }
     const ext = eb.isEmpty() ? { cx: 0, cz: 0, sx: 1, sz: 1 }
@@ -315,7 +331,7 @@ export function build(ctx, params) {
   const placeBlob = (it) => {
     const b = it.blob, g = it.o.g;
     if (!g.visible) { b.visible = false; return; }
-    g.updateMatrixWorld(true); blobBox.setFromObject(g);
+    g.updateMatrixWorld(true); boxNoFx(g, blobBox);
     if (blobBox.isEmpty()) { b.visible = false; return; }
     const hgt = Math.max(0.05, blobBox.max.y - blobBox.min.y), lift = Math.max(0, blobBox.min.y - BASE);
     const k = Math.max(0, 1 - lift / (hgt * 1.5 + 0.3));
@@ -404,7 +420,7 @@ export function build(ctx, params) {
     for (const f of samples.map((s) => Math.round(s * (N - 1)))) {
       apply(f).forEach((a) => cards.push(a));
       ctx.world.updateMatrixWorld(true);
-      items.forEach((it) => { if (it.p.frame !== false && it.o.g && it.o.g.visible) { tmp.setFromObject(it.o.g); if (!tmp.isEmpty()) box.union(tmp); } });
+      items.forEach((it) => { if (it.p.frame !== false && it.o.g && it.o.g.visible) { boxNoFx(it.o.g, tmp); if (!tmp.isEmpty()) box.union(tmp); } });
     }
     for (const a of cards) box.union(new THREE.Box3(new THREE.Vector3(a.x - 0.45 * a.s * 2.25 / 2, a.y, a.z - 0.1), new THREE.Vector3(a.x + 0.45 * a.s * 2.25 / 2, a.y + a.s * 2.25, a.z + 0.1)));
     if (box.isEmpty()) box.set(new THREE.Vector3(-0.5, BASE, -0.5), new THREE.Vector3(0.5, BASE + 1, 0.5));
@@ -426,8 +442,22 @@ export function build(ctx, params) {
       });
       if (away) smartAz = { azim: 34, elev: 16 };
     }
-    const F = { elev: 10, azim: 0, margin: 1.15, push: 0.08, orbit: 6, fov: 38, headroom: 0.2, ...((SET && SET.frame) || {}), ...smartAz, ...pr, ...P.frame };
-    if (F.headroom > 0) { const hgt = box.max.y - box.min.y; box.max.y += hgt * F.headroom / (1 - F.headroom); }
+    // Tôn trọng Grid 3 tầng (Zone C phụ đề ở đáy 9:16): tự tăng footroom khi captions bật để chân nhân vật/bệ diorama ở trên y = 1280
+    const captionsOn = ctx.job.captions_on !== false;
+    const gridStage = (ctx.job.layout_grid && ctx.job.layout_grid.stage) || [390, 1240];
+    const Href = ctx.job.height || 1920;
+    const defFoot = captionsOn ? Math.max(0.22, Math.min(0.32, (Href - (gridStage[1] || 1240)) / Href - 0.06)) : 0;
+    const defHead = captionsOn ? 0.16 : 0.2;
+    const F = { elev: 10, azim: 0, margin: 1.15, push: 0.08, orbit: 6, fov: 38, headroom: defHead, footroom: defFoot,
+      ...((SET && SET.frame) || {}), ...smartAz, ...pr, ...P.frame };
+    const hr = Math.max(0, Math.min(0.4, F.headroom || 0));
+    const fr = Math.max(0, Math.min(0.4, F.footroom || 0));
+    if (hr + fr > 0) {
+      const hgt = box.max.y - box.min.y;
+      const denom = Math.max(0.35, 1 - hr - fr);
+      box.max.y += hgt * hr / denom;
+      box.min.y -= hgt * fr / denom;
+    }
     const c = box.getCenter(new THREE.Vector3()), sz = box.getSize(new THREE.Vector3());
     const vt = Math.tan(F.fov * Math.PI / 360), ht = vt * 9 / 16;
     const d = Math.max((sz.x / 2) / ht, (sz.y / 2) / vt) * F.margin + sz.z / 2;

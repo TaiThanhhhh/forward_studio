@@ -84,4 +84,4 @@ def check_final(path, expect_audio=1):
 
 # Báo cáo/QA mở rộng nằm ở qareport.py (giữ tên cũ qa.write_report… cho pipeline)
 from .qareport import (freeze_black, hold_spans, look_metrics, look_summary, ocr_report, qa_sheet,  # noqa: E402,F401
-                       write_html, write_publish, write_report, write_srt)
+                       studio_checks, write_html, write_publish, write_report, write_srt)

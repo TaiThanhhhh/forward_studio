@@ -261,7 +261,15 @@ function draw(prims, o = {}) {
 }
 
 // ---------- chữ ----------
-let boxes = [];
+let boxes = [], overlaps = [];
+function boxOverlapRatio(a, b) {
+  const iw = Math.max(0, Math.min(a[2], b[2]) - Math.max(a[0], b[0]));
+  const ih = Math.max(0, Math.min(a[3], b[3]) - Math.max(a[1], b[1]));
+  if (iw <= 0 || ih <= 0) return 0;
+  const areaA = Math.max(0, a[2] - a[0]) * Math.max(0, a[3] - a[1]);
+  const areaB = Math.max(0, b[2] - b[0]) * Math.max(0, b[3] - b[1]);
+  return (iw * ih) / Math.max(1, Math.min(areaA, areaB));
+}
 const fontOf = (o) => `${o.weight || L.type.weight || 700} ${Math.round(o.size)}px "${o.font === 'mono' ? 'StyleMono' : 'StyleFont'}", sans-serif`;
 const fmtNum = (v, dec = 0) => Number(v).toLocaleString(JOB.locale || 'en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec });
 function wrap(str, o) {
@@ -330,8 +338,49 @@ function textImpl(str, x, y, o = {}) {
   if (T.px) { const ps = pxSize(size); if (ps !== size) { size = ps; g.font = fontOf({ ...o, size }); lines = wrap(s, o); } }
   const lh = size * (o.lh || T.lh || 1.08), widths = lines.map((ln) => g.measureText(ln).width), wmax = Math.max(...widths);
   const bx = align === 'center' ? x - wmax / 2 : align === 'right' ? x - wmax : x;
-  const box = { x0: bx, y0: y - size * 0.82, x1: bx + wmax, y1: y + lh * (lines.length - 1) + size * 0.24, h: lh * lines.length, lines: lines.length, size };
+  const makeBox = (yy) => ({
+    x0: bx, y0: yy - size * 0.82, x1: bx + wmax, y1: yy + lh * (lines.length - 1) + size * 0.24,
+    h: lh * lines.length, lines: lines.length, size,
+  });
+  let box = makeBox(y);
   if (k <= 0) { g.restore(); return box; }
+  const mCur = g.getTransform(), syCur = Math.hypot(mCur.c, mCur.d) || 1;
+  const screenBoxOf = (b) => {
+    const cs = [[b.x0, b.y0], [b.x1, b.y0], [b.x1, b.y1], [b.x0, b.y1]]
+      .map(([px, py]) => [mCur.a * px + mCur.c * py + mCur.e, mCur.b * px + mCur.d * py + mCur.f]);
+    return [
+      Math.min(cs[0][0], cs[1][0], cs[2][0], cs[3][0]),
+      Math.min(cs[0][1], cs[1][1], cs[2][1], cs[3][1]),
+      Math.max(cs[0][0], cs[1][0], cs[2][0], cs[3][0]),
+      Math.max(cs[0][1], cs[1][1], cs[2][1], cs[3][1]),
+    ];
+  };
+  let sbox = screenBoxOf(box);
+  if (!o.quiet && recordBoxes && !o.allowOverlap && o.autoNudge !== false && boxes.length) {
+    const pad = size * 0.35 * syCur;
+    for (let pass = 0; pass < 4; pass++) {
+      let hit = null, bestR = 0.05;
+      for (const prev of boxes) {
+        const r = boxOverlapRatio(sbox, prev.box);
+        if (r > bestR) { bestR = r; hit = prev; }
+      }
+      if (!hit) break;
+      const dyDown = (hit.box[3] + pad - sbox[1]) / syCur;
+      const dyUp = (hit.box[1] - pad - sbox[3]) / syCur;
+      const downBot = sbox[3] + dyDown * syCur, upTop = sbox[1] + dyUp * syCur;
+      let nextY = y;
+      if (downBot <= A.bottom + 8) nextY = y + dyDown;
+      else if (upTop >= A.top - 8) nextY = y + dyUp;
+      else {
+        const overDown = Math.max(0, downBot - A.bottom), overUp = Math.max(0, A.top - upTop);
+        nextY = overDown <= overUp ? y + dyDown : y + dyUp;
+      }
+      if (Math.abs(nextY - y) < 0.5) break;
+      y = nextY;
+      box = makeBox(y);
+      sbox = screenBoxOf(box);
+    }
+  }
   const enter = o.enter || T.enter || 'mask', c = col(o.role || 'ink'), e = E(k);
   g.textAlign = align; g.textBaseline = 'alphabetic';
   const seed = strSeed(s);
@@ -376,9 +425,15 @@ function textImpl(str, x, y, o = {}) {
     g.restore();
   });
   if (o.under && k >= 1) { g.fillStyle = col(o.under); g.fillRect(box.x0, box.y1 + 6, wmax, Math.max(4, size * 0.07)); }
-  if (k >= 1 && !o.quiet && recordBoxes) {                           // chữ đã hiện đủ → báo khung bao cho QA OCR
-    const m = g.getTransform(), cs = [[box.x0, box.y0], [box.x1, box.y0], [box.x1, box.y1], [box.x0, box.y1]].map(([px, py]) => [m.a * px + m.c * py + m.e, m.b * px + m.d * py + m.f]);
-    boxes.push({ text: lines.join('\n'), box: [Math.min(...cs.map((q) => q[0])), Math.min(...cs.map((q) => q[1])), Math.max(...cs.map((q) => q[0])), Math.max(...cs.map((q) => q[1]))],
+  if (k >= 1 && !o.quiet && recordBoxes) {                           // chữ đã hiện đủ → báo khung bao cho QA OCR + kiểm tra chồng chữ
+    const txtJoined = lines.join('\n');
+    if (!o.allowOverlap) {
+      for (const prev of boxes) {
+        const r = boxOverlapRatio(sbox, prev.box);
+        if (r > 0.05) overlaps.push({ a: prev.text, b: txtJoined, ratio: Number(r.toFixed(3)) });
+      }
+    }
+    boxes.push({ text: txtJoined, box: sbox,
                  lines, font: fontOf({ ...o, size: Math.max(72, size) }), track: (o.track ?? (o.font === 'mono' ? 0.04 : T.track || 0)) });
   }
   g.restore();
@@ -388,8 +443,19 @@ function textImpl(str, x, y, o = {}) {
 // ---------- ngữ cảnh cho look/beat ----------
 const LEAD = L.motion.lead ?? 9;
 const SAFE = JOB.safe || { top: 220, bottom: 384, left: 60, right_icons_x: 940, right_icons_from_y: 700 };
-const A = { x0: Math.max(84, SAFE.left + 24), x1: W - Math.max(84, SAFE.left + 24), top: SAFE.top + 20, bottom: H - SAFE.bottom - 20, cx: W / 2,
-            xr: (y) => (y > SAFE.right_icons_from_y ? Math.min(W - 84, SAFE.right_icons_x - 10) : W - 84) };
+const GRID = JOB.layout_grid || { header: [250, 370], stage: [390, 1240], captions: [1340, 1460] };
+const CAPTIONS_ON = JOB.captions_on !== false;
+const STAGE_BOTTOM = CAPTIONS_ON
+  ? Math.min(H - SAFE.bottom - 20, (GRID.stage && GRID.stage[1]) || 1240)
+  : H - SAFE.bottom - 20;
+const A = {
+  x0: Math.max(84, SAFE.left + 24), x1: W - Math.max(84, SAFE.left + 24),
+  top: SAFE.top + 20, bottom: STAGE_BOTTOM, stageBottom: STAGE_BOTTOM,
+  stageTop: (GRID.stage && GRID.stage[0]) || 390,
+  header: GRID.header || [250, 370], captions: GRID.captions || [1340, 1460],
+  captionsOn: CAPTIONS_ON, cx: W / 2,
+  xr: (y) => (y > SAFE.right_icons_from_y ? Math.min(W - 84, SAFE.right_icons_x - 10) : W - 84),
+};
 function enter(k, box, fn, kind) {
   k = clamp(k); if (k <= 0) return;
   const [bx, by, bw, bh] = box, cx = bx + bw / 2, cy = by + bh / 2, mode = kind || L.motion.enter || 'pop';
@@ -407,23 +473,46 @@ function enter(k, box, fn, kind) {
   cur.drawK = prev;
   g.restore();
 }
+const DEFAULT_EDITORIAL = (L.rig && L.rig.editorial !== undefined)
+  ? !!L.rig.editorial
+  : !!(JOB.design_system && JOB.design_system.character_style === 'editorial');
+function drawHeatHalo(x, y, s, heat) {
+  const h = clamp(heat);
+  if (h <= 0.05) return;
+  const r = Math.max(24, s * (1.15 + 0.35 * h)), [cr, cg, cb] = hex(col('hot'));
+  g.save();
+  const gr = g.createRadialGradient(x, y, r * 0.12, x, y, r);
+  gr.addColorStop(0, `rgba(${cr},${cg},${cb},${(0.42 * h).toFixed(3)})`);
+  gr.addColorStop(0.55, `rgba(${cr},${cg},${cb},${(0.18 * h).toFixed(3)})`);
+  gr.addColorStop(1, `rgba(${cr},${cg},${cb},0)`);
+  g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill();
+  g.restore();
+}
 const icon = (name, o = {}) => {
+  const heat = clamp(o.heat ?? (o.args && o.args.heat) ?? 0);
+  if (heat > 0.05 && !o.noHeatHalo) drawHeatHalo(o.x ?? 0, o.y ?? 0, o.s ?? 100, heat);
+  const applyHeat = (prims) => {
+    if (heat <= 0.05) return prims;
+    const cHot = col('hot'), k = heat * 0.6;
+    return prims.map((p) => (p.fine || p.hole || p.role === 'bg' ? p : { ...p, role: mix(colOf(p), cHot, k), tone: 0 }));
+  };
   if (name && typeof name === 'object') {            // icon tự ghép từ storyboard: {"parts": [...]}
-    draw(partsIcon(name), { ...o, seed: o.seed ?? strSeed(JSON.stringify(name).slice(0, 64)) });
+    draw(applyHeat(partsIcon(name)), { ...o, seed: o.seed ?? strSeed(JSON.stringify(name).slice(0, 64)) });
     return;
   }
   if (isRig(name)) {                                  // nhân vật hoạt hình 2D "rig:<loài>[:hành động][:biểu cảm]" (rig2d.js)
     const seed = o.seed ?? strSeed(name);
-    draw(rigPrims(name, { f: cur.fs, fps: FPS, seed, role: o.role, args: o.args }), { ...o, seed });
+    const args = { editorial: DEFAULT_EDITORIAL, heat, ...(o.args || {}) };
+    draw(applyHeat(rigPrims(name, { f: cur.fs, fps: FPS, seed, role: o.role, args })), { ...o, seed });
     return;
   }
   const fn = ICONS[iconFor(name)] || ICONS.dot;
-  draw(fn({ f: cur.fs, p: o.p ?? 0, role: o.role, hash, ...o.args }), { ...o, seed: o.seed ?? strSeed(name) });
+  draw(applyHeat(fn({ f: cur.fs, p: o.p ?? 0, role: o.role, heat, hash, ...o.args })), { ...o, seed: o.seed ?? strSeed(name) });
 };
 function makeCtx(f, n = N, p = P) {
   const step = L.motion.step || 1, fs = Math.floor(f / step) * step;
   cur.f = f; cur.fs = fs; cur.drawK = 1;
-  return { g, W, H, N: n, FPS, f, fs, t: f / FPS, u: f / Math.max(1, n - 1), pal, L, P: p, A, SAFE, E, EASE, MO, clamp, lerp, hash, noise, strSeed,
+  return { g, W, H, N: n, FPS, f, fs, t: f / FPS, u: f / Math.max(1, n - 1), pal, L, P: p, A, SAFE, GRID, E, EASE, MO, clamp, lerp, hash, noise, strSeed,
            col, shade, mix, draw, text, later, enter, icon, fmtNum, TAU, K: lookMod, media: MEDIA, kick: cur.kick,
            // LEAD: mọi phần tử 'vào sớm' vài frame → frame 0 của shot đã có hình (cắt cứng không lộ frame đen)
            k: (f0, dur, stepped = true) => clamp(((stepped ? fs : f) + LEAD - f0) / Math.max(1, dur)) };
@@ -538,9 +627,9 @@ function drawTile(T, beat, lf, ln, lp, cam, kk, alpha, fill, isSelf) {
 
 window.meta = { cues: [...(S.cues || []).map((q) => ({ f: q.f, name: q.name })), ...(NEXT ? [{ f: Math.max(0, N - SPL), name: 'whoosh' }] : [])],
                 texts: S.texts || [], frames: N, scene: JOB.scene, engine: 'html', look: L.look, spine: !!SP, media: MEDIA.info,
-                post2d: GLP ? GLP.info : null, hold: HOLD };
+                post2d: GLP ? GLP.info : null, hold: HOLD, captions_on: CAPTIONS_ON, stage_bottom: STAGE_BOTTOM };
 window.renderFrame = (f0) => {
-  boxes = []; deferred = [];
+  boxes = []; overlaps = []; deferred = [];
   const f = HOLD > 1 ? Math.floor(f0 / HOLD) * HOLD : f0;
   g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; g.shadowBlur = 0; g.filter = 'none';
   g.fillStyle = pal.bg; g.fillRect(0, 0, W, H);
@@ -604,5 +693,6 @@ window.textBoxes = () => boxes.map((b) => {         // + texture phẳng trắng
   b.lines.forEach((ln, i) => x.fillText(ln, 40, 30 + px * 0.9 + i * px * 1.25));
   return { text: b.text, box: b.box, tex: c.toDataURL('image/png') };
 });
+window.overlapPairs = () => overlaps.slice();
 window.glInfo = 'canvas2d';
 window.ready = true;

@@ -228,24 +228,30 @@ def render(job_path, out_dir, frames=None, workers=None, log=print, gpu=None):
     return st
 
 
-def text_crops(job_path, frames):
-    """Render các frame và trả về [(frame, chữ khai báo, ảnh PIL cắt quanh chữ)] — cho QA OCR chữ trong cảnh."""
+def text_audit(job_path, frames):
+    """Render các frame và trả về {crops, overlaps, boxes} — cho QA OCR, cổng ĐỎ chống chồng chữ & Zone C clearance."""
     import base64  # noqa: PLC0415
     import io  # noqa: PLC0415
 
     from PIL import Image  # noqa: PLC0415
     from playwright.sync_api import sync_playwright  # noqa: PLC0415
     c = cfg()
-    out = []
+    crops, overlaps, boxes = [], [], []
     with serve() as port, sync_playwright() as p:
-        b, pg, gl = _open(p, url_for(port, job_path), c["channel"], c["gpu"])
+        b, pg, _gl = _open(p, url_for(port, job_path), c["channel"], c["gpu"])
         for f in frames:
             d = pg.evaluate("(f) => { window.renderFrame(f); "
                             "return [(window.outCanvas || document.getElementById('c')).toDataURL('image/png'), "
-                            "window.textBoxes()]; }", f)
+                            "window.textBoxes(), "
+                            "typeof window.overlapPairs === 'function' ? window.overlapPairs() : []]; }", f)
             im = Image.open(io.BytesIO(base64.b64decode(d[0].split(",", 1)[1]))).convert("RGB")
-            for t in d[1]:
+            for pair in d[2] or []:
+                overlaps.append({"frame": int(f), "a": str(pair.get("a", "")), "b": str(pair.get("b", "")),
+                                 "ratio": float(pair.get("ratio", 0.0))})
+            for t in d[1] or []:
                 x0, y0, x1, y1 = t["box"]
+                boxes.append({"frame": int(f), "text": str(t.get("text", "")),
+                              "box": [float(x0), float(y0), float(x1), float(y1)]})
                 pad = 10
                 box = (max(0, int(x0) - pad), max(0, int(y0) - pad),
                        min(im.width, int(x1) + pad), min(im.height, int(y1) + pad))
@@ -255,9 +261,14 @@ def text_crops(job_path, frames):
                         ti = Image.open(io.BytesIO(base64.b64decode(t["tex"].split(",", 1)[1]))).convert("RGBA")
                         tex = Image.new("RGB", ti.size, (0, 0, 0))
                         tex.paste(ti, (0, 0), ti)
-                    out.append((f, t["text"], im.crop(box), tex))
+                    crops.append((f, t["text"], im.crop(box), tex))
         b.close()
-    return out
+    return {"crops": crops, "overlaps": overlaps, "boxes": boxes}
+
+
+def text_crops(job_path, frames):
+    """Render các frame và trả về [(frame, chữ khai báo, ảnh PIL cắt quanh chữ, texture)] — cho QA OCR chữ trong cảnh."""
+    return text_audit(job_path, frames)["crops"]
 
 
 def meta(job_path):

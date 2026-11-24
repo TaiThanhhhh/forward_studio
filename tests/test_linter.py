@@ -50,8 +50,8 @@ class Linter(unittest.TestCase):
         self.assertTrue(any("gen_sec" in i["msg"] and i["level"] == "error" for i in linter.lint(sb)))
 
     def test_pacing(self):
-        self.assertIn("tối đa", msgs(mini(target_sec=4.2)))
-        self.assertIn("Hook", msgs(mini(target_sec=2.0), "warn"))
+        self.assertIn("tối đa", msgs(mini(target_sec=5.2)))
+        self.assertIn("Hook", msgs(mini(target_sec=2.6), "warn"))
 
     def test_avoid_conflict_hint(self):
         sb = mini(action=[{"t": [0, 2], "do": "A crowd of white balls bounces together"}])

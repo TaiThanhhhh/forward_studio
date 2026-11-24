@@ -14,19 +14,29 @@ def shot_durations(sb, vo):
     notes = []
     lines = vo["lines"]
     # điểm cắt đặt 0–3 frame TRƯỚC câu VO mới (phản ứng hình ảnh luôn đi trước lời)
-    lead = min(3, max(0, channel()["vo"].get("react_lead_default", 2))) / FPS
+    vo_cfg = channel()["vo"]
+    lead = min(3, max(0, vo_cfg.get("react_lead_default", 2))) / FPS
+    tail_pad = max(0.35, float(vo_cfg.get("keep_silence_ms", 140)) / 1000.0 + 0.21)
     for k, ln in enumerate(lines):
         start = 0.0 if k == 0 else max(0.0, ln["start"] - lead)
-        end = max(0.0, lines[k + 1]["start"] - lead) if k + 1 < len(lines) else ln["end"] + 0.35
+        if k + 1 < len(lines):
+            end = max(0.0, lines[k + 1]["start"] - lead)
+        else:
+            end = max(ln["end"] + tail_pad, float(vo.get("duration") or 0.0))
         span = max(0.4, end - start)
         planned = sum(durs[i] for i in ln["shots"])
         for i in ln["shots"]:
             durs[i] = durs[i] * span / max(planned, 1e-6)
     # shot đứng TRƯỚC câu VO đầu tiên (không có lời) giữ nguyên
-    mx = channel()["pacing"]["shot_max_sec"]
+    pacing = channel()["pacing"]
+    mx_flow = pacing["shot_max_sec"]
+    mx_code = pacing.get("code_shot_max_sec", mx_flow)
     for i, d in enumerate(durs):
+        s = sb["shots"][i]
+        is_code = (s.get("mode_resolved") or s.get("mode")) == "code" or bool((s.get("code") or {}).get("scene"))
+        mx = mx_code if is_code else mx_flow
         if d > mx + 0.6:
-            notes.append(f"{sb['shots'][i]['id']}: dài {d:.1f}s sau khi khớp lời đọc (> {mx}s) — "
+            notes.append(f"{s['id']}: dài {d:.1f}s sau khi khớp lời đọc (> {mx}s) — "
                          "tách câu VO hoặc thêm shot.")
     return durs, notes
 
@@ -58,13 +68,14 @@ def punch_plan(s, dur, scale, idx):
     events += punches
     events = sorted(set(round(t, 3) for t in events if 0 <= t < dur))
     auto = []
-    bounds = events + [dur]
-    for a, b in zip(bounds, bounds[1:]):
-        gap = b - a
-        if gap > every:
-            n = int(math.ceil(gap / every)) - 1
-            for k in range(1, n + 1):
-                auto.append(a + gap * k / (n + 1))
+    if not s.get("hold"):
+        bounds = events + [dur]
+        for a, b in zip(bounds, bounds[1:]):
+            gap = b - a
+            if gap > every:
+                n = int(math.ceil(gap / every)) - 1
+                for k in range(1, n + 1):
+                    auto.append(a + gap * k / (n + 1))
     allp = sorted(punches + auto)
     out, level = [], 1.0
     for k, t in enumerate(allp):

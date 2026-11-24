@@ -87,6 +87,21 @@ def mix_help():
     lines.append(f"  - At least {c['min_mechanism_shots']} shots show a mechanism. Change engine at a beat change "
                  "(setup → escalate → payoff), not every shot. `scale` and `outro` exist in both three and html: html "
                  "`scale` needs `items[]`.")
+    lines.append(
+        "\n**VISUAL BUDGET & STORYTELLING RULES (LESS IS MORE — Vox / Fern / Johnny Harris standard):**\n"
+        "  - **1 Shot = 1 Single Visual Beat**: at most 1 Hero subject + 1 interacting mechanism (≤ 3 prominent actors "
+        "in `scene`, ≤ 5 framed props in `stage`). If a sentence explains two mechanisms, split into 2 consecutive shots.\n"
+        "  - **Show, Don't Type (Visual-First)**: Auto-captions (`studio_clean`, Zone C `y: 1340–1460`) already carry the "
+        "spoken narration. Do NOT repeat the VO on screen. Keep on-screen text to at most 1 short anchor (≤ 4 words or "
+        "one number + unit like `41.2°C`, `157 BPM`), and omit redundant `kicker`/`title`/`sub` on action shots.\n"
+        "  - **Context Coherence & Grounded Physics**: every prop must physically belong in its environment. Never paste "
+        "a giant floating thermometer or floating lungs onto an outdoor running track. Show overheating/strain directly "
+        "on the actor via `heat: 0..1` (thermal core glow in both 2D `scene` and 3D `stage`), and cut to a dedicated "
+        "clean dark-background anatomical cutaway shot when explaining internal organs.\n"
+        "  - **Cinematic Adult Pacing & 3-Zone 9:16 Grid**: calm, authoritative ~3.0 wps narration, 2.4–3.8 s per shot "
+        "(10–13 high-craft shots for a 40 s short) with continuous internal motion; keep all visual subjects and labels "
+        "cleanly inside Zone B (`y: 390–1240`) so Zone C captions never touch characters or labels."
+    )
     return "\n".join(lines)
 
 

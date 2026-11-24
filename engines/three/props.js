@@ -181,17 +181,19 @@ const ARM_3D = {
   present: [-1.05, 0.2, -0.25, 0.55],
 };
 
-/** Nhân vật 3D khớp nối thật (đứng trên mặt y=0, cao ~1.7m khi s=1), hỗ trợ pose động (idle/run/walk/squat/lift/curl/press/point/cheer/fall) + armL/armR. */
-export function mannequin(ctx, { parent = ctx.world, x = 0, y = 0, z = 0, color = 'white', accent = 'accent', pose = 'idle' } = {}) {
+/** Nhân vật 3D khớp nối thật (đứng trên mặt y=0, cao ~1.7m khi s=1), hỗ trợ pose động (idle/run/walk/squat/lift/curl/press/point/cheer/fall) + armL/armR + heat 0..1. */
+export function mannequin(ctx, { parent = ctx.world, x = 0, y = 0, z = 0, color = 'white', accent = 'accent', pose = 'idle', heat = 0 } = {}) {
   const { THREE } = ctx, g = ctx.group(parent, x, y, z);
   const root = ctx.group(g, 0, 0.88, 0); // hông tại y=0.88m
-  const bodyM = ctx.toon(color), accM = ctx.toon(accent), darkM = ctx.toon('iron');
+  const bodyM = ctx.toon(color), torsoM = ctx.toon(color), accM = ctx.toon(accent), darkM = ctx.toon('iron');
 
   // Hông + thân trên + đầu
   ctx.add(new THREE.CylinderGeometry(0.14, 0.13, 0.14, 20), darkM, 0, 0, 0, root);
   const torso = ctx.group(root, 0, 0.06, 0);
-  ctx.add(new THREE.CylinderGeometry(0.18, 0.14, 0.44, 24), bodyM, 0, 0.22, 0, torso);
+  ctx.add(new THREE.CylinderGeometry(0.18, 0.14, 0.44, 24), torsoM, 0, 0.22, 0, torso);
   ctx.add(new THREE.BoxGeometry(0.24, 0.09, 0.22), accM, 0, 0.3, 0.02, torso); // đai/sọc ngực accent
+  const heatHex = (ctx.job && ctx.job.world && ctx.job.world.colors && ctx.job.world.colors.heat_glow) || '#E8523A';
+  let heatGlow = null;
   const head = ctx.group(torso, 0, 0.5, 0);
   ctx.add(new THREE.CylinderGeometry(0.055, 0.065, 0.09, 16), bodyM, 0, 0.03, 0, head);
   ctx.add(new THREE.SphereGeometry(0.155, 28, 20), bodyM, 0, 0.17, 0, head);
@@ -227,8 +229,9 @@ export function mannequin(ctx, { parent = ctx.world, x = 0, y = 0, z = 0, color 
   };
   const legL = makeLeg(-1), legR = makeLeg(1);
 
-  const coldC = new THREE.Color(ctx.C(color)), hotC = new THREE.Color(ctx.C('danger'));
-  let curPose = pose, curVal = 0, curHot = 0, curArmL = null, curArmR = null;
+  const coldC = new THREE.Color(ctx.C(color)), hotC = new THREE.Color(ctx.C('danger')), heatC = new THREE.Color(heatHex);
+  const baseEm = torsoM.emissive ? torsoM.emissive.clone() : new THREE.Color(0x000000);
+  let curPose = pose, curVal = 0, curHot = 0, curHeat = Math.max(0, Math.min(1, Number(heat) || 0)), curArmL = null, curArmR = null;
 
   const applyArmPreset = (arm, name, f) => {
     const p = ARM_3D[name];
@@ -306,6 +309,19 @@ export function mannequin(ctx, { parent = ctx.world, x = 0, y = 0, z = 0, color 
     if (curArmL) applyArmPreset(armL, curArmL, f);
     if (curArmR) applyArmPreset(armR, curArmR, f);
     bodyM.color.copy(coldC).lerp(hotC, curHot);
+    const th = Math.max(curHot, curHeat);
+    torsoM.color.copy(coldC).lerp(curHeat >= curHot ? heatC : hotC, th * 0.78);
+    if (torsoM.emissive) torsoM.emissive.copy(baseEm).lerp(heatC, curHeat * 0.58);
+    if (curHeat > 0.01 && !heatGlow && ctx.glow) {
+      heatGlow = ctx.glow(heatHex, 0.72, torso, 0, 0.24, 0.04, 0);
+      if (heatGlow) heatGlow.userData.noFrame = true;
+    }
+    if (heatGlow) {
+      heatGlow.visible = curHeat > 0.01;
+      const gs = curHeat > 0.01 ? 0.72 * (0.65 + 0.35 * curHeat) : 0.001;
+      heatGlow.scale.set(gs, gs, 1);
+      if (heatGlow.material) heatGlow.material.opacity = curHeat * 0.36;
+    }
   };
   update(0);
   return {
@@ -313,7 +329,8 @@ export function mannequin(ctx, { parent = ctx.world, x = 0, y = 0, z = 0, color 
     update,
     setPose: (v) => { curPose = v; },
     setValue: (v) => { curVal = v; },
-    setHot: (v) => { curHot = v; },
+    setHot: (v) => { curHot = Math.max(0, Math.min(1, Number(v) || 0)); },
+    setHeat: (v) => { curHeat = Math.max(0, Math.min(1, Number(v) || 0)); },
     setArmL: (v) => { curArmL = v; },
     setArmR: (v) => { curArmR = v; },
   };
@@ -477,8 +494,9 @@ export function trophy(ctx, { parent = ctx.world, x = 0, y = 0, z = 0, h = 0.78 
 
 export function track(ctx, { parent = ctx.world, x = 0, y = 0, z = 0, w = 4.2, d = 1.8 } = {}) {
   const { THREE } = ctx, g = ctx.group(parent, x, y, z);
-  const tTex = HAS_DOM && ctx.P && ctx.P.tartanTrack ? ctx.P.tex(ctx.P.tartanTrack(21, '#B44530', '#F4F1EA', 256, 4), Math.max(1, Math.round(w / 1.8)), 1) : null;
-  ctx.add(new THREE.BoxGeometry(w, 0.08, d), tTex ? ctx.toon('#ffffff', { map: tTex }) : '#B44530', 0, 0.04, 0, g);
+  const tc = setCol(ctx, null, 'tartan'), lc = setCol(ctx, null, 'track_line');
+  const tTex = HAS_DOM && ctx.P && ctx.P.tartanTrack ? ctx.P.tex(ctx.P.tartanTrack(21, tc, lc, 256, 4), Math.max(1, Math.round(w / 1.8)), 1) : null;
+  ctx.add(new THREE.BoxGeometry(w, 0.08, d), tTex ? ctx.toon('#ffffff', { map: tTex }) : tc, 0, 0.04, 0, g);
   ctx.add(new THREE.BoxGeometry(w, 0.11, 0.06), 'white', 0, 0.055, -d / 2 - 0.03, g);
   ctx.add(new THREE.BoxGeometry(w, 0.11, 0.06), 'white', 0, 0.055, d / 2 + 0.03, g);
   return { g };
@@ -1035,11 +1053,11 @@ export function fx3d(ctx, { parent = ctx.world, x = 0, y = 0, z = 0, kind = 'ste
 export const SETS = ['black', 'lab', 'track', 'stadium', 'diorama', 'meadow', 'tabletop', 'street'];
 /** Mặt đứng của set (prop y đo từ đây, như mặt bàn lab). */
 export const setBase = (name, o = {}) => (name === 'lab' ? 0.92 : name === 'tabletop' ? (o.top ?? 0.76) : 0);
-const SET_COL = { grass: '#4FA83A', tuft: '#62BE3C', dirt: '#6B4A2E', flower: '#FFD23F', flower_center: '#F08A24', stem: '#3E8E2E',
-  rock: '#8E8C88', hill: '#2F7A55', wood: '#A0683A', wood_dark: '#5E3A22', wall: '#3E4A6A', asphalt: '#3A3D44',
-  road_line: '#F2D24A', curb: '#9A9893', brick: '#B9785A', window: '#2A3448', window_lit: '#FFD27A', lamp: '#FFE7A0',
-  leaf: '#4FA83A', trunk: '#6B4A2E', tartan: '#B84530', track_line: '#F4F1EA', infield: '#2F7D3E', stand: '#232833',
-  stadium_base: '#181B22', cone: '#FF7A2F', trail: '#B99264' };
+const SET_COL = { grass: '#2B4C3B', tuft: '#365C47', dirt: '#3F362E', flower: '#D8B45A', flower_center: '#B87236', stem: '#294F39',
+  rock: '#636872', hill: '#1D332B', wood: '#735036', wood_dark: '#422D1E', wall: '#283042', asphalt: '#2A2E36',
+  road_line: '#C9B15A', curb: '#6A6D73', brick: '#7E5343', window: '#1D2433', window_lit: '#DFBA6E', lamp: '#E8D59C',
+  leaf: '#284A39', trunk: '#4A3B30', tartan: '#943F30', track_line: '#E6E2D8', infield: '#244535', stand: '#1C212B',
+  stadium_base: '#12151C', cone: '#C96336', trail: '#7C664E' };
 const HAS_DOM = typeof document !== 'undefined';
 const setCol = (ctx, o, k) => {
   const own = o && o.colors && o.colors[k];
@@ -1103,16 +1121,23 @@ export function rock(ctx, { parent = ctx.world, x = 0, y = 0, z = 0, r = 0.12, c
   ctx.add(geo, color || setCol(ctx, null, 'rock'), 0, r * 0.35, 0, g);
   return { g };
 }
-/** Cây low-poly: thân + 3 tầng tán tròn. */
+/** Cây kiến trúc tối giản: thân thuôn + 3 tầng tán hình nón chuyển sắc trầm theo độ cao (thay cho cầu tròn kiểu kẹo mút). */
 export function tree(ctx, { parent = ctx.world, x = 0, y = 0, z = 0, h = 1.4, color = null } = {}) {
   const { THREE } = ctx, g = ctx.group(parent, x, y, z), lc = color ? (ctx.C ? ctx.C(color) : color) : setCol(ctx, null, 'leaf');
-  ctx.add(new THREE.CylinderGeometry(h * 0.035, h * 0.05, h * 0.5, 6), setCol(ctx, null, 'trunk'), 0, h * 0.25, 0, g);
-  [[0.24, 0.5, 0], [0.19, 0.72, 0.03], [0.13, 0.9, -0.02]].forEach(([r, yy, dx]) => { ctx.add(new THREE.SphereGeometry(h * r, 8, 6), lc, dx * h, yy * h, 0, g).scale.set(1, 0.85, 1); });
+  ctx.add(new THREE.CylinderGeometry(h * 0.024, h * 0.044, h * 0.36, 8), setCol(ctx, null, 'trunk'), 0, h * 0.18, 0, g);
+  [[0.21, 0.36, 0.42, -14], [0.165, 0.34, 0.62, -4], [0.115, 0.3, 0.81, 8]].forEach(([r, th, yy, dl], idx) => {
+    const cHex = /^#[0-9a-fA-F]{6}/.test(lc) ? shadeHexP(lc, dl) : lc;
+    const tier = ctx.add(new THREE.ConeGeometry(h * r, h * th, 8), cHex, 0, yy * h, 0, g);
+    tier.rotation.y = idx * 0.4;
+  });
   return { g };
 }
 export function bush(ctx, { parent = ctx.world, x = 0, y = 0, z = 0, r = 0.22, color = null } = {}) {
   const { THREE } = ctx, g = ctx.group(parent, x, y, z), lc = color ? (ctx.C ? ctx.C(color) : color) : setCol(ctx, null, 'leaf');
-  [[0, 0.6, 0, 1], [-0.7, 0.45, 0.1, 0.75], [0.65, 0.42, -0.1, 0.8]].forEach(([dx, yy, dz, k]) => { ctx.add(new THREE.SphereGeometry(r * k, 8, 6), lc, dx * r, yy * r, dz * r, g); });
+  const dark = /^#[0-9a-fA-F]{6}/.test(lc) ? shadeHexP(lc, -12) : lc;
+  [[0, 0.42, 0, 1.0, lc], [-0.62, 0.32, 0.12, 0.72, dark], [0.58, 0.3, -0.1, 0.76, dark]].forEach(([dx, yy, dz, k, cHex]) => {
+    ctx.add(new THREE.SphereGeometry(r * k, 8, 6), cHex, dx * r, yy * r, dz * r, g).scale.set(1.1, 0.72, 1.05);
+  });
   return { g };
 }
 
@@ -1330,23 +1355,23 @@ export function setScene(ctx, name, o = {}, ext = { cx: 0, cz: 0, sx: 1, sz: 1 }
     return { root, base: 0, frame: { elev: 17, azim: 26, margin: 1.14, push: 0.06, orbit: 5, headroom: 0.2 } };
   }
   if (name === 'diorama') {
-    // Futurepedia "Tiny Diorama": đảo đất cắt vát nổi trên sân khấu tối, đường mòn uốn nhẹ, cây kẹo mút, bụi, đá
+    // Tiny Diorama trưởng thành dark-mode: đảo đất đá phiến cắt vát, đường mòn trầm, cây thông kiến trúc, viền tối mềm
     const W = o.w ?? Math.max(4.4, ext.sx + 2.4), D = o.d ?? Math.max(3.2, ext.sz + 1.8), H = 0.48;
     root.position.set(o.at ? o.at[0] : ext.cx, 0, o.at ? o.at[1] : ext.cz);
     // khối đất cắt vát (cut soil-and-rock bevel slab)
     const soilT = stex(ctx, tx('dirt', seed + 1, setCol(ctx, o, 'dirt'), 64), 3, 1);
-    const slabG = fadeGeo(ctx, new THREE.BoxGeometry(W, H, D, 8, 3, 6), (x, y) => 0.42 + 0.58 * sstep(-H / 2, H / 2, y));
+    const slabG = fadeGeo(ctx, new THREE.BoxGeometry(W, H, D, 8, 3, 6), (x, y) => 0.36 + 0.62 * sstep(-H / 2, H / 2, y));
     setMesh(ctx, slabG, mapMat(soilT, 'dirt'), root, 0, -H / 2 - 0.02, 0, true);
-    // lớp cỏ xanh phủ trên mặt (bo dày kiểu mô hình đất nặn/diorama)
+    // lớp cỏ rêu đêm phủ trên mặt (có viền tối mềm hòa mượt vào không gian dark-mode)
     const grT = stex(ctx, tx('grass', seed, setCol(ctx, o, 'grass'), px), Math.max(2, Math.round(W / 1.5)), Math.max(2, Math.round(D / 1.5)));
     const topG = new THREE.BoxGeometry(W + 0.06, 0.09, D + 0.06, 10, 1, 8);
-    fadeGeo(ctx, topG, () => 0.96);
+    fadeGeo(ctx, topG, (x, y, z) => 0.96 - 0.34 * Math.max(sstep(0.36 * W, 0.52 * W, Math.abs(x)), sstep(0.36 * D, 0.52 * D, Math.abs(z))));
     setMesh(ctx, topG, mapMat(grT, 'grass'), root, 0, -0.02, 0, true);
     // lối chạy đất nén băng ngang qua giữa đảo (trail)
     if (o.trail !== false) {
       const trG = new THREE.PlaneGeometry(W * 0.98, Math.min(1.1, D * 0.36), 12, 2); trG.rotateX(-Math.PI / 2);
       const trT = stex(ctx, tx('dirt', seed + 3, setCol(ctx, o, 'trail'), 64), 4, 1);
-      fadeGeo(ctx, trG, () => 0.94);
+      fadeGeo(ctx, trG, (x) => 0.92 * (1 - 0.34 * sstep(0.36 * W, 0.5 * W, Math.abs(x))));
       setMesh(ctx, trG, mapMat(trT, 'trail'), root, 0, 0.028, 0.15);
     }
     // rải cây + bụi + đá xung quanh mép đảo (tránh vùng chạy giữa)

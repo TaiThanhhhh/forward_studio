@@ -76,8 +76,10 @@ def video_parser(prog="video"):
                                         "youtube_16x9 | all | default")
     ap.add_argument("--narrative", help="ép dạng kịch bản (countdown, timeline, myth_fact, versus…; xem: studio.py "
                                         "narratives); mặc định auto = xoay vòng theo chủ đề")
-    ap.add_argument("--captions", choices=["capcut_pop", "capcut_pill", "capcut_box", "vox_highlight", "off"],
-                    help="phụ đề burn-in kiểu CapCut (capcut_pop|capcut_pill|capcut_box|vox_highlight|off)")
+    ap.add_argument("--captions",
+                    choices=["studio_clean", "capcut_pop", "capcut_pill", "capcut_box", "vox_highlight", "off"],
+                    help="phụ đề burn-in kiểu Studio/CapCut (studio_clean|capcut_pop|capcut_pill|capcut_box|"
+                         "vox_highlight|off)")
     fl = ap.add_mutually_exclusive_group()
     fl.add_argument("--flow", dest="flow", action="store_const", const=True,
                     help="hôm nay dùng clip Flow (chỉ chọn style có Flow)")

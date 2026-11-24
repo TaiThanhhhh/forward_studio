@@ -264,6 +264,52 @@ def lint_meta(sb):
     return out
 
 
+def lint_clutter(sb):
+    """Clutter Linter (Vòng 12 — Less Is More): giới hạn mật độ vật thể & chữ on-screen mỗi shot."""
+    out = []
+    for s in sb.get("shots") or []:
+        sid = s.get("id", "?")
+        code = s.get("code") or {}
+        scene = code.get("scene")
+        params = code.get("params") or {}
+        if scene == "scene":
+            prominent = [a for a in (params.get("actors") or []) if float(a.get("z") or 0) < 1.8]
+            if len(prominent) > 4:
+                out.append(_issue(
+                    "warn", sid,
+                    f"Cảnh 2D 'scene' có {len(prominent)} actor nổi bật (> 4) — Less Is More: giữ ≤ 3 (1 Hero + 1 cơ chế).",
+                ))
+        elif scene == "stage":
+            prominent = [p for p in (params.get("props") or []) if p.get("frame") is not False]
+            if len(prominent) > 5:
+                out.append(_issue(
+                    "warn", sid,
+                    f"Cảnh 3D 'stage' có {len(prominent)} prop trong khung (> 5) — nên tinh gọn ≤ 4 để tránh rối mắt.",
+                ))
+        if scene not in ("fact", "title") and s.get("beat") != "outro":
+            clusters = []
+            for k in ("kicker", "title", "sub", "result"):
+                if params.get(k):
+                    clusters.append(str(params[k]))
+            for lb in params.get("labels") or []:
+                if isinstance(lb, dict) and lb.get("text"):
+                    clusters.append(str(lb["text"]))
+            for ov in params.get("overlay2d") or []:
+                if isinstance(ov, dict) and ov.get("text"):
+                    clusters.append(str(ov["text"]))
+            for tf in s.get("text_fx") or []:
+                if isinstance(tf, dict) and tf.get("text"):
+                    clusters.append(str(tf["text"]))
+            words = sum(len(re.findall(r"\S+", c)) for c in clusters)
+            if len(clusters) > 3 or words > 12:
+                out.append(_issue(
+                    "warn", sid,
+                    f"Quá nhiều chữ on-screen ({len(clusters)} cụm, {words} từ; chuẩn ≤ 3 cụm & ≤ 12 từ) — "
+                    "ưu tiên kể chuyện bằng hình ảnh, không lặp lại lời thoại.",
+                ))
+    return out
+
+
 def lint(sb):
     """sb phải là bản đã compile (compiler.compile_all)."""
     name, caps = compiler.video_caps(sb)
@@ -276,6 +322,7 @@ def lint(sb):
         out += lint_shot(sb, s, caps, img)
     out += lint_pacing(sb)
     out += lint_meta(sb)
+    out += lint_clutter(sb)
     out += lint_motion(sb)
     return out
 

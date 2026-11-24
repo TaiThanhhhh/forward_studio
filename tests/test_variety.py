@@ -68,17 +68,21 @@ class TestVoices(unittest.TestCase):
         self.assertIn("không có giọng", note)
 
     def test_adaptive_tempo_and_legacy(self):
-        self.assertAlmostEqual(voices.adaptive_speed(3.7), 1.0)
-        self.assertAlmostEqual(voices.adaptive_speed(3.3), round(3.7 / 3.3, 3))
-        self.assertEqual(voices.adaptive_speed(2.0), 1.15)  # giọng rất chậm: kẹp trần, không méo tiếng
-        self.assertEqual(voices.adaptive_speed(5.0), 1.0)  # không bao giờ làm chậm lại
+        from vidlib.common import channel, save_json
+
+        vc = channel()["vo"]
+        target = float(vc["target_wps"])
+        smin, smax = float(vc["speed_min"]), float(vc["speed_max"])
+        mid_wps = round(target / 1.05, 3)
+        self.assertAlmostEqual(voices.adaptive_speed(target), 1.0)
+        self.assertAlmostEqual(voices.adaptive_speed(mid_wps), round(target / mid_wps, 3))
+        self.assertEqual(voices.adaptive_speed(2.0), smax)  # giọng rất chậm: kẹp trần, không méo tiếng
+        self.assertEqual(voices.adaptive_speed(5.0), smin)  # giọng rất nhanh: kẹp sàn
         with tempfile.TemporaryDirectory() as d:
             os.makedirs(os.path.join(d, "audio"))
-            from vidlib.common import save_json
-
-            save_json(os.path.join(d, "audio", "vo_alignment.json"), {"raw_words_per_sec": 3.3})
+            save_json(os.path.join(d, "audio", "vo_alignment.json"), {"raw_words_per_sec": mid_wps})
             sp, why = voices.tempo_for(d, {"voice_resolved": {"id": "a"}}, 1.12)
-            self.assertAlmostEqual(sp, round(3.7 / 3.3, 3))
+            self.assertAlmostEqual(sp, round(target / mid_wps, 3))
             self.assertIn("atempo", why)
             self.assertEqual(voices.tempo_for(d, {"voice_resolved": {"id": "a", "legacy": True}}, 1.12), (1.12, None))
             self.assertEqual(voices.tempo_for(d, {}, 1.12), (1.12, None))  # video cũ: tốc độ cố định

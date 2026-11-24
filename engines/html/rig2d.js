@@ -101,11 +101,46 @@ function xform(prims, c, a, dx = 0, dy = 0) {
 }
 const mirror = (prims) => prims.map((p) => (p.k === 'circle' ? { ...p, x: -p.x, rot: -(p.rot || 0) } : { ...p, pts: p.pts.map((q) => [-q[0], q[1]]) }));
 
+// ---------- lõi nhiệt gắn thân (Grounded Thermal Glow, heat 0..1) ----------
+function thermalCore(cx, cy, rx, ry, heat, breath = 0) {
+  if (!(heat > 0.05)) return [];
+  const k = clamp(heat, 0, 1), pulse = 1 + breath * 0.06;
+  return [
+    E(cx, cy, rx * 0.78 * pulse, ry * 0.72 * pulse, 'hot', { fine: true, alpha: k * 0.32 }),
+    E(cx, cy, rx * 0.48 * pulse, ry * 0.46 * pulse, 'hot', { fine: true, alpha: k * 0.65 }),
+  ];
+}
+
 // ---------- mặt: mắt (lòng trắng, con ngươi, đốm sáng), mí, lông mày, miệng — theo biểu cảm + chớp mắt ----------
 // F = {eyes:[[x,y,r],…] (mắt gần trước), brow, mouth:[x,y,w], look:[dx,dy], skin (vai màu da quanh mắt)}
 function face(F, X, blink, t, o = {}) {
   const out = [], [lx, ly] = F.look || [0.25, 0];
   const closed = blink >= 1 || X === 'sniff' || o.asleep, happyEye = X === 'happy' && !o.openHappy, half = X === 'sleepy' ? 0.55 : X === 'angry' ? 0.32 : blink > 0 ? 0.6 : 0;
+  if (o.editorial) {                                   // chế độ người lớn tối giản (Vox/Fern/Kurzgesagt): không mắt tròn trắng googly + đốm sáng
+    F.eyes.forEach(([x, y, r], i) => {
+      const er = r * 0.44;
+      if (closed) {
+        out.push(tube([[x - er * 1.35, y], [x + er * 1.35, y]], er * 0.28, er * 0.28, 'bg', { fine: true }));
+        return;
+      }
+      const px = x + lx * r * 0.22, py = y + ly * r * 0.18;
+      out.push(E(px, py, er, er * (X === 'shock' ? 1.2 : 1.08), 'bg', { fine: true }));
+      if (F.brow !== false && (X === 'angry' || X === 'sad' || X === 'shock')) {
+        const inner = i === 0 ? -1 : 1, ang = { sad: -0.28, angry: 0.36, shock: -0.05 }[X] ?? 0;
+        const dy = { shock: -0.42, sad: -0.05, angry: 0.1 }[X] ?? 0;
+        const cy = y - r * 1.05 + dy * r * 1.4, w = r * 0.72, a = ang * inner * (F.browFlip ? -1 : 1);
+        out.push(tube([[x - w, cy - Math.sin(a) * w * -inner], [x + w, cy + Math.sin(a) * w * -inner]], r * 0.11, r * 0.11, F.browRole || 'bg', { fine: true, alpha: 0.82 }));
+      }
+    });
+    if (F.mouth) {
+      const [mx, my, mw] = F.mouth;
+      if (X === 'shock') out.push(E(mx, my + mw * 0.1, mw * 0.18, mw * 0.24, 'bg', { fine: true, alpha: 0.85 }));
+      else if (X === 'sad' || X === 'angry') out.push(tube([[mx - mw * 0.32, my + mw * 0.08], [mx + mw * 0.32, my - (X === 'angry' ? mw * 0.04 : 0)]], mw * 0.065, mw * 0.065, 'bg', { fine: true, alpha: 0.8 }));
+      else if (X === 'happy' || X === 'love') out.push(crescent(mx, my - mw * 0.12, mw * 0.36, mw * 0.22, 0.45, PI - 0.45, mw * 0.08, 'bg', { fine: true, alpha: 0.85 }));
+      else out.push(tube([[mx - mw * 0.26, my], [mx + mw * 0.26, my]], mw * 0.055, mw * 0.055, 'bg', { fine: true, alpha: 0.72 }));
+    }
+    return out;
+  }
   F.eyes.forEach(([x, y, r], i) => {
     const big = X === 'shock' ? 1.22 : 1;
     if (closed || happyEye) {                        // mắt nhắm (–) hoặc mắt cười (^)
@@ -158,9 +193,9 @@ const jumpY = (u) => (u < 0.18 ? sm(u / 0.18) * 0.05 : u < 0.78 ? -Math.sin((u -
 const fallK = (t) => clamp(t / 0.75);                 // ngã: 0 → 1 trong 0.75 s rồi nằm ngửa giãy chân
 
 // ================= bộ xương bốn chân =================
-function quad(S, A, X, t, ph, body, blink) {
-  const m = motion(A, t, ph), out = [], ground = 0.9;
-  const [L, Hh] = S.body, legL = S.legs, lw = S.legw, hr = S.head, belly = S.belly || body;
+function quad(S, A, X, t, ph, body, blink, opt = {}) {
+  const m = motion(A, t, ph), out = [], ground = 0.9, ed = !!opt.editorial, edHorse = ed && opt.species === 'horse';
+  const [L, Hh] = edHorse ? [0.57, 0.2] : S.body, legL = edHorse ? 0.54 : S.legs, lw = edHorse ? 0.058 : S.legw, hr = edHorse ? 0.155 : S.head, belly = S.belly || body;
   let dy = 0, pitch = 0, headDrop = 0, headRot = 0, tailBase = -0.5, tailAmp = 0.25, earSwing = 0, lie = 0, whole = 0;
   const legs = [                                     // [x hông/vai theo thân, trước?, xa?, pha]
     { x: 0.62, front: 1, far: 1, ph: 0.5 }, { x: -0.6, front: 0, far: 1, ph: 0 },
@@ -224,14 +259,15 @@ function quad(S, A, X, t, ph, body, blink) {
   if (belly !== body) torso.push(E(bx + L * 0.1, by + Hh * 0.38, L * 0.72, Hh * 0.5, belly));
   if (S.spots) torso.push(E(bx - L * 0.35, by - Hh * 0.2, L * 0.24, Hh * 0.42, S.spots, { rot: 0.4 }), E(bx + L * 0.3, by - Hh * 0.35, L * 0.18, Hh * 0.3, S.spots, { rot: -0.3 }));
   if (S.wool) for (let i = 0; i < 7; i++) torso.push(E(bx - L * 0.8 + i * L * 0.27, by - Hh * (0.75 - (i % 2) * 0.12), Hh * 0.42, Hh * 0.36, 'ink'));
+  if (opt.heat > 0.05) torso.push(...thermalCore(bx + L * 0.12, by, L * 0.68, Hh * 0.86, opt.heat, m.breath));
   P.push(...xform(torso, piv, pitch));
   P.push(...legPrims(false));
   // ---- cổ + đầu ----
-  const neckL = S.neck || 0.1, sh = rotAbout([bx + L * 0.78, by - Hh * 0.45], piv, pitch);
+  const neckL = edHorse ? 0.4 : (S.neck || 0.1), sh = rotAbout([bx + L * 0.78, by - Hh * 0.45], piv, pitch);
   let hc = [sh[0] + 0.06 + (S.neck ? neckL * 0.45 : 0), sh[1] - hr * 0.55 - neckL * 0.75 + headDrop * 1.6];
   if (headRot > 0) hc = [hc[0] + headRot * hr * 0.75, hc[1] + headRot * hr * 1.5 + legL * headRot * 0.55];
   if (lie) hc = [bx + L * 0.95, ground - hr * 0.95];
-  P.push(tube([[sh[0] - 0.05, sh[1] + 0.06], [hc[0] - hr * 0.25, hc[1] + hr * 0.2]], S.neck ? 0.1 : lw * 1.6, S.neck ? 0.085 : lw * 1.4, body));
+  P.push(tube([[sh[0] - 0.05, sh[1] + 0.06], [hc[0] - hr * 0.25, hc[1] + hr * 0.2]], edHorse ? 0.088 : S.neck ? 0.1 : lw * 1.6, edHorse ? 0.068 : S.neck ? 0.085 : lw * 1.4, body));
   if (S.mane) for (let i = 0; i < 5; i++) { const q = [lerp(sh[0] - 0.08, hc[0] - hr * 0.5, i / 4), lerp(sh[1] - 0.04, hc[1] - hr * 0.6, i / 4)]; P.push(E(q[0] - 0.03, q[1], 0.07, 0.05, 'dim', { rot: -0.9 + Math.sin(t * 3 + i) * 0.08 })); }
   if (S.lionmane) for (let i = 0; i < 12; i++) { const a = i / 12 * TAU + Math.sin(t * 2 + i) * 0.03; P.push(E(hc[0] + Math.cos(a) * hr * 1.0, hc[1] + Math.sin(a) * hr * 1.0, hr * 0.42, hr * 0.3, S.lionmane, { rot: a })); }
   const head = [], hdTilt = headRot * 0.6 + (A === 'idle' ? Math.sin(t * 0.9 + ph * 7) * 0.05 : 0) + (lie ? 0.15 : 0);
@@ -260,7 +296,7 @@ function quad(S, A, X, t, ph, body, blink) {
     head.push(E(nose[0], nose[1], hr * 0.14, hr * 0.1, S.nose || 'bg', { fine: true }));
   }
   head.push(...ear(false));
-  const fc = face({ eyes: [[hc[0] + hr * 0.44, hc[1] - hr * 0.2, hr * 0.25], [hc[0] - hr * 0.04, hc[1] - hr * 0.24, hr * 0.21]], mouth: S.disc ? [hc[0] + hr * 0.55, hc[1] + hr * 0.6, hr * 0.42] : [snc[0] + sn[0] * 0.1, snc[1] + sn[1] * 0.55, hr * 0.42], skin: S.face || body, look: [0.4, headRot > 0 ? 0.6 : 0] }, X, blink, t, { asleep: A === 'sleep', chew: A === 'eat' });
+  const fc = face({ eyes: [[hc[0] + hr * 0.44, hc[1] - hr * 0.2, hr * 0.25], [hc[0] - hr * 0.04, hc[1] - hr * 0.24, hr * 0.21]], mouth: S.disc ? [hc[0] + hr * 0.55, hc[1] + hr * 0.6, hr * 0.42] : [snc[0] + sn[0] * 0.1, snc[1] + sn[1] * 0.55, hr * 0.42], skin: S.face || body, look: [0.4, headRot > 0 ? 0.6 : 0] }, X, blink, t, { asleep: A === 'sleep', chew: A === 'eat', editorial: ed });
   head.push(...fc);
   if (S.whiskers) for (const s of [-1, 1]) head.push(tube([[snc[0] + 0.02, snc[1] + s * 0.01], [snc[0] + 0.24, snc[1] - 0.02 + s * 0.05]], 0.005, 0.003, 'ink', { fine: true }));
   P.push(...xform(head, [hc[0] - hr * 0.3, hc[1] + hr * 0.5], hdTilt));
@@ -269,7 +305,7 @@ function quad(S, A, X, t, ph, body, blink) {
 }
 
 // ================= chim =================
-function bird(S, A, X, t, ph, body, blink) {
+function bird(S, A, X, t, ph, body, blink, opt = {}) {
   const m = motion(A, t, ph), out = [], [L, Hh] = S.body, hr = S.head, ground = 0.9;
   let dy = 0, flap = Math.sin(t * TAU * 0.6 + ph * 5) * 0.15, peck = 0, legK = 1, whole = 0, tilt = 0;
   if (A === 'walk' || A === 'run') { const u = A === 'run' ? m.run : m.hop; dy = -Math.abs(Math.sin(u * PI)) * (A === 'run' ? 0.12 : 0.06); }
@@ -286,19 +322,20 @@ function bird(S, A, X, t, ph, body, blink) {
   }
   P.push(PG([[bx - L * 0.8, by - Hh * 0.1], [bx - L * 1.45, by - Hh * 0.55 + Math.sin(t * 3) * 0.02], [bx - L * 1.5, by + Hh * 0.15], [bx - L * 0.7, by + Hh * 0.3]], body, { tone: 0.15 }));
   P.push(E(bx, by, L, Hh, body, { rot: -0.12 }), E(bx + L * 0.2, by + Hh * 0.35, L * 0.6, Hh * 0.55, S.belly, { rot: -0.1 }));
+  if (opt.heat > 0.05) P.push(...thermalCore(bx, by, L * 0.72, Hh * 0.78, opt.heat, m.breath));
   const wingBase = [bx + L * 0.05, by - Hh * 0.15];
   P.push(...xform([E(wingBase[0] - L * 0.35, wingBase[1] + Hh * 0.1, L * 0.62, Hh * 0.48, body, { tone: 0.22, rot: 0.25 })], wingBase, -flap));
   const hc0 = [bx + L * 0.85, by - Hh * 0.95], hp = [hc0[0] + peck * 0.18, hc0[1] + peck * 0.42];
   const head = [E(hp[0], hp[1], hr, hr, body),
     PG([[hp[0] + hr * 0.82, hp[1] - hr * 0.22], [hp[0] + hr * 1.75, hp[1] + hr * 0.05], [hp[0] + hr * 0.82, hp[1] + hr * 0.3]], S.beak || 'accent'),
-    ...face({ eyes: [[hp[0] + hr * 0.38, hp[1] - hr * 0.2, hr * 0.3], [hp[0] - hr * 0.12, hp[1] - hr * 0.25, hr * 0.24]], brow: X === 'neutral' ? false : true, mouth: null, skin: body }, X, blink, t, { asleep: A === 'sleep' })];
+    ...face({ eyes: [[hp[0] + hr * 0.38, hp[1] - hr * 0.2, hr * 0.3], [hp[0] - hr * 0.12, hp[1] - hr * 0.25, hr * 0.24]], brow: X === 'neutral' ? false : true, mouth: null, skin: body }, X, blink, t, { asleep: A === 'sleep', editorial: !!opt.editorial })];
   P.push(...xform(head, hp, tilt));
   if (A === 'sleep') for (let i = 0; i < 3; i++) { const u = (m.sleepZ + i / 3) % 1; P.push(zee(hp[0] + 0.1 + u * 0.25, hp[1] - hr - 0.1 - u * 0.5, 0.06 + u * 0.05, 'ink', 1 - u)); }
   return whole ? xform(P, [bx, by], whole) : P;
 }
 
 // ================= cá =================
-function fish(S, A, X, t, ph, body, blink) {
+function fish(S, A, X, t, ph, body, blink, opt = {}) {
   const m = motion(A, t, ph), [L, Hh] = S.body, hr = S.head;
   const hz = { run: 3.2, walk: 1.8, cheer: 3.6, jump: 2.4 }[A] || 0.9, amp = { run: 0.35, cheer: 0.45 }[A] || 0.22;
   let dy = Math.sin(t * TAU * 0.5 + ph * 4) * 0.03, whole = Math.sin(t * TAU * 0.5 + ph) * 0.04;
@@ -311,16 +348,17 @@ function fish(S, A, X, t, ph, body, blink) {
   P.push(...xform([PG([[tailBase[0] + 0.05, by], [tailBase[0] - 0.4, by - 0.32], [tailBase[0] - 0.3, by], [tailBase[0] - 0.4, by + 0.32]], S.fins || body)], tailBase, beat));
   P.push(PG([[bx - L * 0.3, by - Hh * 0.85], [bx + L * 0.1, by - Hh * 1.45 + beat * 0.05], [bx + L * 0.35, by - Hh * 0.85]], S.fins || body, { tone: 0.15 }));
   P.push(E(bx, by, L, Hh, body), E(bx + L * 0.1, by + Hh * 0.45, L * 0.7, Hh * 0.42, S.belly));
+  if (opt.heat > 0.05) P.push(...thermalCore(bx, by, L * 0.65, Hh * 0.78, opt.heat, m.breath));
   for (let i = 0; i < 3; i++) P.push({ ...E(bx - L * 0.25 + i * 0.13, by - Hh * 0.05, 0.07, Hh * 0.55, 'bg', { alpha: 0.18 }), fine: true });
   P.push(...xform([E(bx + L * 0.15, by + Hh * 0.3, 0.14, 0.06, S.fins || body, { rot: 0.5 })], [bx + L * 0.25, by + Hh * 0.2], Math.sin(t * TAU * 2) * 0.4));
   const ex = bx + L * 0.55, ey = by - Hh * 0.2;
-  P.push(...face({ eyes: [[ex, ey, hr * 0.32]], brow: X !== 'neutral', mouth: [bx + L * 0.88, by + Hh * 0.25, hr * 0.38], skin: body, noTongue: true, look: [0.5, 0] }, X, blink, t, { asleep: A === 'sleep', chew: A === 'eat' }));
+  P.push(...face({ eyes: [[ex, ey, hr * 0.32]], brow: X !== 'neutral', mouth: [bx + L * 0.88, by + Hh * 0.25, hr * 0.38], skin: body, noTongue: true, look: [0.5, 0] }, X, blink, t, { asleep: A === 'sleep', chew: A === 'eat', editorial: !!opt.editorial }));
   if (A === 'eat' || A === 'sleep' || A === 'idle') for (let i = 0; i < 3; i++) { const u = ((t * 0.6 + ph + i / 3) % 1); P.push(E(bx + L * 1.0 + Math.sin(u * 9 + i) * 0.05, by - u * 0.9, 0.03 + u * 0.03, 0.03 + u * 0.03, 'ink', { fine: true, alpha: 1 - u, fill: false })); }
   return whole ? xform(P, [bx, by], whole) : P;
 }
 
 // ================= ếch =================
-function frog(S, A, X, t, ph, body, blink) {
+function frog(S, A, X, t, ph, body, blink, opt = {}) {
   const m = motion(A, t, ph), [L, Hh] = S.body, hr = S.head, ground = 0.9;
   let dy = 0, ext = 0, whole = 0, tongue = 0, armUp = 0, throat = (Math.sin(t * TAU * 1.6) + 1) * 0.5;
   if (A === 'walk' || A === 'run' || A === 'jump' || A === 'cheer') {
@@ -336,6 +374,7 @@ function frog(S, A, X, t, ph, body, blink) {
     P.push(tube(pts, 0.085, 0.06, body, o), E(pts[2][0] + 0.05, pts[2][1] + 0.03, 0.11, 0.045, body, o));
   }
   P.push(E(bx, by, L, Hh * (1 + Math.sin(m.breath * PI) * 0.02), body, { rot: -0.15 }), E(bx + L * 0.15, by + Hh * 0.45, L * 0.62, Hh * 0.45, S.belly, { rot: -0.1 }));
+  if (opt.heat > 0.05) P.push(...thermalCore(bx, by, L * 0.72, Hh * 0.78, opt.heat, m.breath));
   P.push(E(bx + L * 0.55, by + Hh * 0.62, 0.16 * (0.75 + throat * 0.25), 0.1 * (0.7 + throat * 0.3), S.belly, { tone: 0.12 }));
   for (const far of [1, 0]) {                      // tay trước
     const sh = [bx + L * 0.5 + (far ? -0.08 : 0), by + Hh * 0.3], hand = armUp && !far ? [sh[0] + 0.25, sh[1] - 0.35 * armUp] : [sh[0] + 0.08, ground - 0.02];
@@ -343,7 +382,7 @@ function frog(S, A, X, t, ph, body, blink) {
   }
   const ey = by - Hh * 0.85;
   for (const [x, r] of [[bx + L * 0.12, 0.13], [bx + L * 0.62, 0.15]]) P.push(E(x, ey, r, r, body));
-  P.push(...face({ eyes: [[bx + L * 0.62, ey, 0.1], [bx + L * 0.12, ey, 0.085]], mouth: null, skin: body, brow: X !== 'neutral', look: [0.3, 0] }, X, blink, t, { asleep: A === 'sleep' }));
+  P.push(...face({ eyes: [[bx + L * 0.62, ey, 0.1], [bx + L * 0.12, ey, 0.085]], mouth: null, skin: body, brow: X !== 'neutral', look: [0.3, 0] }, X, blink, t, { asleep: A === 'sleep', editorial: !!opt.editorial }));
   const mx = bx + L * 0.6, my = by - Hh * 0.05;
   P.push(crescent(mx - 0.05, my - 0.08, 0.28, 0.12, 0.25, PI - 0.6, 0.035, 'bg', { fine: true }));
   if (tongue > 0.02) P.push(tube([[mx + 0.15, my], [mx + 0.15 + tongue * 0.55, my - tongue * 0.12]], 0.03, 0.035, 'hot', { fine: true }));
@@ -352,9 +391,11 @@ function frog(S, A, X, t, ph, body, blink) {
 }
 
 // ================= người (kid/adult) =================
-function biped(S, A, X, t, ph, body, blink, opt) {
-  const m = motion(A, t, ph), hr = S.head, legL = S.legs, [tw, th] = S.body, ground = 0.9, skin = opt.skin || S.skin, pants = opt.pants || S.pants;
-  const hair = opt.hairRole || S.hair, style = opt.hair || S.style;
+function biped(S, A, X, t, ph, body, blink, opt = {}) {
+  const m = motion(A, t, ph), ed = !!opt.editorial, edAdult = ed && opt.species === 'adult';
+  const hr = edAdult ? 0.18 : (ed ? S.head * 0.9 : S.head);
+  const legL = edAdult ? 0.54 : S.legs, [tw, th] = edAdult ? [0.175, 0.335] : S.body, ground = 0.9, skin = opt.skin || S.skin, pants = opt.pants || S.pants;
+  const hair = opt.hairRole || S.hair, style = opt.hair || (edAdult ? 'short' : S.style);
   let dy = 0, lean = 0, whole = 0, legA = [0.04, -0.04], kn = [0, 0], armA = [0.12, -0.12], elb = [0.1, 0.1], headTilt = Math.sin(t * 0.8 + ph * 9) * 0.04, sit = 0, lie = 0;
   if (A === 'walk' || A === 'run') {
     const u = A === 'run' ? m.run : m.walk, amp = A === 'run' ? 0.75 : 0.38, a = u * TAU;
@@ -377,17 +418,23 @@ function biped(S, A, X, t, ph, body, blink, opt) {
   const P = [];
   const leg = (i, far) => {
     const top = [hip[0] + (i ? -0.05 : 0.05), hip[1]], pts = seg2(top, legL * 0.52, legA[i], legL * 0.52, legA[i] - kn[i]);
-    return [tube(pts, tw * 0.33, tw * 0.28, pants, { tone: far ? 0.3 : 0 }), E(pts[2][0] + 0.06, pts[2][1] + 0.02, 0.1, 0.05, 'bg', { tone: 0 }), { ...E(top[0], top[1], 0.02, 0.02, 'ink'), pin: true, fine: true }];
+    const ra = edAdult ? tw * 0.3 : tw * 0.33, rb = edAdult ? tw * 0.23 : tw * 0.28;
+    return [tube(pts, ra, rb, pants, { tone: far ? 0.3 : 0 }), E(pts[2][0] + 0.06, pts[2][1] + 0.02, edAdult ? 0.095 : 0.1, edAdult ? 0.042 : 0.05, 'bg', { tone: 0 }), { ...E(top[0], top[1], 0.02, 0.02, 'ink'), pin: true, fine: true }];
   };
   const arm = (i, far) => {
     const sh = rotAbout([0.02 * (i ? -1 : 1), hipY - th * 1.75], hip, lean), pts = seg2(sh, th * 0.75, armA[i], th * 0.72, armA[i] + elb[i] * (armA[i] >= 0 ? 1 : -1));
-    const out = [tube(pts, tw * 0.24, tw * 0.2, body, { tone: far ? 0.38 : 0.16 }), E(pts[2][0], pts[2][1], tw * 0.26, tw * 0.26, skin, { tone: far ? 0.3 : 0 }), { ...E(sh[0], sh[1], 0.02, 0.02, 'ink'), pin: true, fine: true }];
+    const ra = edAdult ? tw * 0.22 : tw * 0.24, rb = edAdult ? tw * 0.17 : tw * 0.2;
+    const out = [tube(pts, ra, rb, body, { tone: far ? 0.38 : 0.16 }), E(pts[2][0], pts[2][1], edAdult ? tw * 0.22 : tw * 0.26, edAdult ? tw * 0.22 : tw * 0.26, skin, { tone: far ? 0.3 : 0 }), { ...E(sh[0], sh[1], 0.02, 0.02, 'ink'), pin: true, fine: true }];
     if (A === 'point' && i === 0) out.push(tube([pts[2], [pts[2][0] + Math.sin(armA[0]) * 0.12, pts[2][1] + Math.cos(armA[0]) * 0.12]], 0.025, 0.02, skin));
     return out;
   };
   P.push(...arm(1, true), ...leg(1, true), ...leg(0, false));
-  const torso = PG([[-tw * 0.95, hipY - th * 1.95], [tw * 0.95, hipY - th * 1.95], [tw * 1.05, hipY + 0.02], [-tw * 1.05, hipY + 0.02]], body);
-  P.push(...xform([torso, E(0, hipY, tw * 1.05, tw * 0.45, pants)], hip, lean));
+  const torso = edAdult
+    ? PG([[-tw * 1.06, hipY - th * 1.98], [tw * 1.06, hipY - th * 1.98], [tw * 0.86, hipY + 0.02], [-tw * 0.86, hipY + 0.02]], body)
+    : PG([[-tw * 0.95, hipY - th * 1.95], [tw * 0.95, hipY - th * 1.95], [tw * 1.05, hipY + 0.02], [-tw * 1.05, hipY + 0.02]], body);
+  const torsoGrp = [torso, E(0, hipY, edAdult ? tw * 0.92 : tw * 1.05, tw * 0.42, pants)];
+  if (opt.heat > 0.05) torsoGrp.push(...thermalCore(0, hipY - th * 1.05, tw * 0.92, th * 0.72, opt.heat, m.breath));
+  P.push(...xform(torsoGrp, hip, lean));
   const hc = [neck[0] + Math.sin(lean) * hr * 0.6, neck[1] - hr * 0.82 + Math.sin(m.breath * PI) * 0.004];
   const H = [];
   if (style === 'long') H.push(PG([[hc[0] - hr * 1.02, hc[1] - hr * 0.2], [hc[0] + hr * 0.7, hc[1] - hr * 0.3], [hc[0] + hr * 0.2, hc[1] + hr * 1.25], [hc[0] - hr * 1.05, hc[1] + hr * 1.2 + Math.sin(t * 2) * 0.01]], hair));
@@ -398,8 +445,8 @@ function biped(S, A, X, t, ph, body, blink, opt) {
   if (style === 'curly') for (let i = 0; i < 9; i++) { const a = PI + 0.1 + i / 8 * (PI - 0.2); H.push(E(hc[0] + Math.cos(a) * hr * 0.92, hc[1] + Math.sin(a) * hr * 0.92, hr * 0.32, hr * 0.32, hair)); }
   else if (style === 'cap') H.push(PG([...Array.from({ length: 11 }, (_, i) => { const a = PI + i / 10 * PI; return [hc[0] + Math.cos(a) * hr * 1.03, hc[1] - hr * 0.12 + Math.sin(a) * hr * 1.0]; })], hair), PG([[hc[0] + hr * 0.6, hc[1] - hr * 0.2], [hc[0] + hr * 1.55, hc[1] - hr * 0.1], [hc[0] + hr * 0.9, hc[1] - hr * 0.35]], hair, { tone: 0.2 }));
   else if (style !== 'bald') H.push(PG([...Array.from({ length: 11 }, (_, i) => { const a = PI + 0.05 + i / 10 * (PI - 0.1); return [hc[0] + Math.cos(a) * hr * 1.06, hc[1] + Math.sin(a) * hr * 1.06]; }), [hc[0] + hr * 0.5, hc[1] - hr * 0.42], [hc[0] - hr * 0.2, hc[1] - hr * 0.5], [hc[0] - hr * 0.9, hc[1] + hr * 0.1]], hair));
-  H.push(...face({ eyes: [[hc[0] + hr * 0.42, hc[1] + hr * 0.02, hr * 0.19], [hc[0] - hr * 0.16, hc[1] + hr * 0.0, hr * 0.16]], mouth: [hc[0] + hr * 0.2, hc[1] + hr * 0.5, hr * 0.4], skin, look: [0.5, A === 'sniff' ? 0.5 : 0] }, X, blink, t, { asleep: A === 'sleep', chew: A === 'eat' }));
-  H.push(E(hc[0] + hr * 0.66, hc[1] + hr * 0.28, hr * 0.09, hr * 0.07, skin, { tone: 0.25, fine: true }));
+  H.push(...face({ eyes: [[hc[0] + hr * 0.42, hc[1] + hr * 0.02, hr * 0.19], [hc[0] - hr * 0.16, hc[1] + hr * 0.0, hr * 0.16]], mouth: [hc[0] + hr * 0.2, hc[1] + hr * 0.5, hr * 0.4], skin, look: [0.5, A === 'sniff' ? 0.5 : 0] }, X, blink, t, { asleep: A === 'sleep', chew: A === 'eat', editorial: ed }));
+  if (!ed) H.push(E(hc[0] + hr * 0.66, hc[1] + hr * 0.28, hr * 0.09, hr * 0.07, skin, { tone: 0.25, fine: true }));
   P.push(...xform(H, [hc[0], hc[1] + hr], headTilt));
   P.push(...arm(0, false));
   let out = P;
@@ -423,10 +470,18 @@ export function rigPrims(name, o = {}) {
   const f = (o.f ?? 0) - (a.t0 ? a.t0 * fps : 0), t = Math.max(0, f) / fps;
   const blink = blinkAt(Math.round(f), seed);
   const body = (a.colors && a.colors.body) || o.role || S.role;
-  let prims = PLAN_FN[S.plan](S, action, expr, t, ph, body, blink, { hair: a.hair || r.hair, skin: a.colors?.skin, pants: a.colors?.pants, hairRole: a.colors?.hair });
+  const editorial = Boolean(
+    a.editorial ?? o.editorial ?? (o.look && o.look.rig && o.look.rig.editorial)
+      ?? (a.style === 'editorial' || o.style === 'editorial' || a.face === 'editorial')
+  );
+  const heat = clamp(Number(a.heat ?? o.heat ?? 0) || 0, 0, 1);
+  let prims = PLAN_FN[S.plan](S, action, expr, t, ph, body, blink, {
+    species: sp, hair: a.hair || r.hair, skin: a.colors?.skin, pants: a.colors?.pants,
+    hairRole: a.colors?.hair, editorial, heat,
+  });
   if (a.colors) prims = prims.map((p) => (a.colors[p.role] ? { ...p, role: a.colors[p.role] } : p));
-  const face = a.face || r.face;
-  return face === 'left' ? mirror(prims) : prims;
+  const faceDir = a.face === 'editorial' ? r.face : (a.face || r.face);
+  return faceDir === 'left' ? mirror(prims) : prims;
 }
 export const isRig = (name) => typeof name === 'string' && name.trim().toLowerCase().startsWith('rig:');
 export const RIG_NAMES = Object.keys(SPECIES);

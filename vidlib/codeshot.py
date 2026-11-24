@@ -116,14 +116,39 @@ def suggest(shot):
                   if hit else "")
 
 
-def world(style):
-    st = textstyle.load_style(style)
-    base = textstyle.load_style("forward")
-    if st.get("world"):
-        return st["world"], st.get("cast_palette") or base.get("cast_palette") or {}
-    import copy  # noqa: PLC0415
-    w = copy.deepcopy(base.get("world") or {})
-    cp = copy.deepcopy(base.get("cast_palette") or {})
+CARTOON_LOOKS = (
+    "retro90",
+    "psx",
+    "comic",
+    "story",
+    "cutout",
+    "pixel16",
+    "sprite8",
+    "paper_cutout",
+    "sticker",
+)
+
+
+def character_style_of(style, st=None):
+    """'cartoon' cho style hoạt hình/retro; mặc định 'editorial' cho các style người lớn (Vox/Flat/Swiss/HUD/Clay...)."""
+    st = st if st is not None else textstyle.load_style(style)
+    explicit = st.get("character_style") or (st.get("world") or {}).get("character_style")
+    if explicit in ("editorial", "cartoon"):
+        return explicit
+    sid = str(style or "").lower()
+    html_look = str((st.get("html") or {}).get("look") or "").lower()
+    l3d_raw = (st.get("world") or {}).get("look3d")
+    l3d = str(l3d_raw.get("kind") if isinstance(l3d_raw, dict) else (l3d_raw or "")).lower()
+    if html_look in CARTOON_LOOKS or l3d in CARTOON_LOOKS:
+        return "cartoon"
+    if any(tok in sid for tok in (*CARTOON_LOOKS, "paper-cutout", "cartoon")):
+        return "cartoon"
+    return "editorial"
+
+
+def design_system_of(style, st=None, world_colors=None):
+    """Bảng token nhận diện chung (Shared Visual Identity) để đồng bộ nhân vật & môi trường giữa 2D, 2.5D và 3D."""
+    st = st if st is not None else textstyle.load_style(style)
     html_cfg = st.get("html") or {}
     pal = html_cfg.get("palette") or st.get("palette") or {}
     look = html_cfg.get("look", "flat")
@@ -132,18 +157,64 @@ def world(style):
         look, {"hot": "a", "cold": "b", "accent": "a" if look in ("hud", "boil", "sticker", "swiss", "picto") else "c"}
     )
     roles = {**def_roles, **(html_cfg.get("roles") or {})}
-    ink = pal.get("ink") or "#FFFFFF"
-    acc = pal.get(roles["accent"]) or pal.get("a") or "#1849F7"
-    hot = pal.get(roles["hot"]) or pal.get("a") or "#FF3B30"
-    cold = pal.get(roles["cold"]) or pal.get("b") or acc
+    wc = world_colors or (st.get("world") or {}).get("colors") or {}
+    ink = pal.get("ink") or wc.get("white") or "#ECEAE2"
+    acc = pal.get(roles["accent"]) or wc.get("accent") or pal.get("a") or "#E8B84B"
+    hot = pal.get(roles["hot"]) or wc.get("danger") or pal.get("a") or "#DF4B3C"
+    cold = pal.get(roles["cold"]) or wc.get("water") or pal.get("b") or acc
+    ds_ov = st.get("design_system") or {}
+    char_style = character_style_of(style, st)
+    return {
+        "character_style": char_style,
+        "actor_a": ds_ov.get("actor_a") or cold,
+        "actor_b": ds_ov.get("actor_b") or acc,
+        "actor_neutral": ds_ov.get("actor_neutral") or ink,
+        "heat_glow": ds_ov.get("heat_glow") or "#E8523A",
+        "hot": hot,
+        "env_ground": ds_ov.get("env_ground") or "#2B4C3B",
+        "env_foliage": ds_ov.get("env_foliage") or "#284A39",
+        "env_track": ds_ov.get("env_track") or "#943F30",
+    }
+
+
+def world(style):
+    import copy  # noqa: PLC0415
+
+    st = textstyle.load_style(style)
+    base = textstyle.load_style("forward")
+    if st.get("world"):
+        w = copy.deepcopy(st["world"])
+        cp = copy.deepcopy(st.get("cast_palette") or base.get("cast_palette") or {})
+    else:
+        w = copy.deepcopy(base.get("world") or {})
+        cp = copy.deepcopy(base.get("cast_palette") or {})
+        html_cfg = st.get("html") or {}
+        pal = html_cfg.get("palette") or st.get("palette") or {}
+        look = html_cfg.get("look", "flat")
+        def_roles = {"zoom": {"hot": "c", "cold": "b", "accent": "a"},
+                     "flow": {"hot": "b", "cold": "ink", "accent": "a"}}.get(
+            look, {"hot": "a", "cold": "b", "accent": "a" if look in ("hud", "boil", "sticker", "swiss", "picto") else "c"}
+        )
+        roles = {**def_roles, **(html_cfg.get("roles") or {})}
+        ink = pal.get("ink") or "#FFFFFF"
+        acc = pal.get(roles["accent"]) or pal.get("a") or "#1849F7"
+        hot = pal.get(roles["hot"]) or pal.get("a") or "#FF3B30"
+        cold = pal.get(roles["cold"]) or pal.get("b") or acc
+        c = w.setdefault("colors", {})
+        c.update({"white": ink, "chalk": ink, "label": ink, "dial": ink, "accent": acc, "accent_glow": acc,
+                  "danger": hot, "water": cold})
+        c.setdefault("orange", "#FF9A3D")
+        w.setdefault("ink", {}).update({"color": "#000000", "rim": ink})
+        w.setdefault("lights", {})["rim"] = 2.0
+        cp.update({"body": ink, "accent": acc, "rim": ink})
+        cp = st.get("cast_palette") or cp
+    ds = design_system_of(style, st, w.get("colors"))
+    w["character_style"] = ds["character_style"]
+    w["design_system"] = ds
     c = w.setdefault("colors", {})
-    c.update({"white": ink, "chalk": ink, "label": ink, "dial": ink, "accent": acc, "accent_glow": acc,
-              "danger": hot, "water": cold})
-    c.setdefault("orange", "#FF9A3D")
-    w.setdefault("ink", {}).update({"color": "#000000", "rim": ink})
-    w.setdefault("lights", {})["rim"] = 2.0
-    cp.update({"body": ink, "accent": acc, "rim": ink})
-    return w, st.get("cast_palette") or cp
+    for tok in ("actor_a", "actor_b", "actor_neutral", "heat_glow"):
+        c.setdefault(tok, ds[tok])
+    return w, cp
 
 
 def font_entry(style):
@@ -245,6 +316,14 @@ def meta(job_path):
 
 def text_crops(job_path, frames):
     return _job_engine(job_path).text_crops(job_path, frames)
+
+
+def text_audit(job_path, frames):
+    eng = _job_engine(job_path)
+    fn = getattr(eng, "text_audit", None)
+    if callable(fn):
+        return fn(job_path, frames)
+    return {"crops": eng.text_crops(job_path, frames), "overlaps": [], "boxes": []}
 
 
 def frames_dir(proj, sid):

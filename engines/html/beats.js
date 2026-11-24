@@ -5,20 +5,47 @@
 const hd = (P) => ({ kicker: P.kicker, title: P.title, index: P.index, size: P.title_size });
 const names = (...xs) => xs.filter((x) => x !== undefined && x !== null && x !== '').map(String);
 const bob = (c, seed = 0, a = 8) => Math.sin((c.f + seed * 17) * 0.09) * a;      // trôi nhẹ liên tục (không frame nào đứng yên)
+const hasHdr = (P) => !!(P.title || P.kicker || P.index);
+function drawHeader(c, P, k, minimal = false) {
+  if (!hasHdr(P)) return c.A.top;
+  if (minimal && !P.title && !P.index && P.kicker) {
+    c.g.save(); c.g.globalAlpha *= 0.55;
+    const kb = c.text(P.kicker, c.A.cx, c.A.top + 28, { size: 24, font: 'mono', role: 'dim', k, enter: 'type', weight: 600 });
+    c.g.restore();
+    return kb.y1 + 16;
+  }
+  return c.K.header(c, hd(P), k);
+}
+function fitText(c, str, x, sizes, o = {}) {
+  let pick = null;
+  for (const size of sizes) {
+    const b = c.text(str, x, 0, { ...o, size, k: 0 });
+    pick = { size, b, h: b.y1 - b.y0 };
+    if (!o.maxH || pick.h <= o.maxH) return pick;
+  }
+  return pick;
+}
+const tagY = (c, y) => Math.min(c.A.bottom - 36, y);
 
 // ================= BIẾN THỂ BỐ CỤC (P.layout; Python chọn và xoay vòng theo video — engines/html/__init__.py LAYOUTS) =================
 function titleLeft(c0, P) {                           // chữ lớn căn trái, vật khổng lồ tràn mép phải-dưới
   return {
     cues: [{ f: 1, name: 'whoosh_soft' }, { f: 9, name: 'pop' }], texts: names(P.kicker, P.title, P.sub),
     draw(c) {
-      const x0 = c.A.x0 + 10, s = 310, ix = c.W - 195, iy = 1280 + bob(c, 1, 10);
+      const x0 = c.A.x0 + 10, spanH = c.A.bottom - c.A.top;
+      const s = Math.min(280, spanH * 0.27), ix = c.W - 195, iy = Math.min(c.A.bottom - s * 0.65, 1120) + bob(c, 1, 10);
       if (P.icon) {
         if (P.icon_role === 'hot') c.K.halo(c, ix, iy, s * 0.8);
         c.enter(c.k(5, 12), [ix - s, iy - s, 2 * s, 2 * s], () => c.icon(P.icon, { x: ix, y: iy, s, role: P.icon_role, p: P.icon_p ?? 0.6, rot: Math.sin(c.f * 0.02) * 0.06 }));
       }
-      if (P.kicker) c.text(P.kicker, x0, c.A.top + 60, { size: 36, font: 'mono', role: 'dim', align: 'left', k: c.k(1, 8), enter: 'type', weight: 600 });
-      const b = c.text(P.title, x0, c.A.top + 230, { size: 132, align: 'left', k: c.k(2, 12), maxW: 760, lh: 1.0 });
-      if (P.sub) c.text(P.sub, x0, b.y1 + 120, { size: 58, align: 'left', role: 'accent', k: c.k(12, 10), maxW: P.icon ? 500 : 760 });
+      if (P.kicker) c.text(P.kicker, x0, c.A.top + 42, { size: 32, font: 'mono', role: 'dim', align: 'left', k: c.k(1, 8), enter: 'type', weight: 600 });
+      const topY = c.A.top + (P.kicker ? 96 : 36), subMaxW = P.icon ? 500 : 760;
+      const sf = P.sub ? fitText(c, P.sub, x0, [54, 46, 40], { align: 'left', maxW: subMaxW, maxH: 180 }) : null;
+      const maxTitleH = Math.max(200, c.A.bottom - 36 - topY - (sf ? sf.h + 56 : 20));
+      const tf = fitText(c, P.title, x0, [124, 106, 90, 76, 64], { align: 'left', maxW: 760, lh: 1.02, maxH: maxTitleH });
+      const ty = topY + 24 - tf.b.y0;
+      const b = c.text(P.title, x0, ty, { size: tf.size, align: 'left', k: c.k(2, 12), maxW: 760, lh: 1.02 });
+      if (P.sub && sf) c.text(P.sub, x0, Math.min(c.A.bottom - 36 - sf.b.y1, b.y1 + 48 - sf.b.y0), { size: sf.size, align: 'left', role: 'accent', k: c.k(12, 10), maxW: subMaxW });
     },
   };
 }
@@ -26,14 +53,16 @@ function titleHero(c0, P) {                           // vật chiếm gần h�
   return {
     cues: [{ f: 1, name: 'whoosh' }, { f: 12, name: 'hit', kick: 0.5 }], texts: names(P.kicker, P.title, P.sub),
     draw(c) {
-      const s = 380 * (1 + 0.04 * Math.sin(c.f * 0.06)), cy = 770;
+      const topY = c.A.top + (P.kicker ? 76 : 24), spanH = c.A.bottom - topY;
+      const s = Math.min(340, spanH * 0.34) * (1 + 0.04 * Math.sin(c.f * 0.06)), cy = topY + spanH * 0.42;
       if (P.icon) c.enter(c.k(1, 14), [c.A.cx - s, cy - s, 2 * s, 2 * s], () => c.icon(P.icon, { x: c.A.cx, y: cy, s, role: P.icon_role, p: P.icon_p ?? 0.6, alpha: 0.9 }), 'pop');
-      if (P.kicker) c.text(P.kicker, c.A.cx, c.A.top + 30, { size: 36, font: 'mono', role: 'dim', k: c.k(1, 8), enter: 'type', weight: 600 });
-      // tiêu đề xuống nhiều dòng → đẩy cả khối lên (đo trước bằng k=0, không vẽ) thay vì để nhãn phụ kẹp ở 1460 đè lên chữ
-      const TO = { size: 120, maxW: 900, enter: 'slam' }, m = c.text(P.title, c.A.cx, 1300, { ...TO, k: 0 });
-      const lift = P.sub && m ? Math.max(0, m.y1 + 115 - 1460) : 0;
-      const b = c.text(P.title, c.A.cx, 1300 - lift, { ...TO, k: c.k(10, 12) });
-      if (P.sub) c.K.tag(c, P.sub, c.A.cx, Math.min(1460, (m ? m.y1 - lift : b.y1) + 115), c.k(16, 10));
+      if (P.kicker) c.text(P.kicker, c.A.cx, c.A.top + 32, { size: 32, font: 'mono', role: 'dim', k: c.k(1, 8), enter: 'type', weight: 600 });
+      const subRes = P.sub ? 112 : 24, maxTH = Math.max(160, spanH * 0.48);
+      const tf = fitText(c, P.title, c.A.cx, [112, 96, 82, 70], { maxW: 900, lh: 1.04, maxH: maxTH });
+      const baseY = c.A.bottom - 36 - subRes - tf.b.y1;
+      const ty = Math.max(topY + 20 - tf.b.y0, baseY);
+      const b = c.text(P.title, c.A.cx, ty, { size: tf.size, maxW: 900, lh: 1.04, enter: 'slam', k: c.k(10, 12) });
+      if (P.sub) c.K.tag(c, P.sub, c.A.cx, tagY(c, b.y1 + 88), c.k(16, 10));
     },
   };
 }
@@ -44,18 +73,23 @@ function counterGiant(c0, P) {                        // một con số khổng 
     cues: [...Array.from({ length: Math.min(10, Math.floor((f1 - f0) / 3)) }, (_, i) => ({ f: f0 + i * 3, name: 'tick' })), { f: f1, name: 'hit', kick: 0.8 }],
     texts: names(P.title, final, P.unit, P.label),
     draw(c) {
-      const yb = c.K.header(c, hd(P), c.k(1, 10)), cy = Math.max(1000, yb + 520), k = c.clamp((c.f - f0) / (f1 - f0)), e = c.EASE.out(k), landed = c.f >= f1;
+      const yb = drawHeader(c, P, c.k(1, 10)), k = c.clamp((c.f - f0) / (f1 - f0)), e = c.EASE.out(k), landed = c.f >= f1;
       const txt = landed ? final : `${P.prefix || ''}${c.fmtNum(c.lerp(from, to, e), dec)}${P.suffix || ''}`;
-      const sc = landed ? 1 + Math.max(0, 1 - (c.f - f1) / 8) * 0.18 : 0.92 + 0.08 * e;
-      c.g.save(); c.g.translate(c.A.cx, cy - 80); c.g.scale(sc, sc); c.g.rotate(landed ? 0 : (1 - e) * -0.05); c.g.translate(-c.A.cx, -(cy - 80));
-      c.text(txt, c.A.cx, cy, { size: final.length > 5 ? 230 : 330, quiet: !landed, enter: 'none', maxW: 940, track: -0.02, weight: 900 });
+      const botNeed = 68 + (P.unit ? 92 : 0) + (P.label ? 104 : 0) + 36;
+      const avail = Math.max(160, c.A.bottom - botNeed - yb - 24);
+      const numSize = Math.min(final.length > 5 ? 210 : 280, Math.max(116, avail * 0.78));
+      const cy = yb + 24 + numSize * 0.84 + Math.max(0, (avail - numSize * 1.06) * 0.48);
+      const sc = landed ? 1 + Math.max(0, 1 - (c.f - f1) / 8) * 0.16 : 0.92 + 0.08 * e;
+      c.g.save(); c.g.translate(c.A.cx, cy - numSize * 0.3); c.g.scale(sc, sc); c.g.rotate(landed ? 0 : (1 - e) * -0.05); c.g.translate(-c.A.cx, -(cy - numSize * 0.3));
+      const nb = c.text(txt, c.A.cx, cy, { size: numSize, quiet: !landed, enter: 'none', maxW: 940, track: -0.02, weight: 900 });
       c.g.restore();
-      const bw = 760, bx = c.A.cx - bw / 2;
-      c.g.fillStyle = c.col('dim'); c.g.fillRect(bx, cy + 90, bw, 10);
-      c.g.fillStyle = c.col(P.role || 'hot'); c.g.fillRect(bx, cy + 90, bw * Math.max(0.01, e), 10);
-      if (P.icon) c.icon(P.icon, { x: bx + bw * e, y: cy + 95, s: 44, role: P.icon_role || 'accent', p: e });
-      if (P.unit) c.text(P.unit, c.A.cx, cy + 230, { size: 72, role: 'accent', k: c.k(6, 8) });
-      if (P.label) c.K.tag(c, P.label, c.A.cx, cy + 380, c.k(f1 + 4, 9));
+      const bw = 760, bx = c.A.cx - bw / 2, barY = nb.y1 + 26;
+      c.g.fillStyle = c.col('dim'); c.g.fillRect(bx, barY, bw, 10);
+      c.g.fillStyle = c.col(P.role || 'hot'); c.g.fillRect(bx, barY, bw * Math.max(0.01, e), 10);
+      if (P.icon) c.icon(P.icon, { x: bx + bw * e, y: barY + 5, s: 40, role: P.icon_role || 'accent', p: e });
+      let curY = barY + 24;
+      if (P.unit) { const ub = c.text(P.unit, c.A.cx, curY + 58, { size: 58, role: 'accent', k: c.k(6, 8), maxW: 820 }); curY = ub.y1; }
+      if (P.label) c.K.tag(c, P.label, c.A.cx, tagY(c, curY + 82), c.k(f1 + 4, 9));
     },
   };
 }
@@ -65,16 +99,18 @@ function counterBar(c0, P) {                          // cột dâng như mực 
   return {
     cues: [{ f: f0, name: 'riser' }, { f: f1, name: 'ding', kick: 0.6 }], texts: names(P.title, final, P.unit, P.label),
     draw(c) {
-      const yb = c.K.header(c, hd(P), c.k(1, 10)), base = 1200, Hmax = Math.min(540, base - yb - 200), k = c.clamp((c.f - f0) / (f1 - f0)), e = c.EASE.out(k);
-      const v = c.lerp(from, to, e), h = Hmax * Math.abs(v) / top * (0.25 + 0.75) + 6, x = c.A.cx - 120, w = 240, landed = c.f >= f1;
+      const yb = drawHeader(c, P, c.k(1, 10)), botNeed = (P.icon ? 96 : 16) + (P.unit ? 74 : 0) + (P.label ? 96 : 0) + 36;
+      const base = Math.min(c.A.bottom - botNeed, 1160), Hmax = Math.max(170, Math.min(480, base - yb - 150));
+      const k = c.clamp((c.f - f0) / (f1 - f0)), e = c.EASE.out(k);
+      const v = c.lerp(from, to, e), h = Hmax * Math.abs(v) / top * (0.25 + 0.75) + 6, x = c.A.cx - 115, w = 230, landed = c.f >= f1;
       c.g.fillStyle = c.col('dim'); c.g.globalAlpha = 0.35; c.g.fillRect(x, base - Hmax, w, Hmax); c.g.globalAlpha = 1;
       const wav = (i) => Math.sin(c.f * 0.25 + i * 0.9) * 8 * (1 - (landed ? Math.min(1, (c.f - f1) / 20) : 0));
       c.draw([{ k: 'poly', pts: [[x, base], [x, base - h + wav(0)], [x + w * 0.33, base - h + wav(1)], [x + w * 0.66, base - h + wav(2)], [x + w, base - h + wav(3)], [x + w, base]], role: P.role || 'cold' }], { s: 1, plain: true });
-      c.text(landed ? final : `${P.prefix || ''}${c.fmtNum(v, dec)}${P.suffix || ''}`, c.A.cx, base - h - 40, { size: 120, quiet: !landed, enter: 'none', maxW: 820 });
-      if (P.icon) c.icon(P.icon, { x: c.A.cx, y: base + 78, s: 54, role: P.icon_role, p: e });
-      const uy = base + (P.icon ? 185 : 85);
-      if (P.unit) c.text(P.unit, c.A.cx, uy, { size: 56, role: 'accent', k: c.k(6, 8), maxW: 760 });
-      if (P.label) c.K.tag(c, P.label, c.A.cx, uy + (P.unit ? 110 : 40), c.k(f1 + 4, 9));
+      c.text(landed ? final : `${P.prefix || ''}${c.fmtNum(v, dec)}${P.suffix || ''}`, c.A.cx, Math.max(yb + 108, base - h - 32), { size: 108, quiet: !landed, enter: 'none', maxW: 820 });
+      let y = base;
+      if (P.icon) { c.icon(P.icon, { x: c.A.cx, y: y + 54, s: 44, role: P.icon_role, p: e }); y += 96; }
+      if (P.unit) { const ub = c.text(P.unit, c.A.cx, y + 60, { size: 52, role: 'accent', k: c.k(6, 8), maxW: 760 }); y = ub.y1; }
+      if (P.label) c.K.tag(c, P.label, c.A.cx, tagY(c, y + 78), c.k(f1 + 4, 9));
     },
   };
 }
@@ -90,43 +126,47 @@ function compareSplit(c0, P) {                        // màn hình chia đôi: 
     cues: [{ f: 3, name: 'whoosh' }, { f: 12, name: 'pop' }, { f: 20, name: 'pop' }, { f: 32, name: 'hit', kick: 0.6 }],
     texts: names(P.title, l.label, r.label, lab(l), lab(r), P.result),
     draw(c) {
-      c.K.header(c, hd(P), c.k(1, 10));
-      const kd = c.EASE.out(c.k(3, 12)), mx = c.A.cx, y0 = 540, y1 = 1360;
-      c.g.save(); c.g.strokeStyle = c.col('ink'); c.g.lineWidth = 4; c.g.beginPath(); c.g.moveTo(mx + 60, y0 + (y1 - y0) * (1 - kd)); c.g.lineTo(mx - 60, y1); c.g.stroke(); c.g.restore();
-      [[l, mx - 250, 'l', 12], [r, mx + 250, 'r', 20]].forEach(([o, x, side, f0]) => {
-        const k = c.k(f0, 12), s = 165 * (side === win ? 1.12 : 0.95), y = 880 + bob(c, f0, 9);
+      const yb = drawHeader(c, P, c.k(1, 10)), kd = c.EASE.out(c.k(3, 12)), mx = c.A.cx;
+      const y0 = Math.max(yb + 26, c.A.top + 36), y1 = c.A.bottom - (P.result ? 102 : 24);
+      const availH = Math.max(190, y1 - y0 - 155), sBase = Math.min(148, availH * 0.42), cy = y0 + availH * 0.5;
+      c.g.save(); c.g.strokeStyle = c.col('ink'); c.g.lineWidth = 4; c.g.beginPath(); c.g.moveTo(mx + 50, y0 + (y1 - y0) * (1 - kd)); c.g.lineTo(mx - 50, y1); c.g.stroke(); c.g.restore();
+      [[l, mx - 245, 'l', 12], [r, mx + 245, 'r', 20]].forEach(([o, x, side, f0]) => {
+        const k = c.k(f0, 12), s = sBase * (side === win ? 1.1 : 0.94), y = cy + bob(c, f0, 8);
         c.enter(k, [x - s, y - s, 2 * s, 2 * s], () => c.icon(o.icon || 'dot', { x, y, s, role: o.role || (side === win ? 'hot' : 'cold'), p: o.p ?? 0.6 }), 'pop');
-        if (lab(o)) c.text(lab(o), x, y + s + 100, { size: 70, k: c.k(f0 + 6, 8), role: side === win ? 'accent' : 'ink', maxW: 420 });
-        if (o.label) c.K.label(c, o.label, x, y + s + 185, c.k(f0 + 8, 8), { align: 'center', maxW: 400 });
+        let ty = cy + sBase * 1.1 + 66;
+        if (lab(o)) { const vb = c.text(lab(o), x, Math.min(y1 - (o.label ? 68 : 16), ty), { size: 58, k: c.k(f0 + 6, 8), role: side === win ? 'accent' : 'ink', maxW: 410 }); ty = vb.y1 + 54; }
+        if (o.label) c.K.label(c, o.label, x, Math.min(y1 - 12, ty), c.k(f0 + 8, 8), { align: 'center', maxW: 390, size: 42 });
       });
-      if (P.vs) { const k = c.k(26, 6); c.enter(k, [mx - 80, 800, 160, 160], () => c.draw([{ k: 'circle', x: 0, y: 0, r: 1, role: 'bg' }, { k: 'circle', x: 0, y: 0, r: 1, role: 'ink', fill: false }], { x: mx, y: 880, s: 70 }), 'pop');
-        c.text(P.vs, mx, 902, { size: 50, k, enter: 'none', font: 'mono', quiet: true }); }
-      if (P.result) c.K.tag(c, P.result, mx, 1435, c.k(32, 9));
+      if (P.vs) { const k = c.k(26, 6); c.enter(k, [mx - 70, cy - 70, 140, 140], () => c.draw([{ k: 'circle', x: 0, y: 0, r: 1, role: 'bg' }, { k: 'circle', x: 0, y: 0, r: 1, role: 'ink', fill: false }], { x: mx, y: cy, s: 62 }), 'pop');
+        c.text(P.vs, mx, cy + 18, { size: 46, k, enter: 'none', font: 'mono', quiet: true }); }
+      if (P.result) c.K.tag(c, P.result, mx, tagY(c, y1 + 64), c.k(32, 9));
     },
   };
 }
 function compareBalance(c0, P) {                      // cân đòn: hai vật trên hai đĩa, cân nghiêng về bên nặng hơn
   const l = P.left || {}, r = P.right || {}, lv = Number(l.value) || 0, rv = Number(r.value) || 0;
   const lab = (o) => (o.value !== undefined ? `${c0.fmtNum(o.value, decOf(o, P))}${o.unit ? ' ' + o.unit : ''}` : '');
-  const tilt = Math.max(-0.32, Math.min(0.32, (rv - lv) / Math.max(lv, rv, 1e-9) * 0.4));
+  const tilt = Math.max(-0.28, Math.min(0.28, (rv - lv) / Math.max(lv, rv, 1e-9) * 0.36));
   return {
     cues: [{ f: 8, name: 'thunk' }, { f: 16, name: 'thunk' }, { f: 26, name: 'creak', kick: 0.4 }], texts: names(P.title, l.label, r.label, lab(l), lab(r), P.result),
     draw(c) {
-      c.K.header(c, hd(P), c.k(1, 10));
-      const kt = c.k(22, 22, false), wob = Math.sin(c.f * 0.35) * 0.06 * Math.max(0, 1 - (c.f - 22) / 30) * (c.f > 22 ? 1 : 0);
-      const a = tilt * c.EASE.spring(kt) + wob, px = c.A.cx, py = 820, arm = 330;
-      c.draw([{ k: 'line', pts: [[px, py], [px, 1290]], role: 'dim', w: 1.2 }, { k: 'poly', pts: [[px - 26, py + 4], [px + 26, py + 4], [px, py - 34]], role: 'accent' },
-              { k: 'rect', x: px - 130, y: 1280, w: 260, h: 26, rad: 8, role: 'dim' }], { s: 1, plain: true });
+      const yb = drawHeader(c, P, c.k(1, 10));
+      const kt = c.k(22, 22, false), wob = Math.sin(c.f * 0.35) * 0.05 * Math.max(0, 1 - (c.f - 22) / 30) * (c.f > 22 ? 1 : 0);
+      const baseY = c.A.bottom - (P.result ? 114 : 30), availH = Math.max(240, baseY - yb - 40);
+      const a = tilt * c.EASE.spring(kt) + wob, px = c.A.cx, py = yb + 40 + availH * 0.28, arm = 305, panDrop = Math.min(125, availH * 0.24);
+      c.draw([{ k: 'line', pts: [[px, py], [px, baseY - 12]], role: 'dim', w: 1.2 }, { k: 'poly', pts: [[px - 24, py + 4], [px + 24, py + 4], [px, py - 30]], role: 'accent' },
+              { k: 'rect', x: px - 120, y: baseY - 22, w: 240, h: 22, rad: 8, role: 'dim' }], { s: 1, plain: true });
       c.draw([{ k: 'line', pts: [[px - arm * Math.cos(a), py - arm * Math.sin(a)], [px + arm * Math.cos(a), py + arm * Math.sin(a)]], role: 'ink', w: 1.6 }], { s: 1 });
       [[l, -1, 8], [r, 1, 16]].forEach(([o, sd, f0]) => {
-        const ex = px + sd * arm * Math.cos(a), ey = py + sd * arm * Math.sin(a), panY = ey + 150;
-        c.draw([{ k: 'line', pts: [[ex, ey], [ex - 90, panY]], role: 'dim', w: 0.5 }, { k: 'line', pts: [[ex, ey], [ex + 90, panY]], role: 'dim', w: 0.5 },
-                { k: 'arc', x: ex, y: panY, r: 110, a0: 0, a1: Math.PI, role: 'ink', w: 1.2 }], { s: 1, plain: true });
-        c.enter(c.k(f0, 10), [ex - 90, panY - 180, 180, 180], () => c.icon(o.icon || 'dot', { x: ex, y: panY - 80, s: 80, role: o.role, p: o.p ?? 0.6 }), 'slide');
-        if (lab(o)) c.text(lab(o), ex, panY + 155, { size: 56, k: c.k(f0 + 6, 8), role: 'accent', maxW: 400 });
-        if (o.label) c.K.label(c, o.label, ex, panY + 225, c.k(f0 + 8, 8), { align: 'center', maxW: 380 });
+        const ex = px + sd * arm * Math.cos(a), ey = py + sd * arm * Math.sin(a), panY = ey + panDrop, panR = Math.min(96, availH * 0.19);
+        c.draw([{ k: 'line', pts: [[ex, ey], [ex - panR * 0.82, panY]], role: 'dim', w: 0.5 }, { k: 'line', pts: [[ex, ey], [ex + panR * 0.82, panY]], role: 'dim', w: 0.5 },
+                { k: 'arc', x: ex, y: panY, r: panR, a0: 0, a1: Math.PI, role: 'ink', w: 1.2 }], { s: 1, plain: true });
+        c.enter(c.k(f0, 10), [ex - 80, panY - 150, 160, 150], () => c.icon(o.icon || 'dot', { x: ex, y: panY - 68, s: 68, role: o.role, p: o.p ?? 0.6 }), 'slide');
+        let ty = panY + panR + 46;
+        if (lab(o)) { const vb = c.text(lab(o), ex, Math.min(baseY - (o.label ? 66 : 16), ty), { size: 48, k: c.k(f0 + 6, 8), role: 'accent', maxW: 380 }); ty = vb.y1 + 48; }
+        if (o.label) c.K.label(c, o.label, ex, Math.min(baseY - 12, ty), c.k(f0 + 8, 8), { align: 'center', maxW: 360, size: 38 });
       });
-      if (P.result) c.K.tag(c, P.result, px, 1440, c.k(30, 9));
+      if (P.result) c.K.tag(c, P.result, px, tagY(c, c.A.bottom - 36), c.k(30, 9));
     },
   };
 }
@@ -135,15 +175,20 @@ function factStamp(c0, P) {                           // câu chốt + cụm nh�
   return {
     cues: [{ f: 2, name: 'whoosh_soft' }, { f: fs0, name: 'stamp', kick: 1 }], texts: names(P.kicker, P.text, P.em),
     draw(c) {
-      if (P.kicker) c.text(P.kicker, c.A.cx, c.A.top + 60, { size: 34, font: 'mono', role: 'dim', k: c.k(1, 8), weight: 600, enter: 'type' });
-      if (P.icon) c.icon(P.icon, { x: c.A.cx, y: c.A.top + 260 + bob(c), s: 100, role: P.icon_role, alpha: c.k(3, 9) });
-      const b = c.text(P.text, c.A.cx, c.A.top + 560, { size: 108, k: c.k(4, 12), maxW: 880, lh: 1.08 });
-      if (P.em) {
-        const k = c.k(fs0, 5, false), sc = c.lerp(2.4, 1, c.EASE.out(k)), y = b.y1 + 260;
+      if (P.kicker) c.text(P.kicker, c.A.cx, c.A.top + 38, { size: 32, font: 'mono', role: 'dim', k: c.k(1, 8), weight: 600, enter: 'type' });
+      const topY = c.A.top + (P.kicker ? 86 : 26), botY = c.A.bottom - 44, iconH = P.icon ? 170 : 0;
+      const ef = P.em ? fitText(c, P.em.toUpperCase(), 0, [74, 62, 52], { maxW: 720, weight: 900, maxH: 130 }) : null;
+      const emReserve = ef ? ef.h + 108 : 0;
+      const tf = fitText(c, P.text, c.A.cx, [96, 82, 70, 58, 48], { maxW: 860, lh: 1.08, maxH: Math.max(150, botY - topY - iconH - emReserve - 20) });
+      const totalH = iconH + tf.h + emReserve, startY = topY + Math.max(0, (botY - topY - totalH) / 2);
+      if (P.icon) c.icon(P.icon, { x: c.A.cx, y: startY + 78 + bob(c), s: 82, role: P.icon_role, alpha: c.k(3, 9) });
+      const b = c.text(P.text, c.A.cx, startY + iconH - tf.b.y0, { size: tf.size, k: c.k(4, 12), maxW: 860, lh: 1.08 });
+      if (P.em && ef) {
+        const k = c.k(fs0, 5, false), sc = c.lerp(2.4, 1, c.EASE.out(k)), y = Math.min(botY - ef.h / 2 - 22, b.y1 + 54 + ef.h / 2);
         if (k > 0) {
-          c.g.save(); c.g.translate(c.A.cx, y); c.g.rotate(-0.12); c.g.scale(sc, sc); c.g.globalAlpha *= Math.min(1, k * 2);
-          const t = c.text(P.em.toUpperCase(), 0, 26, { size: 84, role: 'hot', enter: 'none', quiet: k < 1, maxW: 760, weight: 900 });
-          c.g.strokeStyle = c.col('hot'); c.g.lineWidth = 10; c.g.strokeRect(t.x0 - 36, t.y0 - 26, t.x1 - t.x0 + 72, t.y1 - t.y0 + 46);
+          c.g.save(); c.g.translate(c.A.cx, y); c.g.rotate(-0.1); c.g.scale(sc, sc); c.g.globalAlpha *= Math.min(1, k * 2);
+          const t = c.text(P.em.toUpperCase(), 0, -(ef.b.y0 + ef.b.y1) / 2, { size: ef.size, role: 'hot', enter: 'none', quiet: k < 1, maxW: 720, weight: 900 });
+          c.g.strokeStyle = c.col('hot'); c.g.lineWidth = 9; c.g.strokeRect(t.x0 - 32, t.y0 - 22, t.x1 - t.x0 + 64, t.y1 - t.y0 + 42);
           c.g.restore();
         }
       }
@@ -155,12 +200,17 @@ function factLeft(c0, P) {                            // gõ chữ căn trái, v
   return {
     cues: [{ f: 2, name: 'typing:1.0' }, { f: fe, name: 'pop', kick: 0.4 }], texts: names(P.kicker, P.text, P.em),
     draw(c) {
-      const x = c.A.x0 + 60, y = 760;
-      c.g.fillStyle = c.col('accent'); c.g.fillRect(c.A.x0 + 10, y - 140, 12, 520 * c.EASE.out(c.k(1, 14)));
-      if (P.kicker) c.text(P.kicker, x, y - 170, { size: 34, font: 'mono', role: 'dim', align: 'left', k: c.k(1, 6), weight: 600, enter: 'type' });
-      const b = c.text(P.text, x, y, { size: 104, align: 'left', k: c.k(3, Math.max(14, Math.round(c.N * 0.3))), enter: 'type', maxW: 820, lh: 1.08 });
-      if (P.em) c.text(P.em, x, b.y1 + 150, { size: 96, align: 'left', role: 'hot', k: c.k(fe, 8), enter: 'slide', maxW: P.icon ? 640 : 820 });
-      if (P.icon) c.icon(P.icon, { x: c.W - 210, y: 1430 + bob(c, 3, 12), s: 105, role: P.icon_role, alpha: c.k(6, 10) });
+      const x = c.A.x0 + 56, topY = c.A.top + 32, botY = c.A.bottom - 36, maxW = 820, emW = P.icon ? 620 : 820;
+      const kickH = P.kicker ? 64 : 0;
+      const ef = P.em ? fitText(c, P.em, x, [82, 68, 56, 48], { align: 'left', maxW: emW, maxH: 200 }) : null;
+      const emReserve = ef ? ef.h + 54 : 0;
+      const tf = fitText(c, P.text, x, [92, 80, 68, 56, 48], { align: 'left', maxW, lh: 1.08, maxH: Math.max(160, botY - topY - kickH - emReserve) });
+      const totalH = kickH + tf.h + emReserve, startY = topY + Math.max(0, (botY - topY - totalH) / 2);
+      c.g.fillStyle = c.col('accent'); c.g.fillRect(c.A.x0 + 10, startY - 12, 12, Math.min(botY - startY + 12, totalH + 24) * c.EASE.out(c.k(1, 14)));
+      if (P.kicker) c.text(P.kicker, x, startY + 28, { size: 30, font: 'mono', role: 'dim', align: 'left', k: c.k(1, 6), weight: 600, enter: 'type' });
+      const b = c.text(P.text, x, startY + kickH - tf.b.y0, { size: tf.size, align: 'left', k: c.k(3, Math.max(14, Math.round(c.N * 0.3))), enter: 'type', maxW, lh: 1.08 });
+      if (P.em && ef) c.text(P.em, x, Math.min(botY - ef.b.y1, b.y1 + 48 - ef.b.y0), { size: ef.size, align: 'left', role: 'hot', k: c.k(fe, 8), enter: 'slide', maxW: emW });
+      if (P.icon) c.icon(P.icon, { x: c.W - 205, y: Math.min(c.A.bottom - 95, startY + totalH - 35) + bob(c, 3, 10), s: 90, role: P.icon_role, alpha: c.k(6, 10) });
     },
   };
 }
@@ -169,19 +219,18 @@ function processPath(c0, P) {                         // các bước nằm trê
   return {
     cues: steps.map((_, i) => ({ f: 6 + i * stride, name: i === steps.length - 1 ? 'ding' : 'pop' })), texts: names(P.title, ...steps.map((s) => s.label)),
     draw(c) {
-      // bước đầu nằm dưới header (header cao như look swiss có số thứ tự lớn sẽ đè lên bước cố định ở y=660)
-      const yb = c.K.header(c, hd(P), c.k(1, 10)), y0 = Math.max(660, (Number(yb) || 0) + 150), y1 = Math.max(y0 + 480, 1480);
-      const pts = steps.map((_, i) => [i % 2 ? 760 : 320, y0 + i * ((y1 - y0) / Math.max(1, n - 1 || 1))]);
+      const yb = drawHeader(c, P, c.k(1, 10)), y0 = Math.max(c.A.top + 110, (Number(yb) || 0) + 96), y1 = Math.max(y0 + 200, c.A.bottom - 80);
+      const pts = steps.map((_, i) => [i % 2 ? 750 : 330, y0 + i * ((y1 - y0) / Math.max(1, n - 1 || 1))]);
+      const iconS = Math.min(72, Math.max(46, (y1 - y0) / Math.max(1, n - 1) * 0.34));
       const prog = c.clamp((c.f - 6) / Math.max(1, stride * (n - 1))), seg = [];
       for (let i = 0; i < pts.length - 1; i++) for (let j = 0; j <= 12; j++) { const t = j / 12, a = pts[i], b = pts[i + 1]; seg.push([c.lerp(a[0], b[0], t * t * (3 - 2 * t)), c.lerp(a[1], b[1], t)]); }
       if (seg.length) c.draw([{ k: 'line', pts: seg, role: 'dim', w: 0.5, dash: [2, 2] }], { s: 1, plain: true });
-      if (seg.length > 1) { const q = seg[Math.min(seg.length - 1, Math.floor(prog * (seg.length - 1)))]; c.draw([{ k: 'circle', x: 0, y: 0, r: 1, role: 'accent' }], { x: q[0], y: q[1], s: 18 + Math.sin(c.f * 0.4) * 4, plain: true }); }
+      if (seg.length > 1) { const q = seg[Math.min(seg.length - 1, Math.floor(prog * (seg.length - 1)))]; c.draw([{ k: 'circle', x: 0, y: 0, r: 1, role: 'accent' }], { x: q[0], y: q[1], s: 16 + Math.sin(c.f * 0.4) * 4, plain: true }); }
       steps.forEach((s, i) => {
         const [x, y] = pts[i], f0 = 6 + i * stride, k = c.k(f0, 9), on = c.fs >= f0, left = x < c.A.cx;
-        c.enter(k, [x - 90, y - 90, 180, 180], () => c.icon(s.icon || 'dot', { x, y: y + (on ? bob(c, i, 6) : 0), s: 82, role: s.role, p: s.p ?? 0.6 }));
-        if (on && k >= 1) c.K.ring(c, x, y, 112, c.k(f0 + 4, 8));
-        // nhãn bên trái lùi tới x+190: chấm ring của look swiss nằm ở x + 1.25r (≈ x+114…x+166)
-        c.K.label(c, s.label, left ? x + 190 : x - 140, y + 16, c.k(f0 + 3, 8), { align: left ? 'left' : 'right', maxW: 380, size: 48 });
+        c.enter(k, [x - iconS, y - iconS, iconS * 2, iconS * 2], () => c.icon(s.icon || 'dot', { x, y: y + (on ? bob(c, i, 5) : 0), s: iconS, role: s.role, p: s.p ?? 0.6 }));
+        if (on && k >= 1) c.K.ring(c, x, y, iconS * 1.35, c.k(f0 + 4, 8));
+        c.K.label(c, s.label, left ? x + 175 : x - 135, y + 14, c.k(f0 + 3, 8), { align: left ? 'left' : 'right', maxW: 370, size: 42 });
       });
     },
   };
@@ -254,17 +303,19 @@ function counterUnits(c0, P) {                        // isotype: đúng số đ
     cues: [...Array.from({ length: Math.min(10, Math.floor(cnt / 10)) }, (_, b) => ({ f: Math.round(fOf(b * 10 + 9)), name: 'tick' })), { f: f1, name: 'ding', kick: 0.5 }],
     texts: names(P.title, final, P.unit, P.label, legend && `= ${legend}`),
     draw(c) {
-      const yb = c.K.header(c, hd(P), c.k(1, 10)), ny = Math.max(yb + 170, 600), gy = ny + (P.unit ? 150 : 80);
-      const grid = unitGrid(n, { x: c.A.x0, y: gy, w: c.A.x1 - c.A.x0, h: Math.max(300, c.A.bottom - 230 - gy) }, { maxS: 130 });
-      const shown = drawUnits(c, grid, n, { icon: P.icon, role: P.icon_role || P.role, fOf, seed: 7 }), landed = c.f >= f1;
+      const yb = drawHeader(c, P, c.k(1, 10)), ny = Math.max(yb + 126, c.A.top + 150), landed = c.f >= f1;
+      let gy = ny + 48;
+      if (P.unit) { const ub = c.text(P.unit, c.A.cx, ny + 76, { size: 50, role: 'accent', k: c.k(4, 8), maxW: 800 }); gy = ub.y1 + 24; }
+      const botNeed = (legend ? 62 : 0) + (P.label ? 92 : 0) + 38;
+      const grid = unitGrid(n, { x: c.A.x0, y: gy, w: c.A.x1 - c.A.x0, h: Math.max(150, c.A.bottom - botNeed - gy) }, { maxS: 120 });
+      const shown = drawUnits(c, grid, n, { icon: P.icon, role: P.icon_role || P.role, fOf, seed: 7 });
       const v = Math.sign(to) * Math.min(Math.abs(to), shown * per), pop = landed ? 1 + Math.max(0, 1 - (c.f - f1) / 7) * 0.1 : 1;
-      c.g.save(); c.g.translate(c.A.cx, ny - 50); c.g.scale(pop, pop); c.g.translate(-c.A.cx, -(ny - 50));
-      c.text(landed ? final : fmtV(c, v, dec, P), c.A.cx, ny, { size: 150, quiet: !landed, enter: 'none', maxW: 900, weight: 900 });
+      c.g.save(); c.g.translate(c.A.cx, ny - 44); c.g.scale(pop, pop); c.g.translate(-c.A.cx, -(ny - 44));
+      c.text(landed ? final : fmtV(c, v, dec, P), c.A.cx, ny, { size: 132, quiet: !landed, enter: 'none', maxW: 900, weight: 900 });
       c.g.restore();
-      if (P.unit) c.text(P.unit, c.A.cx, ny + 82, { size: 56, role: 'accent', k: c.k(4, 8), maxW: 800 });
-      const ly = grid.y0 + grid.h + 70;
-      drawLegend(c, P.icon, P.icon_role || P.role, legend, c.A.cx, ly, c.k(f0 + 6, 8));
-      if (P.label) c.K.tag(c, P.label, c.A.cx, ly + (legend ? 100 : 30), c.k(f1 + 4, 9));
+      let ly = grid.y0 + grid.h + 52;
+      if (legend) { drawLegend(c, P.icon, P.icon_role || P.role, legend, c.A.cx, Math.min(c.A.bottom - (P.label ? 102 : 34), ly), c.k(f0 + 6, 8)); ly += 78; }
+      if (P.label) c.K.tag(c, P.label, c.A.cx, tagY(c, ly + (legend ? 14 : 26)), c.k(f1 + 4, 9));
     },
   };
 }
@@ -289,11 +340,14 @@ function counterOdometer(c0, P) {                     // đồng hồ cơ: từn
     cues: [{ f: f0, name: 'riser' }, ...Array.from({ length: Math.min(8, Math.floor((f1 - f0) / 4)) }, (_, i) => ({ f: f0 + 2 + i * 4, name: 'click' })), { f: f1, name: 'ding', kick: 0.6 }],
     texts: names(P.title, final, P.unit, P.label),
     draw(c) {
-      const yb = c.K.header(c, hd(P), c.k(1, 10)), cy = Math.max(1000, yb + 470), landed = c.f >= f1;
+      const yb = drawHeader(c, P, c.k(1, 10)), landed = c.f >= f1;
+      const topNeed = P.icon ? 136 : 44, botNeed = (P.unit ? 90 : 0) + (P.label ? 104 : 0) + 52;
+      const avail = Math.max(130, c.A.bottom - botNeed - (yb + topNeed));
       const e = c.EASE.out(c.clamp((c.f - f0) / (f1 - f0))), V = Math.round(Math.abs(c.lerp(from, to, e)) * sc * 1000) / 1000;
       const Vp = Math.abs(c.lerp(from, to, c.EASE.out(c.clamp((c.f - 1 - f0) / (f1 - f0))))) * sc;
-      const size = Math.min(230, 900 / Math.max(3, cells.length) * 1.55), m = c.text('0', 0, 0, { size, font: 'mono', k: 0, track: 0 });
-      const cw = m.x1 - m.x0, ch = size * 1.18, x0 = c.A.cx - cw * cells.length / 2, top = cy - size * 0.86;
+      const size = Math.min(200, 880 / Math.max(3, cells.length) * 1.5, Math.max(92, avail * 0.72)), m = c.text('0', 0, 0, { size, font: 'mono', k: 0, track: 0 });
+      const cw = m.x1 - m.x0, ch = size * 1.18, x0 = c.A.cx - cw * cells.length / 2;
+      const top = yb + topNeed + Math.max(0, (avail - ch) * 0.45), cy = top + size * 0.86;
       c.g.save(); c.g.fillStyle = c.mix(c.pal.bg, c.col('ink'), 0.1); c.g.fillRect(x0 - 26, top - 22, cw * cells.length + 52, ch + 44); c.g.restore();
       c.draw([{ k: 'rect', x: x0 - 26, y: top - 22, w: cw * cells.length + 52, h: ch + 44, rad: 18, role: 'dim', fill: false }], { s: 1, plain: true });
       cells.forEach((cl, i) => {
@@ -319,9 +373,10 @@ function counterOdometer(c0, P) {                     // đồng hồ cơ: từn
       const sgn = to < 0 ? '-' : '';
       if (P.prefix || sgn) c.text(`${sgn}${P.prefix || ''}`, x0 - 40, cy, { size: size * 0.6, align: 'right', role: 'accent', k: c.k(3, 8) });
       if (P.suffix) c.text(P.suffix, x0 + cw * cells.length + 40, cy, { size: size * 0.6, align: 'left', role: 'accent', k: c.k(3, 8) });
-      if (P.unit) c.text(P.unit, c.A.cx, top + ch + 130, { size: 72, role: 'accent', k: c.k(4, 8), maxW: 840 });
-      if (P.icon) c.icon(P.icon, { x: c.A.cx, y: top - 130 + bob(c, 2, 6), s: 70, role: P.icon_role, p: e });
-      if (P.label) c.K.tag(c, P.label, c.A.cx, top + ch + (P.unit ? 260 : 150), c.k(f1 + 4, 9));
+      let y = top + ch + 28;
+      if (P.unit) { const ub = c.text(P.unit, c.A.cx, y + 60, { size: 58, role: 'accent', k: c.k(4, 8), maxW: 840 }); y = ub.y1; }
+      if (P.icon) c.icon(P.icon, { x: c.A.cx, y: Math.max(yb + 62, top - 82) + bob(c, 2, 6), s: 56, role: P.icon_role, p: e });
+      if (P.label) c.K.tag(c, P.label, c.A.cx, tagY(c, y + 82), c.k(f1 + 4, 9));
     },
   };
 }
@@ -341,9 +396,12 @@ function counterFlap(c0, P) {                         // bảng lật (split-fla
     cues: [{ f: f0, name: `typing:${Math.max(0.3, (last - f0) / c0.FPS).toFixed(2)}` }, { f: last, name: 'click' }, { f: last + 2, name: 'ding', kick: 0.5 }],
     texts: names(P.title, body, P.unit, P.label),
     draw(c) {
-      const yb = c.K.header(c, hd(P), c.k(1, 10)), cy = Math.max(990, yb + 460), landed = c.f >= last;
-      const size = Math.min(200, 860 / Math.max(3, cells.length) * 1.45), m = c.text('0', 0, 0, { size, font: 'mono', k: 0, track: 0 });
-      const cw = m.x1 - m.x0, gap = cw * 0.08, ch = size * 1.22, x0 = c.A.cx - cw * cells.length / 2, top = cy - size * 0.84, hinge = top + ch / 2;
+      const yb = drawHeader(c, P, c.k(1, 10)), landed = c.f >= last;
+      const topNeed = P.icon ? 132 : 42, botNeed = (P.unit ? 90 : 0) + (P.label ? 104 : 0) + 50;
+      const avail = Math.max(130, c.A.bottom - botNeed - (yb + topNeed));
+      const size = Math.min(185, 860 / Math.max(3, cells.length) * 1.45, Math.max(88, avail * 0.72)), m = c.text('0', 0, 0, { size, font: 'mono', k: 0, track: 0 });
+      const cw = m.x1 - m.x0, gap = cw * 0.08, ch = size * 1.22, x0 = c.A.cx - cw * cells.length / 2;
+      const top = yb + topNeed + Math.max(0, (avail - ch) * 0.45), cy = top + size * 0.84, hinge = top + ch / 2;
       const plate = c.mix(c.pal.bg, c.col('ink'), 0.13), plate2 = c.mix(c.pal.bg, c.col('ink'), 0.2);
       cells.forEach((cl, i) => {
         const x = x0 + cw * (i + 0.5), q = plan[i], g = c.g;
@@ -367,9 +425,10 @@ function counterFlap(c0, P) {                         // bảng lật (split-fla
       });
       if (landed) c.text(body, c.A.cx, cy, { size, font: 'mono', enter: 'none', track: 0, maxW: 2000 });
       c.g.save(); c.g.fillStyle = c.pal.bg; c.g.fillRect(x0, hinge - 2, cw * cells.length, 4); c.g.restore();      // bản lề
-      if (P.icon) c.icon(P.icon, { x: c.A.cx, y: top - 130 + bob(c, 2, 6), s: 70, role: P.icon_role });
-      if (P.unit) c.text(P.unit, c.A.cx, top + ch + 120, { size: 72, role: 'accent', k: c.k(4, 8), maxW: 840 });
-      if (P.label) c.K.tag(c, P.label, c.A.cx, top + ch + (P.unit ? 250 : 140), c.k(last + 4, 9));
+      if (P.icon) c.icon(P.icon, { x: c.A.cx, y: Math.max(yb + 62, top - 82) + bob(c, 2, 6), s: 56, role: P.icon_role });
+      let y = top + ch + 26;
+      if (P.unit) { const ub = c.text(P.unit, c.A.cx, y + 60, { size: 58, role: 'accent', k: c.k(4, 8), maxW: 840 }); y = ub.y1; }
+      if (P.label) c.K.tag(c, P.label, c.A.cx, tagY(c, y + 82), c.k(last + 4, 9));
     },
   };
 }
@@ -406,14 +465,19 @@ function counterGauge(c0, P) {                        // đồng hồ kim: kim q
     cues: [{ f: f0, name: 'whoosh_soft' }, { f: f1, name: P.danger !== undefined && to >= num(P.danger) ? 'warn' : 'ding', kick: 0.6 }],
     texts: names(P.title, final, P.unit, P.label),
     draw(c) {
-      const yb = c.K.header(c, hd(P), c.k(1, 10)), cy = Math.max(960, yb + 470), R = 330, landed = c.f >= f1;
+      const yb = drawHeader(c, P, c.k(1, 10)), landed = c.f >= f1;
+      const botNeed = 122 + (P.unit ? 68 : 0) + (P.label ? 92 : 0) + 36;
+      const availDial = Math.max(220, c.A.bottom - botNeed - yb - 20);
+      const R = Math.min(280, availDial / 1.62), cy = yb + 20 + R + Math.max(0, (availDial - R * 1.62) * 0.4);
       const t = c.clamp((c.f - f0) / (f1 - f0)), e = c.EASE.back(t, 1.4), live = landed ? (c.noise(c.f, 3) * 0.6 + Math.sin(c.f * 0.9) * 0.4) * (hi - lo) * 0.006 : 0;
       const v = c.lerp(from, to, e) + live;
       drawDial(c, { x: c.A.cx, y: cy, R, lo, hi, v, k: c.k(1, 10), danger: P.danger !== undefined ? num(P.danger) : undefined, dec });
-      c.text(landed ? final : fmtV(c, c.lerp(from, to, Math.min(1, e)), dec, P), c.A.cx, cy + 300, { size: 140, quiet: !landed, enter: 'none', maxW: 820, weight: 900 });
-      if (P.unit) c.text(P.unit, c.A.cx, cy + 385, { size: 60, role: 'accent', k: c.k(4, 8), maxW: 800 });
-      if (P.icon) c.icon(P.icon, { x: c.A.cx, y: cy - 150, s: 60, role: P.icon_role, p: t });
-      if (P.label) c.K.tag(c, P.label, c.A.cx, cy + (P.unit ? 500 : 430), c.k(f1 + 4, 9));
+      const ry = cy + R * 0.7 + 56, rSize = Math.min(118, Math.max(76, R * 0.44));
+      const rb = c.text(landed ? final : fmtV(c, c.lerp(from, to, Math.min(1, e)), dec, P), c.A.cx, ry, { size: rSize, quiet: !landed, enter: 'none', maxW: 820, weight: 900 });
+      let y = rb.y1;
+      if (P.unit) { const ub = c.text(P.unit, c.A.cx, y + 54, { size: 50, role: 'accent', k: c.k(4, 8), maxW: 800 }); y = ub.y1; }
+      if (P.icon) c.icon(P.icon, { x: c.A.cx, y: cy - R * 0.46, s: Math.min(54, R * 0.2), role: P.icon_role, p: t });
+      if (P.label) c.K.tag(c, P.label, c.A.cx, tagY(c, y + 78), c.k(f1 + 4, 9));
     },
   };
 }
@@ -429,9 +493,9 @@ function compareRace(c0, P) {                         // đua về phía camera:
     cues: [{ f: f0, name: 'whoosh' }, ...Array.from({ length: Math.min(6, Math.floor((f1 - f0) / 6)) }, (_, i) => ({ f: f0 + 4 + i * 6, name: 'thud' })), { f: f1, name: 'hit', kick: 0.7 }],
     texts: names(P.title, l.label, r.label, labOf(c0, l, P), labOf(c0, r, P), P.result),
     draw(c) {
-      const yb = c.K.header(c, hd(P), c.k(1, 10)), vy = yb + 90, near = c.A.bottom - (P.result ? 170 : 90), cx = c.A.cx;
+      const yb = drawHeader(c, P, c.k(1, 10), true), vy = yb + 84, near = c.A.bottom - (P.result ? 132 : 56), cx = c.A.cx;
       const pj = (lx, z) => { const s = 1 / (1 + Math.max(-0.35, z)); return [cx + lx * s, vy + (near - vy) * s / 1, s]; };
-      const zAt = (d) => Z0 * (1 - d), g = c.g, k0 = c.k(1, 10);
+      const zAt = (d) => Z0 * (1 - d), g = c.g, k0 = c.k(1, 10), Sbase = Math.min(185, Math.max(105, (near - vy) * 0.31));
       // mặt đường chạy phối cảnh (terracotta / nhấn mờ) để khung không bị trống đen
       {
         const tl = pj(-420, Z0 + 0.18), tr = pj(420, Z0 + 0.18), bl = pj(-420, -0.1), br = pj(420, -0.1);
@@ -447,7 +511,7 @@ function compareRace(c0, P) {                         // đua về phía camera:
       const items = [[l, -210, 0], [r, 210, 1]].map(([o, lx, i]) => ({ o, lx, i, d: prog(c.f, dist[i]) })).sort((a, b) => a.d - b.d);   // xa vẽ trước
       for (const it of items) {
         const z = zAt(it.d), [x, y, s] = pj(it.lx, z), run = c.f < f1 && it.d < dist[it.i] - 1e-4, ph = it.d * 46;
-        const hop = run ? Math.abs(Math.sin(ph)) * 22 * s : Math.sin(c.f * 0.1 + it.i) * 3, S = 220 * s;
+        const hop = run ? Math.abs(Math.sin(ph)) * 18 * s : Math.sin(c.f * 0.1 + it.i) * 3, S = Sbase * s;
         c.draw([{ k: 'circle', x: 0, y: 0, r: 1, rx: 1, ry: 0.16, role: 'dim' }], { x, y: y + 6, s: S * 0.8, plain: true, alpha: 0.5 });
         if (run) for (let q = 1; q <= 4; q++) {                                  // bụi sau chân: phun theo nhịp bước
           const fq = c.f - q * 3, dq = prog(fq, dist[it.i]), [px, py, ps] = pj(it.lx + (c.hash(q, it.i, Math.floor(fq / 3)) - 0.5) * 60, zAt(dq) + 0.05);
@@ -456,11 +520,13 @@ function compareRace(c0, P) {                         // đua về phía camera:
         g.save(); if (z > 0.3) g.filter = `brightness(${(1 - Math.min(0.45, z * 0.2)).toFixed(3)})`;
         c.icon(it.o.icon || 'runner', { x, y: y - S - hop, s: S, role: it.o.role || (it.i === win ? 'hot' : 'cold'), rot: run ? 0.08 : 0, seed: 3 + it.i });
         g.restore();
-        const ty = y - 2 * S - 40 * s - hop;
-        if (it.o.label) c.K.label(c, it.o.label, x, ty, c.k(6 + it.i * 4, 8), { align: 'center', maxW: 380, size: Math.max(34, 54 * Math.sqrt(s)) });
-        if (labOf(c, it.o, P)) c.text(labOf(c, it.o, P), x, ty - (it.o.label ? Math.max(34, 54 * Math.sqrt(s)) + 26 : 0), { size: Math.max(36, 62 * Math.sqrt(s)), k: c.k(f1 - 2, 8), role: it.i === win ? 'accent' : 'ink', maxW: 400 });
+        const lSize = Math.max(32, 48 * Math.sqrt(s)), vSize = Math.max(36, 56 * Math.sqrt(s)), hasVal = !!labOf(c, it.o, P);
+        const minLabelY = yb + 44 + (hasVal ? vSize + 30 : 0);
+        const ty = Math.max(minLabelY, y - 2 * S - 28 * s - hop);
+        if (it.o.label) c.K.label(c, it.o.label, x, ty, c.k(6 + it.i * 4, 8), { align: 'center', maxW: 380, size: lSize });
+        if (hasVal) c.text(labOf(c, it.o, P), x, Math.max(yb + vSize + 12, ty - (it.o.label ? lSize + 24 : 0)), { size: vSize, k: c.k(f1 - 2, 8), role: it.i === win ? 'accent' : 'ink', maxW: 400 });
       }
-      if (P.result) c.K.tag(c, P.result, cx, c.A.bottom - 30, c.k(f1 + 5, 9));
+      if (P.result) c.K.tag(c, P.result, cx, tagY(c, c.A.bottom - 36), c.k(f1 + 5, 9));
     },
   };
 }
@@ -474,18 +540,19 @@ function compareUnits(c0, P) {                        // hai nhóm isotype cùng
     cues: [{ f: f0, name: 'whoosh_soft' }, ...ends.map((f) => ({ f, name: 'tick' })), { f: f1 + 3, name: 'hit', kick: 0.5 }],
     texts: names(P.title, l.label, r.label, labOf(c0, l, P), labOf(c0, r, P), P.result, `= ${legend}`),
     draw(c) {
-      const yb = c.K.header(c, hd(P), c.k(1, 10)), top = Math.max(yb + 200, 640), base = c.A.bottom - 250, half = (c.A.x1 - c.A.x0 - 60) / 2;
-      const boxes = [{ x: c.A.x0, y: top, w: half, h: base - top }, { x: c.A.x0 + half + 60, y: top, w: half, h: base - top }];
-      const s = Math.min(...ns.map((n, i) => unitGrid(n, boxes[i], { maxS: 110 }).s));
+      const yb = drawHeader(c, P, c.k(1, 10)), resY = P.result ? yb + 70 : yb;
+      const top = resY + (P.result ? 112 : 82), base = c.A.bottom - 172, half = (c.A.x1 - c.A.x0 - 60) / 2;
+      const boxes = [{ x: c.A.x0, y: top, w: half, h: Math.max(160, base - top) }, { x: c.A.x0 + half + 60, y: top, w: half, h: Math.max(160, base - top) }];
+      const s = Math.min(...ns.map((n, i) => unitGrid(n, boxes[i], { maxS: 105 }).s));
       [l, r].forEach((o, i) => {
         const grid = unitGrid(ns[i], boxes[i], { maxS: s, anchor: 'bottom', up: true }), shown = drawUnits(c, grid, ns[i], { icon: o.icon, role: o.role || (i ? 'cold' : 'hot'), fOf, seed: 11 + i * 5 });
         const cx = boxes[i].x + half / 2, done = c.f >= ends[i], v = Math.min(Math.abs(vals[i]), shown * per);
-        c.text(done ? labOf(c, o, P) : `${c.fmtNum(v, decOf(o, P))}${o.unit ? ' ' + o.unit : ''}`, cx, grid.y0 - 40, { size: 58, quiet: !done, enter: 'none', role: done ? 'accent' : 'ink', maxW: half });
-        if (o.label) c.K.label(c, o.label, cx, base + 70, c.k(f0 + 2 + i * 4, 8), { align: 'center', maxW: half - 10 });
+        c.text(done ? labOf(c, o, P) : `${c.fmtNum(v, decOf(o, P))}${o.unit ? ' ' + o.unit : ''}`, cx, Math.max(resY + (P.result ? 64 : 26), grid.y0 - 28), { size: 52, quiet: !done, enter: 'none', role: done ? 'accent' : 'ink', maxW: half });
+        if (o.label) c.K.label(c, o.label, cx, base + 60, c.k(f0 + 2 + i * 4, 8), { align: 'center', maxW: half - 10, size: 42 });
       });
       c.draw([{ k: 'line', pts: [[c.A.x0, base + 12], [c.A.x1, base + 12]], role: 'dim', w: 0.4 }], { s: 1, plain: true });
-      drawLegend(c, l.icon, l.role || 'hot', legend, c.A.cx, base + 170, c.k(f0 + 8, 8));
-      if (P.result) c.K.tag(c, P.result, c.A.cx, Math.max(yb + 110, top - 120), c.k(f1 + 3, 9));
+      drawLegend(c, l.icon, l.role || 'hot', legend, c.A.cx, Math.min(c.A.bottom - 32, base + 130), c.k(f0 + 8, 8));
+      if (P.result) c.K.tag(c, P.result, c.A.cx, resY, c.k(f1 + 3, 9));
     },
   };
 }
@@ -499,7 +566,8 @@ function compareStack(c0, P) {                        // chồng vật: mỗi v�
     cues: [...Array.from({ length: Math.min(10, cmax) }, (_, j) => ({ f: Math.round(fOf(Math.floor(j * cmax / Math.min(10, cmax))) + DR), name: 'thunk' })), { f: f1 + DR + 2, name: 'hit', kick: 0.5 }],
     texts: names(P.title, l.label, r.label, labOf(c0, l, P), labOf(c0, r, P), P.result, legend && `= ${legend}`),
     draw(c) {
-      const yb = c.K.header(c, hd(P), c.k(1, 10)), base = c.A.bottom - 210, topY = Math.max(yb + 230, 620), sz = Math.min(170, (base - topY) / cmax);
+      const yb = drawHeader(c, P, c.k(1, 10)), resY = P.result ? yb + 70 : yb;
+      const base = c.A.bottom - (legend ? 172 : 104), topY = resY + (P.result ? 116 : 82), sz = Math.min(148, Math.max(32, (base - topY) / cmax));
       c.K.ground(c, c.A.cx, base + 4, 860);
       [[l, c.A.cx - 210, 0], [r, c.A.cx + 210, 1]].forEach(([o, x, i]) => {
         let topNow = base;
@@ -515,11 +583,11 @@ function compareStack(c0, P) {                        // chồng vật: mỗi v�
           topNow = base - (j + frac) * sz;
         }
         const done = c.f >= fOf(cnt[i] - 1) + DR;
-        if (labOf(c, o, P)) c.text(labOf(c, o, P), x, topNow - 40, { size: 58, k: done ? 1 : 0, enter: 'none', role: 'accent', maxW: 380 });
-        if (o.label) c.K.label(c, o.label, x, base + 80, c.k(f0 + i * 4, 8), { align: 'center', maxW: 380 });
+        if (labOf(c, o, P)) c.text(labOf(c, o, P), x, Math.max(resY + (P.result ? 64 : 26), topNow - 28), { size: 52, k: done ? 1 : 0, enter: 'none', role: 'accent', maxW: 380 });
+        if (o.label) c.K.label(c, o.label, x, base + 64, c.k(f0 + i * 4, 8), { align: 'center', maxW: 380, size: 42 });
       });
-      drawLegend(c, l.icon || 'cube', l.role || 'hot', legend, c.A.cx, base + 170, c.k(f0 + 8, 8));
-      if (P.result) c.K.tag(c, P.result, c.A.cx, yb + 120, c.k(f1 + DR + 2, 9));
+      drawLegend(c, l.icon || 'cube', l.role || 'hot', legend, c.A.cx, Math.min(c.A.bottom - 32, base + 132), c.k(f0 + 8, 8));
+      if (P.result) c.K.tag(c, P.result, c.A.cx, resY, c.k(f1 + DR + 2, 9));
     },
   };
 }
@@ -533,20 +601,22 @@ function compareOverlay(c0, P) {                      // chồng hình đúng t�
     cues: [{ f: 3, name: 'pop' }, { f: fs, name: 'whoosh' }, { f: fs + 12, name: 'thunk' }, { f: fr, name: 'hit', kick: 0.6 }],
     texts: names(P.title, l.label, r.label, labOf(c0, l, P), labOf(c0, r, P), rtxt, P.result),
     draw(c) {
-      const yb = c.K.header(c, hd(P), c.k(1, 10)), base = c.A.bottom - 290, R = Math.min(340, (base - yb - 170) / 2), cx = c.A.cx;
+      const yb = drawHeader(c, P, c.k(1, 10)), base = c.A.bottom - (P.result ? 228 : 138), R = Math.max(80, Math.min(310, (base - yb - 130) / 2)), cx = c.A.cx;
       const Rs = Math.max(8, R * rs), kb = c.k(3, 12), ksl = c.EASE.back(c.clamp((c.f - fs) / 12), 1.2);
       c.K.ground(c, cx, base, R * 2.6);
       c.enter(kb, [cx - R, base - 2 * R, 2 * R, 2 * R], () => c.icon(B.icon || 'dot', { x: cx, y: base - R, s: R, role: B.role || 'cold', alpha: 0.9, p: B.p ?? 0.6 }), 'grow');
       const sx = c.lerp(c.A.x1 + Rs + 40, cx, ksl), sy = base - Rs + bob(c, 4, 4) * (ksl < 1 ? 1 : 0.3);
       if (c.f >= fs - 2) c.icon(S.icon || 'dot', { x: sx, y: sy, s: Rs, role: S.role || 'hot', p: S.p ?? 0.6, seed: 9 });
       const lead = (o, x, y, side, k) => { if (k <= 0) return; const tx = side < 0 ? c.A.x0 + 10 : c.A.xr(y) - 10;
-        c.K.arrow(c, tx + side * -20, y, x, y, k, 'dim');
-        if (o.label) c.K.label(c, o.label, tx, y - 60, k, { align: side < 0 ? 'left' : 'right', maxW: 380, size: 44 });
-        if (labOf(c, o, P)) c.text(labOf(c, o, P), tx, y + 70, { size: 54, k, align: side < 0 ? 'left' : 'right', role: 'accent', maxW: 380 }); };
+        const cyL = c.clamp(y, yb + 76, base - 64);
+        c.K.arrow(c, tx + side * -20, cyL, x, y, k, 'dim');
+        if (o.label) c.K.label(c, o.label, tx, cyL - 44, k, { align: side < 0 ? 'left' : 'right', maxW: 360, size: 40 });
+        if (labOf(c, o, P)) c.text(labOf(c, o, P), tx, cyL + 54, { size: 48, k, align: side < 0 ? 'left' : 'right', role: 'accent', maxW: 360 }); };
       lead(B, cx - R * 0.7, base - 2 * R + 30, -1, c.k(10, 8));
       lead(S, cx + Rs * 0.7, base - 2 * Rs, 1, c.k(fs + 12, 8));
-      if (c.f >= fr - 8) { const kr = c.k(fr, 8); c.enter(kr, [cx - 200, base + 20, 400, 160], () => c.text(rtxt, cx, base + 140, { size: 130, role: 'hot', enter: 'none', maxW: 700, weight: 900 }), 'pop'); }
-      if (P.result) c.K.tag(c, P.result, cx, base + 250, c.k(fr + 8, 9));
+      let rY1 = base + 108;
+      if (c.f >= fr - 8) { const kr = c.k(fr, 8); c.enter(kr, [cx - 200, base + 12, 400, 140], () => { const rb = c.text(rtxt, cx, base + 106, { size: 112, role: 'hot', enter: 'none', maxW: 700, weight: 900 }); rY1 = rb.y1; }, 'pop'); }
+      if (P.result) c.K.tag(c, P.result, cx, tagY(c, Math.max(base + 190, rY1 + 78)), c.k(fr + 8, 9));
     },
   };
 }
@@ -560,38 +630,45 @@ function titleKinetic(c0, P) {                       // chữ động từng t�
   if (hot < 0) hot = words.reduce((b, w, i) => (bare(w).length > bare(words[b] || '').length ? i : b), 0);
   const FX = ['slam', 'pop', 'slide', 'mask'], sd = c0.strSeed(P.title || '') >>> 0;
   let lay = null;
-  const layout = (c) => {                             // dòng: ≤ 2 từ (ngắn) mỗi dòng, cỡ chữ từng dòng vừa bề ngang
+  const layout = (c) => {                             // dòng: ≤ 2 từ (ngắn) mỗi dòng, cỡ chữ từng dòng vừa bề ngang + vừa chiều cao vùng sân khấu
     const lines = []; let cur = [];
     words.forEach((w, i) => { const len = cur.reduce((a, j) => a + words[j].length + 1, 0) + w.length; if (cur.length && (cur.length >= 2 || len > 11)) { lines.push(cur); cur = []; } cur.push(i); });
     if (cur.length) lines.push(cur);
-    let y = 0;
-    const out = lines.map((ids) => {
-      const m = c.text(ids.map((i) => words[i]).join(' '), 0, 0, { size: 100, k: 0, weight: 900 }), size = Math.max(84, Math.min(220, 100 * 880 / Math.max(1, m.x1 - m.x0)));
-      const ws = ids.map((i) => { const b = c.text(words[i], 0, 0, { size, k: 0, weight: 900 }); return b.x1 - b.x0; }), sp = size * 0.28, tot = ws.reduce((a, b) => a + b, 0) + sp * (ids.length - 1);
-      let x = c.A.cx - tot / 2; const xs = ws.map((w) => { const cxw = x + w / 2; x += w + sp; return cxw; });
-      y += size * 0.92; const ln = { ids, size, xs, y }; y += size * 0.12; return ln;
-    });
-    return { lines: out, H: y };
+    const topMin = c.A.top + (P.kicker ? 96 : 32), botMax = c.A.bottom - (P.sub ? 132 : 36), maxH = Math.max(240, botMax - topMin);
+    const build = (sc = 1) => {
+      let y = 0;
+      const out = lines.map((ids) => {
+        const m = c.text(ids.map((i) => words[i]).join(' '), 0, 0, { size: 100, k: 0, weight: 900 });
+        const size = Math.max(54, Math.min(200, 100 * 880 / Math.max(1, m.x1 - m.x0)) * sc);
+        const ws = ids.map((i) => { const b = c.text(words[i], 0, 0, { size, k: 0, weight: 900 }); return b.x1 - b.x0; }), sp = size * 0.28, tot = ws.reduce((a, b) => a + b, 0) + sp * (ids.length - 1);
+        let x = c.A.cx - tot / 2; const xs = ws.map((w) => { const cxw = x + w / 2; x += w + sp; return cxw; });
+        y += size * 0.92; const ln = { ids, size, xs, y }; y += size * 0.28; return ln;
+      });
+      return { lines: out, H: y, topMin, botMax };
+    };
+    const raw = build(1);
+    return raw.H > maxH ? build(maxH / raw.H) : raw;
   };
   return {
     cues: [...fw.map((f, i) => ({ f, name: i === hot ? 'hit' : 'pop', kick: i === hot ? 0.6 : 0.15 })), ...(P.sub ? [{ f: fe + 4, name: 'whoosh_soft' }] : [])],
     texts: names(P.kicker, ...words, P.sub),
     draw(c) {
       lay = lay || layout(c);
-      if (P.kicker) c.text(P.kicker, c.A.cx, c.A.top + 60, { size: 36, font: 'mono', role: 'dim', k: c.k(1, 8), enter: 'type', weight: 600 });
+      if (P.kicker) c.text(P.kicker, c.A.cx, c.A.top + 38, { size: 32, font: 'mono', role: 'dim', k: c.k(1, 8), enter: 'type', weight: 600 });
       // khối chữ canh giữa theo số dòng ĐÃ hiện → dồn lên mượt khi có dòng mới (máy quay đi theo chữ)
       const nShown = (f) => lay.lines.filter((ln) => f + 4 >= fw[ln.ids[0]]).length || 1;
-      const hOf = (n) => lay.lines[n - 1].y + 20, mid = 960, ns = nShown(c.f), np = nShown(c.f - 6);
-      const off = mid - c.lerp(hOf(np), hOf(ns), c.EASE.out(c.clamp((c.f - fw[lay.lines[ns - 1].ids[0]] + 4) / 6))) / 2;
+      const hOf = (n) => lay.lines[n - 1].y + lay.lines[n - 1].size * 0.24, mid = (lay.topMin + lay.botMax) / 2, ns = nShown(c.f), np = nShown(c.f - 6);
+      const rawOff = mid - c.lerp(hOf(np), hOf(ns), c.EASE.out(c.clamp((c.f - fw[lay.lines[ns - 1].ids[0]] + 4) / 6))) / 2;
+      const off = Math.max(lay.topMin, Math.min(lay.botMax - lay.H, rawOff));
       lay.lines.forEach((ln) => ln.ids.forEach((i, j) => {
         const k = c.k(fw[i], 7), role = i === hot ? 'hot' : 'ink';
         c.text(words[i], ln.xs[j], off + ln.y, { size: ln.size, k, enter: FX[(i + sd) % FX.length], role, weight: 900, maxW: 2000 });
         if (i === hot && k >= 1) {                    // vạch nhấn quét dưới từ chính
           const b = c.text(words[i], ln.xs[j], off + ln.y, { size: ln.size, k: 0, weight: 900 }), kb = c.EASE.out(c.k(fw[i] + 6, 8));
-          c.g.save(); c.g.fillStyle = c.col('accent'); c.g.fillRect(b.x0, b.y1 + 10, (b.x1 - b.x0) * kb, Math.max(8, ln.size * 0.07)); c.g.restore();
+          c.g.save(); c.g.fillStyle = c.col('accent'); c.g.fillRect(b.x0, b.y1 + 8, (b.x1 - b.x0) * kb, Math.max(7, ln.size * 0.06)); c.g.restore();
         }
       }));
-      if (P.sub) c.K.tag(c, P.sub, c.A.cx, Math.min(c.A.bottom - 40, off + lay.H + 150), c.k(fe + 4, 10));
+      if (P.sub) c.K.tag(c, P.sub, c.A.cx, tagY(c, off + lay.H + 82), c.k(fe + 4, 10));
     },
   };
 }
@@ -601,9 +678,10 @@ function titleReveal(c0, P) {                         // lộ qua chiều sâu: 
     cues: [{ f: 1, name: 'whoosh_soft' }, { f: fr, name: 'riser' }, { f: fd, name: 'hit', kick: 0.4 }],
     texts: names(P.kicker, P.title, P.sub),
     draw(c) {
-      const rk = c.EASE.smooth(c.clamp((c.f - fr) / (fd - fr))), g = c.g, cy = 860;
+      const rk = c.EASE.smooth(c.clamp((c.f - fr) / (fd - fr))), g = c.g;
+      const topY = c.A.top + (P.kicker ? 84 : 26), spanH = c.A.bottom - topY, cy = topY + spanH * 0.42;
       if (P.icon) {
-        const ki = c.EASE.out(c.k(1, 16)), Ri = ki * 760, s = 360 * (1 - 0.2 * rk) * (1 + 0.025 * Math.sin(c.f * 0.05));
+        const ki = c.EASE.out(c.k(1, 16)), Ri = ki * 720, s = Math.min(310, spanH * 0.34) * (1 - 0.2 * rk) * (1 + 0.025 * Math.sin(c.f * 0.05));
         g.save(); g.beginPath(); g.arc(c.A.cx, cy, Math.max(1, Ri), 0, c.TAU); g.clip();
         if (rk > 0.02) g.filter = `blur(${(rk * 9).toFixed(1)}px) brightness(${(1 - 0.5 * rk).toFixed(3)})`;
         if (P.icon_role === 'hot') c.K.halo(c, c.A.cx - rk * 40, cy, s * 0.8);
@@ -611,12 +689,16 @@ function titleReveal(c0, P) {                         // lộ qua chiều sâu: 
         g.restore();
         if (ki < 1) c.draw([{ k: 'circle', x: 0, y: 0, r: 1, role: 'accent', fill: false, w: 0.8 }], { x: c.A.cx, y: cy, s: Math.max(1, Ri), plain: true, alpha: 1 - ki });
       }
-      if (P.kicker) c.text(P.kicker, c.A.cx, c.A.top + 60, { size: 36, font: 'mono', role: 'dim', k: c.k(1, 8), enter: 'type', weight: 600 });
-      const tb = (1 - rk) * 14, ty = P.icon ? 1180 : 960;
-      g.save(); if (tb > 0.3) g.filter = `blur(${tb.toFixed(1)}px)`;
-      const b = c.text(P.title, c.A.cx + (1 - rk) * 30, ty, { size: 132, k: c.k(fr - 8, 12), maxW: 900, quiet: tb > 0.5, lh: 1.0 });
+      if (P.kicker) c.text(P.kicker, c.A.cx, c.A.top + 38, { size: 32, font: 'mono', role: 'dim', k: c.k(1, 8), enter: 'type', weight: 600 });
+      const subRes = P.sub ? 114 : 24, tbBlur = (1 - rk) * 14;
+      const tf = fitText(c, P.title, c.A.cx, [118, 102, 88, 74, 64], { maxW: 900, lh: 1.02, maxH: Math.max(160, spanH - subRes - 40) });
+      const wantY = P.icon ? topY + spanH * 0.72 : topY + spanH * 0.48;
+      const maxTy = c.A.bottom - 36 - subRes - tf.b.y1, minTy = topY + 24 - tf.b.y0;
+      const ty = Math.max(minTy, Math.min(maxTy, wantY));
+      g.save(); if (tbBlur > 0.3) g.filter = `blur(${tbBlur.toFixed(1)}px)`;
+      const b = c.text(P.title, c.A.cx + (1 - rk) * 30, ty, { size: tf.size, k: c.k(fr - 8, 12), maxW: 900, quiet: tbBlur > 0.5, lh: 1.02 });
       g.restore();
-      if (P.sub) c.K.tag(c, P.sub, c.A.cx, Math.min(c.A.bottom - 30, b.y1 + 130), c.k(fd + 4, 10));
+      if (P.sub) c.K.tag(c, P.sub, c.A.cx, tagY(c, b.y1 + 88), c.k(fd + 4, 10));
     },
   };
 }
@@ -627,23 +709,45 @@ function factFlip(c0, P) {                            // thẻ lật: mặt trư
     cues: [{ f: 2, name: 'whoosh_soft' }, { f: fh, name: 'whoosh' }, { f: fh + FL / 2, name: 'pop' }, ...(P.em ? [{ f: fh + FL + 8, name: 'hit', kick: 0.5 }] : [])],
     texts: names(P.front, P.kicker, P.text, P.em),
     draw(c) {
-      const g = c.g, cx = c.A.cx, cy = 1000, cw = 860, chh = 940, ph = c.clamp((c.f - fh) / FL), back = ph >= 0.5;
+      const g = c.g, cx = c.A.cx, chh = Math.min(780, c.A.bottom - c.A.top - 80), cy = (c.A.top + c.A.bottom) / 2, cw = 860;
+      const ph = c.clamp((c.f - fh) / FL), back = ph >= 0.5;
       const pre = c.f < fh ? c.clamp(1 - (fh - c.f) / 8) : 0, sx = Math.max(0.02, Math.abs(Math.cos(Math.PI * ph))), sk = Math.sin(Math.PI * ph) * 0.09 * (back ? -1 : 1);
-      const kin = c.EASE.out(c.k(1, 12)), lift = pre * -18 + (1 - kin) * 260, rot = pre * Math.sin(c.f * 1.3) * 0.012;
-      c.draw([{ k: 'circle', x: 0, y: 0, r: 1, rx: 1, ry: 0.06, role: 'dim' }], { x: cx, y: cy + chh / 2 + 50, s: cw * 0.5 * sx, plain: true, alpha: 0.35 * kin });
+      const kin = c.EASE.out(c.k(1, 12)), lift = pre * -18 + (1 - kin) * 220, rot = pre * Math.sin(c.f * 1.3) * 0.012;
+      c.draw([{ k: 'circle', x: 0, y: 0, r: 1, rx: 1, ry: 0.06, role: 'dim' }], { x: cx, y: cy + chh / 2 + 34, s: cw * 0.48 * sx, plain: true, alpha: 0.35 * kin });
       g.save(); g.translate(cx, cy + lift); g.rotate(rot); g.transform(sx, sk, 0, 1, 0, 0); g.translate(-cx, -cy);
       if (ph > 0 && ph < 1) g.filter = `brightness(${(1 - 0.45 * Math.sin(Math.PI * ph)).toFixed(3)})`;
       g.globalAlpha *= c.clamp(kin * 2);
       g.fillStyle = c.mix(c.pal.bg, c.col(back ? 'accent' : 'ink'), back ? 0.1 : 0.12); g.fillRect(cx - cw / 2, cy - chh / 2, cw, chh);
       c.draw([{ k: 'rect', x: cx - cw / 2, y: cy - chh / 2, w: cw, h: chh, rad: 28, role: back ? 'accent' : 'dim', fill: false }], { s: 1, plain: true });
-      const q = ph > 0 && ph < 1;
+      const q = ph > 0 && ph < 1, maxW = cw - 120;
       if (!back) {
-        if (P.kicker) c.text(P.kicker, cx, cy - chh / 2 + 110, { size: 34, font: 'mono', role: 'dim', k: c.k(2, 8), weight: 600, quiet: q });
-        if (P.icon) c.icon(P.icon, { x: cx, y: cy - 150, s: 110, role: P.icon_role, p: 0.6 });
-        c.text(front, cx, P.icon ? cy + 120 : cy + 40, { size: front.length <= 2 ? 360 : 96, k: c.k(3, 10), maxW: cw - 120, lh: 1.08, quiet: q, role: front.length <= 2 ? 'accent' : 'ink' });
+        if (P.kicker) c.text(P.kicker, cx, cy - chh / 2 + 78, { size: 30, font: 'mono', role: 'dim', k: c.k(2, 8), weight: 600, quiet: q });
+        const topIn = cy - chh / 2 + (P.kicker ? 124 : 56), botIn = cy + chh / 2 - 56;
+        if (P.icon) {
+          c.icon(P.icon, { x: cx, y: topIn + 110, s: 96, role: P.icon_role, p: 0.6 });
+          const ff = fitText(c, front, cx, front.length <= 2 ? [240, 180] : [86, 72, 60, 50], { maxW, lh: 1.08, maxH: Math.max(120, botIn - (topIn + 230)) });
+          c.text(front, cx, topIn + 230 + Math.max(0, (botIn - (topIn + 230) - ff.h) / 2) - ff.b.y0, { size: ff.size, k: c.k(3, 10), maxW, lh: 1.08, quiet: q, role: front.length <= 2 ? 'accent' : 'ink' });
+        } else {
+          const ff = fitText(c, front, cx, front.length <= 2 ? [300, 220] : [92, 78, 66, 54], { maxW, lh: 1.08, maxH: botIn - topIn });
+          c.text(front, cx, topIn + Math.max(0, (botIn - topIn - ff.h) / 2) - ff.b.y0, { size: ff.size, k: c.k(3, 10), maxW, lh: 1.08, quiet: q, role: front.length <= 2 ? 'accent' : 'ink' });
+        }
       } else {
-        c.text(P.text, cx, cy - 150, { size: 96, k: c.clamp((ph - 0.5) * 2), enter: 'none', maxW: cw - 120, lh: 1.08, quiet: q });
-        if (P.em) { const ke = c.k(fh + FL + 8, 6); c.text(P.em, cx, cy + 250, { size: 84, role: 'hot', k: ke, enter: 'slam', maxW: cw - 120, weight: 900 }); }
+        // Tự đo P.text + P.em với k=0, thu nhỏ size động để tổng chiều cao luôn vừa chh - 140, căn giữa thẻ và đặt P.em strictly dưới tb.y1
+        const ef = P.em ? fitText(c, P.em, cx, [74, 64, 56, 48], { maxW, lh: 1.08, weight: 900, maxH: chh * 0.34 }) : null;
+        const emGap = 52, emH = ef ? ef.h : 0, availH = Math.max(220, chh - 140);
+        let tSize = 54, tb0 = null;
+        for (const sz of [84, 72, 62, 54, 46, 38]) {
+          const m = c.text(P.text, cx, 0, { size: sz, k: 0, maxW, lh: 1.1 });
+          tSize = sz; tb0 = m;
+          if ((m.y1 - m.y0) + (ef ? emH + emGap : 0) <= availH) break;
+        }
+        const textH = tb0.y1 - tb0.y0, gap = ef && (textH + emH + emGap > chh - 90) ? 34 : emGap;
+        const totalH = textH + (ef ? gap + emH : 0), stackTop = cy - totalH / 2, textY = stackTop - tb0.y0;
+        const tb = c.text(P.text, cx, textY, { size: tSize, k: c.clamp((ph - 0.5) * 2), enter: 'none', maxW, lh: 1.1, quiet: q });
+        if (P.em && ef) {
+          const ke = c.k(fh + FL + 8, 6);
+          c.text(P.em, cx, tb.y1 + gap - ef.b.y0, { size: ef.size, role: 'hot', k: ke, enter: 'slam', maxW, lh: 1.08, weight: 900 });
+        }
       }
       g.restore();
     },
@@ -656,14 +760,20 @@ function factQuote(c0, P) {                           // trích dẫn: ngoặc k
     cues: [{ f: 2, name: 'thunk', kick: 0.3 }, { f: 4, name: `typing:${(ft / c0.FPS).toFixed(2)}` }, ...(P.em ? [{ f: fe, name: 'pop', kick: 0.4 }] : [])],
     texts: names(P.kicker, P.text, P.em, P.by && `— ${P.by}`),
     draw(c) {
-      const x = c.A.x0 + 40, kq = c.k(1, 9), y0 = 800;
-      if (P.kicker) c.text(P.kicker, x, c.A.top + 60, { size: 34, font: 'mono', role: 'dim', align: 'left', k: c.k(1, 6), weight: 600, enter: 'type' });
-      c.enter(kq, [x - 20, y0 - 260, 260, 220], () => c.draw([...mark(0), ...mark(1.15)], { x: x + 70, y: y0 - 210 + bob(c, 2, 4), s: 80, rot: Math.PI }), 'pop');
-      const b = c.text(P.text, x, y0, { size: P.size || 104, align: 'left', k: c.k(4, ft), enter: 'type', maxW: c.A.x1 - x - 20, lh: 1.12 });
-      let y = b.y1 + 130;
-      if (P.em) { c.text(P.em, x, y, { size: 86, align: 'left', role: 'hot', k: c.k(fe, 8), enter: 'slide', maxW: c.A.x1 - x - 20, weight: 900 }); y += 120; }
-      if (P.by) c.text(`— ${P.by}`, x, y + 20, { size: 40, font: 'mono', role: 'dim', align: 'left', k: c.k(fe + 6, 10), weight: 600, enter: 'type', maxW: c.A.x1 - x - 20 });
-      if (c.f >= ft) c.draw([...mark(0), ...mark(1.15)], { x: c.A.x1 - 160, y: Math.min(c.A.bottom - 60, y + 110), s: 46, alpha: c.k(ft, 8) });
+      const x = c.A.x0 + 40, kq = c.k(1, 9), maxW = c.A.x1 - x - 20;
+      if (P.kicker) c.text(P.kicker, x, c.A.top + 38, { size: 32, font: 'mono', role: 'dim', align: 'left', k: c.k(1, 6), weight: 600, enter: 'type' });
+      const topY = c.A.top + (P.kicker ? 86 : 24), botY = c.A.bottom - 36, markH = 104;
+      const ef = P.em ? fitText(c, P.em, x, [78, 66, 56, 48], { align: 'left', maxW, weight: 900, maxH: 180 }) : null;
+      const bf = P.by ? fitText(c, `— ${P.by}`, x, [38, 32], { align: 'left', font: 'mono', maxW, weight: 600, maxH: 80 }) : null;
+      const extraH = (ef ? ef.h + 44 : 0) + (bf ? bf.h + 38 : 0);
+      const tf = fitText(c, P.text, x, [P.size || 92, 80, 68, 58, 48], { align: 'left', maxW, lh: 1.12, maxH: Math.max(150, botY - topY - markH - extraH) });
+      const totalH = markH + tf.h + extraH, startY = topY + Math.max(0, (botY - topY - totalH) / 2), y0 = startY + markH - tf.b.y0;
+      c.enter(kq, [x - 20, startY - 10, 220, 120], () => c.draw([...mark(0), ...mark(1.15)], { x: x + 62, y: startY + 24 + bob(c, 2, 4), s: 66, rot: Math.PI }), 'pop');
+      const b = c.text(P.text, x, y0, { size: tf.size, align: 'left', k: c.k(4, ft), enter: 'type', maxW, lh: 1.12 });
+      let lastY1 = b.y1;
+      if (P.em && ef) { const eb = c.text(P.em, x, Math.min(botY - (bf ? bf.h + 36 : 0) - ef.b.y1, lastY1 + 42 - ef.b.y0), { size: ef.size, align: 'left', role: 'hot', k: c.k(fe, 8), enter: 'slide', maxW, weight: 900 }); lastY1 = eb.y1; }
+      if (P.by && bf) { const bb = c.text(`— ${P.by}`, x, Math.min(botY - bf.b.y1, lastY1 + 36 - bf.b.y0), { size: bf.size, font: 'mono', role: 'dim', align: 'left', k: c.k(fe + 6, 10), weight: 600, enter: 'type', maxW }); lastY1 = bb.y1; }
+      if (c.f >= ft) c.draw([...mark(0), ...mark(1.15)], { x: c.A.x1 - 150, y: Math.min(c.A.bottom - 48, lastY1 + 28), s: 42, alpha: c.k(ft, 8) });
     },
   };
 }
@@ -675,7 +785,8 @@ function processLoop(c0, P) {                         // vòng tuần hoàn: cá
     cues: [...steps.map((_, i) => ({ f: arr(i), name: 'pop' })), ...Array.from({ length: cyc }, (_, lap) => ({ f: arr(0, lap + 1) - 1, name: 'ding', kick: 0.3 }))],
     texts: names(P.title, P.center, ...steps.map((s) => s.label)),
     draw(c) {
-      const yb = c.K.header(c, hd(P), c.k(1, 10)), R = n > 4 ? 300 : 270, cx = c.A.cx, cy = Math.max(1000, yb + R + 190);
+      const yb = drawHeader(c, P, c.k(1, 10)), availH = Math.max(300, c.A.bottom - yb - 130);
+      const R = Math.min(n > 4 ? 235 : 215, availH * 0.36), cx = c.A.cx, cy = yb + 92 + R + Math.max(0, (availH - 2 * R - 30) * 0.45);
       const tk = c.clamp((c.f - f0) / (f1 - f0)), a = -Math.PI / 2 + 2 * Math.PI * cyc * tk, A = (i) => -Math.PI / 2 + 2 * Math.PI * i / n;
       c.draw([{ k: 'circle', x: 0, y: 0, r: 1, role: 'dim', fill: false, w: 0.4, dash: [1.5, 2] }], { x: cx, y: cy, s: R, plain: true, alpha: c.k(1, 10) });
       const sweep = Math.min(2 * Math.PI, 2 * Math.PI * cyc * tk);                   // vòng đầu: cung có mũi tên vẽ theo hạt
@@ -684,24 +795,25 @@ function processLoop(c0, P) {                         // vòng tuần hoàn: cá
         if (e <= s0) continue;
         c.draw([{ k: 'arc', x: 0, y: 0, r: 1, a0: s0, a1: e, role: 'accent', w: 0.7 }], { x: cx, y: cy, s: R, seed: 4 + i });
         if (e >= s1 - 1e-3) { const hx = cx + Math.cos(s1) * R, hy = cy + Math.sin(s1) * R, d = s1 + Math.PI / 2;
-          c.draw([{ k: 'poly', role: 'accent', pts: [[hx + Math.cos(d) * 22, hy + Math.sin(d) * 22], [hx + Math.cos(d + 2.5) * 22, hy + Math.sin(d + 2.5) * 22], [hx + Math.cos(d - 2.5) * 22, hy + Math.sin(d - 2.5) * 22]] }], { s: 1 }); }
+          c.draw([{ k: 'poly', role: 'accent', pts: [[hx + Math.cos(d) * 20, hy + Math.sin(d) * 20], [hx + Math.cos(d + 2.5) * 20, hy + Math.sin(d + 2.5) * 20], [hx + Math.cos(d - 2.5) * 20, hy + Math.sin(d - 2.5) * 20]] }], { s: 1 }); }
       }
-      for (let j = 5; j >= 0; j--) { const aj = a - j * 0.07; c.draw([{ k: 'circle', x: 0, y: 0, r: 1, role: 'hot' }], { x: cx + Math.cos(aj) * R, y: cy + Math.sin(aj) * R, s: 20 - j * 2.5, plain: true, alpha: 1 - j / 6 }); }
+      for (let j = 5; j >= 0; j--) { const aj = a - j * 0.07; c.draw([{ k: 'circle', x: 0, y: 0, r: 1, role: 'hot' }], { x: cx + Math.cos(aj) * R, y: cy + Math.sin(aj) * R, s: 18 - j * 2.2, plain: true, alpha: 1 - j / 6 }); }
       steps.forEach((s, i) => {
         const ai = A(i), x = cx + Math.cos(ai) * R, y = cy + Math.sin(ai) * R, k = c.k(arr(i) - 6, 8);
         const dA = Math.abs(((a - ai) % (2 * Math.PI) + 3 * Math.PI) % (2 * Math.PI) - Math.PI), on = c.f >= arr(i) - 2 && dA < Math.PI / n;
-        c.enter(k, [x - 80, y - 80, 160, 160], () => c.icon(s.icon || 'dot', { x, y: y + (on ? bob(c, i, 5) : 0), s: on ? 84 : 70, role: s.role, p: s.p ?? 0.6 }));
-        if (on) c.K.ring(c, x, y, 110, c.clamp((Math.PI / n - dA) / (Math.PI / n) * 3));
-        const up = Math.sin(ai) < -0.7, ly = up ? y - 120 : y + 140, lx = Math.min(c.A.xr(ly) - 160, Math.max(c.A.x0 + 160, x));
-        c.K.label(c, s.label, lx, ly, k, { align: 'center', maxW: 320, size: 44, role: on || c.f > f1 ? 'ink' : 'dim' });
+        c.enter(k, [x - 70, y - 70, 140, 140], () => c.icon(s.icon || 'dot', { x, y: y + (on ? bob(c, i, 5) : 0), s: on ? 70 : 58, role: s.role, p: s.p ?? 0.6 }));
+        if (on) c.K.ring(c, x, y, 92, c.clamp((Math.PI / n - dA) / (Math.PI / n) * 3));
+        const up = Math.sin(ai) < -0.5, ly = up ? Math.max(yb + 46, y - 92) : Math.min(c.A.bottom - 30, y + 104);
+        const lx = Math.min(c.A.xr(ly) - 160, Math.max(c.A.x0 + 160, x));
+        c.K.label(c, s.label, lx, ly, k, { align: 'center', maxW: 300, size: 38, role: on || c.f > f1 ? 'ink' : 'dim' });
       });
-      if (P.center) c.text(P.center, cx, cy + 18, { size: 54, role: 'accent', k: c.k(4, 8), maxW: R * 1.2 });
-      else c.text(`×${Math.min(cyc, 1 + Math.floor(cyc * tk))}`, cx, cy + 30, { size: 90, font: 'mono', role: 'dim', quiet: true, enter: 'none' });
+      if (P.center) c.text(P.center, cx, cy + 16, { size: 46, role: 'accent', k: c.k(4, 8), maxW: R * 1.15 });
+      else c.text(`×${Math.min(cyc, 1 + Math.floor(cyc * tk))}`, cx, cy + 26, { size: 78, font: 'mono', role: 'dim', quiet: true, enter: 'none' });
     },
   };
 }
 function processNest(c0, P) {                         // zoom lồng: vĩ mô → vi mô, mỗi bước nằm TRONG bước trước; camera lao vào theo thang log
-  const steps = (P.steps || []).slice(0, 5), M = Math.max(1, steps.length), Z = Math.max(3, num(P.ratio, 7)), N = c0.N, R0 = 300;
+  const steps = (P.steps || []).slice(0, 5), M = Math.max(1, steps.length), Z = Math.max(3, num(P.ratio, 7)), N = c0.N, R0 = 260;
   const off = steps.map((_, i) => (i ? [(c0.hash(i, 31) - 0.5) * 0.7, (c0.hash(i, 37) - 0.5) * 0.5 + 0.05] : [0, 0]));
   const W = [[0, 0]]; for (let i = 1; i < M; i++) W.push([W[i - 1][0] + off[i][0] * R0 / Z ** (i - 1), W[i - 1][1] + off[i][1] * R0 / Z ** (i - 1)]);
   const pos = (u) => { const x = c0.clamp(u) * Math.max(1, M - 1), i = Math.min(M - 2, Math.floor(x)), t = x - i; return M < 2 ? [0, 0] : [i, c0.MO.M.smooth(c0.clamp((t - 0.35) / 0.65))]; };
@@ -709,7 +821,8 @@ function processNest(c0, P) {                         // zoom lồng: vĩ mô �
     cues: steps.slice(1).map((_, i) => ({ f: Math.round((i + 0.35) / Math.max(1, M - 1) * N * 0.9), name: 'whoosh' })),
     texts: names(P.title, ...steps.map((s) => s.label)),
     draw(c) {
-      const yb = c.K.header(c, hd(P), c.k(1, 10)), cx = c.A.cx, cy = Math.max(960, yb + 420), u = c.clamp(c.f / (c.N * 0.9)), [i, t] = pos(u);
+      const yb = drawHeader(c, P, c.k(1, 10)), botNeed = 152, availH = Math.max(240, c.A.bottom - botNeed - yb - 20);
+      const cx = c.A.cx, cy = yb + 20 + availH * 0.5, u = c.clamp(c.f / (c.N * 0.9)), [i, t] = pos(u);
       const L = i + t, zoom = Z ** L, w = (1 - Z ** -t) / (1 - 1 / Z), cam = M < 2 ? W[0] : [c.lerp(W[i][0], W[i + 1][0], w), c.lerp(W[i][1], W[i + 1][1], w)];
       c.zoomU = M < 2 ? 0 : L / (M - 1);
       steps.forEach((s, j) => {
@@ -720,8 +833,9 @@ function processNest(c0, P) {                         // zoom lồng: vĩ mô �
       });
       const cur = t > 0.55 ? i + 1 : i, st = steps[cur]; if (!st) return;
       const settle = t <= 0.02 || t >= 0.98 || M < 2, kk = settle ? 1 : c.clamp(Math.abs(t - 0.55) * 5);
-      c.text(String(cur + 1).padStart(2, '0'), cx, cy + 400, { size: 44, font: 'mono', role: 'accent', k: kk, quiet: true, enter: 'none', weight: 700 });
-      c.text(st.label, cx, cy + 500, { size: 70, k: kk, quiet: !settle, maxW: 820 });
+      const numY = Math.min(c.A.bottom - 102, cy + availH * 0.5 + 34);
+      c.text(String(cur + 1).padStart(2, '0'), cx, numY, { size: 40, font: 'mono', role: 'accent', k: kk, quiet: true, enter: 'none', weight: 700 });
+      c.text(st.label, cx, Math.min(c.A.bottom - 32, numY + 68), { size: 58, k: kk, quiet: !settle, maxW: 820 });
     },
   };
 }
@@ -732,8 +846,11 @@ function processDomino(c0, P) {                       // chuỗi domino: mỗi b
     cues: steps.map((_, i) => ({ f: fi(i) + st, name: i === n - 1 ? 'thunk' : 'click', kick: i === n - 1 ? 0.6 : 0.15 })),
     texts: names(P.title, ...steps.map((s) => s.label)),
     draw(c) {
-      const yb = c.K.header(c, hd(P), c.k(1, 10)), b0 = Math.max(yb + 560, 1020), q = (i) => (n > 1 ? i / (n - 1) : 0);
-      const T = steps.map((_, i) => { const s = c.lerp(1, 0.62, q(i)); return { x: c.lerp(c.A.x0 + 70, c.A.x1 - 150, q(i)), b: b0 - q(i) * 210, s, w: 92 * s, h: 300 * s }; });
+      const yb = drawHeader(c, P, c.k(1, 10)), q = (i) => (n > 1 ? i / (n - 1) : 0);
+      const lh = Math.min(60, Math.max(46, (c.A.bottom - yb - 240) / (n + 1.5))), listH = n * lh + 26;
+      const b0 = Math.max(yb + 190, c.A.bottom - listH - 46);
+      const domH = Math.min(230, Math.max(120, b0 - yb - 44)), domW = domH * 0.31;
+      const T = steps.map((_, i) => { const s = c.lerp(1, 0.64, q(i)); return { x: c.lerp(c.A.x0 + 70, c.A.x1 - 150, q(i)), b: b0 - q(i) * Math.min(140, domH * 0.55), s, w: domW * s, h: domH * s }; });
       const fallK = (i) => c.clamp((c.f - fi(i)) / st);
       T.forEach((d, i) => {                            // góc chạm quân sau (nghiêng tựa) → quân cuối nằm hẳn
         const nx = T[i + 1], lean = nx ? Math.asin(c.clamp((nx.x - d.w * 0.5 - (d.x + d.w / 2)) / d.h, 0.05, 0.98)) : Math.PI / 2;
@@ -752,11 +869,11 @@ function processDomino(c0, P) {                       // chuỗi domino: mỗi b
         }, 'grow');
         c.g.restore();
       }
-      const ly0 = b0 + 110, lh = Math.min(76, (c.A.bottom - ly0) / n);
+      const ly0 = b0 + 56, lblSize = Math.min(38, Math.max(28, Math.floor(lh * 0.68)));
       steps.forEach((s, i) => {
-        const k = c.k(fi(i), 7), on = c.f >= fi(i) && (i === n - 1 || c.f < fi(i + 1) + 4);
-        c.text(String(i + 1).padStart(2, '0'), c.A.x0 + 10, ly0 + i * lh, { size: 40, font: 'mono', role: 'accent', align: 'left', k, quiet: true, weight: 700 });
-        c.K.label(c, s.label, c.A.x0 + 90, ly0 + i * lh, k, { align: 'left', size: 44, maxW: c.A.xr(ly0 + i * lh) - c.A.x0 - 100, role: on ? 'ink' : 'dim' });
+        const y = ly0 + i * lh, k = c.k(fi(i), 7), on = c.f >= fi(i) && (i === n - 1 || c.f < fi(i + 1) + 4);
+        c.text(String(i + 1).padStart(2, '0'), c.A.x0 + 10, y, { size: lblSize - 2, font: 'mono', role: 'accent', align: 'left', k, quiet: true, weight: 700 });
+        c.K.label(c, s.label, c.A.x0 + 84, y, k, { align: 'left', size: lblSize, maxW: c.A.xr(y) - c.A.x0 - 94, role: on ? 'ink' : 'dim' });
       });
     },
   };
@@ -787,15 +904,16 @@ function title(c0, P) {
   return {
     cues: [{ f: 1, name: 'whoosh_soft' }, { f: 9, name: 'pop' }], texts: names(P.kicker, P.title, P.sub),
     draw(c) {
-      const yb = c.K.header(c, hd(P), c.k(2, 12));
-      const cy = Math.max(yb + 300, 900), s = 210;
+      const yb = drawHeader(c, P, c.k(2, 12));
+      const subH = P.sub ? 112 : 28, availTop = yb + 34, availBot = c.A.bottom - subH;
+      const availH = Math.max(180, availBot - availTop), s = Math.min(195, availH * 0.38), cy = availTop + availH * 0.5;
       if (P.icon) {
         const k = c.k(7, 10);
         c.K.ground(c, c.A.cx, cy + s * 0.95, s * 2.2);
         if (P.icon_role === 'hot') c.K.halo(c, c.A.cx, cy + bob(c), s * 0.8);
         c.enter(k, [c.A.cx - s, cy - s, s * 2, s * 2], () => c.icon(P.icon, { x: c.A.cx, y: cy + bob(c), s, role: P.icon_role, p: P.icon_p ?? 0.6 }));
       }
-      if (P.sub) c.K.tag(c, P.sub, c.A.cx, cy + s + 190, c.k(16, 10));
+      if (P.sub) c.K.tag(c, P.sub, c.A.cx, tagY(c, Math.max(yb + 86, P.icon ? cy + s + 90 : availTop + availH * 0.5)), c.k(16, 10));
     },
   };
 }
@@ -807,21 +925,26 @@ function drop(c0, P) {                                // A rơi/đi vào B → v
     cues: [{ f: Math.max(0, fh - 8), name: 'whoosh' }, { f: fh, name: P.sfx || 'splash', kick: 1 }, ...(hot ? [{ f: fh + 3, name: 'sizzle' }] : [])],
     texts: names(P.title, a.label, b.label, P.result),
     draw(c) {
-      const yb = c.K.header(c, hd(P), c.k(1, 10)), cx = c.A.cx, by = Math.max(1080, yb + 600), bs = 200, as = 96, ay0 = by - 440;
-      const fall = c.clamp((c.fs - (fh - 8)) / 8), ay = fall <= 0 ? ay0 + bob(c) - c.EASE.out(c.k(fh - 16, 8)) * 26 : c.lerp(ay0 - 26, by + 10, c.EASE.in(fall));
+      const yb = drawHeader(c, P, c.k(1, 10)), cx = c.A.cx;
+      const botNeed = (b.label ? 74 : 14) + (P.result ? 92 : 16) + 36;
+      const availH = Math.max(260, c.A.bottom - botNeed - yb - 20);
+      const bs = Math.min(165, availH * 0.27), as = Math.round(bs * 0.48), by = c.A.bottom - botNeed - bs;
+      const ay0 = Math.max(yb + as + 32, by - bs * 2.0);
+      const fall = c.clamp((c.fs - (fh - 8)) / 8), ay = fall <= 0 ? ay0 + bob(c) - c.EASE.out(c.k(fh - 16, 8)) * 22 : c.lerp(ay0 - 22, by + 10, c.EASE.in(fall));
       const after = c.fs - fh, shake = after >= 0 && after < 10 ? Math.sin(after * 2.4) * (10 - after) * 1.6 : 0;
       c.K.ground(c, cx, by + bs * 0.98, bs * 2.3);
-      if (after > 2) c.icon('steam', { x: cx, y: by - bs - 130 - Math.min(60, after * 1.5), s: 90 + Math.min(50, after), alpha: c.clamp(after / 8) * (hot ? 1 : 0.5), k: c.clamp(after / 10) });
+      if (after > 2) c.icon('steam', { x: cx, y: by - bs - 110 - Math.min(50, after * 1.4), s: 80 + Math.min(40, after), alpha: c.clamp(after / 8) * (hot ? 1 : 0.5), k: c.clamp(after / 10) });
       c.enter(c.k(4, 10), [cx - bs, by - bs, bs * 2, bs * 2], () => c.icon(b.icon || 'glass', { x: cx + shake, y: by, s: bs, p: b.p ?? 0.62, role: b.role }));
       if (after < 0 || hot) {                         // vật nóng vẫn thấy được sau khi chìm (nằm dưới đáy)
         const sunk = after >= 0;
         if (hot && !sunk) c.K.halo(c, cx, ay, as);
         c.enter(c.k(8, 8), [cx - as, ay - as, as * 2, as * 2], () => c.icon(a.icon || 'ball', { x: cx + (sunk ? shake : 0), y: sunk ? by + bs * 0.42 : ay, s: sunk ? as * 0.82 : as, role: a.role, sy: fall > 0 && !sunk ? 1.18 : 1 }), 'pop');
       }
-      if (after >= 0 && after < 9) c.icon('burst', { x: cx, y: by - bs * 0.6, s: 60 + after * 34, alpha: 1 - after / 9, role: hot ? 'hot' : 'accent', plain: true });
-      if (a.label && after < 0) { const k = c.k(12, 8); c.K.arrow(c, cx + 330, ay0, cx + as + 26, ay0, k, 'dim'); c.K.label(c, a.label, cx + 190, ay0 - 40, k, { align: 'center', maxW: 330 }); }
-      if (b.label) c.K.label(c, b.label, cx, by + bs + 96, c.k(8, 8), { role: 'dim' });
-      if (P.result) c.K.tag(c, P.result, cx, by + bs + 220, c.k(fh + 8, 9));
+      if (after >= 0 && after < 9) c.icon('burst', { x: cx, y: by - bs * 0.6, s: 55 + after * 30, alpha: 1 - after / 9, role: hot ? 'hot' : 'accent', plain: true });
+      if (a.label && after < 0) { const k = c.k(12, 8); c.K.arrow(c, cx + 310, ay0, cx + as + 24, ay0, k, 'dim'); c.K.label(c, a.label, cx + 190, Math.max(yb + 46, ay0 - 36), k, { align: 'center', maxW: 320, size: 42 }); }
+      let y = by + bs + 12;
+      if (b.label) { const blb = c.K.label(c, b.label, cx, y + 50, c.k(8, 8), { role: 'dim', align: 'center', size: 42 }); y = blb.y1; }
+      if (P.result) c.K.tag(c, P.result, cx, tagY(c, y + 76), c.k(fh + 8, 9));
     },
   };
 }
@@ -836,18 +959,21 @@ function counter(c0, P) {
   return {
     cues: [...ticks, { f: f1, name: 'ding', kick: 0.6 }], texts: names(P.title, final, P.unit, P.label),
     draw(c) {
-      const yb = c.K.header(c, hd(P), c.k(1, 10)), cy = Math.max(940, yb + 420), k = c.clamp((c.f - f0) / (f1 - f0)), e = c.EASE.out(k), landed = c.f >= f1;
+      const yb = drawHeader(c, P, c.k(1, 10)), k = c.clamp((c.f - f0) / (f1 - f0)), e = c.EASE.out(k), landed = c.f >= f1;
       const v = landed ? to : c.lerp(from, to, e), txt = landed ? final : `${P.prefix || ''}${c.fmtNum(v, dec)}${P.suffix || ''}`;
-      const R = 350;
+      const botNeed = P.label ? 112 : 30, availH = Math.max(280, c.A.bottom - botNeed - yb - 24);
+      const R = Math.min(305, availH * 0.48), cy = yb + 24 + availH * 0.5;
       c.draw([{ k: 'arc', x: 0, y: 0, r: 1, a0: -Math.PI * 1.25, a1: Math.PI * 0.25, role: 'dim', w: 0.6 }], { x: c.A.cx, y: cy, s: R, plain: true, alpha: 0.6 });
       c.draw([{ k: 'arc', x: 0, y: 0, r: 1, a0: -Math.PI * 1.25, a1: -Math.PI * 1.25 + Math.PI * 1.5 * Math.max(0.01, e), role: P.role || 'hot', w: 1.5 }], { x: c.A.cx, y: cy, s: R, seed: 3 });
-      if (P.icon) c.icon(P.icon, { x: c.A.cx, y: cy - 210 + bob(c, 2, 5), s: 70, role: P.icon_role, p: e });
+      if (P.icon) c.icon(P.icon, { x: c.A.cx, y: cy - R * 0.56 + bob(c, 2, 5), s: Math.min(62, R * 0.21), role: P.icon_role, p: e });
       const pulse = landed ? 1 + Math.max(0, 1 - (c.f - f1) / 6) * 0.08 : 1;
+      const numSize = Math.min(final.length > 6 ? 150 : 190, R * 0.62);
       c.g.save(); c.g.translate(c.A.cx, cy); c.g.scale(pulse, pulse); c.g.translate(-c.A.cx, -cy);
-      c.text(txt, c.A.cx, cy + 70, { size: final.length > 6 ? 170 : 220, quiet: !landed, enter: 'none', align: 'center', maxW: 640, track: 0 });
+      const nb = c.text(txt, c.A.cx, cy + R * 0.18, { size: numSize, quiet: !landed, enter: 'none', align: 'center', maxW: R * 1.85, track: 0 });
       c.g.restore();
-      if (P.unit) c.text(P.unit, c.A.cx, cy + 190, { size: 76, role: 'accent', k: c.k(4, 8), align: 'center' });
-      if (P.label) c.K.tag(c, P.label, c.A.cx, cy + R + 150, c.k(f1 + 4, 9));
+      let lastY = nb.y1;
+      if (P.unit) { const ub = c.text(P.unit, c.A.cx, nb.y1 + Math.min(72, R * 0.24), { size: Math.min(64, R * 0.22), role: 'accent', k: c.k(4, 8), align: 'center', maxW: R * 1.8 }); lastY = ub.y1; }
+      if (P.label) c.K.tag(c, P.label, c.A.cx, tagY(c, Math.max(cy + R * 0.85 + 62, lastY + 78)), c.k(f1 + 4, 9));
     },
   };
 }
@@ -861,17 +987,19 @@ function compare(c0, P) {
   return {
     cues: [{ f: 8, name: 'pop' }, { f: 16, name: 'pop' }, { f: 30, name: 'hit', kick: 0.5 }], texts: names(P.title, l.label, r.label, lab(l), lab(r)),
     draw(c) {
-      const yb = c.K.header(c, hd(P), c.k(1, 10)), base = Math.max(1180, yb + 640), maxH = 290, cols = [[l, c.A.cx - 215, 8], [r, c.A.cx + 195, 16]];
+      const yb = drawHeader(c, P, c.k(1, 10)), botNeed = 76 + (P.result ? 104 : 18) + 36;
+      const base = c.A.bottom - botNeed, topNeed = (l.icon || r.icon) ? 215 : 88;
+      const maxH = Math.max(130, Math.min(280, base - yb - topNeed)), cols = [[l, c.A.cx - 215, 8], [r, c.A.cx + 195, 16]];
       c.g.fillStyle = c.col('dim'); c.g.fillRect(c.A.x0 + 20, base, c.A.xr(base) - c.A.x0 - 40, 3);
       for (const [o, x, f0] of cols) {
-        const k = c.k(f0, 14), e = c.EASE.out(k), h = Math.max(8, maxH * (Number(o.value) || 0) / vmax) * e, win = (Number(o.value) || 0) >= vmax, w = 150;
+        const k = c.k(f0, 14), e = c.EASE.out(k), h = Math.max(8, maxH * (Number(o.value) || 0) / vmax) * e, win = (Number(o.value) || 0) >= vmax, w = 148;
         c.K.bar(c, x - w / 2, base, w, h, o.role || (win ? 'hot' : 'ink'));
-        if (o.icon) c.enter(c.k(f0 + 2, 9), [x - 70, base - h - 190, 140, 140], () => c.icon(o.icon, { x, y: base - h - 110 + bob(c, f0, 5), s: 66, role: o.icon_role, p: o.p ?? 0.6 }));
-        if (lab(o)) c.text(k >= 1 ? lab(o) : `${c.fmtNum((Number(o.value) || 0) * e, decOf(o, P))}${o.unit ? ' ' + o.unit : ''}`, x, base - h - (o.icon ? 220 : 40), { size: 56, quiet: k < 1, enter: 'none', align: 'center', role: win ? 'accent' : 'ink', maxW: 400 });
-        if (o.label) c.K.label(c, o.label, x, base + 70, c.k(f0 + 4, 8), { align: 'center', maxW: 380 });
+        if (o.icon) c.enter(c.k(f0 + 2, 9), [x - 62, base - h - 160, 124, 124], () => c.icon(o.icon, { x, y: base - h - 92 + bob(c, f0, 5), s: 58, role: o.icon_role, p: o.p ?? 0.6 }));
+        if (lab(o)) c.text(k >= 1 ? lab(o) : `${c.fmtNum((Number(o.value) || 0) * e, decOf(o, P))}${o.unit ? ' ' + o.unit : ''}`, x, Math.max(yb + 62, base - h - (o.icon ? 180 : 32)), { size: 52, quiet: k < 1, enter: 'none', align: 'center', role: win ? 'accent' : 'ink', maxW: 390 });
+        if (o.label) c.K.label(c, o.label, x, base + 60, c.k(f0 + 4, 8), { align: 'center', maxW: 380, size: 42 });
       }
-      if (P.vs) c.text(P.vs, c.A.cx - 10, base - maxH * 0.5, { size: 54, role: 'dim', k: c.k(22, 6), enter: 'pop', align: 'center', font: 'mono' });
-      if (P.result) c.K.tag(c, P.result, c.A.cx, base + 210, c.k(30, 9));
+      if (P.vs) c.text(P.vs, c.A.cx - 10, base - maxH * 0.5, { size: 50, role: 'dim', k: c.k(22, 6), enter: 'pop', align: 'center', font: 'mono' });
+      if (P.result) c.K.tag(c, P.result, c.A.cx, tagY(c, base + 150), c.k(30, 9));
     },
   };
 }
@@ -886,9 +1014,11 @@ function graph(c0, P) {
     cues: [{ f: fa, name: 'whoosh_soft' }, ...marks.map((m) => ({ f: m.f, name: 'pop' })), { f: fb, name: 'ding', kick: 0.4 }],
     texts: names(P.title, P.x_label, P.y_label, fin, ...marks.map((m) => m.label)),
     draw(c) {
-      const yb = c.K.header(c, hd(P), c.k(1, 10)), L = c.A.x0 + 70, R = c.A.xr(1000) - 40, T = Math.max(560, yb + 90), B = T + 560;
+      const yb = drawHeader(c, P, c.k(1, 10)), L = c.A.x0 + 70, R = c.A.xr(1000) - 40;
+      const T = yb + (P.y_label ? 84 : 44), botNeed = (marks.length ? 112 : 0) + (P.x_label ? 52 : 16) + 28;
+      const B = Math.max(T + 180, Math.min(T + 480, c.A.bottom - botNeed));
       const X = (v) => c.lerp(L, R, (v - x0) / Math.max(1e-9, x1 - x0)), Y = (v) => c.lerp(B, T, (v - y0) / Math.max(1e-9, y1 - y0));
-      c.draw([{ k: 'line', pts: [[L, T - 30], [L, B], [R + 20, B]], role: 'ink', w: 0.7 }], { s: 1, k: c.k(2, 10), seed: 1 });
+      c.draw([{ k: 'line', pts: [[L, T - 24], [L, B], [R + 20, B]], role: 'ink', w: 0.7 }], { s: 1, k: c.k(2, 10), seed: 1 });
       for (let i = 1; i <= 4; i++) c.draw([{ k: 'line', pts: [[L, c.lerp(B, T, i / 4)], [R, c.lerp(B, T, i / 4)]], role: 'dim', w: 0.25, dash: [1, 2] }], { s: 1, alpha: 0.5 * c.k(4, 8), plain: true });
       const k = c.clamp((c.f - fa) / (fb - fa)), dense = [];
       for (let i = 0; i < pts.length - 1; i++) for (let j = 0; j < 12; j++) { const t = j / 12, s = t * t * (3 - 2 * t); dense.push([X(c.lerp(pts[i][0], pts[i + 1][0], t)), Y(c.lerp(pts[i][1], pts[i + 1][1], P.smooth === false ? t : s))]); }
@@ -897,16 +1027,16 @@ function graph(c0, P) {
         c.draw([{ k: 'line', pts: dense, role: P.role || 'hot', w: 1.4 }], { s: 1, k: Math.max(0.002, k), seed: 2 });
         const idx = Math.min(dense.length - 1, Math.floor(k * (dense.length - 1))), d = dense[idx], val = c.lerp(y1, y0, (d[1] - T) / (B - T));
         c.draw([{ k: 'circle', x: 0, y: 0, r: 1, role: P.role || 'hot' }], { x: d[0], y: d[1], s: 15 + Math.sin(c.f * 0.5) * 3, plain: true });
-        const tx = Math.min(R - 110, Math.max(L + 130, d[0])), ty = Math.max(T + 10, d[1] - 46);
-        c.text(k >= 1 ? fin : `${c.fmtNum(val, dec)}${P.y_unit || ''}`, tx, ty, { size: 60, quiet: k < 1, enter: 'none', align: 'center', role: 'accent' });
+        const tx = Math.min(R - 110, Math.max(L + 130, d[0])), ty = Math.max(T + 14, d[1] - 42);
+        c.text(k >= 1 ? fin : `${c.fmtNum(val, dec)}${P.y_unit || ''}`, tx, ty, { size: 56, quiet: k < 1, enter: 'none', align: 'center', role: 'accent' });
       }
+      if (P.y_label) c.text(P.y_label, L - 20, T - 46, { size: 32, font: 'mono', role: 'dim', k: c.k(4, 8), align: 'left', weight: 600 });
+      if (P.x_label) c.text(P.x_label, R + 10, B + 46, { size: 32, font: 'mono', role: 'dim', k: c.k(4, 8), align: 'right', weight: 600 });
       for (const m of marks) {
         const mk = c.k(m.f, 8, false); if (mk <= 0) continue;
         c.draw([{ k: 'line', pts: [[X(m.x), B], [X(m.x), c.lerp(B, T + 40, c.EASE.out(mk))]], role: 'dim', w: 0.4, dash: [2, 2] }], { s: 1, plain: true });
-        c.K.label(c, m.label, Math.min(R - 120, Math.max(L + 120, X(m.x))), B + 150, mk, { align: 'center', maxW: 300, size: 38 });
+        c.K.label(c, m.label, Math.min(R - 120, Math.max(L + 120, X(m.x))), Math.min(c.A.bottom - 26, B + (P.x_label ? 104 : 62)), mk, { align: 'center', maxW: 300, size: 36 });
       }
-      if (P.y_label) c.text(P.y_label, L - 20, T - 60, { size: 34, font: 'mono', role: 'dim', k: c.k(4, 8), align: 'left', weight: 600 });
-      if (P.x_label) c.text(P.x_label, R + 10, B + 60, { size: 34, font: 'mono', role: 'dim', k: c.k(4, 8), align: 'right', weight: 600 });
     },
   };
 }
@@ -918,14 +1048,16 @@ function process(c0, P) {
   return {
     cues: steps.map((_, i) => ({ f: 6 + i * stride, name: i === steps.length - 1 ? 'ding' : 'pop' })), texts: names(P.title, ...steps.map((s) => s.label)),
     draw(c) {
-      const yb = c.K.header(c, hd(P), c.k(1, 10)), top = Math.max(yb + 130, 620), gap = Math.min(250, (c.A.bottom - 190 - top) / Math.max(1, steps.length - 1 || 1)), ix = c.A.x0 + 220;
+      const yb = drawHeader(c, P, c.k(1, 10)), top = Math.max(yb + 92, c.A.top + 120);
+      const gap = Math.min(200, Math.max(105, (c.A.bottom - 76 - top) / Math.max(1, steps.length - 1 || 1))), ix = c.A.x0 + 210;
+      const iconS = Math.min(68, Math.max(46, gap * 0.38)), lblS = Math.min(46, Math.max(34, gap * 0.28));
       steps.forEach((s, i) => {
         const y = top + i * gap, f0 = 6 + i * stride, k = c.k(f0, 9), active = c.fs >= f0 && (i === steps.length - 1 || c.fs < f0 + stride);
-        if (i > 0) c.K.arrow(c, ix, y - gap + 86, ix, y - 92, c.k(f0 - 6, 7), 'dim');
-        if (c.K.badge) c.K.badge(c, i + 1, c.A.x0 + 50, y, k); else c.text(String(i + 1).padStart(2, '0'), c.A.x0 + 6, y + 14, { size: 40, font: 'mono', role: 'accent', k, align: 'left', quiet: true, weight: 700 });
-        c.enter(k, [ix - 76, y - 76, 152, 152], () => c.icon(s.icon || 'dot', { x: ix, y: y + (active ? bob(c, i, 5) : 0), s: 72, role: s.role, p: s.p ?? 0.6 }));
-        if (active && k >= 1) c.K.ring(c, ix, y, 104, c.k(f0 + 6, 8));
-        c.K.label(c, s.label, ix + 150, y + 16, c.k(f0 + 3, 8), { align: 'left', maxW: c.A.xr(y) - ix - 160, size: 50, role: active ? 'ink' : 'dim' });
+        if (i > 0) c.K.arrow(c, ix, y - gap + iconS + 10, ix, y - iconS - 14, c.k(f0 - 6, 7), 'dim');
+        if (c.K.badge) c.K.badge(c, i + 1, c.A.x0 + 50, y, k); else c.text(String(i + 1).padStart(2, '0'), c.A.x0 + 6, y + 14, { size: 38, font: 'mono', role: 'accent', k, align: 'left', quiet: true, weight: 700 });
+        c.enter(k, [ix - iconS, y - iconS, iconS * 2, iconS * 2], () => c.icon(s.icon || 'dot', { x: ix, y: y + (active ? bob(c, i, 5) : 0), s: iconS, role: s.role, p: s.p ?? 0.6 }));
+        if (active && k >= 1) c.K.ring(c, ix, y, iconS * 1.38, c.k(f0 + 6, 8));
+        c.K.label(c, s.label, ix + 140, y + 14, c.k(f0 + 3, 8), { align: 'left', maxW: c.A.xr(y) - ix - 150, size: lblS, role: active ? 'ink' : 'dim' });
       });
     },
   };
@@ -938,8 +1070,9 @@ function scale(c0, P) {                               // thang kích thước: c
   return {
     cues: items.slice(1).map((_, i) => ({ f: Math.round((i + 0.3) / Math.max(1, M - 1) * c0.N * 0.92), name: 'whoosh' })), texts: names(P.title, ...items.map((it) => it.label), ...items.map(tx)),
     draw(c) {
-      const yb = c.K.header(c, hd(P), c.k(1, 10)), cx = c.A.cx, cy = Math.max(940, yb + 420), u = c.clamp(c.f / (c.N * 0.92)), [i, t] = pos(u);
-      const ls = M < 2 ? logs[0] || 0 : c.lerp(logs[i], logs[i + 1], t), base = 135, curI = t > 0.55 ? i + 1 : i;
+      const yb = drawHeader(c, P, c.k(1, 10)), botNeed = 166, availH = Math.max(240, c.A.bottom - botNeed - yb - 20);
+      const cx = c.A.cx, cy = yb + 20 + availH * 0.48, u = c.clamp(c.f / (c.N * 0.92)), [i, t] = pos(u);
+      const ls = M < 2 ? logs[0] || 0 : c.lerp(logs[i], logs[i + 1], t), base = 128, curI = t > 0.55 ? i + 1 : i;
       c.zoomU = M < 2 ? 0 : (ls - logs[0]) / Math.max(1e-9, logs[M - 1] - logs[0]);
       items.forEach((it, j) => {
         const r = base * Math.exp(logs[j] - ls); if (r < 2.5 || r > 2600) return;
@@ -950,8 +1083,8 @@ function scale(c0, P) {                               // thang kích thước: c
       if (M > 1 && i + 1 < M && t < 0.3) { const k = c.clamp((u * (M - 1) - i) / 0.3), rn = Math.max(26, base * Math.exp(logs[i + 1] - ls) * 1.4); c.K.ring(c, cx, cy, Math.min(rn, 500), k); }
       const it = items[curI]; if (!it) return;
       const settle = t <= 0.02 || t >= 0.98 || M < 2, kk = settle ? 1 : c.clamp(Math.abs(t - 0.55) * 5);
-      c.text(it.label, cx, cy + 420, { size: 70, k: kk, quiet: !settle, maxW: 800, align: 'center' });
-      c.text(tx(it), cx, cy + 520, { size: 60, role: 'accent', k: kk, quiet: !settle, align: 'center', font: 'mono', weight: 700 });
+      const lb = c.text(it.label, cx, Math.min(c.A.bottom - 104, cy + availH * 0.52 + 42), { size: 60, k: kk, quiet: !settle, maxW: 800, align: 'center' });
+      c.text(tx(it), cx, Math.min(c.A.bottom - 30, lb.y1 + 64), { size: 52, role: 'accent', k: kk, quiet: !settle, align: 'center', font: 'mono', weight: 700 });
     },
   };
 }
@@ -961,20 +1094,25 @@ function callout(c0, P) {
   return {
     cues: [{ f: 4, name: 'pop' }, ...labs.map((_, i) => ({ f: 12 + i * stride, name: 'tick' }))], texts: names(P.title, ...labs.map((l) => l.text)),
     draw(c) {
-      const yb = c.K.header(c, hd(P), c.k(1, 10)), cx = c.A.cx, cy = Math.max(930, yb + 420), s = 200;
+      const yb = drawHeader(c, P, c.k(1, 10)), availTop = yb + 64, availBot = c.A.bottom - 36, availH = Math.max(260, availBot - availTop);
+      const cx = c.A.cx, cy = availTop + availH * 0.5, s = Math.min(180, availH * 0.33), span = Math.min(250, availH * 0.42);
       c.K.ground(c, cx, cy + s, s * 2.2);
       if (P.icon_role === 'hot') c.K.halo(c, cx, cy, s * 0.8);
       c.enter(c.k(4, 10), [cx - s, cy - s, s * 2, s * 2], () => c.icon(P.icon || 'dot', { x: cx, y: cy + bob(c, 1, 5), s, role: P.icon_role, p: P.icon_p ?? 0.6 }));
       const normY = labs.length > 0 && labs.every((l) => typeof l.y === 'number' && l.y >= 0 && l.y <= 1);
+      const placed = { l: [], r: [] };
       labs.forEach((l, i) => {
-        const left = String(l.side || (i % 2 ? 'r' : 'l')).toLowerCase().startsWith('l');
-        const rawY = typeof l.y === 'number' ? (normY ? (l.y - 0.5) * 2.4 : l.y) : (i < 2 ? -0.9 : 0.9);
-        const yOff = c.clamp(rawY, -1.05, 1.05);
-        const ly = cy + yOff * 340, lx = left ? c.A.x0 + 10 : c.A.xr(ly) - 10, k = c.k(12 + i * stride, 9);
+        const left = String(l.side || (i % 2 ? 'r' : 'l')).toLowerCase().startsWith('l'), sideKey = left ? 'l' : 'r';
+        const rawY = typeof l.y === 'number' ? (normY ? (l.y - 0.5) * 2.4 : l.y) : (i < 2 ? -0.85 : 0.85);
+        const yOff = c.clamp(rawY, -1.0, 1.0);
+        let ly = c.clamp(cy + yOff * span, availTop + 56, availBot);
+        for (const py of placed[sideKey]) if (Math.abs(ly - py) < 92) ly = c.clamp(ly >= py ? py + 94 : py - 94, availTop + 56, availBot);
+        placed[sideKey].push(ly);
+        const lx = left ? c.A.x0 + 10 : c.A.xr(ly) - 10, k = c.k(12 + i * stride, 9);
         const ax = cx + (left ? -1 : 1) * s * 0.78, ay = cy + yOff * s * 0.48;
-        const lb = c.K.label(c, l.text, lx, ly - 54, k, { align: left ? 'left' : 'right', maxW: 270, size: 40, role: l.role || 'ink' });
+        const lb = c.K.label(c, l.text, lx, ly - 44, k, { align: left ? 'left' : 'right', maxW: 270, size: 38, role: l.role || 'ink' });
         const xStart = left ? Math.min(ax - 24, lb ? lb.x1 + 18 : lx + 210) : Math.max(ax + 24, lb ? lb.x0 - 18 : lx - 210);
-        c.K.arrow(c, xStart, ly - 32, ax, ay, k, 'dim');
+        c.K.arrow(c, xStart, ly - 24, ax, ay, k, 'dim');
       });
     },
   };
@@ -987,11 +1125,14 @@ function fact(c0, P) {
   return {
     cues: [{ f: 2, name: 'whoosh_soft' }, { f: Math.round(c0.N * 0.4), name: 'hit', kick: 0.6 }], texts: names(P.kicker, P.text, P.em),
     draw(c) {
-      const left = c.L.type.align === 'left', x = left ? c.A.x0 : c.A.cx; let y = c.A.top + 250;
-      if (P.kicker) c.text(P.kicker, x, y - 150, { size: 34, font: 'mono', role: 'dim', k: c.k(1, 8), weight: 600, enter: 'type' });
-      if (P.icon) { c.enter(c.k(3, 9), [c.A.cx - 110, y - 100, 220, 220], () => c.icon(P.icon, { x: c.A.cx, y: y + 20 + bob(c), s: 110, role: P.icon_role, p: 0.6 })); y += 260; }
-      const b = c.text(P.text, x, y + 100, { size: P.size || 104, k: c.k(4, 12), maxW: 860, lh: 1.1 });
-      if (P.em) { const f0 = Math.round(c.N * 0.4), bb = c.K.tag(c, P.em, c.A.cx, b.y1 + 300, c.k(f0, 9)); if (bb) c.K.ring(c, (bb.x0 + bb.x1) / 2, (bb.y0 + bb.y1) / 2, Math.min(170, Math.max(110, (bb.x1 - bb.x0) * 0.55)), c.k(f0 + 8, 10)); }
+      const left = c.L.type.align === 'left', x = left ? c.A.x0 : c.A.cx;
+      if (P.kicker) c.text(P.kicker, x, c.A.top + 38, { size: 32, font: 'mono', role: 'dim', k: c.k(1, 8), weight: 600, enter: 'type' });
+      const topY = c.A.top + (P.kicker ? 88 : 28), botY = c.A.bottom - 36, iconH = P.icon ? 185 : 0, emRes = P.em ? 126 : 16;
+      const tf = fitText(c, P.text, x, [P.size || 96, 84, 72, 62, 52], { maxW: 860, lh: 1.1, maxH: Math.max(150, botY - topY - iconH - emRes) });
+      const totalH = iconH + tf.h + (P.em ? 116 : 0), startY = topY + Math.max(0, (botY - topY - totalH) / 2);
+      if (P.icon) c.enter(c.k(3, 9), [c.A.cx - 95, startY, 190, 190], () => c.icon(P.icon, { x: c.A.cx, y: startY + 86 + bob(c), s: 94, role: P.icon_role, p: 0.6 }));
+      const b = c.text(P.text, x, startY + iconH - tf.b.y0, { size: tf.size, k: c.k(4, 12), maxW: 860, lh: 1.1 });
+      if (P.em) { const f0 = Math.round(c.N * 0.4), bb = c.K.tag(c, P.em, c.A.cx, tagY(c, b.y1 + 102), c.k(f0, 9)); if (bb) c.K.ring(c, (bb.x0 + bb.x1) / 2, (bb.y0 + bb.y1) / 2, Math.min(160, Math.max(100, (bb.x1 - bb.x0) * 0.55)), c.k(f0 + 8, 10)); }
     },
   };
 }
@@ -1000,11 +1141,13 @@ function outro(c0, P) {
   return {
     cues: [{ f: 2, name: 'pop' }], texts: names(P.next_prefix, P.teaser, P.follow),
     draw(c) {
-      const yb = c.K.header(c, { kicker: P.next_prefix, title: P.teaser, size: 98 }, c.k(1, 12)), cy = Math.max(yb + 320, 980);
+      const yb = c.K.header(c, { kicker: P.next_prefix, title: P.teaser, size: 92 }, c.k(1, 12));
+      const botNeed = P.follow ? 120 : 36, availH = Math.max(200, c.A.bottom - botNeed - yb - 24);
+      const s = Math.min(124, availH * 0.36), cy = yb + 24 + availH * 0.48;
       const a = c.f * 0.05;                            // vòng lặp: mũi tên chạy vòng (video nối về đầu)
       c.draw([{ k: 'arc', x: 0, y: 0, r: 1, a0: a, a1: a + 4.6, role: 'accent', w: 1.3 }, { k: 'poly', role: 'accent', pts: [[Math.cos(a + 4.6) * 1.0 - Math.sin(a + 4.6) * 0.22, Math.sin(a + 4.6) + Math.cos(a + 4.6) * 0.22], [Math.cos(a + 4.6) * 1.22, Math.sin(a + 4.6) * 1.22], [Math.cos(a + 4.6) * 0.78, Math.sin(a + 4.6) * 0.78]] }],
-             { x: c.A.cx, y: cy, s: 130 * c.EASE.out(c.k(4, 10)) + 0.01, seed: 4 });
-      if (P.follow) c.K.tag(c, P.follow, c.A.cx, cy + 300, c.k(12, 9));
+             { x: c.A.cx, y: cy, s: s * c.EASE.out(c.k(4, 10)) + 0.01, seed: 4 });
+      if (P.follow) c.K.tag(c, P.follow, c.A.cx, tagY(c, cy + s + 98), c.k(12, 9));
     },
   };
 }
@@ -1066,9 +1209,9 @@ function scene(c0, P) {
   const N = c0.N, acts = P.actors || [], labs = P.labels || [], arrs = P.arrows || [], fxs = P.fx || [];
   const uf = (u) => Math.round(c0.clamp(u ?? 0) * (N - 1));
   const FXSFX = { burst: 'hit', shockwave: 'boom', smoke: 'whoosh_soft', splash: 'splash', sparkle: 'sparkle' };
-  const DK = ['x', 'y', 'size', 'rot', 'p', 'alpha', 'z'];
+  const DK = ['x', 'y', 'size', 'rot', 'p', 'alpha', 'z', 'heat'];
   const keysOf = (a) => {                              // keyframe đã sắp theo u, thuộc tính thiếu lấy từ key trước
-    const ks = [{ u: a.in ?? 0, x: a.x ?? 0.5, y: a.y ?? 0.55, size: a.size ?? 170, rot: a.rot ?? 0, p: a.p ?? 0.6, alpha: 1, z: a.z ?? 0 },
+    const ks = [{ u: a.in ?? 0, x: a.x ?? 0.5, y: a.y ?? 0.55, size: a.size ?? 170, rot: a.rot ?? 0, p: a.p ?? 0.6, alpha: 1, z: a.z ?? 0, heat: a.heat ?? 0 },
       ...(a.keys || []).map((k) => ({ ...k }))].sort((p, q) => (p.u ?? 0) - (q.u ?? 0));
     for (let i = 1; i < ks.length; i++) for (const key of DK) if (ks[i][key] === undefined) ks[i][key] = ks[i - 1][key];
     return ks;
@@ -1128,7 +1271,7 @@ function scene(c0, P) {
   return {
     cues, texts: names(P.kicker, P.title, ...labs.map((l) => l.text)),
     draw(c) {
-      if (P.title || P.kicker) c.K.header(c, hd(P), c.k(1, 10));
+      const yb = (P.title || P.kicker) ? drawHeader(c, P, c.k(1, 10), true) : c.A.top;
       const u = c.clamp(c.f / Math.max(1, N - 1)), at = {}, g = c.g, cam = camAt(u, c);
       if (depthOn && DO.layers) {                      // hậu cảnh: bụi/mảnh xa, thị sai + DOF theo đúng camera của cảnh
         const kind = { hud: 'spark', synth: 'spark', sketch: 'cross', boil: 'cross', swiss: 'tick', picto: 'disc', spy: 'strip' }[c.L.look] || 'mote';
@@ -1165,8 +1308,8 @@ function scene(c0, P) {
           // nhân vật rig:<loài> (rig2d.js): hành động/biểu cảm đổi theo key, đồng hồ riêng từ lúc vào, tự quay mặt theo hướng đi
           const rig = typeof a.icon === 'string' && a.icon.startsWith('rig:'), dx = rig ? q.x - pose(id, Math.max(0, u - 0.02), c).x : 0;
           const face = a.face || (rig && !/:(left|right)\b/.test(a.icon) && dx < -1e-4 ? 'left' : undefined);
-          const args = { action: discrete(a, id, u, 'action'), expr: discrete(a, id, u, 'expr'), face, hair: a.hair, colors: a.colors, t0: uf(a.in ?? 0) / c.FPS };
-          c.enter(kin, [x - s, y - s, 2 * s, 2 * s], () => c.icon(a.icon || 'dot', { x, y, s, sx: vm.sx, sy: vm.sy, role: a.role, p: q.p, rot, alpha, seed: i + 3, args, k: vm.reveal, z: o.z }));
+          const args = { action: discrete(a, id, u, 'action'), expr: discrete(a, id, u, 'expr'), face, hair: a.hair, colors: a.colors, heat: q.heat, t0: uf(a.in ?? 0) / c.FPS };
+          c.enter(kin, [x - s, y - s, 2 * s, 2 * s], () => c.icon(a.icon || 'dot', { x, y, s, sx: vm.sx, sy: vm.sy, role: a.role, p: q.p, rot, alpha, heat: q.heat, seed: i + 3, args, k: vm.reveal, z: o.z }));
         }
         g.restore();
       }
@@ -1203,7 +1346,9 @@ function scene(c0, P) {
         const hw = b ? Math.min((c.A.x1 - c.A.x0) / 2, (b.x1 - b.x0) / 2 + (l.tag ? 40 : 20)) : 0;
         const Lp = !A && depthOn && l.z !== undefined ? proj(c, cam, l.x ?? 0.5, l.y ?? 0.8, l.z) : null;
         const x = A ? Math.min(c.A.x1 - hw, Math.max(c.A.x0 + hw, A[0])) : Lp ? Lp[0] : (l.x ?? 0.5) * c.W;
-        const y = A ? Math.min(c.A.bottom - 20, Math.max(c.A.top + 80, A[1] + A[2] + 70)) : Lp ? Lp[1] : (l.y ?? 0.8) * c.H;
+        const rawY = A ? A[1] + A[2] + 70 : Lp ? Lp[1] : (l.y ?? 0.8) * c.H;
+        const minLabY = Math.max(c.A.top + 70, yb + (l.tag ? 76 : 48));
+        const y = Math.min(c.A.bottom - 26, Math.max(minLabY, rawY));
         if (l.tag) c.K.tag(c, l.text, x, y, k, l.role || 'accent'); else c.K.label(c, l.text, x, y, k, { align: 'center', size: l.size || 54, role: l.role, maxW: 760 });
       }
     },
@@ -1221,21 +1366,21 @@ function units(c0, P) {                               // biểu đồ đơn vị
     cues: [{ f: f0, name: 'whoosh_soft' }, ...ends.map((f) => ({ f, name: 'tick' })), { f: f1 + 2, name: 'ding', kick: 0.4 }],
     texts: names(P.title, ...gs.map((g) => g.label), ...gs.map(vt), `= ${legend}`, P.result),
     draw(c) {
-      const yb = c.K.header(c, hd(P), c.k(1, 10)), top = Math.max(yb + 150, 600), bot = c.A.bottom - 190, n = gs.length || 1, W0 = c.A.x1 - c.A.x0;
+      const yb = drawHeader(c, P, c.k(1, 10), true), top = Math.max(yb + (P.result ? 108 : 54), c.A.stageTop + 30), bot = c.A.bottom - 134, n = gs.length || 1, W0 = c.A.x1 - c.A.x0;
       const rows = n === 3, boxes = gs.map((_, i) => (rows
-        ? { x: c.A.x0, y: top + i * (bot - top) / 3 + 80, w: W0, h: (bot - top) / 3 - 100 }
-        : { x: c.A.x0 + i * (W0 + 50) / n, y: top + 90, w: (W0 - 50 * (n - 1)) / n, h: bot - top - 160 }));
-      const s = Math.min(...ns.map((v, i) => unitGrid(v, boxes[i], { maxS: 120 }).s));
+        ? { x: c.A.x0, y: top + i * (bot - top) / 3 + 56, w: W0, h: Math.max(64, (bot - top) / 3 - 76) }
+        : { x: c.A.x0 + i * (W0 + 50) / n, y: top + 68, w: (W0 - 50 * (n - 1)) / n, h: Math.max(120, bot - top - 120) }));
+      const s = Math.min(...ns.map((v, i) => unitGrid(v, boxes[i], { maxS: 108 }).s));
       gs.forEach((g, i) => {
         const bx = boxes[i], grid = unitGrid(ns[i], bx, { maxS: s, anchor: rows ? 'center' : 'bottom', up: !rows });
         const shown = drawUnits(c, grid, ns[i], { icon: g.icon || P.icon, role: g.role || ['hot', 'cold', 'accent'][i], fOf, seed: 70 + i * 9 });
         const done = c.f >= ends[i], v = Math.min(Math.abs(vals[i]), shown * per), cx = bx.x + bx.w / 2;
-        const ty = rows ? bx.y - 26 : grid.y0 - 40, tx = rows ? bx.x : cx, al = rows ? 'left' : 'center';
-        if (g.label) c.K.label(c, g.label, tx, rows ? ty - 54 : bot - 10, c.k(f0 + i * 3, 8), { align: al, maxW: rows ? 600 : bx.w, size: 44 });
-        c.text(done ? vt(g) : `${c.fmtNum(v, decN(per))}${(g.unit || P.unit) ? ' ' + (g.unit || P.unit) : ''}`, rows ? bx.x + bx.w : tx, ty, { size: rows ? 50 : 56, quiet: !done, enter: 'none', role: done ? 'accent' : 'ink', align: rows ? 'right' : 'center', maxW: rows ? 380 : bx.w });
+        const ty = rows ? bx.y - 16 : Math.max(top + 38, grid.y0 - 30), tx = rows ? bx.x : cx, al = rows ? 'left' : 'center';
+        if (g.label) c.K.label(c, g.label, tx, rows ? ty - 42 : bot + 14, c.k(f0 + i * 3, 8), { align: al, maxW: rows ? 580 : bx.w, size: 40 });
+        c.text(done ? vt(g) : `${c.fmtNum(v, decN(per))}${(g.unit || P.unit) ? ' ' + (g.unit || P.unit) : ''}`, rows ? bx.x + bx.w : tx, ty, { size: rows ? 44 : 52, quiet: !done, enter: 'none', role: done ? 'accent' : 'ink', align: rows ? 'right' : 'center', maxW: rows ? 360 : bx.w });
       });
-      drawLegend(c, gs[0] && (gs[0].icon || P.icon), gs[0] && (gs[0].role || 'hot'), legend, c.A.cx, c.A.bottom - 70, c.k(f0 + 6, 8));
-      if (P.result) c.K.tag(c, P.result, c.A.cx, top - 10, c.k(f1 + 4, 9));
+      drawLegend(c, gs[0] && (gs[0].icon || P.icon), gs[0] && (gs[0].role || 'hot'), legend, c.A.cx, tagY(c, c.A.bottom - 38), c.k(f0 + 6, 8));
+      if (P.result) c.K.tag(c, P.result, c.A.cx, Math.max(yb + 46, top - 34), c.k(f1 + 4, 9));
     },
   };
 }
@@ -1274,27 +1419,30 @@ function timeline(c0, P) {                            // trục thời gian: kho
     cues: [...ev.map((_, i) => ({ f: arrive[i], name: 'pop' })), ...ev.slice(1).map((_, i) => ({ f: Math.round(f0 + (f1 - f0) * (i + 0.3) / Math.max(1, n - 1)), name: 'whoosh_soft' }))],
     texts: names(P.title, ...ev.map(tl), ...ev.map((e) => e.label)),
     draw(c) {
-      const yb = c.K.header(c, hd(P), c.k(1, 10)), ay = Math.max(1080, yb + 560), [i, t] = pos(c.f);
+      const yb = drawHeader(c, P, c.k(1, 10), true), availTop = yb + 34, availBot = c.A.bottom - 30, spanH = Math.max(320, availBot - availTop);
+      const ay = availTop + spanH * 0.52, stem = Math.min(126, spanH * 0.16), [i, t] = pos(c.f);
       const camX = n < 2 ? 0 : c.lerp(xs[i], xs[i + 1], t), dz = 1 - 0.1 * Math.sin(Math.PI * t), cx = c.A.cx, X = (x) => cx + (x - camX) * dz, g = c.g;
       parallaxDust(c, camX, 0, seed, { n: 22 });
       // năm/mốc lớn mờ ở hậu cảnh (thị sai 0.35): camera đi qua như qua các lớp
       // chỉ mốc đang tới/đang rời (đan chéo), lớp này trôi 0.35 lần tốc độ camera → thấy hai tầng sâu
       [[i, 1 - t], [Math.min(n - 1, i + 1), t]].forEach(([j, w]) => { const e = ev[j]; if (!e || w < 0.02) return;
         g.save(); g.globalAlpha *= 0.12 * w; g.filter = 'blur(2px)';
-        c.text(tl(e), cx + (xs[j] - camX) * 0.35, ay + 650, { size: 260, font: 'mono', quiet: true, enter: 'none', weight: 800, maxW: 2000 }); g.restore(); });
+        c.text(tl(e), cx + (xs[j] - camX) * 0.35, Math.min(c.A.bottom - 40, ay + 180), { size: 220, font: 'mono', quiet: true, enter: 'none', weight: 800, maxW: 2000 }); g.restore(); });
       const xA = X(xs[0]) - 200, xB = X(xs[n - 1]) + 200;
       c.draw([{ k: 'line', pts: [[Math.max(-50, xA), ay], [Math.min(c.W + 50, xB), ay]], role: 'dim', w: 0.6 }], { s: 1, plain: true, alpha: c.k(1, 10) });
       c.draw([{ k: 'line', pts: [[Math.max(-50, X(xs[0])), ay], [Math.min(c.W + 50, cx), ay]], role: 'accent', w: 1.1 }], { s: 1, plain: true });
       c.draw([{ k: 'circle', x: 0, y: 0, r: 1, role: 'hot' }], { x: cx, y: ay, s: 16 + Math.sin(c.f * 0.4) * 3, plain: true });
       ev.forEach((e, j) => {
         const x = X(xs[j]); if (x < -500 || x > c.W + 500) return;
-        const up = j % 2 === 0, k = c.k(arrive[j] - 6, 9), here = j === (t > 0.5 ? i + 1 : i), sy = up ? ay - 170 : ay + 170;
+        const up = j % 2 === 0, k = c.k(arrive[j] - 6, 9), here = j === (t > 0.5 ? i + 1 : i), sy = up ? ay - stem : ay + stem;
         c.draw([{ k: 'line', pts: [[x, ay], [x, c.lerp(ay, sy, c.EASE.out(k))]], role: here ? 'accent' : 'dim', w: 0.5 }], { s: 1, plain: true });
         c.draw([{ k: 'circle', x: 0, y: 0, r: 1, role: here ? 'hot' : 'ink' }], { x, y: ay, s: here ? 13 : 9, plain: true, alpha: c.clamp(k * 2) });
-        if (e.icon) c.enter(k, [x - 70, sy - 70, 140, 140], () => c.icon(e.icon, { x, y: sy + (up ? -50 : 50) + (here ? bob(c, j, 5) : 0), s: here ? 80 : 64, role: e.role, p: e.p ?? 0.6, seed: 80 + j }));
-        const ty = up ? sy - (e.icon ? 170 : 40) : sy + (e.icon ? 200 : 70), lx = Math.min(c.A.xr(ty) - 200, Math.max(c.A.x0 + 200, x));
-        c.text(tl(e), here ? lx : x, ty, { size: here ? 84 : 64, font: 'mono', role: here ? 'accent' : 'dim', k, weight: 700, quiet: !here });
-        c.K.label(c, e.label, here ? lx : x, up ? ty - 95 : ty + 90, k, { align: 'center', maxW: 420, size: here ? 54 : 44, role: here ? 'ink' : 'dim', quiet: !here });
+        if (e.icon) c.enter(k, [x - 56, sy - 56, 112, 112], () => c.icon(e.icon, { x, y: sy + (up ? -34 : 34) + (here ? bob(c, j, 4) : 0), s: here ? 58 : 48, role: e.role, p: e.p ?? 0.6, seed: 80 + j }));
+        const rawTy = up ? sy - (e.icon ? 116 : 32) : sy + (e.icon ? 132 : 56);
+        const ty = c.clamp(rawTy, availTop + 82, availBot - 76), lx = Math.min(c.A.xr(ty) - 200, Math.max(c.A.x0 + 200, x));
+        const lblY = c.clamp(up ? ty - 68 : ty + 68, availTop + 26, availBot - 10);
+        c.text(tl(e), here ? lx : x, ty, { size: here ? 68 : 52, font: 'mono', role: here ? 'accent' : 'dim', k, weight: 700, quiet: !here });
+        c.K.label(c, e.label, here ? lx : x, lblY, k, { align: 'center', maxW: 420, size: here ? 44 : 36, role: here ? 'ink' : 'dim', quiet: !here });
       });
     },
   };
@@ -1345,49 +1493,52 @@ function split(c0, P) {                               // chia đôi màn hình (
   return {
     cues, texts: names(P.title, ...S.map((o) => o.label), ...S.map(vtxt)),
     draw(c) {
-      const yb = P.title || P.kicker ? c.K.header(c, hd(P), c.k(1, 10)) : c.A.top, top = yb + 40, mid = (top + c.A.bottom) / 2, t = c.f / FPS, g = c.g;
+      const yb = drawHeader(c, P, c.k(1, 10), true), top = yb + 24, mid = (top + c.A.bottom) / 2, t = c.f / FPS, g = c.g;
       const kd = c.EASE.out(c.k(1, 12));
       c.draw([{ k: 'line', pts: [[c.A.cx - 470 * kd, mid], [c.A.cx + 470 * kd, mid]], role: 'dim', w: 0.6 }], { s: 1, plain: true });
-      const clk = `${c.fmtNum(Math.max(0, Math.min(T, t)), 1)} s`, cb = c.text(clk, 0, 0, { size: 38, font: 'mono', k: 0 });
-      g.save(); g.fillStyle = c.pal.bg; g.fillRect(c.A.cx - (cb.x1 - cb.x0) / 2 - 24, mid - 32, cb.x1 - cb.x0 + 48, 64); g.restore();
-      c.text(clk, c.A.cx, mid + 14, { size: 38, font: 'mono', role: 'accent', quiet: true, enter: 'none', weight: 700 });
+      const clk = `${c.fmtNum(Math.max(0, Math.min(T, t)), 1)} s`, cb = c.text(clk, 0, 0, { size: 34, font: 'mono', k: 0 });
+      g.save(); g.fillStyle = c.pal.bg; g.fillRect(c.A.cx - (cb.x1 - cb.x0) / 2 - 22, mid - 26, cb.x1 - cb.x0 + 44, 52); g.restore();
+      c.text(clk, c.A.cx, mid + 12, { size: 34, font: 'mono', role: 'accent', quiet: true, enter: 'none', weight: 700 });
       S.forEach((o, i) => {
-        const y0 = i ? mid + 50 : top, y1 = i ? c.A.bottom : mid - 50, cy = (y0 + y1) / 2 + 30, ax = c.A.x0 + 190, a = act(o), k = c.k(2 + i * 4, 9);
+        const y0 = i ? mid + 34 : top, y1 = i ? c.A.bottom - 14 : mid - 34, paneH = Math.max(180, y1 - y0);
+        const cy = y0 + Math.min(paneH * 0.62, paneH - 76), ax = c.A.x0 + 170, a = act(o), k = c.k(2 + i * 4, 9);
         const role = o.role || (i ? 'cold' : 'hot'), ic = o.icon || (a === 'pulse' ? 'heart' : a === 'drip' ? 'drop' : a === 'run' ? 'runner' : 'dot');
-        if (o.label) c.K.label(c, o.label, c.A.x0 + 10, y0 + 50, k, { align: 'left', maxW: 520, size: 48 });
-        if (vtxt(o)) c.text(vtxt(o), c.A.xr(y0 + 50) - 10, y0 + 54, { size: 58, align: 'right', role: 'accent', k: c.k(6 + i * 4, 8), maxW: 420, weight: 800 });
+        const icS = Math.min(92, paneH * 0.30);
+        if (o.label) c.K.label(c, o.label, c.A.x0 + 10, y0 + 44, k, { align: 'left', maxW: 520, size: 42 });
+        if (vtxt(o)) c.text(vtxt(o), c.A.xr(y0 + 44) - 10, y0 + 48, { size: 50, align: 'right', role: 'accent', k: c.k(6 + i * 4, 8), maxW: 420, weight: 800 });
         const dt = sinceBeat(B[i], t), env = lubdub(dt);
         if (a === 'pulse') {
-          for (const b of B[i]) { const q = t - b; if (q < 0 || q > 0.6) continue; c.draw([{ k: 'circle', x: 0, y: 0, r: 1, role, fill: false, w: 0.5 }], { x: ax, y: cy, s: 110 + q * 260, plain: true, alpha: 0.5 * (1 - q / 0.6) }); }
-          c.enter(k, [ax - 130, cy - 130, 260, 260], () => c.icon(ic, { x: ax, y: cy, s: 110 * (1 + 0.2 * env), role, seed: 90 + i }));
-          ecgTrace(c, { x: ax + 170, y: cy - 110, w: c.A.xr(cy) - ax - 190, h: 200 }, B[i], 2.2, role);
+          for (const b of B[i]) { const q = t - b; if (q < 0 || q > 0.6) continue; c.draw([{ k: 'circle', x: 0, y: 0, r: 1, role, fill: false, w: 0.5 }], { x: ax, y: cy, s: icS + q * 220, plain: true, alpha: 0.5 * (1 - q / 0.6) }); }
+          c.enter(k, [ax - icS, cy - icS, icS * 2, icS * 2], () => c.icon(ic, { x: ax, y: cy, s: icS * (1 + 0.2 * env), role, seed: 90 + i }));
+          const eh = Math.min(165, paneH * 0.54);
+          ecgTrace(c, { x: ax + 145, y: cy - eh / 2, w: c.A.xr(cy) - ax - 165, h: eh }, B[i], 2.2, role);
         } else if (a === 'spin') {
-          c.enter(k, [ax - 130, cy - 130, 260, 260], () => c.icon(ic, { x: c.A.cx, y: cy, s: 140, role, rot: 2 * Math.PI * num(o.rate) / 60 * t, seed: 90 + i }));
+          c.enter(k, [ax - icS, cy - icS, icS * 2, icS * 2], () => c.icon(ic, { x: c.A.cx, y: cy, s: icS * 1.15, role, rot: 2 * Math.PI * num(o.rate) / 60 * t, seed: 90 + i }));
         } else if (a === 'bounce') {
-          const ph = dt * num(o.rate) / 60, h = Math.sin(Math.PI * c.clamp(ph)) * 170, sq = dt < 0.08 ? 0.18 * (1 - dt / 0.08) : 0;
-          c.K.ground(c, c.A.cx, cy + 110, 360);
-          c.icon(ic, { x: c.A.cx, y: cy + 40 - h, s: 80, sx: 1 + sq, sy: 1 - sq, role, seed: 90 + i });
+          const ph = dt * num(o.rate) / 60, h = Math.sin(Math.PI * c.clamp(ph)) * Math.min(130, paneH * 0.4), sq = dt < 0.08 ? 0.18 * (1 - dt / 0.08) : 0;
+          c.K.ground(c, c.A.cx, Math.min(y1 - 12, cy + icS * 0.9), 340);
+          c.icon(ic, { x: c.A.cx, y: cy + 20 - h, s: icS * 0.78, sx: 1 + sq, sy: 1 - sq, role, seed: 90 + i });
         } else if (a === 'drip') {
-          for (const b of B[i]) { const q = t - b; if (q < 0 || q > 1.2) continue; const fy = y0 + 110 + 0.5 * 2400 * q * q;
-            if (fy < y1 - 40) c.icon(ic, { x: c.A.cx, y: fy, s: 34, role, seed: 90 + i, plain: true }); else c.icon('burst', { x: c.A.cx, y: y1 - 40, s: 40 + (q - Math.sqrt((y1 - y0 - 150) / 1200)) * 300, role, plain: true, alpha: 0.6 }); }
-          c.draw([{ k: 'line', pts: [[c.A.cx - 200, y1 - 30], [c.A.cx + 200, y1 - 30]], role: 'dim', w: 0.6 }], { s: 1, plain: true });
+          for (const b of B[i]) { const q = t - b; if (q < 0 || q > 1.2) continue; const fy = y0 + 84 + 0.5 * 2200 * q * q;
+            if (fy < y1 - 30) c.icon(ic, { x: c.A.cx, y: fy, s: 30, role, seed: 90 + i, plain: true }); else c.icon('burst', { x: c.A.cx, y: y1 - 30, s: 36 + (q - Math.sqrt(Math.max(10, y1 - y0 - 114) / 1100)) * 260, role, plain: true, alpha: 0.6 }); }
+          c.draw([{ k: 'line', pts: [[c.A.cx - 200, y1 - 22], [c.A.cx + 200, y1 - 22]], role: 'dim', w: 0.6 }], { s: 1, plain: true });
         } else if (a === 'count') {
           const n = B[i].filter((b) => b >= 0 && b <= t).length, pop = 1 + 0.15 * Math.exp(-dt * 12);
           g.save(); g.translate(c.A.cx, cy); g.scale(pop, pop); g.translate(-c.A.cx, -cy);
-          c.text(c.fmtNum(n, 0), c.A.cx, cy + 60, { size: 190, font: 'mono', quiet: true, enter: 'none', role, weight: 800 }); g.restore();
-          c.icon(ic, { x: ax - 60, y: cy, s: 60 * (1 + 0.2 * env), role, seed: 90 + i });
+          c.text(c.fmtNum(n, 0), c.A.cx, cy + 48, { size: Math.min(156, paneH * 0.52), font: 'mono', quiet: true, enter: 'none', role, weight: 800 }); g.restore();
+          c.icon(ic, { x: ax - 50, y: cy, s: 52 * (1 + 0.2 * env), role, seed: 90 + i });
         } else {                                       // run · fill · grow: quãng/mức/cỡ ∝ value (cùng thời gian → khác biệt là dữ liệu)
           const p = Math.abs(num(o.value)) / vmax * c.EASE.smooth(c.clamp((c.f - 4) / Math.max(1, N * 0.75 - 4)));
           if (a === 'run') {
             const x = c.lerp(c.A.x0 + 70, c.A.xr(cy) - 70, p);
-            c.draw([{ k: 'line', pts: [[c.A.x0 + 20, cy + 95], [c.A.xr(cy) - 20, cy + 95]], role: 'dim', w: 0.5, dash: [1, 2] }], { s: 1, plain: true });
-            c.icon(ic, { x, y: cy + 10 - Math.abs(Math.sin(p * 40)) * 14, s: 85, role, seed: 90 + i });
+            c.draw([{ k: 'line', pts: [[c.A.x0 + 20, Math.min(y1 - 14, cy + 74)], [c.A.xr(cy) - 20, Math.min(y1 - 14, cy + 74)]], role: 'dim', w: 0.5, dash: [1, 2] }], { s: 1, plain: true });
+            c.icon(ic, { x, y: cy + 4 - Math.abs(Math.sin(p * 40)) * 12, s: icS * 0.85, role, seed: 90 + i });
           } else if (a === 'fill') {
-            const bw = 560, bh = 120, bx = c.A.cx - bw / 2 + 60;
-            c.draw([{ k: 'rect', x: bx, y: cy - bh / 2, w: bw, h: bh, rad: 22, role: 'dim', fill: false }], { s: 1, plain: true });
+            const bw = 540, bh = Math.min(104, paneH * 0.36), bx = c.A.cx - bw / 2 + 56;
+            c.draw([{ k: 'rect', x: bx, y: cy - bh / 2, w: bw, h: bh, rad: 20, role: 'dim', fill: false }], { s: 1, plain: true });
             g.save(); g.fillStyle = c.col(role); g.fillRect(bx + 10, cy - bh / 2 + 10, Math.max(0, (bw - 20) * p), bh - 20); g.restore();
-            c.icon(ic, { x: ax - 70, y: cy, s: 60, role, seed: 90 + i });
-          } else c.icon(ic, { x: c.A.cx, y: cy, s: 30 + 130 * Math.sqrt(p), role, seed: 90 + i });
+            c.icon(ic, { x: ax - 60, y: cy, s: 54, role, seed: 90 + i });
+          } else c.icon(ic, { x: c.A.cx, y: cy, s: 26 + Math.min(110, paneH * 0.36) * Math.sqrt(p), role, seed: 90 + i });
         }
       });
     },
@@ -1408,34 +1559,38 @@ function meter(c0, P) {                               // đồng hồ vật lý:
   return {
     cues, texts: names(P.title, final, unit, P.label),
     draw(c) {
-      const yb = c.K.header(c, hd(P), c.k(1, 10)), cx = c.A.cx, landed = kind === 'ecg' ? from === to || c.f >= f1 : c.f >= f1, g = c.g, v = vAt(c.f);
+      const yb = drawHeader(c, P, c.k(1, 10), true), cx = c.A.cx, landed = kind === 'ecg' ? from === to || c.f >= f1 : c.f >= f1, g = c.g, v = vAt(c.f);
       const fr = c.clamp((v - lo) / Math.max(1e-9, hi - lo)), hotNow = P.danger !== undefined && v >= num(P.danger);
-      const readout = (x, y, size = 150, al = 'center') => {
-        c.text(landed ? final : `${P.prefix || ''}${c.fmtNum(v, dec)}${P.suffix || ''}`, x, y, { size, quiet: !landed, enter: 'none', maxW: 700, weight: 900, align: al, role: hotNow ? 'hot' : 'ink' });
-        if (unit) c.text(unit, x, y + size * 0.62, { size: Math.max(44, size * 0.38), role: 'accent', k: c.k(4, 8), align: al, maxW: 600 });
+      const readout = (x, y, size = 136, al = 'center') => {
+        const nb = c.text(landed ? final : `${P.prefix || ''}${c.fmtNum(v, dec)}${P.suffix || ''}`, x, y, { size, quiet: !landed, enter: 'none', maxW: 700, weight: 900, align: al, role: hotNow ? 'hot' : 'ink' });
+        if (unit) c.text(unit, x, Math.min(c.A.bottom - 26, nb.y1 + Math.max(46, size * 0.42)), { size: Math.max(38, size * 0.34), role: 'accent', k: c.k(4, 8), align: al, maxW: 600 });
+        return nb;
       };
       if (kind === 'ecg') {
-        const by = Math.max(yb + 120, 640), box = { x: c.A.x0 + 10, y: by, w: c.A.x1 - c.A.x0 - 20, h: 380 }, t = c.f / c.FPS;
+        const by = Math.max(yb + 44, c.A.stageTop + 16), eh = Math.min(280, Math.max(170, c.A.bottom - by - (P.label ? 300 : 210)));
+        const box = { x: c.A.x0 + 10, y: by, w: c.A.x1 - c.A.x0 - 20, h: eh }, t = c.f / c.FPS;
         g.save(); g.strokeStyle = c.col('dim'); g.globalAlpha = 0.22; g.lineWidth = 1.5; g.beginPath();
         for (let x = box.x; x <= box.x + box.w; x += 40) { g.moveTo(x, box.y); g.lineTo(x, box.y + box.h); }
         for (let y = box.y; y <= box.y + box.h; y += 40) { g.moveTo(box.x, y); g.lineTo(box.x + box.w, y); }
         g.stroke(); g.restore();
         c.draw([{ k: 'rect', x: box.x - 10, y: box.y - 10, w: box.w + 20, h: box.h + 20, rad: 20, role: 'dim', fill: false }], { s: 1, plain: true, k: c.k(1, 10) });
         ecgTrace(c, box, B, num(P.sweep, 2.6), P.role || 'hot');
-        const env = lubdub(sinceBeat(B, t)), hy = box.y + box.h + 200;
-        c.icon(P.icon || 'heart', { x: cx - 230, y: hy, s: 120 * (1 + 0.22 * env), role: P.icon_role || 'hot' });
-        readout(cx + 120, hy + 40, 170);
-        if (P.label) c.K.tag(c, P.label, cx, Math.min(c.A.bottom - 10, hy + 330), c.k(f1 + 4, 9));
+        const env = lubdub(sinceBeat(B, t)), hy = Math.min(c.A.bottom - (P.label ? 150 : 90), box.y + box.h + 114);
+        c.icon(P.icon || 'heart', { x: cx - 220, y: hy, s: 94 * (1 + 0.22 * env), role: P.icon_role || 'hot' });
+        readout(cx + 115, hy + 24, 132);
+        if (P.label) c.K.tag(c, P.label, cx, tagY(c, c.A.bottom - 36), c.k(f1 + 4, 9));
         return;
       }
       if (kind === 'dial') {
-        const cy = Math.max(960, yb + 470), live = landed ? (c.noise(c.f, 3) * 0.6 + Math.sin(c.f * 0.9) * 0.4) * (hi - lo) * 0.006 : 0;
-        drawDial(c, { x: cx, y: cy, R: 330, lo, hi, v: c.lerp(from, to, c.EASE.back(c.clamp((c.f - f0) / (f1 - f0)), 1.4)) + live, k: c.k(1, 10), danger: P.danger !== undefined ? num(P.danger) : undefined, dec });
-        readout(cx, cy + 290, 130);
-        if (P.label) c.K.tag(c, P.label, cx, Math.min(c.A.bottom - 20, cy + 510), c.k(f1 + 4, 9));
+        const botNeed = P.label ? 124 : 36, availH = Math.max(280, c.A.bottom - botNeed - yb - 24);
+        const R = Math.min(265, availH * 0.42), cy = yb + 24 + R + 12;
+        const live = landed ? (c.noise(c.f, 3) * 0.6 + Math.sin(c.f * 0.9) * 0.4) * (hi - lo) * 0.006 : 0;
+        drawDial(c, { x: cx, y: cy, R, lo, hi, v: c.lerp(from, to, c.EASE.back(c.clamp((c.f - f0) / (f1 - f0)), 1.4)) + live, k: c.k(1, 10), danger: P.danger !== undefined ? num(P.danger) : undefined, dec });
+        readout(cx, Math.min(c.A.bottom - (P.label ? 150 : 72), cy + Math.min(210, R * 0.78)), Math.min(118, R * 0.44));
+        if (P.label) c.K.tag(c, P.label, cx, tagY(c, c.A.bottom - 36), c.k(f1 + 4, 9));
         return;
       }
-      const top = Math.max(yb + 120, 600), bot = c.A.bottom - 240, hgt = bot - top;
+      const top = Math.max(yb + 52, c.A.stageTop + 20), bot = c.A.bottom - (P.label ? 132 : 52), hgt = Math.max(200, bot - top);
       if (kind === 'battery') {
         const w = 300, x = cx - 220, low = fr < 0.2, segs = 5, charging = to > from && !landed;
         c.draw([{ k: 'rect', x: x - w / 2, y: top + 40, w, h: hgt - 40, rad: 34, role: 'ink', fill: false, sw: 1.2 }, { k: 'rect', x: x - 55, y: top, w: 110, h: 44, rad: 12, role: 'ink' }], { s: 1, plain: true, k: c.k(1, 10) });
@@ -1472,7 +1627,7 @@ function meter(c0, P) {                               // đồng hồ vật lý:
         readout(cx + 170, top + hgt * 0.45, 140);
       }
       if (P.icon && kind !== 'battery') c.icon(P.icon, { x: cx + 170, y: top + 40 + bob(c, 3, 5), s: 60, role: P.icon_role });
-      if (P.label) c.K.tag(c, P.label, cx, c.A.bottom - 60, c.k(f1 + 4, 9));
+      if (P.label) c.K.tag(c, P.label, cx, tagY(c, c.A.bottom - 36), c.k(f1 + 4, 9));
     },
   };
 }
