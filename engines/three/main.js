@@ -590,17 +590,18 @@ window.renderFrame = (f) => {
     GU.uKeyCol.value.copy(key.color).multiplyScalar(key.intensity); GU.uRimCol.value.copy(rim.color).multiplyScalar(rim.intensity);
     GU.uSky.value.copy(hemi.color).multiplyScalar(hemi.intensity * amb); GU.uGround.value.copy(hemi.groundColor).multiplyScalar(hemi.intensity * amb);
   }
-  renderer.setClearColor(C(ST.bg || '#000000'), 1);
+  const bgCol = C(ST.bg || '#000000');
   if (RETRO) {
     const hid = [];
     if (RETRO.textHd) scene.traverse((o) => { if (o.isMesh && o.visible && isText(o)) { hid.push(o); o.visible = false; } });
-    renderer.setRenderTarget(RETRO.low); renderer.clear(); renderer.render(scene, camera);
+    // đặt renderTarget TRƯỚC setClearColor để Three.js (r160) xoá buffer HalfFloat ở không gian tuyến tính, không bị nhân sRGB 2 lần khi EffectComposer tắt autoClear
+    renderer.setRenderTarget(RETRO.low); renderer.setClearColor(bgCol, 1); renderer.clear(); renderer.render(scene, camera);
     hid.forEach((o) => { o.visible = true; });
     renderer.setRenderTarget(RETRO.q); renderer.render(RETRO.qScene, fsCam);
-    renderer.setRenderTarget(rtColor); renderer.clear(); renderer.render(RETRO.upScene, fsCam);
+    renderer.setRenderTarget(rtColor); renderer.setClearColor(0x000000, 1); renderer.clear(); renderer.render(RETRO.upScene, fsCam);
     if (RETRO.textHd && hid.length) textHdPass();
   } else {
-    renderer.setRenderTarget(rtColor); renderer.clear(); renderer.render(scene, camera);
+    renderer.setRenderTarget(rtColor); renderer.setClearColor(bgCol, 1); renderer.clear(); renderer.render(scene, camera);
   }
   const D = st.dof || { focus: 5, cinf: 0 };
   // pass normal/depth chỉ khi có người đọc (nét ink, viền rim, DOF) — look không viền (retro, chrome…) bỏ qua, ảnh y hệt

@@ -294,9 +294,9 @@ export function build(ctx, params) {
     return out;
   };
 
-  // ---- bối cảnh track/stadium/diorama/meadow/tabletop/street: tự vừa vùng đặt prop (đo theo keyframe, chưa tính vật lý)
+  // ---- bối cảnh black/track/stadium/diorama/meadow/tabletop/street: tự vừa vùng đặt prop (đo theo keyframe, chưa tính vật lý)
   let SET = null;
-  if (PROPS.setScene && ['track', 'stadium', 'diorama', 'meadow', 'tabletop', 'street'].includes(P.set)) {
+  if (PROPS.setScene && ['black', 'track', 'stadium', 'diorama', 'meadow', 'tabletop', 'street'].includes(P.set)) {
     const eb = new THREE.Box3(), tb = new THREE.Box3();
     for (const u of [0, 0.5, 1]) {
       const f = Math.round(u * (N - 1));
@@ -430,11 +430,33 @@ export function build(ctx, params) {
       side: { elev: 12, azim: 52, orbit: 4 },
       hero_low: { elev: 7, azim: -20, orbit: 5 },
       front: { elev: 10, azim: 0, orbit: 6 },
+      ecu_macro: { elev: 8, azim: 18, orbit: 4, margin: 0.82, fov: 32, push: 0.14 },
+      low_hero: { elev: 4, azim: -24, orbit: 10, margin: 1.04, fov: 35, push: 0.12 },
+      tracking_low: { elev: 7, azim: 42, orbit: 5, margin: 0.94, fov: 36, push: 0.10 },
+      over_shoulder: { elev: 12, azim: -48, orbit: 6, margin: 1.0, fov: 36, push: 0.10 },
+      dolly_zoom: { elev: 11, azim: 14, orbit: 5, margin: 1.02, fov: 30, fovEnd: 44, push: 0.22 },
     };
-    const pr = (P.frame && P.frame.preset && PRESETS[P.frame.preset]) || {};
+    const PF = P.frame || {};
+    const pr = (PF.preset && PRESETS[PF.preset]) || {};
+    // Nếu không ép preset/azim/elev → luân phiên góc máy điện ảnh tất định theo thứ tự shot (ctx.job.index / shot)
+    let autoVar = {};
+    if (!PF.preset && PF.azim === undefined && PF.elev === undefined) {
+      const rawIdx = ctx.job && ctx.job.index;
+      let idx = null;
+      if (typeof rawIdx === 'number' && Number.isFinite(rawIdx)) idx = Math.abs(Math.floor(rawIdx));
+      else if (Array.isArray(rawIdx) && typeof rawIdx[0] === 'number') idx = Math.abs(Math.floor(rawIdx[0]));
+      else if (ctx.job && typeof ctx.job.shot === 'string') {
+        const m = ctx.job.shot.match(/(\d+)/);
+        if (m) idx = parseInt(m[1], 10);
+      }
+      if (idx !== null) {
+        const AUTO_ANGLES = ['low_hero', 'three_quarter', 'tracking_low', 'over_shoulder', 'ecu_macro', 'diorama'];
+        autoVar = PRESETS[AUTO_ANGLES[idx % AUTO_ANGLES.length]] || {};
+      }
+    }
     // Nếu nhân vật chạy dọc trục -Z (quay lưng khỏi máy) và chưa ép góc → tự xoay 3/4 để thấy dáng + mặt thay vì nhìn lưng
     let smartAz = {};
-    if ((P.frame || {}).azim === undefined && !pr.azim && !((SET && SET.frame) || {}).azim) {
+    if (PF.azim === undefined && !pr.azim && !autoVar.azim && !((SET && SET.frame) || {}).azim) {
       const away = items.some((it) => {
         if (!it.o.creature || it.keys.length < 2) return false;
         const a = pose(it, 0).at, b = pose(it, N - 1).at;
@@ -449,7 +471,7 @@ export function build(ctx, params) {
     const defFoot = captionsOn ? Math.max(0.22, Math.min(0.32, (Href - (gridStage[1] || 1240)) / Href - 0.06)) : 0;
     const defHead = captionsOn ? 0.16 : 0.2;
     const F = { elev: 10, azim: 0, margin: 1.15, push: 0.08, orbit: 6, fov: 38, headroom: defHead, footroom: defFoot,
-      ...((SET && SET.frame) || {}), ...smartAz, ...pr, ...P.frame };
+      ...((SET && SET.frame) || {}), ...autoVar, ...smartAz, ...pr, ...PF };
     const hr = Math.max(0, Math.min(0.4, F.headroom || 0));
     const fr = Math.max(0, Math.min(0.4, F.footroom || 0));
     if (hr + fr > 0) {
@@ -465,8 +487,9 @@ export function build(ctx, params) {
     const c0 = followIt ? new THREE.Vector3(...pose(followIt, 0).at).setY(c.y) : c;
     const c1 = followIt ? new THREE.Vector3(...pose(followIt, N - 1).at).setY(c.y - sz.y * 0.02) : new THREE.Vector3(c.x, c.y - sz.y * 0.02, c.z);
     const at = (center, az, dd) => [center.x + dd * Math.sin(deg(az)) * Math.cos(deg(F.elev)), center.y + dd * Math.sin(deg(F.elev)), center.z + dd * Math.cos(deg(az)) * Math.cos(deg(F.elev))];
+    const fovEnd = F.fovEnd !== undefined ? F.fovEnd : (F.fov - 1);
     keys = [{ f: 0, pos: at(c0, F.azim - F.orbit / 2, d), look: [c0.x, c0.y, c0.z], fov: F.fov },
-      { f: N - 1, pos: at(c1, F.azim + F.orbit / 2, d * (1 - F.push)), look: [c1.x, c1.y, c1.z], fov: F.fov - 1, ease: 'smooth' }];
+      { f: N - 1, pos: at(c1, F.azim + F.orbit / 2, d * (1 - F.push)), look: [c1.x, c1.y, c1.z], fov: fovEnd, ease: 'smooth' }];
     camDist = d; camFov = F.fov;
   }
   const kicks = P.kicks.map((k) => ({ f: Math.round(fOf(k)), a: k.a ?? 0.07 })).concat(phys ? phys.kicks : []);
