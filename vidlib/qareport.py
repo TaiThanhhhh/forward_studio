@@ -435,6 +435,79 @@ def board_html(ctx, e, table, img):
 LEVEL_WORD = {"green": "XANH", "yellow": "VÀNG", "red": "ĐỎ"}
 
 
+def _resolve_viral(ctx, path=None, proj=None):
+    """Lấy (score_dict, archetype) từ ctx['viral_score'], ctx['sb'], hoặc storyboard.json kề thư mục qa/."""
+    from . import viralscore  # noqa: PLC0415
+    sb = ctx.get("sb")
+    if sb is None:
+        base = proj or (os.path.dirname(os.path.dirname(os.path.abspath(path))) if path else None)
+        sp = os.path.join(base, "storyboard.json") if base else None
+        if sp and os.path.exists(sp):
+            try:
+                sb = json_load(sp)
+            except Exception:  # noqa: BLE001
+                sb = None
+    arch = ctx.get("archetype") or ((sb or {}).get("archetype_resolved") or (sb or {}).get("archetype"))
+    vs = ctx.get("viral_score")
+    if vs is None and isinstance(sb, dict) and sb.get("shots"):
+        try:
+            vs = viralscore.score_storyboard(sb)
+        except Exception:  # noqa: BLE001
+            vs = None
+    return vs, arch
+
+
+def viral_md(ctx, path=None):
+    """Mục `## Điểm Viral & Craft (Agency Scorecard)` cho qa/report.md."""
+    from . import viralscore  # noqa: PLC0415
+    vs, arch = _resolve_viral(ctx, path=path)
+    if not vs:
+        return []
+    axes = vs.get("axes") or {}
+    max_axes = vs.get("max_axes") or viralscore.MAX_AXES
+    L = [
+        "## Điểm Viral & Craft (Agency Scorecard)",
+        f"- Tổng điểm: **{vs['total']}/100 · Hạng {vs['grade']}**"
+        + (f" · archetype: `{arch}`" if arch else " · archetype: _chưa chọn_"),
+        "",
+        "| Trục đánh giá | Điểm | Tối đa |",
+        "|---|---|---|",
+    ]
+    for key in viralscore.MAX_AXES:
+        label = viralscore.AXIS_LABELS.get(key, key)
+        L.append(f"| {label} (`{key}`) | {axes.get(key, 0)} | {max_axes.get(key, 0)} |")
+    sugs = vs.get("suggestions") or []
+    if sugs:
+        L += ["", "**Gợi ý nâng cấp hàng đầu:**"] + [f"- {s}" for s in sugs[:5]]
+    return L + [""]
+
+
+def viral_html(ctx, e, table, proj=None, path=None):
+    """Mục `<h2>Điểm Viral & Craft (Agency Scorecard)</h2>` cho qa/report.html."""
+    from . import viralscore  # noqa: PLC0415
+    vs, arch = _resolve_viral(ctx, path=path, proj=proj)
+    if not vs:
+        return ""
+    axes = vs.get("axes") or {}
+    max_axes = vs.get("max_axes") or viralscore.MAX_AXES
+    rows = []
+    for key in viralscore.MAX_AXES:
+        label = viralscore.AXIS_LABELS.get(key, key)
+        val, mx = int(axes.get(key, 0)), int(max_axes.get(key, 0))
+        cls = "lv-green" if mx and val / mx >= 0.8 else "lv-yellow" if mx and val / mx >= 0.5 else "lv-red"
+        rows.append(f"<tr><td>{e(label)} <code>{e(key)}</code></td><td class={cls}>{val}</td><td>{mx}</td></tr>")
+    sugs = vs.get("suggestions") or []
+    sug_html = ("<ul>" + "".join(f"<li>{e(s)}</li>" for s in sugs[:5]) + "</ul>") if sugs else "<p class=mut>Đạt chuẩn Agency Viral — không có đề xuất bắt buộc.</p>"
+    badge_cls = "pass" if vs["total"] >= 75 else "fail"
+    arch_txt = f" · archetype <b>{e(str(arch))}</b>" if arch else ""
+    return (
+        "<h2>Điểm Viral &amp; Craft (Agency Scorecard)</h2>"
+        f'<p><span class="badge {badge_cls}">{vs["total"]}/100 · Hạng {e(str(vs["grade"]))}</span>{arch_txt}</p>'
+        + table(["Trục đánh giá", "Điểm", "Tối đa"], rows)
+        + sug_html
+    )
+
+
 def _rows(ctx):
     from . import qagate  # noqa: PLC0415
     return ctx.get("rows") or qagate.classify(ctx.get("checks") or {})
@@ -464,6 +537,7 @@ def write_report(path, ctx):
         L += ["", f"Đoạn đứng hình (freezedetect n={fz['noise']}, ≥ {fz['threshold_sec']}s): "
               + ", ".join(f"{a:.2f}–{b:.2f}s{'' if (a, b) in fz['freezes_bad'] else ' (hold)'}" for a, b in fz["freezes"])]
     L.append("")
+    L += viral_md(ctx, path=path)
     lk = ctx.get("look") or {}
     if lk.get("flow") or lk.get("code"):
         L += ["## Khớp nhìn: shot code ↔ shot Flow (qa/look/sheet.jpg)",
@@ -603,6 +677,7 @@ def write_html(path, ctx, proj):
         f' · {e(ctx.get("loudness", "—"))}</p>',
         "<h2>Kiểm tra</h2>", table(["Mức", "Kiểm tra", "Giá trị"], checks),
         f'<p class="mut">Freeze (n={fz.get("noise")}, ≥{fz.get("threshold_sec")}s): {e(fr)} · Black: {e(bl)}</p>',
+        viral_html(ctx, e, table, proj=proj, path=path),
         board_html(ctx, e, table, img),
         "<h2>Contact sheet trước render (look-check)</h2>", img("look/sheet.jpg", "giữa mỗi shot + hai phía mỗi điểm cắt"),
         table(["Nguồn", "Still", "Nét mực px", "Nền đen", "Trung tính", "Xanh accent"], look_rows),

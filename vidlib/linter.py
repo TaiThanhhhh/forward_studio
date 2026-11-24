@@ -147,7 +147,7 @@ def lint_pacing(sb):
         (s.get("code") or {}).get("scene") for s in shots
         if (s.get("mode_resolved") or s.get("mode")) == "code" and codeshot.engine_of(s, st) == "html"
     ]
-    if len(html_scenes) >= 5 and "scene" not in html_scenes:
+    if len(html_scenes) >= 5 and not any(b in html_scenes for b in ("scene", "dossier", "xray_cutaway")):
         out.append(_issue("warn", "kịch bản",
                           "Mọi shot html đều dùng beat mẫu (chưa có 'scene' dàn cảnh tự do) — nên đổi 1–2 khoảnh khắc "
                           "hành động sang beat 'scene' để video không giống đổi icon trên cùng một khung."))
@@ -253,7 +253,8 @@ def lint_meta(sb):
             out.append(_issue("warn", v["id"], f"Chữ thumbnail '{v['text']}' có {len(tw)} từ > {mx}."))
         if tw and sum(w.lower() in title_words for w in tw) / len(tw) > 0.6:
             out.append(_issue("warn", v["id"], "Chữ thumbnail lặp lại tiêu đề — nên bổ sung, không lặp."))
-    if sb.get("outro", {}).get("enabled") and not sb.get("outro", {}).get("teaser"):
+    if (sb.get("outro", {}).get("enabled") and sb.get("outro", {}).get("mode") != "loop"
+            and not sb.get("outro", {}).get("teaser")):
         out.append(_issue("warn", "outro", "Chưa có outro.teaser (câu hỏi thí nghiệm tiếp theo)."))
     from . import userassets  # noqa: PLC0415 — tài sản người dùng (SVG/Lottie/Rive) phải có ghi chú nguồn/giấy phép
     for s in sb.get("shots", []):
@@ -286,7 +287,50 @@ def lint_clutter(sb):
                     "warn", sid,
                     f"Cảnh 3D 'stage' có {len(prominent)} prop trong khung (> 5) — nên tinh gọn ≤ 4 để tránh rối mắt.",
                 ))
-        if scene not in ("fact", "title") and s.get("beat") != "outro":
+        elif scene == "dossier":
+            ev = params.get("evidence") or []
+            if len(ev) > 4:
+                out.append(_issue(
+                    "warn", sid,
+                    f"Beat 'dossier' có {len(ev)} dòng bằng chứng (> 4) — tinh gọn ≤ 4 dòng để dễ đọc trên 9:16.",
+                ))
+            hl_words = len(re.findall(r"\S+", str(params.get("headline") or "")))
+            if hl_words > 16:
+                out.append(_issue(
+                    "warn", sid,
+                    f"Tiêu đề 'dossier' dài {hl_words} từ (> 16) — rút gọn thành 1 câu sắc lạnh.",
+                ))
+        elif scene == "xray_cutaway":
+            flows = params.get("flow") or []
+            if len(flows) > 4:
+                out.append(_issue(
+                    "warn", sid,
+                    f"Beat 'xray_cutaway' có {len(flows)} luồng hạt (> 4) — giữ ≤ 3 luồng để không rối mắt.",
+                ))
+            x_clusters = [str(params[k]) for k in ("kicker", "title", "callout_label") if params.get(k)]
+            for tf in s.get("text_fx") or []:
+                if isinstance(tf, dict) and tf.get("text"):
+                    x_clusters.append(str(tf["text"]))
+            x_words = sum(len(re.findall(r"\S+", c)) for c in x_clusters)
+            if len(x_clusters) > 4 or x_words > 18:
+                out.append(_issue(
+                    "warn", sid,
+                    f"Beat 'xray_cutaway' quá nhiều chữ ({len(x_clusters)} cụm, {x_words} từ) — "
+                    "ưu tiên luồng hạt & 1 telemetry.",
+                ))
+        elif scene == "hero_stat":
+            h_clusters = [str(params[k]) for k in ("kicker", "unit", "label") if params.get(k)]
+            for tf in s.get("text_fx") or []:
+                if isinstance(tf, dict) and tf.get("text"):
+                    h_clusters.append(str(tf["text"]))
+            h_words = sum(len(re.findall(r"\S+", c)) for c in h_clusters)
+            if len(h_clusters) > 4 or h_words > 18:
+                out.append(_issue(
+                    "warn", sid,
+                    f"Beat 'hero_stat' quá nhiều chữ ({len(h_clusters)} cụm, {h_words} từ) — "
+                    "giữ 1 con số cỡ đại + 1 dòng nhãn gọn.",
+                ))
+        if scene not in ("fact", "title", "dossier", "xray_cutaway", "hero_stat") and s.get("beat") != "outro":
             clusters = []
             for k in ("kicker", "title", "sub", "result"):
                 if params.get(k):
@@ -310,6 +354,26 @@ def lint_clutter(sb):
     return out
 
 
+def lint_viral(sb):
+    """Agency Viral & Craft Scorecard (Vòng 13): gợi ý khi storyboard khai archetype và điểm < viral.min_score."""
+    if not (sb.get("archetype_resolved") or sb.get("archetype")):
+        return []
+    from . import viralscore  # noqa: PLC0415
+    try:
+        res = viralscore.score_storyboard(sb)
+    except Exception as ex:  # noqa: BLE001
+        return [_issue("info", "viral", f"không chấm được Viral Scorecard: {ex}")]
+    min_score = int((channel().get("viral") or {}).get("min_score", 75))
+    if res["total"] < min_score:
+        top = "; ".join((res.get("suggestions") or [])[:3])
+        return [_issue(
+            "warn", "viral",
+            f"Điểm Viral & Craft {res['total']}/100 (Hạng {res['grade']}) < ngưỡng {min_score}"
+            + (f" — gợi ý: {top}" if top else "."),
+        )]
+    return []
+
+
 def lint(sb):
     """sb phải là bản đã compile (compiler.compile_all)."""
     name, caps = compiler.video_caps(sb)
@@ -324,6 +388,7 @@ def lint(sb):
     out += lint_meta(sb)
     out += lint_clutter(sb)
     out += lint_motion(sb)
+    out += lint_viral(sb)
     return out
 
 
