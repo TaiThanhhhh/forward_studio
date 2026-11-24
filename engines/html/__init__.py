@@ -9,7 +9,7 @@ import os
 import re
 
 BEATS = ("title", "drop", "counter", "compare", "graph", "process", "scale", "callout", "fact", "scene", "outro",
-         "units", "timeline", "split", "meter")
+         "units", "timeline", "split", "meter", "dossier", "xray_cutaway", "hero_stat")
 LOOKS = ("flat", "boil", "iso", "hud", "synth", "sticker", "swiss", "spy", "picto", "zoom", "flow", "sketch", "gallery",
          "halftone", "comic", "pixel16", "sprite8", "silhouette", "cutout", "lineart", "vox", "story")
 
@@ -61,6 +61,21 @@ PARAMS = {
         "kind ecg|battery|tank|thermo|dial, value (ecg: bpm), from (start value → ramps to value), min, max, unit, label, "
         "danger, decimals, land, sweep (ecg seconds per screen) — a physical meter whose motion IS the data (ECG beats "
         "at the real bpm, battery %, tank level, mercury, needle)",
+    ),
+    "dossier": (
+        ("headline",),
+        "tag, stamp (e.g. VERIFIED|BUSTED), headline, evidence[{k, v}] (≤4), highlight (keyword swept by highlighter), "
+        "visual_icon, cite — ARCHIVAL DOSSIER CARD (LEMMiNO/Johnny Harris/Fern): dark evidence file with hairline rows",
+    ),
+    "xray_cutaway": (
+        ("core_icon",),
+        "shell_icon, core_icon, flow[{from:[x,y], to:[x,y], via?:[x,y], count, role, speed}], pulse_rate (BPM), "
+        "callout_num, callout_label — X-RAY CUTAWAY (Zack D. Films/Fern): blueprint shell, pulsing core & Bezier flow",
+    ),
+    "hero_stat": (
+        ("number",),
+        "number, prefix, suffix, unit, label, sub_bar{from, to, max}, bg_motif rings|bars|grid|wave, role — "
+        "ARCHITECTURAL HERO STAT (Cleo Abram/Vox/Ordinary Folk): giant 180-230px number over reactive full-bleed graphics",
     ),
     "outro": ((), "teaser, follow, next_prefix — thẻ kết + vòng lặp"),
 }
@@ -210,11 +225,11 @@ def icon_for(name):
 
 
 def _icons_in(params):
-    """Mọi giá trị khoá 'icon' trong params (lồng nhau: a/b, left/right, steps[], items[])."""
+    """Mọi giá trị khoá icon trong params (lồng nhau: icon, visual_icon, shell_icon, core_icon)."""
     out = []
     if isinstance(params, dict):
         for k, v in params.items():
-            if k == "icon" and v not in (None, ""):
+            if k in ("icon", "visual_icon", "shell_icon", "core_icon") and v not in (None, ""):
                 out.append(v)
             else:
                 out += _icons_in(v)
@@ -237,6 +252,10 @@ def split_actions():
 
 def meter_kinds():
     return _js_list("beats.js", "METER_KINDS")
+
+
+def hero_motifs():
+    return _js_list("beats.js", "HERO_MOTIFS")
 
 
 @functools.cache
@@ -449,6 +468,34 @@ def _beat_errors(scene, p):  # noqa: C901 — một nhánh mỗi beat
         lo, hi = _f(p.get("min")), _f(p.get("max"))
         if lo is not None and hi is not None and lo >= hi:
             errs.append("meter: min phải < max.")
+    if scene == "dossier":
+        ev = p.get("evidence")
+        if ev is not None and (not isinstance(ev, list) or not all(isinstance(r, dict) for r in ev)):
+            errs.append("dossier.evidence phải là danh sách [{k, v}].")
+    if scene == "xray_cutaway":
+        fl = p.get("flow")
+        if fl is not None:
+            if not isinstance(fl, list) or not all(isinstance(f, dict) for f in fl):
+                errs.append("xray_cutaway.flow phải là danh sách [{from:[x,y], to:[x,y], via?:[x,y]}].")
+            else:
+                for f in fl:
+                    for key in ("from", "to"):
+                        pt = f.get(key)
+                        if not (isinstance(pt, list) and len(pt) == 2 and all(_n(v) for v in pt)):
+                            errs.append(f"xray_cutaway.flow[].{key} phải là cặp số [x, y].")
+                    via = f.get("via")
+                    if via is not None and not (isinstance(via, list) and len(via) == 2 and all(_n(v) for v in via)):
+                        errs.append("xray_cutaway.flow[].via phải là cặp số [x, y].")
+        pr = p.get("pulse_rate")
+        if pr is not None and not (_n(pr) and 10 <= pr <= 300):
+            errs.append("xray_cutaway.pulse_rate là nhịp BPM 10..300.")
+    if scene == "hero_stat":
+        motifs = hero_motifs() or ("rings", "bars", "grid", "wave")
+        if p.get("bg_motif") is not None and p.get("bg_motif") not in motifs:
+            errs.append(f"hero_stat.bg_motif '{p.get('bg_motif')}' không có (có: {'|'.join(motifs)}).")
+        sb = p.get("sub_bar")
+        if sb is not None and (not isinstance(sb, dict) or _f(sb.get("from")) is None or _f(sb.get("to")) is None):
+            errs.append("hero_stat.sub_bar cần {from, to} là số.")
     return errs
 
 

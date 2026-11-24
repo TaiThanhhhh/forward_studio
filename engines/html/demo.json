@@ -775,5 +775,87 @@
         "u": 0.62
       }
     ]
+  },
+  "dossier": {
+    "tag": "ARCHIVE // 04-B",
+    "headline": "Mouth sensors trick the brain before fuel arrives",
+    "highlight": "trick the brain",
+    "evidence": [
+      {
+        "k": "PROTOCOL",
+        "v": "Carb rinse (5 sec, spat out)"
+      },
+      {
+        "k": "ABSORPTION",
+        "v": "0.0 g glucose swallowed"
+      },
+      {
+        "k": "TIME TRIAL",
+        "v": "+2.9% faster output"
+      }
+    ],
+    "visual_icon": "brain",
+    "stamp": "VERIFIED",
+    "cite": "Chambers et al., J. Physiol. (2009)"
+  },
+  "xray_cutaway": {
+    "kicker": "INTERNAL CUTAWAY",
+    "title": "Neural signal to motor cortex",
+    "shell_icon": "person",
+    "core_icon": "heart",
+    "pulse_rate": 148,
+    "flow": [
+      {
+        "from": [
+          -0.82,
+          -0.42
+        ],
+        "via": [
+          -0.28,
+          -0.58
+        ],
+        "to": [
+          0.0,
+          -0.05
+        ],
+        "count": 9,
+        "role": "cold",
+        "speed": 0.65
+      },
+      {
+        "from": [
+          0.0,
+          0.05
+        ],
+        "via": [
+          0.42,
+          0.25
+        ],
+        "to": [
+          0.82,
+          0.55
+        ],
+        "count": 10,
+        "role": "hot",
+        "speed": 0.85
+      }
+    ],
+    "callout_num": "148 BPM",
+    "callout_label": "Cardiac output surges"
+  },
+  "hero_stat": {
+    "kicker": "PERFORMANCE GAIN",
+    "number": 2.9,
+    "prefix": "+",
+    "suffix": "%",
+    "unit": "FASTER TIME TRIAL",
+    "label": "Without swallowing a single calorie",
+    "bg_motif": "rings",
+    "role": "accent",
+    "sub_bar": {
+      "from": 100,
+      "to": 102.9,
+      "max": 110
+    }
   }
 }
