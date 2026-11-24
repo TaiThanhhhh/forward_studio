@@ -48,8 +48,29 @@ DESCRIPTIONS = {
     "stamp": "đóng dấu: thud trầm + tiếng giấy",
     "scratch": "bút dạ khoanh tròn / gạch — scratch:<giây>",
     "projector": "máy chiếu phim lạch cạch 24/giây + hiss (đoạn chèn phim câm) — projector:<giây>",
+    # bộ SFX Agency Vòng 13 (audio-driven editing & micro-foley)
+    "sub_drop": "rơi sub-bass điện ảnh 90Hz → 32Hz + cú chạm gọn (Hook / Payoff)",
+    "riser_long": "âm dâng căng thẳng 1.8s kết thúc sắc ngay trước payoff/twist",
+    "tape_stop": "phanh băng từ hãm tốc đột ngột (lật tẩy myth_autopsy / Re-Hook)",
+    "paper_rustle": "tiếng lật giấy/hồ sơ lưu trữ sắc gọn (beat dossier)",
+    "neural_pulse": "xung điện sinh học mềm mượt (beat xray_cutaway)",
+    "swish_match": "lướt không khí định hướng mượt (chuyển cảnh iris_match / whip_match)",
 }
 PARAM_SFX = ("typing", "scratch", "projector")
+
+_DEFAULT_LEVEL_DB = {
+    "sub_drop": -5,
+    "riser_long": -10,
+    "tape_stop": -7,
+    "paper_rustle": -14,
+    "neural_pulse": -13,
+    "swish_match": -11,
+}
+
+
+def _norm(x, target=0.92):
+    peak = float(np.abs(x).max()) if len(x) else 0.0
+    return (x / peak * target) if peak > 1e-9 else x
 
 
 def split_name(name):
@@ -308,6 +329,88 @@ def _make(name):  # noqa: C901 — bảng tổng hợp
             seg = np.sin(2 * np.pi * np.cumsum(f0 * (1 + 2.5 * tt / 0.06)) / GEN_SR) * np.exp(-tt * 60) * rng.uniform(.3, .8)
             out[i:i + n] += seg[: len(out) - i]
         return out
+    if name == "sub_drop":  # sâu 90Hz → 32Hz + cú chạm gọn (~0.85s)
+        d = 0.85
+        t = _t(d)
+        f = 32.0 + 58.0 * np.exp(-t * 4.6)
+        ph = 2 * np.pi * np.cumsum(f) / GEN_SR
+        sub = np.sin(ph) * np.minimum(1.0, t / 0.004) * np.exp(-t * 2.5)
+        warm = np.sin(2.0 * ph) * np.exp(-t * 6.5) * 0.18
+        knock = np.sin(2 * np.pi * 135.0 * t) * np.exp(-t * 36.0) * 0.34
+        transient = _lp_fast(_noise(d, 701), 1750.0) * np.exp(-t * 58.0) * 0.42
+        tail = np.clip((d - t) / 0.04, 0.0, 1.0)
+        return _norm((sub + warm + knock + transient) * tail, 0.92)
+    if name == "riser_long":  # 1.8s filtered noise + rising harmonic tension swell peaking sharply at end
+        d = 1.8
+        t = _t(d)
+        u = t / d
+        f1 = 110.0 * (1.0 + 3.0 * u ** 2.1)
+        f2 = 165.0 * (1.0 + 3.0 * u ** 2.1)
+        f3 = 220.0 * (1.0 + 3.5 * u ** 2.4)
+        tone = (
+            np.sin(2 * np.pi * np.cumsum(f1) / GEN_SR) * 0.42
+            + np.sin(2 * np.pi * np.cumsum(f2) / GEN_SR) * 0.28
+            + np.sin(2 * np.pi * np.cumsum(f3) / GEN_SR) * 0.16
+        )
+        pulse = 0.84 + 0.16 * np.sin(2 * np.pi * np.cumsum(4.0 + 13.0 * u ** 2) / GEN_SR)
+        air = _hp_fast(_lowpass(_noise(d, 702), 260.0 + 6200.0 * u ** 2.2), 180.0) * 0.95
+        swell = (u ** 2.0) * np.clip((d - t) / 0.014, 0.0, 1.0)
+        return _norm((tone * pulse + air) * swell, 0.92)
+    if name == "tape_stop":  # 0.45s pitch-diving vinyl/tape brake deceleration
+        d = 0.45
+        t = _t(d)
+        u = t / d
+        speed = np.maximum(0.035, 1.0 - (u ** 1.32))
+        ph_a = 2 * np.pi * np.cumsum(220.0 * speed) / GEN_SR
+        ph_e = 2 * np.pi * np.cumsum(330.0 * speed) / GEN_SR
+        ph_hi = 2 * np.pi * np.cumsum(440.0 * speed) / GEN_SR
+        chord = (
+            (np.sin(ph_a) + 0.4 * np.sin(2 * ph_a) + 0.2 * np.sin(3 * ph_a)) * 0.50
+            + (np.sin(ph_e) + 0.3 * np.sin(2 * ph_e)) * 0.32
+            + np.sin(ph_hi) * 0.22
+        )
+        hiss = _noise(d, 703) * 0.12 * speed
+        body = _lowpass(chord + hiss, 320.0 + 3400.0 * speed)
+        # Mechanical deck brake click near the end of deceleration
+        t_brk = np.maximum(0.0, t - 0.38)
+        brake = (t >= 0.38) * (_lp_fast(_noise(d, 704), 1400.0) * np.exp(-t_brk * 110.0) * 0.45)
+        env = np.minimum(1.0, t / 0.004) * np.clip((d - t) / 0.025, 0.0, 1.0)
+        return _norm((body + brake) * env, 0.90)
+    if name == "paper_rustle":  # 0.35s crisp band-pass archival paper/card foley (dossier)
+        d = 0.35
+        t = _t(d)
+        rng = np.random.default_rng(705)
+        raw = rng.normal(0.0, 1.0, len(t))
+        burst1 = np.exp(-((t - 0.075) / 0.048) ** 2) * (0.65 + 0.35 * np.sin(2 * np.pi * 42.0 * t))
+        burst2 = np.exp(-((t - 0.205) / 0.055) ** 2) * (0.60 + 0.40 * np.sin(2 * np.pi * 58.0 * t + 1.1))
+        crisp = _hp_fast(_lp_fast(raw * (burst1 + 0.82 * burst2), 6400.0), 1150.0)
+        card = _lp_fast(_noise(d, 706), 340.0) * np.exp(-t * 32.0) * 0.16
+        env = np.minimum(1.0, t / 0.005) * np.clip((d - t) / 0.02, 0.0, 1.0)
+        return _norm((crisp + card) * env, 0.88)
+    if name == "neural_pulse":  # 0.40s subtle organic bio-signal chime sweep (xray_cutaway)
+        d = 0.40
+        t = _t(d)
+        u = t / d
+        f = 420.0 + 460.0 * np.sin(np.pi * np.minimum(1.0, u * 1.15)) * np.exp(-t * 2.2)
+        ph = 2 * np.pi * np.cumsum(f) / GEN_SR
+        mod = 0.32 * np.sin(2.0 * ph) * np.exp(-t * 8.0)
+        chime = (
+            np.sin(ph + mod) * np.exp(-t * 6.5) * 0.72
+            + np.sin(2.0 * ph) * np.exp(-t * 11.0) * 0.24
+            + np.sin(3.0 * ph) * np.exp(-t * 16.0) * 0.10
+        )
+        air = _hp_fast(_lp_fast(_noise(d, 707), 3400.0), 1600.0) * np.exp(-((t - 0.06) / 0.05) ** 2) * 0.12
+        env = np.minimum(1.0, t / 0.014) * np.clip((d - t) / 0.03, 0.0, 1.0)
+        return _norm((chime + air) * env, 0.88)
+    if name == "swish_match":  # 0.32s smooth directional air whoosh (iris_match / whip_match)
+        d = 0.32
+        t = _t(d)
+        tt = t / d
+        arch = np.sin(np.pi * tt) ** 1.65
+        air = _hp_fast(_lowpass(_noise(d, 708), 340.0 + 3700.0 * arch), 190.0)
+        f_air = 190.0 + 340.0 * arch
+        glide = np.sin(2 * np.pi * np.cumsum(f_air) / GEN_SR) * arch * 0.14
+        return _norm((air * arch * 1.3 + glide), 0.90)
     raise KeyError(name)
 
 
@@ -379,4 +482,8 @@ def load(name, sr=None):
 def level_db(name):
     db = channel()["audio"]["sfx_db"]
     base, _ = split_name(name)
-    return db.get(name, db.get(base, db.get("default", -10)))
+    if name in db:
+        return db[name]
+    if base in db:
+        return db[base]
+    return _DEFAULT_LEVEL_DB.get(name, _DEFAULT_LEVEL_DB.get(base, db.get("default", -10)))
