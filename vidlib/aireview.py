@@ -11,12 +11,20 @@ Xuất: `qa/ai_review.json` + `qa/ai_review.md`. Tự xoá file tạm trên Gemi
 """
 import json
 import os
+import tempfile
 import time
 
 from . import storyboard as sbm
-from .common import StudioError, env, save_json, save_text
+from .common import StudioError, env, run, save_json, save_text
 
 DEFAULT_MODEL = "gemini-4-hydrogen"
+FALLBACK_MODELS = (
+    "gemini-4-hydrogen",
+    "gemini-3.8-flash",
+    "gemini-3.5-flash",
+    "gemini-3.5-flash-lite",
+)
+PROXY_THRESHOLD_BYTES = 15 * 1024 * 1024
 
 REVIEW_SCHEMA = {
     "type": "object",
@@ -76,7 +84,8 @@ def build_prompt(sb=None):
         "- READY if all scores >= 8 and there are zero high-severity issues.\n"
         "- NEEDS_POLISH if fixable with targeted tweaks.\n"
         "- REDO if visuals are confusing, abstract, too fast, or logic feels broken.\n\n"
-        "Write `summary` and every item in `issues` (with exact MM:SS timestamps) in concise, practical Vietnamese."
+        "Write `summary` and every item in `issues` (with exact MM:SS timestamps) in concise, practical Vietnamese "
+        "with proper Vietnamese diacritics (tiếng Việt có dấu chuẩn, UTF-8)."
     )
 
 
@@ -135,6 +144,51 @@ def format_markdown(data, title="", model=""):
     return "\n".join(L) + "\n"
 
 
+def _prepare_upload(vid, log=print):
+    """Nếu video > 15 MB, nén bản xem nhanh 480p (~3 MB) để tải lên Gemini nhanh gấp 10 lần mà vẫn đủ đọc chữ."""
+    if os.path.getsize(vid) <= PROXY_THRESHOLD_BYTES:
+        return vid, False
+    fd, tmp = tempfile.mkstemp(prefix="studio_ai_review_", suffix=".mp4")
+    os.close(fd)
+    try:
+        log(f"  · Nén bản xem nhanh 480p từ {os.path.getsize(vid) / 1e6:.1f} MB để tải lên nhanh hơn…")
+        run(
+            [
+                "ffmpeg", "-v", "error", "-y", "-i", vid,
+                "-vf", "scale=480:-2",
+                "-c:v", "libx264", "-preset", "veryfast", "-crf", "28",
+                "-c:a", "aac", "-b:a", "96k",
+                "-movflags", "+faststart",
+                tmp,
+            ],
+            "ffmpeg (ai_review proxy)",
+        )
+        return tmp, True
+    except Exception:  # noqa: BLE001
+        if os.path.exists(tmp):
+            os.remove(tmp)
+        return vid, False
+
+
+def _is_transient_err(ex):
+    msg = str(ex).lower()
+    return any(
+        k in msg
+        for k in ("503", "service_unavailable", "high demand", "429", "too_many_requests", "resource_exhausted", "timed out")
+    )
+
+
+def _model_candidates(model=None):
+    if model:
+        return [model]
+    pref = os.environ.get("GEMINI_VIDEO_MODEL") or DEFAULT_MODEL
+    out = [pref]
+    for m in FALLBACK_MODELS:
+        if m not in out:
+            out.append(m)
+    return out
+
+
 def review_video(proj, video_path=None, model=None, log=print):
     """Upload `out/final.mp4` lên Gemini API, chấm điểm đa phương thức và ghi `qa/ai_review.{json,md}`."""
     api_key = env("GEMINI_API_KEY") or os.environ.get("GEMINI_API_KEY")
@@ -153,35 +207,69 @@ def review_video(proj, video_path=None, model=None, log=print):
         raise StudioError("Chưa cài SDK google-genai. Chạy: pip install -U google-genai") from ex
 
     sb = sbm.load(proj) or {}
-    mdl = model or os.environ.get("GEMINI_VIDEO_MODEL", DEFAULT_MODEL)
-    client = genai.Client(api_key=api_key)
-    log(f"▶ review · tải {os.path.relpath(vid, proj)} ({os.path.getsize(vid) / 1e6:.1f} MB) lên Gemini ({mdl})…")
-    uploaded = client.files.upload(file=vid)
+    candidates = _model_candidates(model)
     try:
+        client = genai.Client(api_key=api_key, http_options={"retry_options": {"attempts": 1}})
+    except TypeError:
+        client = genai.Client(api_key=api_key)
+    up_path, is_tmp = _prepare_upload(vid, log=log)
+    log(
+        f"▶ review · tải {os.path.basename(up_path)} "
+        f"({os.path.getsize(up_path) / 1e6:.1f} MB) lên Gemini ({candidates[0]})…"
+    )
+    uploaded = None
+    used_model = candidates[0]
+    interaction = None
+    last_err = None
+    try:
+        uploaded = client.files.upload(file=up_path)
         ready = _wait_active(client, uploaded)
-        interaction = client.interactions.create(
-            model=mdl,
-            input=[
-                {"type": "text", "text": build_prompt(sb)},
-                {"type": "video", "uri": ready.uri, "mime_type": getattr(ready, "mime_type", None) or "video/mp4"},
-            ],
-            response_format={
-                "type": "text",
-                "mime_type": "application/json",
-                "schema": REVIEW_SCHEMA,
-            },
-        )
+        prompt = build_prompt(sb)
+        mime = getattr(ready, "mime_type", None) or "video/mp4"
+        for idx, cand in enumerate(candidates):
+            used_model = cand
+            try:
+                if idx > 0:
+                    log(f"  · Model trước đang quá tải → chuyển tự động sang `{cand}`…")
+                interaction = client.interactions.create(
+                    model=cand,
+                    input=[
+                        {"type": "text", "text": prompt},
+                        {"type": "video", "uri": ready.uri, "mime_type": mime},
+                    ],
+                    response_format={
+                        "type": "text",
+                        "mime_type": "application/json",
+                        "schema": REVIEW_SCHEMA,
+                    },
+                )
+                break
+            except Exception as ex:  # noqa: BLE001
+                last_err = ex
+                if idx + 1 < len(candidates) and _is_transient_err(ex):
+                    continue
+                raise StudioError(
+                    f"Gemini API lỗi với `{cand}`: {ex}\n"
+                    "  → Nếu gặp 503 (quá tải Free Tier), thử lại sau 1 phút hoặc liên kết Billing Google AI Pro "
+                    "($10/tháng credit) trong Google AI Studio."
+                ) from ex
     finally:
-        try:
-            client.files.delete(name=uploaded.name)
-        except Exception:  # noqa: BLE001
-            pass
+        if uploaded is not None:
+            try:
+                client.files.delete(name=uploaded.name)
+            except Exception:  # noqa: BLE001
+                pass
+        if is_tmp and os.path.exists(up_path):
+            try:
+                os.remove(up_path)
+            except Exception:  # noqa: BLE001
+                pass
 
     raw_text = getattr(interaction, "output_text", None) or ""
     if not raw_text:
-        raise StudioError("Gemini không trả về kết quả chấm video.")
+        raise StudioError(f"Gemini không trả về kết quả chấm video ({last_err or 'empty output'}).")
     data = json.loads(raw_text)
-    data["model"] = mdl
+    data["model"] = used_model
     data["video"] = os.path.relpath(vid, proj).replace("\\", "/")
 
     qa_dir = os.path.join(proj, "qa")
@@ -189,11 +277,12 @@ def review_video(proj, video_path=None, model=None, log=print):
     jp = os.path.join(qa_dir, "ai_review.json")
     mp = os.path.join(qa_dir, "ai_review.md")
     save_json(jp, data)
-    save_text(mp, format_markdown(data, title=sb.get("title") or os.path.basename(proj), model=mdl))
+    save_text(mp, format_markdown(data, title=sb.get("title") or os.path.basename(proj), model=used_model))
 
     log(
-        f"✔ Gemini QA: {data['verdict']} · Dễ hiểu {data['clarity_score']}/10 · Tắt tiếng {data['muted_hook_score']}/10 "
-        f"· Khớp thực tế {data['visual_realism_score']}/10 · Nhịp {data['pacing_score']}/10"
+        f"✔ Gemini QA ({used_model}): {data['verdict']} · Dễ hiểu {data['clarity_score']}/10 · "
+        f"Tắt tiếng {data['muted_hook_score']}/10 · Khớp thực tế {data['visual_realism_score']}/10 · "
+        f"Nhịp {data['pacing_score']}/10"
     )
     log(f"  · {data.get('summary', '')}")
     for it in data.get("issues") or []:

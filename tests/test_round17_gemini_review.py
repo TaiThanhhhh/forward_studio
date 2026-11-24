@@ -117,6 +117,46 @@ class Round17GeminiReviewTests(unittest.TestCase):
             self.assertTrue(os.path.exists(os.path.join(d, "qa", "ai_review.json")))
             self.assertTrue(os.path.exists(os.path.join(d, "qa", "ai_review.md")))
 
+    def test_review_video_falls_back_on_503_without_reupload(self):
+        payload = {
+            "verdict": "READY",
+            "clarity_score": 9,
+            "muted_hook_score": 8,
+            "visual_realism_score": 9,
+            "pacing_score": 9,
+            "summary": "Ổn.",
+            "issues": [],
+        }
+        g_mod, genai_mod, calls = _make_fake_genai(json.dumps(payload), state_seq=("ACTIVE",))
+        orig_client = genai_mod.Client
+
+        class _FlakyClient(orig_client):
+            def __init__(self, api_key=None):
+                super().__init__(api_key=api_key)
+                orig_create = self.interactions.create
+
+                def flaky_create(**kwargs):
+                    if kwargs["model"] == "gemini-4-hydrogen":
+                        calls["creates"].append(kwargs)
+                        raise RuntimeError("Error code: 503 - service_unavailable high demand")
+                    return orig_create(**kwargs)
+
+                self.interactions.create = flaky_create
+
+        genai_mod.Client = _FlakyClient
+        with tempfile.TemporaryDirectory() as d:
+            os.makedirs(os.path.join(d, "out"), exist_ok=True)
+            with open(os.path.join(d, "out", "final.mp4"), "wb") as fh:
+                fh.write(b"\x00" * 2048)
+            with (
+                mock.patch.dict(sys.modules, {"google": g_mod, "google.genai": genai_mod}),
+                mock.patch.object(aireview, "env", return_value="test-key"),
+            ):
+                res = aireview.review_video(d, log=lambda *_: None)
+            self.assertEqual(res["model"], "gemini-3.8-flash")
+            self.assertEqual(len(calls["uploads"]), 1)
+            self.assertEqual([c["model"] for c in calls["creates"]], ["gemini-4-hydrogen", "gemini-3.8-flash"])
+
 
 if __name__ == "__main__":
     unittest.main()
