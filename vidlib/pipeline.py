@@ -287,6 +287,9 @@ class Run:
             if self.want_archetype is not None or "archetype" not in plan:     # plan.json cũ (trước Vòng 13)
                 plan.update(narratives.plan_archetype(self.idea, self.slug, want=self.want_archetype, idea=idea))
                 dirty = True
+            if "format_family" not in plan:                                   # plan.json cũ (trước Vòng 14)
+                plan.update(narratives.plan_format(self.idea, self.slug, idea=idea))
+                dirty = True
             if dirty:
                 save_json(pp, plan)
             return plan
@@ -297,6 +300,7 @@ class Run:
             plan["voice"], plan["voice_reason"] = v, why or "chỉ định tay (--voice)"
         plan.update(narratives.plan(self.idea, self.slug, want=self.want_narrative, idea=idea))
         plan.update(narratives.plan_archetype(self.idea, self.slug, want=self.want_archetype, idea=idea))
+        plan.update(narratives.plan_format(self.idea, self.slug, idea=idea))
         save_json(pp, plan)
         return plan
 
@@ -337,6 +341,10 @@ class Run:
                 self.log(f"  · archetype đạo diễn: {plan['archetype']} "
                          f"({narratives.get_archetype(plan['archetype'])['name']}) — "
                          f"{plan.get('archetype_reason', '')}")
+            if plan.get("format_family") and narratives.get_format(plan["format_family"]):
+                self.log(f"  · format family: {plan['format_family']} "
+                         f"({narratives.get_format(plan['format_family'])['name']}) — "
+                         f"{plan.get('format_reason', '')}")
             text = brief.build(self.idea, self.slug, self.model, self.proj, plan=plan)
             bp = self.p("brief.md")
             with open(bp, "w", encoding="utf-8", newline="\n") as f:
@@ -403,6 +411,11 @@ class Run:
             sb["archetype_resolved"] = aid
         if anote:
             warns.append(anote)
+        fid, fnote = narratives.resolve_format(sb, plan)
+        if fid:
+            sb["format_family_resolved"] = fid
+        if fnote:
+            warns.append(fnote)
         if errs:
             raise Stop("storyboard_invalid", "storyboard.json còn lỗi:\n  ✖ " + "\n  ✖ ".join(errs))
         self.sb = sb

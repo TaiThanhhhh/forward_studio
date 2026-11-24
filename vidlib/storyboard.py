@@ -335,6 +335,14 @@ def validate(sb):
             if sb["archetype"] not in narratives.archetype_ids():
                 warns.append(f"archetype '{sb['archetype']}' không có trong config/archetypes.json "
                              f"(có: {', '.join(narratives.archetype_ids())}).")
+    if "format_family" in sb and sb["format_family"] is not None:
+        if not isinstance(sb["format_family"], str):
+            errs.append("format_family phải là chuỗi (hoặc 'auto'/null).")
+        elif sb["format_family"] != "auto":
+            from . import narratives  # noqa: PLC0415
+            if sb["format_family"] not in narratives.format_ids():
+                warns.append(f"format_family '{sb['format_family']}' không có trong config/formats.json "
+                             f"(có: {', '.join(narratives.format_ids())}).")
     if "story_hud" in sb and sb["story_hud"] is not None and not isinstance(sb["story_hud"], (dict, bool)):
         errs.append("story_hud phải là object JSON hoặc false/null.")
     for v in sb.get("thumbnail", {}).get("variants", []):

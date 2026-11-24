@@ -230,6 +230,7 @@ def build(idea, slug, video_model=None, proj=None, plan=None):
         "style": (plan or {}).get("style") or cfg.get("styles", {}).get("default", "auto"),
         "styles": ", ".join(styles.available()), "plan_block": plan_block(plan),
         "narrative_block": narratives.block((plan or {}).get("narrative")),
+        "format_block": narratives.format_block((plan or {}).get("format_family")).replace("{", "{{").replace("}", "}}"),
         "archetype_block": narratives.archetype_block((plan or {}).get("archetype")).replace("{", "{{").replace("}", "}}"),
         "scenes": ", ".join(s for s in codeshot.scenes() if s != "charsheet"), "scene_help": scene_help(),
         # §4c motion: cơ chế cho chủ đề + không lặp video trước + verb (ngoặc nhân đôi để qua bước gộp {{ }} bên dưới)
