@@ -85,7 +85,7 @@ def main(argv):
         for style in _arg(argv, "--rigs").split(","):
             print(rig_sheet(style, out_dir, int(_arg(argv, "--frame", 40))))
         return
-    styles = argv[0].split(",")
+    styles = argv[0].split(",") if argv and not argv[0].startswith("--") else ["vox-editorial-black"]
     beats = argv[1].split(",") if len(argv) > 1 and not argv[1].startswith("--") else list(html.BEATS)
     n = int(_arg(argv, "--frames", 60))
     data = _arg(argv, "--data", os.path.join(ROOT, "engines", "html", "demo.json"))

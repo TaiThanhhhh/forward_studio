@@ -23,6 +23,19 @@ export const TONES = {
   sheep_face: '#3B332E',
 };
 
+// bảng màu trưởng thành giảm bão hoà cho chế độ editorial (Vox/Fern/Cleo Abram — không màu kẹo/đồ chơi)
+const EDITORIAL_TONES = {
+  fur_orange: '#B8693E', fur_peach: '#C9956B', fur_rust: '#8E492D', fur_tan: '#A07E5B', fur_brown: '#6E4C38',
+  fur_dark: '#2A2524', fur_cream: '#DDD2BE', fur_grey: '#6D737F', fur_silver: '#9FA5B0', fur_white: '#ECEAE2',
+  fur_black: '#22242B', fur_red: '#A84E36', pink: '#BE8492', pink_dark: '#9E6271', skin: '#D9B394', leaf: '#355E47',
+  frog: '#3F6A4C', shell: '#677442', shell_dark: '#414A2A', dino: '#436B4D', dino_belly: '#C7BE84', beak: '#C98A32',
+  comb: '#B84336', horn: '#D6CCB8', hoof: '#2B2624', fish: '#C4723C', fish_fin: '#CFA44C', penguin: '#20242C',
+  bird: '#3D6A92', duck: '#C4A54B', nose: '#1C1D22', eye_white: '#ECEAE2', pupil: '#181A20', brow: '#2C2522',
+  mouth: '#4B282B', tongue: '#B55B68', blush: '#C67E8D', hair_brown: '#4A3528', hair_black: '#232224',
+  hair_blond: '#C4A85C', shirt: '#3C6282', shirt2: '#9E463B', pants: '#232833', shoes: '#1D2028', wool: '#E3DEC8',
+  sheep_face: '#312C2A',
+};
+
 // Bảng loài (mét, scale 1; +Z = phía trước). kind: quad | biped | bird | fish.
 // len/r/w = thân dài / bán kính / tỉ lệ rộng · leg/legR = chân (đất → hông) / bán kính · hind = hệ số chân sau
 // head = bán kính đầu · hs = tỉ lệ đầu [x,y,z] · neck = [dài, góc ngẩng rad] · snout = [long|short|cone|disc|flat|beak|none,
@@ -131,6 +144,11 @@ const shade = (hex, k) => {           // k < 1 tối hơn, > 1 sáng hơn (giữ
   const n = parseInt(hex.slice(1, 7), 16), f = (v) => Math.max(0, Math.min(255, Math.round(k < 1 ? v * k : v + (255 - v) * (k - 1))));
   return `#${[(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) => f(v).toString(16).padStart(2, '0')).join('')}`;
 };
+const mixHex = (a, b, t) => {
+  const na = parseInt(a.slice(1, 7), 16), nb = parseInt(b.slice(1, 7), 16);
+  const ch = (sh) => Math.max(0, Math.min(255, Math.round(lerp((na >> sh) & 255, (nb >> sh) & 255, t)))).toString(16).padStart(2, '0');
+  return `#${ch(16)}${ch(8)}${ch(0)}`;
+};
 const ell = (g, x, y, rx, ry, rot = 0) => { g.beginPath(); g.ellipse(x, y, Math.max(0.1, rx), Math.max(0.1, ry), rot, 0, TAU); };
 const speckle = (g, w, h, base, seed, n = 60, k = 0.06) => {   // vân lông/da nhẹ (tất định) → texture "vẽ tay" thời 90
   for (let i = 0; i < n; i++) {
@@ -176,16 +194,33 @@ function paintBody(T, H, pattern, c, seed) {
 
 /** Mặt nhìn thẳng (canvas vuông, đường tròn đầu bán kính 0.49): mắt + lông mày (+ miệng khi không có mõm). */
 function paintFace(T, F, st) {
-  const [cn, g] = cv(T, T), c = F.c, s = (v) => v * T;
+  const [cn, g] = cv(T, T), c = F.c, s = (v) => v * T, ed = !!F.editorial;
   g.fillStyle = c.head; g.fillRect(0, 0, T, T);
-  speckle(g, T, T, c.head, F.seed, 26, 0.04);
+  speckle(g, T, T, c.head, F.seed, ed ? 12 : 26, ed ? 0.02 : 0.04);
   if (F.mask) { g.fillStyle = c.belly; ell(g, s(0.5), s(0.74), s(0.3), s(0.2)); g.fill(); }
-  if (F.blush) { g.fillStyle = c.blush + '99'; for (const k of [-1, 1]) { ell(g, s(0.5 + k * 0.25), s(0.6), s(0.07), s(0.04)); g.fill(); } }
+  if (F.blush && !ed) { g.fillStyle = c.blush + '99'; for (const k of [-1, 1]) { ell(g, s(0.5 + k * 0.25), s(0.6), s(0.07), s(0.04)); g.fill(); } }
   const e = st.expr, er = F.r, lineW = Math.max(1.2, s(0.025));
   const eye = (k) => {
     const cx = s(0.5 + k * F.gap), cy = s(F.y), rx = s(er * (e === 'shock' ? 1.12 : 0.92)), ry = s(er * (e === 'shock' ? 1.2 : 1.05));
     const closed = st.blink >= 1 || e === 'sniff' || (e === 'wink' && k > 0) || st.sleep;
     g.lineCap = 'round'; g.lineJoin = 'round';
+    if (ed) {                                        // mắt editorial tối giản: chấm tối tinh gọn, không lòng trắng googly/đốm sáng
+      if (closed) {
+        g.strokeStyle = c.pupil; g.lineWidth = lineW * 0.85; g.beginPath();
+        g.moveTo(cx - rx * 0.55, cy); g.lineTo(cx + rx * 0.55, cy); g.stroke(); return;
+      }
+      const dr = s(er * (e === 'shock' ? 0.48 : 0.42));
+      const px = cx + st.look[0] * rx * 0.22, py = cy + st.look[1] * ry * 0.18 + (e === 'sad' ? dr * 0.15 : 0);
+      g.fillStyle = c.pupil; ell(g, px, py, dr, dr * 1.08); g.fill();
+      const lid = Math.max(st.blink >= 0.5 ? 0.55 : 0, e === 'sleepy' ? 0.48 : 0, e === 'angry' ? 0.28 : 0);
+      if (lid > 0) {
+        const tilt = e === 'angry' ? 0.3 : 0, yl = py - dr + 2 * dr * lid;
+        g.fillStyle = c.head; g.beginPath();
+        g.moveTo(px - dr * 1.4, py - dr * 1.5); g.lineTo(px + dr * 1.4, py - dr * 1.5);
+        g.lineTo(px + dr * 1.4, yl + k * tilt * dr); g.lineTo(px - dr * 1.4, yl - k * tilt * dr); g.closePath(); g.fill();
+      }
+      return;
+    }
     if (closed) {                                    // mắt nhắm: ∩ (vui/đánh hơi) hoặc ⌣ (ngủ/chớp)
       const happy = e === 'sniff' || e === 'wink' || e === 'happy' || e === 'love';
       g.strokeStyle = c.pupil; g.lineWidth = lineW * 1.25; g.beginPath();
@@ -222,20 +257,28 @@ function paintFace(T, F, st) {
   const B = { neutral: [0, 0], happy: [-0.04, -0.01], shock: [-0.08, -0.02], sad: [-0.03, -0.06], angry: [0.01, 0.07],
     sleepy: [0.02, 0], sniff: [-0.02, 0], love: [-0.04, 0], wink: [-0.02, 0.02] }[e] || [0, 0];
   if (F.brows !== false) {
-    g.strokeStyle = c.brow; g.lineWidth = lineW * 1.3; g.lineCap = 'round';
+    g.strokeStyle = c.brow; g.lineWidth = lineW * (ed ? 0.82 : 1.3); g.lineCap = 'round';
     for (const k of [-1, 1]) {
-      const cx = s(0.5 + k * F.gap), y0 = s(F.y - er * 1.55 + B[0]);
-      g.beginPath(); g.moveTo(cx - k * s(er * 0.85), y0 + s(B[1])); g.lineTo(cx + k * s(er * 0.85), y0 - s(B[1] * 0.4)); g.stroke();
+      const cx = s(0.5 + k * F.gap), y0 = s(F.y - er * (ed ? 1.12 : 1.55) + B[0] * (ed ? 0.7 : 1));
+      const bw = s(er * (ed ? 0.62 : 0.85));
+      g.beginPath(); g.moveTo(cx - k * bw, y0 + s(B[1] * (ed ? 0.7 : 1))); g.lineTo(cx + k * bw, y0 - s(B[1] * (ed ? 0.3 : 0.4))); g.stroke();
     }
   }
-  if (F.mouth) paintMouth(g, T, s(0.5), s(F.my), s(F.wide ? 0.2 : 0.1), st, c, lineW);
+  if (F.mouth) paintMouth(g, T, s(0.5), s(F.my), s(F.wide ? 0.2 : 0.1), st, c, lineW, ed);
   return cn;
 }
 
 /** Miệng theo biểu cảm (dùng cho mặt người/ếch/cá và cho mõm). w = nửa bề rộng (px). */
-function paintMouth(g, T, x, y, w, st, c, lw) {
+function paintMouth(g, T, x, y, w, st, c, lw, editorial = false) {
   const e = st.expr, open = st.jaw > 0.5 || e === 'happy' || e === 'love';
-  g.lineCap = 'round'; g.lineJoin = 'round'; g.strokeStyle = c.mouth; g.fillStyle = c.mouth; g.lineWidth = lw * 1.2;
+  g.lineCap = 'round'; g.lineJoin = 'round'; g.strokeStyle = c.mouth; g.fillStyle = c.mouth; g.lineWidth = lw * (editorial ? 0.85 : 1.2);
+  if (editorial) {
+    if (e === 'shock') { ell(g, x, y + w * 0.1, w * 0.24, w * 0.32); g.fill(); return; }
+    if (e === 'sad' || e === 'angry') { g.beginPath(); g.moveTo(x - w * 0.65, y + w * 0.18); g.quadraticCurveTo(x, y - w * 0.15, x + w * 0.65, y + w * 0.18); g.stroke(); return; }
+    if (e === 'happy' || e === 'love') { g.beginPath(); g.moveTo(x - w * 0.72, y); g.quadraticCurveTo(x, y + w * 0.42, x + w * 0.72, y); g.stroke(); return; }
+    g.beginPath(); g.moveTo(x - w * 0.55, y + w * 0.04); g.lineTo(x + w * 0.55, y + w * 0.04); g.stroke();
+    return;
+  }
   if (e === 'shock') { ell(g, x, y + w * 0.15, w * 0.42, w * 0.55); g.fill(); return; }
   if (e === 'sad' || e === 'angry') { g.beginPath(); g.arc(x, y + w * 0.9, w * 0.8, Math.PI * 1.2, Math.PI * 1.8); g.stroke(); return; }
   if (e === 'sleepy' || (e === 'sniff' && !open)) { ell(g, x, y + w * 0.1, w * 0.22, w * 0.16); g.fill(); return; }
@@ -249,15 +292,20 @@ function paintMouth(g, T, x, y, w, st, c, lw) {
 
 /** Mõm nhìn thẳng: màu mõm + miệng "ω" dưới mũi + (lỗ mũi / ria) — miệng đổi theo biểu cảm. */
 function paintSnout(T, F, st) {
-  const [cn, g] = cv(T, T), c = F.c, s = (v) => v * T, lw = Math.max(1.2, s(0.03));
+  const [cn, g] = cv(T, T), c = F.c, s = (v) => v * T, lw = Math.max(1.2, s(0.03)), ed = !!F.editorial;
   g.fillStyle = c.snout; g.fillRect(0, 0, T, T);
-  speckle(g, T, T, c.snout, F.seed + 7, 12, 0.04);
-  if (F.nostrils) { g.fillStyle = shade(c.snout, 0.45); for (const k of [-1, 1]) { ell(g, s(0.5 + k * 0.15), s(0.42), s(0.06), s(0.09)); g.fill(); } }
+  speckle(g, T, T, c.snout, F.seed + 7, ed ? 6 : 12, ed ? 0.02 : 0.04);
+  if (F.nostrils) { g.fillStyle = shade(c.snout, 0.45); for (const k of [-1, 1]) { ell(g, s(0.5 + k * 0.15), s(0.42), s(0.055), s(0.08)); g.fill(); } }
   if (F.whiskers) {
     g.strokeStyle = shade(c.snout, 0.55); g.lineWidth = lw * 0.5;
     for (const k of [-1, 1]) for (let i = 0; i < 3; i++) { g.beginPath(); g.moveTo(s(0.5 + k * 0.2), s(0.56 + i * 0.05)); g.lineTo(s(0.5 + k * 0.48), s(0.5 + i * 0.09)); g.stroke(); }
   }
   if (F.mouth === false) return cn;
+  if (ed) {
+    g.strokeStyle = shade(c.snout, 0.42); g.lineCap = 'round'; g.lineWidth = lw * 0.7;
+    g.beginPath(); g.moveTo(s(0.38), s(0.68)); g.quadraticCurveTo(s(0.5), s(0.71), s(0.62), s(0.68)); g.stroke();
+    return cn;
+  }
   const e = st.expr, y = s(0.66), w = s(0.17), open = st.jaw > 0.5 || e === 'happy' || e === 'love';
   g.strokeStyle = c.mouth; g.fillStyle = c.mouth; g.lineCap = 'round'; g.lineWidth = lw;
   if (!F.nostrils) { g.beginPath(); g.moveTo(s(0.5), s(0.46)); g.lineTo(s(0.5), y); g.stroke(); }
@@ -270,11 +318,12 @@ function paintSnout(T, F, st) {
   return cn;
 }
 
-/** Mũi bóng: đen + chấm sáng (mọi look đều thấy bóng, kể cả toon không có specular). */
-function paintNose(T, col) {
+/** Mũi bóng: đen + chấm sáng (editorial: lì tinh tế, không bóng loáng hoạt hình). */
+function paintNose(T, col, editorial = false) {
   const [cn, g] = cv(T, T);
   g.fillStyle = col; g.fillRect(0, 0, T, T);
-  g.fillStyle = 'rgba(255,255,255,0.85)'; ell(g, T * 0.38, T * 0.3, T * 0.13, T * 0.09, -0.4); g.fill();
+  g.fillStyle = editorial ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.85)';
+  ell(g, T * 0.38, T * 0.3, T * 0.13, T * 0.09, -0.4); g.fill();
   return cn;
 }
 
@@ -325,16 +374,39 @@ export function creature(ctx, p = {}) {
   const sp = SPECIES[p.species] ? p.species : SPECIES[ALIASES[p.species]] ? ALIASES[p.species] : 'dog';
   const S = { hind: 1, hs: [1, 1, 1], neck: [0.05, 0.6], snout: ['none'], ears: ['none'], tail: ['none'], extras: [], ...SPECIES[sp] };
   const LK = ctx.look3d || {}, FPS = ctx.fps || 30, N = ctx.N || 1;
+  const worldCfg = (ctx.job && ctx.job.world) || {}, wCol = worldCfg.colors || {};
+  const isRetroLook = LK.kind === 'retro90' || LK.kind === 'psx' || LK.mat === 'gouraud';
+  const charStyle = worldCfg.character_style || (isRetroLook ? 'cartoon' : 'editorial');
+  const isEditorial = charStyle === 'editorial' && !isRetroLook;
+  if (isEditorial && sp === 'adult') S.head = S.head * 0.94;
   const seed = p.seed ?? ((Object.keys(SPECIES).indexOf(sp) + 1) * 7 + Math.round(((p.at || [0])[0] || 0) * 13));
   const plainOnly = LK.mat === 'wire' || LK.mat === 'xray';
-  // ---- màu theo vai: prop.color (chuỗi = thân; object = từng vai) > style world.colors.<token> > TONES
+  // ---- màu theo vai: prop.color (chuỗi = thân; object = từng vai) > editorial world.colors > style world.colors > TONES
+  const edOverrides = {};
+  if (isEditorial) {
+    if (sp === 'adult') {
+      const aCol = wCol.actor_a || wCol.water;
+      edOverrides.shirt = /^#[0-9a-fA-F]{6}/.test(aCol || '') ? mixHex(aCol, '#2E3A4A', 0.22) : EDITORIAL_TONES.shirt;
+      edOverrides.pants = /^#[0-9a-fA-F]{6}/.test(wCol.iron || '') ? wCol.iron : EDITORIAL_TONES.pants;
+      edOverrides.skin = EDITORIAL_TONES.skin;
+      edOverrides.shoes = EDITORIAL_TONES.shoes;
+      edOverrides.hair = EDITORIAL_TONES.hair_black;
+    } else if (sp === 'horse') {
+      const bCol = wCol.actor_b || wCol.accent;
+      const baseHorse = /^#[0-9a-fA-F]{6}/.test(bCol || '') ? mixHex('#78523B', bCol, 0.28) : EDITORIAL_TONES.fur_brown;
+      edOverrides.body = baseHorse;
+      edOverrides.snout = shade(baseHorse, 0.88);
+    }
+  }
+  const propColObj = p.color && typeof p.color === 'object' ? p.color : p.color ? (S.human ? { shirt: p.color } : { body: p.color }) : {};
   const roles = { eye: 'eye_white', pupil: 'pupil', mouth: 'mouth', tongue: 'tongue', blush: 'blush', nose: 'nose', heart: 'comb', ...S.tones,
-    ...(p.color && typeof p.color === 'object' ? p.color : p.color ? { body: p.color } : {}) };
+    ...edOverrides, ...propColObj };
   const hex = (role) => {
     let t = roles[role];
     if (t === undefined) return ROLE_DEFAULT[role] ? hex(ROLE_DEFAULT[role]) : '#888888';
     const c = ctx.C ? ctx.C(t) : t;
     if (typeof c === 'string' && c !== t && /^#/.test(c)) return c;
+    if (isEditorial && EDITORIAL_TONES[t]) return EDITORIAL_TONES[t];
     return TONES[t] || (/^#[0-9a-fA-F]{6}/.test(t) ? t : '#888888');
   };
   const col = {};
@@ -361,7 +433,16 @@ export function creature(ctx, p = {}) {
   const J = { rig };                                     // khớp
 
   // ---- mặt (texture vẽ lại khi biểu cảm/chớp/con ngươi đổi)
-  const F = { c: { ...col }, seed, gap: 0.2, y: 0.37, r: 0.125, my: 0.68, mouth: false, mask: S.pattern === 'mask', blush: S.blush, ...(S.face || {}) };
+  const F = { c: { ...col }, seed, gap: 0.2, y: 0.37, r: 0.125, my: 0.68, mouth: false, mask: S.pattern === 'mask', blush: S.blush, editorial: isEditorial, ...(S.face || {}) };
+  const heatMats = [];
+  const regHeatMat = (m) => {
+    if (!m) return;
+    heatMats.push({
+      m,
+      base: m.color ? m.color.clone() : new THREE.Color(0xffffff),
+      baseEm: m.emissive ? m.emissive.clone() : new THREE.Color(0x000000),
+    });
+  };
   const faceState = { key: '', tex: null, snoutTex: null, snoutKey: '' };
   const faceCanvas = HAS_DOM && !plainOnly ? cv(texPx, texPx)[0] : null;
   const snoutCanvas = HAS_DOM && !plainOnly ? cv(Math.max(32, texPx >> 1), Math.max(32, texPx >> 1))[0] : null;
@@ -371,8 +452,8 @@ export function creature(ctx, p = {}) {
     if (sc) gg.scale.set(...sc);
     return gg;
   };
-  const texMat = (canvas, fallback) => {
-    if (!canvas) return { m: M(fallback), t: null };
+  const texMat = (canvas, fallback, dedicated = false) => {
+    if (!canvas) return { m: dedicated ? ctx.toon(fallback) : M(fallback), t: null };
     const t = tex(canvas); return { m: ctx.toon('#ffffff', { map: t }), t };
   };
 
@@ -400,7 +481,7 @@ export function creature(ctx, p = {}) {
         const scl = k === 'disc' ? [1, 0.82, 0.55] : k === 'flat' ? [1.25, 0.8, L / R] : k === 'cone' ? [0.85, 0.8, L / R] : [1, 0.86, Math.max(0.8, L / R)];
         faceBall(R, sg, sm.m, M(col.snout), scl);
         if (k !== 'disc' && k !== 'flat' && S.snoutNose !== false && sp !== 'horse') {
-          const nr = R * (k === 'short' ? 0.42 : 0.38), nm = texMat(HAS_DOM && !plainOnly ? paintNose(32, col.nose) : null, col.nose);
+          const nr = R * (k === 'short' ? 0.42 : 0.38), nm = texMat(HAS_DOM && !plainOnly ? paintNose(32, col.nose, isEditorial) : null, col.nose);
           faceBall(nr, sg, nm.m, M(col.nose), [1.25, 0.9, 0.85]).position.set(0, R * 0.55 * scl[1], R * scl[2] * 0.92);
         }
       }
@@ -506,7 +587,8 @@ export function creature(ctx, p = {}) {
     const L = S.leg, D = S.len * 0.62, r = S.r, w = S.w || 1;
     J.torso = grp(rig, 0, L, -D / 2);
     const bodyCanvas = HAS_DOM && !plainOnly ? paintBody(Math.max(32, texPx >> 1), Math.max(32, texPx >> 1), S.pattern, col, seed) : null;
-    const bm = texMat(bodyCanvas, col.body);
+    const bm = texMat(bodyCanvas, col.body, true);
+    regHeatMat(bm.m);
     J.body = add(latheBody(S.len, r, 0.9, 1.05, sp === 'pig' || sp === 'sheep' || sp === 'bear' ? 2 : 2.8, facet ? 7 : 12, seg), bm.m, J.torso, 0, r * 0.35, D / 2);
     J.body.scale.x = w;
     const xs = r * w * 0.55, hoof = col.paw === TONES.hoof || (roles.paw === 'hoof');
@@ -569,15 +651,19 @@ export function creature(ctx, p = {}) {
     J.lean0 = human ? 0 : S.lean || 0;
     if (human) {
       const bodyCanvas = HAS_DOM && !plainOnly ? paintBody(32, 32, 'plain', { ...col, body: col.shirt }, seed) : null;
-      const bm = texMat(bodyCanvas, col.shirt);
+      const bm = texMat(bodyCanvas, col.shirt, true);
+      regHeatMat(bm.m);
       const ch = add(latheBody(torsoL * 1.15, R, 0.95, 1.0, 3.2, facet ? 6 : 10, seg), bm.m, J.torso, 0, torsoL * 0.5, 0);
-      ch.rotation.x = -Math.PI / 2; ch.scale.x = 1.15;
-      sph(R * 0.95, J.pelvis, col.pants, 0, 0, 0, [1.15, 0.6, 0.9]);
+      ch.rotation.x = -Math.PI / 2; ch.scale.x = isEditorial && sp === 'adult' ? 1.08 : 1.15;
+      J.body = ch;
+      sph(R * 0.95, J.pelvis, col.pants, 0, 0, 0, [isEditorial && sp === 'adult' ? 1.08 : 1.15, 0.6, 0.9]);
     } else {
       const bodyCanvas = HAS_DOM && !plainOnly ? paintBody(Math.max(32, texPx >> 1), Math.max(32, texPx >> 1), S.pattern, col, seed) : null;
-      const bm = texMat(bodyCanvas, col.body);
+      const bm = texMat(bodyCanvas, col.body, true);
+      regHeatMat(bm.m);
       const b = add(latheBody(torsoL, R, 1.05, 0.85, 2.4, facet ? 7 : 12, seg), bm.m, J.torso, 0, R * 0.2, torsoL * 0.12);
       b.scale.x = S.w || 1;
+      J.body = b;
       if (S.extras.includes('spikes')) for (let i = 0; i < 5; i++) { const c = cone(R * 0.16, R * 0.35, J.torso, col.extra, 0, R * 1.08, torsoL * (0.32 - i * 0.16)); c.rotation.x = -0.25; }
     }
     // cổ + đầu
@@ -626,7 +712,8 @@ export function creature(ctx, p = {}) {
     J.pelvis = grp(rig, 0, L + (up ? R * 0.45 : R * 0.6), 0);
     J.torso = grp(J.pelvis);
     const bodyCanvas = HAS_DOM && !plainOnly ? paintBody(Math.max(32, texPx >> 1), Math.max(32, texPx >> 1), S.pattern, col, seed) : null;
-    const bm = texMat(bodyCanvas, col.body);
+    const bm = texMat(bodyCanvas, col.body, true);
+    regHeatMat(bm.m);
     J.body = add(latheBody(S.len, R, up ? 1.0 : 0.85, up ? 0.7 : 1.0, 2.2, facet ? 7 : 12, seg), bm.m, J.torso, 0, 0, up ? S.len * 0.2 : S.len * 0.1);
     J.body.scale.x = S.w || 1;
     J.neck = grp(J.torso, 0, up ? 0 : R * 0.55, up ? S.len * 0.62 : S.len * 0.42);
@@ -662,7 +749,8 @@ export function creature(ctx, p = {}) {
     const R = S.r, L = S.len;
     J.torso = grp(rig, 0, R * 1.05, 0);
     const bodyCanvas = HAS_DOM && !plainOnly ? paintBody(Math.max(32, texPx >> 1), Math.max(32, texPx >> 1), S.pattern, col, seed) : null;
-    const bm = texMat(bodyCanvas, col.body);
+    const bm = texMat(bodyCanvas, col.body, true);
+    regHeatMat(bm.m);
     J.body = add(latheBody(L, R, 0.55, 1.05, 2.0, facet ? 7 : 12, seg), bm.m, J.torso, 0, 0, -L * 0.08);
     J.body.scale.x = S.w;
     J.headPivot = grp(J.torso, 0, R * 0.05, L * 0.24);
@@ -678,6 +766,14 @@ export function creature(ctx, p = {}) {
   }
 
   J.headBase = J.headPivot ? J.headPivot.position.clone() : null;
+
+  // ---- hiệu ứng nhiệt gắn thân (Grounded Thermal Glow, set.heat 0..1 — tạo lười khi heat > 0 để không lệch Box3)
+  const heatHex = wCol.heat_glow || (worldCfg.design_system && worldCfg.design_system.heat_glow) || '#E8523A';
+  const heatCol = new THREE.Color(heatHex);
+  const heatGlowSize = S.kind === 'biped' && S.human ? (J.torsoL || 0.5) * 1.4 : Math.max(S.r || 0.2, (S.len || 0.4) * 0.42) * 1.65;
+  const heatGlowY = S.kind === 'biped' && S.human ? (J.torsoL || 0.5) * 0.52 : S.kind === 'quad' ? S.r * 0.35 : 0;
+  const heatGlowZ = S.kind === 'quad' ? S.len * 0.34 : 0.04;
+  let heatGlow = null;
 
   // ====================================================================================================================
   // bảng theo frame (tính MỘT LẦN từ keyframe): vị trí → tốc độ, hướng, dáng tự chọn, pha chân, pha vẫy đuôi
@@ -918,7 +1014,29 @@ export function creature(ctx, p = {}) {
   // ====================================================================================================================
   // áp dáng + nhìn theo điểm + tai/đuôi trễ pha + mặt
   // ====================================================================================================================
-  const cur = { expr: p.expr, look: p.look || null };
+  const cur = { expr: p.expr, look: p.look || null, heat: 0 };
+  const applyHeat = (v) => {
+    const h = clamp(Number(v) || 0, 0, 1);
+    cur.heat = h;
+    for (const entry of heatMats) {
+      if (entry.m.color) entry.m.color.copy(entry.base).lerp(heatCol, h * 0.62);
+      if (entry.m.emissive) {
+        entry.m.emissive.copy(entry.baseEm).lerp(heatCol, h * 0.58);
+        if ('emissiveIntensity' in entry.m) entry.m.emissiveIntensity = 1.0;
+      }
+    }
+    if (h > 0.01 && !heatGlow && ctx.glow && J.torso) {
+      heatGlow = ctx.glow(heatHex, heatGlowSize, J.torso, 0, heatGlowY, heatGlowZ, 0);
+      if (heatGlow) heatGlow.userData.noFrame = true;
+    }
+    if (heatGlow) {
+      heatGlow.visible = h > 0.01;
+      const gs = h > 0.01 ? heatGlowSize * (0.65 + 0.35 * h) : 0.001;
+      heatGlow.scale.set(gs, gs, 1);
+      if (heatGlow.material) heatGlow.material.opacity = h * 0.34;
+    }
+  };
+  if (p.heat !== undefined) applyHeat(p.heat);
   const v3 = new THREE.Vector3(), v4 = new THREE.Vector3(), qInv = new THREE.Quaternion();
   const apply = (P) => {
     rig.position.set(P.x || 0, P.y, P.z || 0); rig.rotation.set(0, P.yaw, P.roll);
@@ -1020,7 +1138,7 @@ export function creature(ctx, p = {}) {
 
   return {
     g, update, bind, species: sp, S, footprint,
-    set: { expr: (v) => { cur.expr = v; }, look: (v) => { cur.look = v; } },
+    set: { expr: (v) => { cur.expr = v; }, look: (v) => { cur.look = v; }, heat: applyHeat },
     joints: J,
   };
 }

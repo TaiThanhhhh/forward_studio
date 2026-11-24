@@ -10,6 +10,7 @@
   "voice": "auto",
   "narrative": "classic",
   "assembly": "auto",
+  "captions": "studio_clean",
   "flow": {
     "video_model": "<tool fills>",
     "image_model": "<tool fills>"

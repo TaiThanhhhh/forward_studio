@@ -202,7 +202,7 @@ def render(proj, sb, tl, layer, trims, ingested, cams, out_video=None, stills_at
                 if not is_outro:
                     img = layer.draw(img.copy() if img is clean else img, clean, seg, shot, fa, t_abs)
                     if captions is not None:
-                        img = captions.draw(img, t_abs)
+                        img = captions.draw(img, t_abs, shot=shot)
                 if n_loop and i >= seg["n"] - n_loop and first_frame is not None:
                     img = _whip_to(img, first_frame, (i - (seg["n"] - n_loop) + 1) / (n_loop + 1))
                 if first_frame is None:
@@ -269,9 +269,9 @@ class NearestFrames:
         pass
 
 
-def look_stills(proj, sb, tl, layer, trims, ingested, cams, stills_at):
-    """Ảnh cho contact sheet (giữa mỗi shot + hai phía điểm cắt), có camera ảo + transition + text_fx như bản cuối.
-    Không encode; clip chỉ đọc tới frame cần."""
+def look_stills(proj, sb, tl, layer, trims, ingested, cams, stills_at, captions=None):
+    """Ảnh cho contact sheet (giữa mỗi shot + hai phía điểm cắt), có camera ảo + transition + text_fx (+ captions)
+    như bản cuối. Không encode; clip chỉ đọc tới frame cần."""
     shots = {s["id"]: s for s in sb["shots"]}
     items, prev_clean = [], None
     spine_ids, prev_sid = spine_shot_ids(proj, sb), None
@@ -311,7 +311,10 @@ def look_stills(proj, sb, tl, layer, trims, ingested, cams, stills_at):
             if not (seg["sid"] in spine_ids and prev_sid in spine_ids):
                 img = fx.transition(img, prev_clean, seg["transition"], i)
             if sid != "OUTRO":
-                img = layer.draw(img.copy() if img is clean else img, clean, seg, shot, fa, fa / FPS)
+                t_abs = fa / FPS
+                img = layer.draw(img.copy() if img is clean else img, clean, seg, shot, fa, t_abs)
+                if captions is not None:
+                    img = captions.draw(img, t_abs, shot=shot)
             items.append((f"{stills_at[fa]} {fa / FPS:.1f}s", img, sid, kind))
         prev_clean, prev_sid = clean, seg["sid"]
         if src:

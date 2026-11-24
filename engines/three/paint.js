@@ -74,68 +74,68 @@ export function blob(px = 64) {
 const dots = (g, w, h, r, n, cols, rmin, rmax) => {
   for (let i = 0; i < n; i++) { g.fillStyle = cols[Math.floor(r() * cols.length)]; g.beginPath(); g.ellipse(r() * w, r() * h, rmin + r() * (rmax - rmin), (rmin + r() * (rmax - rmin)) * 0.7, r() * 3, 0, 7); g.fill(); }
 };
-/** cỏ: nền xanh + đốm sáng/tối + nét lá ngắn */
-export function grass(seed = 5, base = '#4FA83A', px = 128) {
+/** cỏ: nền rêu đêm trưởng thành + đốm sáng/tối dịu + nét lá ngắn */
+export function grass(seed = 5, base = '#2B4C3B', px = 128) {
   const [c, g] = cv(px, px), r = rng(seed);
   g.fillStyle = base; g.fillRect(0, 0, px, px);
-  dots(g, px, px, r, px * 0.5, [shadeHex(base, -9), shadeHex(base, 8), shadeHex(base, -5)], px * 0.015, px * 0.04);
+  dots(g, px, px, r, px * 0.45, [shadeHex(base, -7), shadeHex(base, 6), shadeHex(base, -4)], px * 0.015, px * 0.04);
   g.lineCap = 'round';
-  for (let i = 0; i < px * 0.9; i++) {
-    const x = r() * px, y = r() * px; g.strokeStyle = shadeHex(base, r() < 0.5 ? 14 : -14); g.lineWidth = Math.max(1, px / 96);
+  for (let i = 0; i < px * 0.75; i++) {
+    const x = r() * px, y = r() * px; g.strokeStyle = shadeHex(base, r() < 0.5 ? 10 : -10); g.lineWidth = Math.max(1, px / 96);
     g.beginPath(); g.moveTo(x, y); g.lineTo(x + (r() - 0.5) * px * 0.03, y - px * (0.02 + r() * 0.03)); g.stroke();
   }
   return c;
 }
 /** đất/đá (vách đảo, đường đất) */
-export function dirt(seed = 6, base = '#6B4A2E', px = 64) {
+export function dirt(seed = 6, base = '#3F362E', px = 64) {
   const [c, g] = cv(px, px), r = rng(seed);
   g.fillStyle = base; g.fillRect(0, 0, px, px);
-  dots(g, px, px, r, px * 0.8, [shadeHex(base, -25), shadeHex(base, 15), shadeHex(base, -10)], px * 0.02, px * 0.07);
+  dots(g, px, px, r, px * 0.75, [shadeHex(base, -18), shadeHex(base, 12), shadeHex(base, -8)], px * 0.02, px * 0.07);
   return c;
 }
-/** cụm cỏ (nền trong suốt) — dán lên 2 mặt phẳng chéo như sprite đồ hoạ thời 90 */
-export function tuft(seed = 7, base = '#5DBE3A', px = 64) {
+/** cụm cỏ (nền trong suốt) — dán lên 2 mặt phẳng chéo */
+export function tuft(seed = 7, base = '#365C47', px = 64) {
   const [c, g] = cv(px, px), r = rng(seed);
   for (let i = 0; i < 9; i++) {
     const x = px * (0.18 + 0.64 * r()), h = px * (0.45 + 0.5 * r()), lean = (r() - 0.5) * px * 0.35, w = px * (0.05 + 0.04 * r());
-    g.fillStyle = shadeHex(base, (r() - 0.5) * 40);
+    g.fillStyle = shadeHex(base, (r() - 0.5) * 24);
     g.beginPath(); g.moveTo(x - w, px); g.quadraticCurveTo(x + lean * 0.3, px - h * 0.6, x + lean, px - h); g.quadraticCurveTo(x + lean * 0.3 + w * 0.6, px - h * 0.5, x + w, px); g.closePath(); g.fill();
   }
   return c;
 }
 /** gỗ ván (mặt bàn) */
-export function planks(seed = 8, base = '#A0683A', px = 128, n = 4) {
+export function planks(seed = 8, base = '#735036', px = 128, n = 4) {
   const [c, g] = cv(px, px), r = rng(seed), hp = px / n;
   for (let i = 0; i < n; i++) {
-    g.fillStyle = shadeHex(base, (r() - 0.5) * 18); g.fillRect(0, i * hp, px, hp);
-    for (let k = 0; k < 7; k++) { g.strokeStyle = shadeHex(base, -20 - r() * 15); g.lineWidth = Math.max(1, px / 128); g.beginPath(); const y = i * hp + r() * hp; g.moveTo(0, y); g.bezierCurveTo(px * 0.3, y + (r() - 0.5) * hp * 0.4, px * 0.7, y + (r() - 0.5) * hp * 0.4, px, y); g.stroke(); }
-    g.fillStyle = shadeHex(base, -45); g.fillRect(0, i * hp, px, Math.max(1, px / 96));
+    g.fillStyle = shadeHex(base, (r() - 0.5) * 16); g.fillRect(0, i * hp, px, hp);
+    for (let k = 0; k < 7; k++) { g.strokeStyle = shadeHex(base, -18 - r() * 14); g.lineWidth = Math.max(1, px / 128); g.beginPath(); const y = i * hp + r() * hp; g.moveTo(0, y); g.bezierCurveTo(px * 0.3, y + (r() - 0.5) * hp * 0.4, px * 0.7, y + (r() - 0.5) * hp * 0.4, px, y); g.stroke(); }
+    g.fillStyle = shadeHex(base, -40); g.fillRect(0, i * hp, px, Math.max(1, px / 96));
   }
   return c;
 }
 /** nhựa đường + vạch đứt giữa đường (theo trục u) */
-export function asphalt(seed = 9, base = '#3A3D44', line = '#F2D24A', px = 128) {
+export function asphalt(seed = 9, base = '#2A2E36', line = '#C9B15A', px = 128) {
   const [c, g] = cv(px, px), r = rng(seed);
   g.fillStyle = base; g.fillRect(0, 0, px, px);
-  dots(g, px, px, r, px * 1.2, [shadeHex(base, -18), shadeHex(base, 18)], px * 0.006, px * 0.02);
+  dots(g, px, px, r, px * 1.1, [shadeHex(base, -14), shadeHex(base, 14)], px * 0.006, px * 0.02);
   g.fillStyle = line; for (let i = 0; i < 2; i++) g.fillRect(i * px / 2 + px * 0.08, px * 0.47, px * 0.3, px * 0.06);
   return c;
 }
 /** gạch lát vỉa hè / tường phòng */
-export function tilesFlat(seed = 10, base = '#8C8A86', grout = '#55524E', px = 64, n = 4) {
+export function tilesFlat(seed = 10, base = '#6A6D73', grout = '#42454B', px = 64, n = 4) {
   const [c, g] = cv(px, px), r = rng(seed), s = px / n;
   g.fillStyle = grout; g.fillRect(0, 0, px, px);
-  for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) { g.fillStyle = shadeHex(base, (r() - 0.5) * 12); g.fillRect(i * s + 1, j * s + 1, s - 2, s - 2); }
+  for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) { g.fillStyle = shadeHex(base, (r() - 0.5) * 10); g.fillRect(i * s + 1, j * s + 1, s - 2, s - 2); }
   return c;
 }
 /** mặt tiền nhà: tường + ô cửa sổ (một số sáng đèn) */
-export function facade(seed = 11, base = '#B9785A', win = '#2A3448', lit = '#FFD27A', px = 64) {
+export function facade(seed = 11, base = '#7E5343', win = '#1D2433', lit = '#DFBA6E', px = 64) {
   const [c, g] = cv(px, px), r = rng(seed);
   g.fillStyle = base; g.fillRect(0, 0, px, px);
   dots(g, px, px, r, px * 0.4, [shadeHex(base, -10), shadeHex(base, 8)], px * 0.01, px * 0.03);
   for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) {
     g.fillStyle = r() < 0.3 ? lit : win; g.fillRect(px * (0.14 + i * 0.5), px * (0.14 + j * 0.5), px * 0.24, px * 0.28);
-    g.fillStyle = shadeHex(base, -30); g.fillRect(px * (0.12 + i * 0.5), px * (0.42 + j * 0.5), px * 0.28, px * 0.03);
+    g.fillStyle = shadeHex(base, -26); g.fillRect(px * (0.12 + i * 0.5), px * (0.42 + j * 0.5), px * 0.28, px * 0.03);
   }
   return c;
 }
@@ -144,11 +144,11 @@ export function shadeHex(hex, dl) {
   const ch = (v) => Math.max(0, Math.min(255, Math.round(v * k))).toString(16).padStart(2, '0');
   return `#${ch((n >> 16) & 255)}${ch((n >> 8) & 255)}${ch(n & 255)}`;
 }
-/** đường chạy cao su tartan (terracotta hạt cao su + vạch làn + vạch đứt + số làn) */
-export function tartanTrack(seed = 21, base = '#B44530', line = '#F4F1EA', px = 256, lanes = 4) {
+/** đường chạy cao su tartan (đất nung trầm hạt cao su mịn + vạch làn kem ấm) */
+export function tartanTrack(seed = 21, base = '#943F30', line = '#E6E2D8', px = 256, lanes = 4) {
   const [c, g] = cv(px, px), r = rng(seed);
   g.fillStyle = base; g.fillRect(0, 0, px, px);
-  dots(g, px, px, r, px * 2.4, [shadeHex(base, -14), shadeHex(base, 12), shadeHex(base, -8)], px * 0.004, px * 0.012);
+  dots(g, px, px, r, px * 2.2, [shadeHex(base, -10), shadeHex(base, 9), shadeHex(base, -6)], px * 0.004, px * 0.012);
   const lw = Math.max(2, Math.round(px * 0.014));
   g.fillStyle = line;
   for (let i = 0; i <= lanes; i++) {
@@ -157,21 +157,21 @@ export function tartanTrack(seed = 21, base = '#B44530', line = '#F4F1EA', px = 
   }
   return c;
 }
-/** cỏ sân vận động kẻ sọc cắt cỏ luân phiên (mowed turf stripes) */
-export function stadiumGrass(seed = 22, base = '#2F7D3E', px = 256, stripes = 6) {
+/** cỏ sân vận động kẻ sọc cắt cỏ luân phiên (mowed turf stripes tông rêu đêm) */
+export function stadiumGrass(seed = 22, base = '#244535', px = 256, stripes = 6) {
   const [c, g] = cv(px, px), r = rng(seed), sw = px / stripes;
   for (let i = 0; i < stripes; i++) {
-    g.fillStyle = i % 2 === 0 ? base : shadeHex(base, -12);
+    g.fillStyle = i % 2 === 0 ? base : shadeHex(base, -10);
     g.fillRect(i * sw, 0, Math.ceil(sw), px);
   }
-  dots(g, px, px, r, px * 1.1, [shadeHex(base, -16), shadeHex(base, 10)], px * 0.005, px * 0.016);
+  dots(g, px, px, r, px * 1.0, [shadeHex(base, -12), shadeHex(base, 8)], px * 0.005, px * 0.015);
   return c;
 }
-/** vạch xuất phát / vạch đích ô cờ đen-trắng */
+/** vạch xuất phát / vạch đích ô cờ kem-than chì */
 export function checkeredStrip(px = 128, rows = 8) {
   const [c, g] = cv(px, px), cell = px / rows;
   for (let y = 0; y < rows; y++) for (let x = 0; x < 2; x++) {
-    g.fillStyle = (x + y) % 2 === 0 ? '#F4F1EA' : '#181A1F';
+    g.fillStyle = (x + y) % 2 === 0 ? '#E6E2D8' : '#161920';
     g.fillRect(x * (px / 2), y * cell, px / 2, cell);
   }
   return c;

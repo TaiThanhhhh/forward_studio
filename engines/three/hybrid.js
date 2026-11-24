@@ -230,6 +230,10 @@ export function makeMultiplane(ctx, p) {
 export function makeOverlay2D(ctx, items, W, H) {
   if (!Array.isArray(items) || !items.length || typeof document === 'undefined') return null;
   const pal = paletteFromWorld(ctx.job.world);
+  const grid = ctx.job.layout_grid || { header: [250, 370], stage: [390, 1240] };
+  const captionsOn = ctx.job.captions_on !== false;
+  const minY = (grid.header && grid.header[0]) || 250;
+  const maxY = captionsOn ? Math.min(H - 220, ((grid.stage && grid.stage[1]) || 1240) - 36) : H - 220;
   const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
   const g = cv.getContext('2d');
   let lastBoxes = [];
@@ -252,15 +256,22 @@ export function makeOverlay2D(ctx, items, W, H) {
       const u = f / Math.max(1, N - 1);
       g.clearRect(0, 0, W, H);
       if (layer === 'front') lastBoxes = [];
+      const placed = [];
       for (const it of items) {
         if ((it.z || 'front') !== layer) continue;
         if (u < (it.u0 ?? 0) || u > (it.u1 ?? 1)) continue;
         const anchor = it.of ? project(objectOf(it.of), camera, THREE) : null;
-        const off = it.offset || [0, -110];
+        const off = it.offset || [0, -100];
         const x = anchor ? anchor[0] + (off[0] || 0) : (it.x ?? 0.5) * W;
-        const y = anchor ? anchor[1] + (off[1] || 0) : (it.y ?? 0.22) * H;
-        const clampedX = Math.max(130, Math.min(W - 130, x));
-        const clampedY = Math.max(170, Math.min(H - 220, y));
+        const y = anchor ? anchor[1] + (off[1] || 0) : (it.y ?? 0.24) * H;
+        const clampedX = Math.max(120, Math.min(W - 120, x));
+        let clampedY = Math.max(minY, Math.min(maxY, y));
+        for (const pb of placed) {
+          if (Math.abs(clampedX - pb.x) < 280 && Math.abs(clampedY - pb.y) < 76) {
+            clampedY = Math.max(minY, Math.min(maxY, clampedY >= pb.y ? pb.y + 78 : pb.y - 78));
+          }
+        }
+        placed.push({ x: clampedX, y: clampedY });
         const u0 = it.u0 ?? 0, u1 = it.u1 ?? 1;
         const fadeIn = Math.min(1, Math.max(0, (u - u0) / 0.07));
         const fadeOut = Math.min(1, Math.max(0, (u1 - u) / 0.06));
@@ -274,34 +285,34 @@ export function makeOverlay2D(ctx, items, W, H) {
         if (anchor && it.arrow !== false) {
           g.save();
           g.strokeStyle = accent;
-          g.lineWidth = 4;
-          g.beginPath(); g.moveTo(clampedX, clampedY + 28); g.lineTo(anchor[0], anchor[1]); g.stroke();
+          g.lineWidth = 2.0;
+          g.globalAlpha = alpha * 0.82;
+          g.beginPath(); g.moveTo(clampedX, clampedY + 22); g.lineTo(anchor[0], anchor[1]); g.stroke();
           g.fillStyle = accent;
-          g.beginPath(); g.arc(anchor[0], anchor[1], 8, 0, Math.PI * 2); g.fill();
-          g.strokeStyle = '#000000'; g.lineWidth = 2.5; g.stroke();
+          g.beginPath(); g.arc(anchor[0], anchor[1], 5, 0, Math.PI * 2); g.fill();
           g.restore();
         }
         if (it.icon) {
           const fn = ICONS[iconFor(it.icon)] || ICONS.dot;
-          drawPrims2d(g, fn({ f, p: 0.6, hash }), { x: clampedX, y: clampedY, s: it.size || 64, pal, look: it.look || 'flat' });
+          drawPrims2d(g, fn({ f, p: 0.6, hash }), { x: clampedX, y: clampedY, s: it.size || 56, pal, look: it.look || 'flat' });
         }
         if (it.text) {
-          const px = it.px || 44;
+          const px = it.px || 36;
           const fam = ctx.job.font_family || 'StyleFont';
-          const font = `700 ${px}px "${fam}", sans-serif`;
+          const font = `600 ${px}px "${fam}", sans-serif`;
           g.save();
           g.font = font; g.textAlign = 'center'; g.textBaseline = 'middle';
           const hasPin = it.pin !== undefined && it.pin !== null && it.pin !== '';
-          const pinW = hasPin ? px * 1.15 + 14 : 0;
-          const tw = g.measureText(String(it.text)).width, padX = 26, padY = 16;
+          const pinW = hasPin ? px * 1.1 + 12 : 0;
+          const tw = g.measureText(String(it.text)).width, padX = 20, padY = 12;
           const bw = tw + pinW + padX * 2, bh = px + padY * 2;
           const bx0 = Math.max(40, Math.min(W - 40 - bw, clampedX - bw / 2));
           const by0 = clampedY - bh / 2;
-          g.shadowColor = 'rgba(0,0,0,0.65)'; g.shadowBlur = 18; g.shadowOffsetY = 6;
-          g.fillStyle = it.bg || 'rgba(12,14,18,0.88)';
+          g.shadowColor = 'rgba(0,0,0,0.48)'; g.shadowBlur = 14; g.shadowOffsetY = 4;
+          g.fillStyle = it.bg || 'rgba(12,15,20,0.82)';
           g.strokeStyle = it.border || accent;
-          g.lineWidth = 3.5;
-          g.beginPath(); g.roundRect(bx0, by0, bw, bh, 14); g.fill();
+          g.lineWidth = 1.8;
+          g.beginPath(); g.roundRect(bx0, by0, bw, bh, 10); g.fill();
           g.shadowBlur = 0; g.shadowOffsetY = 0; g.stroke();
           if (hasPin) {
             const pcx = bx0 + padX + px * 0.48, pcy = by0 + bh / 2;

@@ -111,7 +111,7 @@
             {
               "id": "cell1",
               "icon": "bloodcell",
-              "x": 0.48,
+              "x": 0.5,
               "y": 0.82,
               "size": 70,
               "role": "hot",
@@ -127,24 +127,6 @@
                 {
                   "u": 0.92,
                   "verb": "sink"
-                }
-              ]
-            },
-            {
-              "id": "cell2",
-              "icon": "bloodcell",
-              "x": 0.53,
-              "y": 0.86,
-              "size": 60,
-              "role": "hot",
-              "keys": [
-                {
-                  "u": 0.5,
-                  "y": 0.66
-                },
-                {
-                  "u": 0.9,
-                  "y": 0.86
                 }
               ]
             },
@@ -231,17 +213,9 @@
             {
               "id": "salt1",
               "icon": "crystal",
-              "x": 0.45,
+              "x": 0.48,
               "y": 0.6,
-              "size": 60,
-              "verb": "drift"
-            },
-            {
-              "id": "salt2",
-              "icon": "crystal",
-              "x": 0.55,
-              "y": 0.62,
-              "size": 60,
+              "size": 64,
               "verb": "drift"
             },
             {
@@ -425,7 +399,7 @@
         "overheat",
         "heat"
       ],
-      "mechanism": "Sweat beads appear on the runner and evaporate upward as steam, each one carrying heat away — the thermometer needle drops only while the drops keep leaving.",
+      "mechanism": "Core thermal glow fades directly across the runner's body (heat 0.85 → 0.15) as sweat beads evaporate upward into mist — grounded body physics with zero floating thermometers.",
       "recipe": {
         "engine": "html",
         "scene": "scene",
@@ -435,19 +409,26 @@
               "id": "runner",
               "icon": "runner",
               "x": 0.5,
-              "y": 0.6,
-              "size": 420,
+              "y": 0.52,
+              "size": 380,
+              "heat": 0.85,
               "verb": "bob",
               "args": {
                 "spm": 170
-              }
+              },
+              "keys": [
+                {
+                  "u": 0.85,
+                  "heat": 0.15
+                }
+              ]
             },
             {
               "id": "s1",
               "icon": "drop",
               "x": 0.42,
-              "y": 0.45,
-              "size": 50,
+              "y": 0.42,
+              "size": 48,
               "role": "cold",
               "keys": [
                 {
@@ -464,7 +445,7 @@
               "id": "s2",
               "icon": "drop",
               "x": 0.58,
-              "y": 0.5,
+              "y": 0.46,
               "size": 44,
               "role": "cold",
               "keys": [
@@ -477,14 +458,6 @@
                   "verb": "evaporate"
                 }
               ]
-            },
-            {
-              "id": "th",
-              "icon": "thermo",
-              "x": 0.85,
-              "y": 0.35,
-              "size": 160,
-              "z": 0.8
             }
           ],
           "fx": [
@@ -502,11 +475,11 @@
         "flicker"
       ],
       "depth": {
-        "far": "heat shimmer",
-        "mid": "runner + rising steam",
-        "near": "a drop slides off the lens"
+        "far": "subtle dark studio backdrop",
+        "mid": "runner cooling from core thermal glow + evaporating sweat",
+        "near": "soft mist drift"
       },
-      "avoid": "a thermometer card with a number"
+      "avoid": "a giant floating thermometer next to a runner; a thermometer card with a number"
     },
     {
       "id": "lactic_burn",
@@ -519,7 +492,7 @@
         "sore muscles",
         "doms"
       ],
-      "mechanism": "Tiny embers pile up inside the working muscle rep by rep; the muscle starts to shiver and the last rep stalls.",
+      "mechanism": "In a clean anatomical cutaway on dark ground, the working muscle builds internal thermal glow (heat 0.1 → 0.95) rep by rep until it shivers and stalls.",
       "recipe": {
         "engine": "html",
         "scene": "scene",
@@ -529,8 +502,9 @@
               "id": "muscle",
               "icon": "muscle",
               "x": 0.5,
-              "y": 0.55,
+              "y": 0.5,
               "size": 360,
+              "heat": 0.1,
               "keys": [
                 {
                   "u": 0.1,
@@ -540,7 +514,11 @@
                   }
                 },
                 {
-                  "u": 0.6,
+                  "u": 0.72,
+                  "heat": 0.95
+                },
+                {
+                  "u": 0.65,
                   "verb": "shiver"
                 }
               ]
@@ -548,32 +526,12 @@
             {
               "id": "e1",
               "icon": "flame",
-              "x": 0.45,
-              "y": 0.55,
-              "size": 50,
-              "role": "hot",
-              "verb": "flicker",
-              "in": 0.2
-            },
-            {
-              "id": "e2",
-              "icon": "flame",
-              "x": 0.55,
-              "y": 0.5,
-              "size": 46,
-              "role": "hot",
-              "verb": "flicker",
-              "in": 0.4
-            },
-            {
-              "id": "e3",
-              "icon": "flame",
               "x": 0.5,
-              "y": 0.62,
+              "y": 0.52,
               "size": 52,
               "role": "hot",
               "verb": "flicker",
-              "in": 0.6
+              "in": 0.45
             }
           ]
         }
@@ -584,11 +542,11 @@
         "flicker"
       ],
       "depth": {
-        "far": "dim weight plates",
-        "mid": "muscle filling with embers",
-        "near": "a barbell edge crossing"
+        "far": "clean dark cutaway field",
+        "mid": "muscle heating up and shivering",
+        "near": "single ember pulse"
       },
-      "avoid": "a pain scale card"
+      "avoid": "a pain scale card; piling 4+ flame icons on top of an outdoor runner"
     },
     {
       "id": "glycogen_tank",
@@ -640,7 +598,7 @@
         "out of breath",
         "aerobic"
       ],
-      "mechanism": "The lungs breathe at the real breathing rate; each breath launches oxygen dots that ride arrows to the muscle.",
+      "mechanism": "In a dedicated dark-background anatomical cutaway, the lungs breathe at the real breathing rate and send oxygen dots along one clean route to the working muscle.",
       "recipe": {
         "engine": "html",
         "scene": "scene",
@@ -650,8 +608,8 @@
               "id": "lungs",
               "icon": "lungs",
               "x": 0.5,
-              "y": 0.35,
-              "size": 340,
+              "y": 0.34,
+              "size": 300,
               "verb": "breathe",
               "args": {
                 "rate": 40,
@@ -662,14 +620,14 @@
               "id": "o2",
               "icon": "oxygen",
               "x": 0.5,
-              "y": 0.45,
-              "size": 70,
+              "y": 0.44,
+              "size": 64,
               "role": "cold",
               "keys": [
                 {
                   "u": 0.5,
                   "x": 0.5,
-                  "y": 0.78
+                  "y": 0.68
                 },
                 {
                   "u": 0.52,
@@ -681,8 +639,8 @@
               "id": "muscle",
               "icon": "muscle",
               "x": 0.5,
-              "y": 0.8,
-              "size": 220,
+              "y": 0.72,
+              "size": 200,
               "z": 0.5
             }
           ],
@@ -700,11 +658,11 @@
         "pulse"
       ],
       "depth": {
-        "far": "faint airflow streaks",
+        "far": "clean dark cutaway backdrop",
         "mid": "lungs → muscle route",
-        "near": "an oxygen bubble near the lens"
+        "near": "single oxygen transfer"
       },
-      "avoid": "a VO2 number on a card"
+      "avoid": "floating lungs pasted over an outdoor track; a VO2 number on a card"
     },
     {
       "id": "breaths_per_minute",
@@ -755,32 +713,57 @@
         "core temperature",
         "hyperthermia"
       ],
-      "mechanism": "The mercury climbs from 37 °C into the red zone while the body flickers with heat and the frame warms up.",
+      "mechanism": "Core thermal glow intensifies directly inside the runner's chest (heat 0.1 → 0.95) with one minimal readout — no oversized thermometer floating in an outdoor scene.",
       "recipe": {
         "engine": "html",
-        "scene": "meter",
+        "scene": "scene",
         "params": {
-          "kind": "thermo",
-          "value": "<°C>",
-          "from": 37,
-          "min": 35,
-          "max": 43,
-          "unit": "°C",
-          "danger": 40,
-          "label": "CORE"
+          "actors": [
+            {
+              "id": "runner",
+              "icon": "runner",
+              "x": 0.5,
+              "y": 0.48,
+              "size": 380,
+              "heat": 0.1,
+              "verb": "bob",
+              "args": {
+                "spm": 165
+              },
+              "keys": [
+                {
+                  "u": 0.75,
+                  "heat": 0.95
+                },
+                {
+                  "u": 0.78,
+                  "verb": "shiver"
+                }
+              ]
+            }
+          ],
+          "labels": [
+            {
+              "text": "<°C> CORE",
+              "of": "runner",
+              "u": 0.55,
+              "role": "hot",
+              "tag": true
+            }
+          ]
         }
       },
       "verbs": [
-        "flicker",
+        "bob",
         "shiver",
-        "highlight"
+        "flicker"
       ],
       "depth": {
-        "far": "heat haze",
-        "mid": "thermometer",
-        "near": "sun flare at the lens"
+        "far": "dark editorial stage",
+        "mid": "runner with core thermal glow",
+        "near": "minimal temperature tag"
       },
-      "avoid": "a big number card"
+      "avoid": "a giant floating thermometer next to a runner on a track; a big number card"
     },
     {
       "id": "bone_load",

@@ -140,6 +140,11 @@ class BrowserEngine:
 
         return coderender.text_crops(job_path, frames)
 
+    def text_audit(self, job_path, frames):
+        from vidlib import coderender  # noqa: PLC0415
+
+        return coderender.text_audit(job_path, frames)
+
 
 class ThreeEngine(BrowserEngine):
     name, page = "three", "engines/three/index.html"
@@ -157,12 +162,12 @@ class ThreeEngine(BrowserEngine):
         return _hash_files(files)
 
     def job(self, spec):
-        from vidlib import codeshot, textstyle  # noqa: PLC0415
-
-        from vidlib import userassets  # noqa: PLC0415
+        from vidlib import codeshot, textstyle, userassets  # noqa: PLC0415
+        from vidlib.common import channel  # noqa: PLC0415
 
         st = textstyle.load_style(spec.style)
         w, cp = codeshot.world(spec.style)
+        grid = {k: v for k, v in (channel().get("layout_grid") or {}).items() if not k.startswith("_")}
         job = {
             "scene": spec.scene,
             "params": userassets.resolve(spec.params or {}, "three"),   # "svg:<tên>" → icon_parts (ép khối)
@@ -171,6 +176,8 @@ class ThreeEngine(BrowserEngine):
             "width": spec.width,
             "height": spec.height,
             "world": w,
+            "design_system": w.get("design_system"),
+            "layout_grid": grid,
             "cast_palette": cp,
             "fonts": [{"family": "StyleFont", "url": "/assets/fonts/" + st["font"]}],
             "font_family": "StyleFont",
@@ -427,17 +434,17 @@ class HtmlEngine(BrowserEngine):
         return html.workers()
 
     def job(self, spec):
-        from vidlib import lang  # noqa: PLC0415
+        from vidlib import codeshot, lang, userassets  # noqa: PLC0415
         from vidlib.common import channel  # noqa: PLC0415
 
         look = {
             k: v for k, v in style_tokens(spec.style, "html").items() if not k.startswith("_") and k not in ("font", "mono")
         }
-        from vidlib import userassets  # noqa: PLC0415
-
         params = userassets.resolve(spec.params or {}, "html")    # "svg:<tên>" → parts · lottie/rive → URL
         if spec.index and "index" not in params:
             params["index"] = spec.index
+        cfg = channel()
+        grid = {k: v for k, v in (cfg.get("layout_grid") or {}).items() if not k.startswith("_")}
         job = {
             "engine": "html",
             "page": self.page,
@@ -448,8 +455,10 @@ class HtmlEngine(BrowserEngine):
             "width": spec.width,
             "height": spec.height,
             "look": look,
+            "design_system": codeshot.design_system_of(spec.style),
+            "layout_grid": grid,
             "fonts": font_entries(spec.style, "html"),
-            "safe": {k: v for k, v in channel().get("safe_zone", {}).items() if not k.startswith("_")},
+            "safe": {k: v for k, v in cfg.get("safe_zone", {}).items() if not k.startswith("_")},
             "locale": lang.locale().replace("_", "-"),
             "style": spec.style,
             "shot": spec.sid,

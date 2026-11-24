@@ -10,6 +10,7 @@ const D = {                                          // token mặc định chun
   type: { weight: 800, upper: true, align: 'center', enter: 'mask', lh: 1.06, track: 0, monoUpper: true },
   motion: { ease: 'smooth', enter: 'pop', step: 1, creep: 0.025, stagger: 3 },
   post: { grain: 0.05, vignette: 0.25 },
+  rig: { editorial: false },
 };
 const deep = (a, b) => { const o = { ...a }; for (const k of Object.keys(b || {})) o[k] = (b[k] && typeof b[k] === 'object' && !Array.isArray(b[k])) ? deep(a[k] || {}, b[k]) : b[k]; return o; };
 
@@ -40,20 +41,33 @@ const base = {
 };
 
 // ---------- các look ----------
-const shapesDrift = (c, n, roleA = 'dim') => {       // mảnh hình học trôi chậm ở nền
-  for (let i = 0; i < n; i++) {
-    const x = c.hash(i, 1) * c.W, y0 = c.hash(i, 2) * c.H, sp = 0.25 + c.hash(i, 3) * 0.5, y = ((y0 - c.f * sp) % c.H + c.H) % c.H;
-    const s = 16 + c.hash(i, 4) * 44, kind = i % 4, rot = c.f * 0.004 * (i % 2 ? 1 : -1) + i;
-    const pr = kind === 0 ? [{ k: 'circle', x: 0, y: 0, r: 1, role: roleA, fill: false }] : kind === 1 ? [{ k: 'line', pts: [[-1, 0], [1, 0]], role: roleA }, { k: 'line', pts: [[0, -1], [0, 1]], role: roleA }]
-      : kind === 2 ? [{ k: 'rect', x: -1.4, y: -0.4, w: 2.8, h: 0.8, rad: 0.4, role: roleA }] : [{ k: 'poly', pts: [[0, -1], [0.9, 0.7], [-0.9, 0.7]], role: roleA }];
-    c.draw(pr, { x, y, s, rot, alpha: 0.32, plain: true, lw: 0.6 });
+const editorialGrid = (c) => {                       // lưới điểm kiến trúc + đường dẫn dọc mảnh (Vox/Cleo Abram/Stripe)
+  const g = c.g, step = 72, ox = (c.f * 0.35) % step, oy = (c.f * 0.2) % step;
+  g.save();
+  g.fillStyle = c.col('dim'); g.globalAlpha = 0.14;
+  for (let y = -step; y < c.H + step; y += step) {
+    for (let x = -step; x < c.W + step; x += step) {
+      g.fillRect(x - ox, y - oy, 2.5, 2.5);
+    }
   }
+  const x0 = c.A.x0, x1 = c.A.x1, cw = (x1 - x0) / 3;
+  g.strokeStyle = c.col('dim'); g.lineWidth = 1; g.globalAlpha = 0.14;
+  g.beginPath();
+  for (let i = 0; i <= 3; i++) {
+    const gx = x0 + i * cw;
+    g.moveTo(gx, c.A.top - 48); g.lineTo(gx, c.A.bottom + 36);
+  }
+  g.stroke();
+  g.fillStyle = c.col('accent'); g.globalAlpha = 0.28;
+  g.fillRect(x0, c.A.top - 48, (x1 - x0) * c.u, 2);
+  g.restore();
 };
 
 const flat = {
   tokens: { palette: { ink: '#FFF6E9', a: '#FF5A4E', b: '#4B5BFF', c: '#FFC62B' }, roles: { hot: 'a', cold: 'b', accent: 'c' },
-            type: { weight: 800, upper: false, enter: 'pop' }, motion: { ease: 'bounce', enter: 'pop', stagger: 3 }, post: { grain: 0.03, vignette: 0.15 } },
-  bg(c) { shapesDrift(c, 14); },
+            type: { weight: 800, upper: false, enter: 'pop' }, motion: { ease: 'bounce', enter: 'pop', stagger: 3 },
+            post: { grain: 0.03, vignette: 0.15 }, rig: { editorial: true } },
+  bg(c) { editorialGrid(c); },
   tag(c, str, x, y, k, role = 'accent') {            // viên thuốc màu, chữ nền đen
     if (k <= 0) return null;
     const b = c.text(str, x, y, { size: 64, k: 0, maxW: 800 }), w = b.x1 - b.x0 + 70, h = b.y1 - b.y0 + 34;
@@ -84,7 +98,7 @@ const isoPt = (c, gx, gy, gz = 0) => [c.A.cx + (gx - gy) * 0.866, 1040 + (gx + g
 const iso = {
   tokens: { palette: { ink: '#E9EDF5', a: '#FF8A65', b: '#5DE6B1', c: '#9B8CFF' }, roles: { hot: 'a', cold: 'b', accent: 'c' },
             pen: { fill: true, stroke: 0, slab: 14 }, type: { weight: 800, upper: true, enter: 'mask' },
-            motion: { ease: 'bounce', enter: 'grow', creep: 0.0 }, post: { grain: 0.03, vignette: 0.3 } },
+            motion: { ease: 'bounce', enter: 'grow', creep: 0.0 }, post: { grain: 0.03, vignette: 0.3 }, rig: { editorial: true } },
   bg(c) {                                            // sàn lưới đẳng trục, camera trượt song song (không xoay)
     const g = c.g, slide = c.f * 0.6;
     g.strokeStyle = c.col('dim'); g.globalAlpha = 0.55; g.lineWidth = 2; g.beginPath();
@@ -111,7 +125,7 @@ const iso = {
 const hud = {
   tokens: { palette: { ink: '#00E5FF', a: '#FF6A00', b: '#B8FBFF' }, roles: { hot: 'a', cold: 'ink', accent: 'a' },
             pen: { fill: false, stroke: 3.5, glow: 14, tint: 0.16, cap: 'butt', join: 'miter' }, type: { weight: 700, upper: true, enter: 'type', glow: 12, track: 0.06 },
-            motion: { ease: 'out', enter: 'lock', creep: 0.015 }, post: { grain: 0.06, scanlines: 0.22, vignette: 0.45 } },
+            motion: { ease: 'out', enter: 'lock', creep: 0.015 }, post: { grain: 0.06, scanlines: 0.22, vignette: 0.45 }, rig: { editorial: true } },
   bg(c) {
     const g = c.g, cx = c.A.cx, cy = 880;
     g.strokeStyle = c.col('ink'); g.lineWidth = 1.5; g.globalAlpha = 0.13; g.beginPath();      // lưới lục giác
@@ -203,7 +217,7 @@ const sticker = {
 const swiss = {
   tokens: { palette: { ink: '#F2F0EA', a: '#E30613' }, roles: { hot: 'a', cold: 'ink', accent: 'a' },
             pen: { fill: true, stroke: 0, line: 6, cap: 'butt', join: 'miter' }, type: { weight: 800, upper: false, align: 'left', enter: 'mask', track: -0.02, lh: 0.98 },
-            motion: { ease: 'snap', enter: 'wipe', creep: 0.03 }, post: { grain: 0.025, vignette: 0 } },   // hạt rất nhẹ: quy tắc kênh 'không đứng hình' thắng 'không grain'
+            motion: { ease: 'snap', enter: 'wipe', creep: 0.03 }, post: { grain: 0.025, vignette: 0 }, rig: { editorial: true } },   // hạt rất nhẹ: quy tắc kênh 'không đứng hình' thắng 'không grain'
   bg(c) {                                            // lưới 4 cột + hàng chú thích mono có kẻ 1px
     const g = c.g, x0 = c.A.x0, x1 = c.A.x1, cw = (x1 - x0) / 4; g.strokeStyle = c.col('dim'); g.globalAlpha = 0.3; g.lineWidth = 1; g.beginPath();
     for (let i = 0; i <= 4; i++) { g.moveTo(x0 + i * cw, c.A.top - 40); g.lineTo(x0 + i * cw, c.A.bottom + 30); }
@@ -287,7 +301,7 @@ const picto = {
 const zoom = {
   tokens: { palette: { ink: '#F4F1E8', a: '#FFD23F', b: '#5AC8FA', c: '#FF6B4A' }, roles: { hot: 'c', cold: 'b', accent: 'a' },
             pen: { fill: true, stroke: 0 }, type: { weight: 800, upper: false, enter: 'mask' },
-            motion: { ease: 'spring', enter: 'pop', creep: 0.04 }, post: { grain: 0.03, vignette: 0.2 } },
+            motion: { ease: 'spring', enter: 'pop', creep: 0.04 }, post: { grain: 0.03, vignette: 0.2 }, rig: { editorial: true } },
   bg(c) { for (let i = 0; i < 60; i++) { c.g.fillStyle = c.col(i % 9 ? 'dim' : 'ink'); const s = 2 + (i % 3) * 2; c.g.fillRect(c.hash(i, 1) * c.W, ((c.hash(i, 2) * c.H + c.f * (0.2 + (i % 4) * 0.15)) % c.H), s, s); } },
   fg(c) {                                            // dải thang log ở góc + số trường nhìn (đọc từ cùng một camera)
     const g = c.g, x = c.A.x0, y = c.A.bottom + 4, w = 300; g.fillStyle = c.col('dim'); g.fillRect(x, y, w, 3);
@@ -308,7 +322,7 @@ const zoom = {
 const flow = {
   tokens: { palette: { ink: '#FCF9EC', a: '#FBBF2F', b: '#D41928' }, roles: { hot: 'b', cold: 'ink', accent: 'a' },
             pen: { fill: true, stroke: 0, shadow: [8, 8, '#3a2f12'] }, type: { weight: 900, upper: false, enter: 'mask' },
-            motion: { ease: 'out', enter: 'pop', creep: 0.03 }, post: { grain: 0.03, vignette: 0.2 } },
+            motion: { ease: 'out', enter: 'pop', creep: 0.03 }, post: { grain: 0.03, vignette: 0.2 }, rig: { editorial: true } },
   bg(c) {                                            // vành mặt đồng hồ 12 vạch, thị sai 0.5; kim chạy liên tục
     const g = c.g, cx = c.A.cx + 220 - c.f * 0.5, cy = 1020, r = 420; g.strokeStyle = c.col('dim'); g.globalAlpha = 0.3; g.lineWidth = 14; g.lineCap = 'round';
     g.beginPath(); g.arc(cx, cy, r, 0, TAU); g.stroke(); g.beginPath();
@@ -603,7 +617,7 @@ const cutout = {
 const lineart = {
   tokens: { palette: { ink: '#EEECE6', a: '#FF6A3D' }, roles: { hot: 'a', cold: 'ink', accent: 'a' },
             pen: { fill: false, stroke: 4, tint: 0, seg: 64 }, type: { weight: 600, upper: false, enter: 'wipe', lh: 1.04 },
-            motion: { ease: 'smooth', enter: 'draw', creep: 0.02, lead: 12 }, post: { grain: 0.03, vignette: 0.2 } },
+            motion: { ease: 'smooth', enter: 'draw', creep: 0.02, lead: 12 }, post: { grain: 0.03, vignette: 0.2 }, rig: { editorial: true } },
   ground(c, x, y, w) { c.draw([{ k: 'line', pts: [[-w / 2, 0], [w / 2, 0]], role: 'ink', w: 0.6 }], { x, y, s: 1 }); },
   tag(c, str, x, y, k, role = 'accent') {
     const b = c.text(str, x, y, { size: 62, k, role: 'ink', maxW: 820 });
@@ -617,7 +631,7 @@ const vox = {
   tokens: { palette: { bg: '#0E1014', ink: '#F4EFE6', a: '#E5483B', b: '#4CA8D8', c: '#F5D547' }, roles: { hot: 'a', cold: 'b', accent: 'c' },
             pen: { fill: true, stroke: 2.5, strokeRole: '#0E1014', line: 5, cap: 'butt', join: 'miter', seg: 48, shadow: [6, 8, '#050608'] },
             type: { weight: 700, upper: false, align: 'left', enter: 'mask', lh: 1.08, track: -0.01 },
-            motion: { ease: 'snap', enter: 'wipe', creep: 0.02, stagger: 3 }, post: { grain: 0.045, vignette: 0.22 } },
+            motion: { ease: 'snap', enter: 'wipe', creep: 0.02, stagger: 3 }, post: { grain: 0.045, vignette: 0.22 }, rig: { editorial: true } },
   bg(c) {
     const g = c.g, x0 = c.A.x0, x1 = c.A.x1, cw = (x1 - x0) / 3;
     // lưới cột báo chí mờ + dải chấm biên tập trôi rất nhẹ (đảm bảo luôn có chuyển động mịn)

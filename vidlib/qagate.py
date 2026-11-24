@@ -12,8 +12,8 @@ import json
 from .common import channel, run
 
 DEFAULT_BLOCKING = ["kích thước", "fps", "số audio track", "codec", "loudness", "true peak", "freeze", "black frame",
-                    "chữ đúng chính tả", "màu BT.709", "pix_fmt", "faststart", "audio 48 kHz", "file hỏng", "nền tảng",
-                    "quyền thương mại BỊ CẤM"]
+                    "chữ đúng chính tả", "không chồng chữ", "màu BT.709", "pix_fmt", "faststart", "audio 48 kHz",
+                    "file hỏng", "nền tảng", "quyền thương mại BỊ CẤM"]
 
 
 def blocking():

@@ -31,8 +31,9 @@ PARAMS = {
     "scene": (
         ("actors",),
         "kicker, title, actors[{id, icon | lottie | rive (user assets), x, y (0..1 of the frame), size (px), role, rot, "
-        "in, out (u 0..1), "
-        "keys[{u, x, y, size, rot, p, alpha, ease}]}], labels[{text, x, y | of (actor id), u, tag}], arrows[{from, to, u}], "
+        "heat (0..1 grounded thermal glow), in, out (u 0..1), "
+        "keys[{u, x, y, size, rot, p, alpha, heat, ease}]}], "
+        "labels[{text, x, y | of (actor id), u, tag}], arrows[{from, to, u}], "
         "fx[{kind: burst|shockwave|smoke|splash|sparkle, x, y | at (actor id), u}] — FREE STAGING: several props/characters "
         "moving and interacting (use it for the story's key moments, not only one centred icon). DEPTH: actor/key `z` "
         "(0 = in focus, 1–4 = far: smaller, parallax, depth-of-field blur, fades into the dark; -0.5 = right at the lens), "

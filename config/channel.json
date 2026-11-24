@@ -37,11 +37,11 @@
     "max_sec": 45
   },
   "pacing": {
-    "hook_max_sec": 1.5,
-    "shot_avg_min": 1.5,
-    "shot_avg_max": 2.5,
-    "shot_max_sec": 3.5,
-    "change_every_sec": 1.2,
+    "hook_max_sec": 2.2,
+    "shot_avg_min": 2.2,
+    "shot_avg_max": 3.8,
+    "shot_max_sec": 4.8,
+    "change_every_sec": 1.8,
     "punch_in_scale": [
       1.08,
       1.12
@@ -59,7 +59,7 @@
     "vcam_carry_frames": 8,
     "vcam_carry_max_px": 9.0,
     "_doc_vcam": "Camera ảo hậu kỳ (vidlib/vcam.py): upscale ≤ 112%, creep 0.5–1.5%/s, kick 7 frame roll ±2° ở mỗi SFX hit, giữ quán tính qua điểm cắt.",
-    "code_shot_max_sec": 5.0
+    "code_shot_max_sec": 5.5
   },
   "flow": {
     "video_model": "Omni Flash 1.2",
@@ -99,12 +99,12 @@
     "scene_max_words": 70
   },
   "vo": {
-    "_doc": "Giọng đọc: config/voice.json (ElevenLabs). speed = atempo hậu kỳ (giữ cao độ; ≤1.15 nghe tự nhiên) — cần vì eleven_v3 bỏ qua voice_settings.speed. Cắt lặng > max_silence_ms còn keep_silence_ms; giữ một nhịp ngừng trước câu payoff.",
-    "speed": 1.12,
-    "max_silence_ms": 150,
-    "keep_silence_ms": 70,
-    "pre_payoff_pause_ms": 350,
-    "line_gap_min_ms": 120,
+    "_doc": "Giọng đọc: config/voice.json (ElevenLabs). speed = atempo hậu kỳ (giữ cao độ; 0.96–1.08 nghe đĩnh đạc tự nhiên) — cần vì eleven_v3 bỏ qua voice_settings.speed. Cắt lặng > max_silence_ms còn keep_silence_ms; giữ nhịp thở tự nhiên giữa các câu/beat và trước payoff/twist.",
+    "speed": 1.04,
+    "max_silence_ms": 260,
+    "keep_silence_ms": 140,
+    "pre_payoff_pause_ms": 420,
+    "line_gap_min_ms": 160,
     "start_by_frame": 6,
     "react_lead_frames": [
       0,
@@ -112,10 +112,10 @@
     ],
     "react_lead_default": 2,
     "speed_auto": true,
-    "speed_min": 1.0,
-    "speed_max": 1.15,
-    "target_wps": 3.7,
-    "_doc_speed_auto": "Vòng 7b: mỗi video một giọng → atempo tự tính = target_wps / nhịp nói thật của bản TTS, kẹp [speed_min, speed_max] (giọng chậm/nhanh đều ra cùng nhịp). Chỉ áp cho video có voice_resolved; video cũ giữ speed cố định."
+    "speed_min": 0.96,
+    "speed_max": 1.08,
+    "target_wps": 3.0,
+    "_doc_speed_auto": "Vòng 7b/12: mỗi video một giọng → atempo tự tính = target_wps / nhịp nói thật của bản TTS, kẹp [speed_min, speed_max] (giọng chậm/nhanh đều ra cùng nhịp ~3.0 wps). Chỉ áp cho video có voice_resolved; video cũ giữ speed cố định."
   },
   "audio": {
     "_doc": "Mức SFX tính theo đỉnh VO (dB âm = nhỏ hơn VO). Không có VO thì tham chiếu -6 dBFS.",
@@ -169,13 +169,29 @@
       1450
     ]
   },
+  "layout_grid": {
+    "header": [
+      250,
+      370
+    ],
+    "stage": [
+      390,
+      1240
+    ],
+    "captions": [
+      1340,
+      1460
+    ],
+    "_doc": "Grid 3 tầng cứng (Vòng 12): Zone A header, Zone B sân khấu hình (cấm phụ đề vào), Zone C kênh phụ đề độc lập."
+  },
   "captions": {
-    "_doc": "Auto-captions kiểu CapCut (vidlib/autocaptions.py): preset = capcut_pop | capcut_pill | capcut_box | vox_highlight | off. Dùng word timestamps của ElevenLabs.",
+    "_doc": "Auto-captions (vidlib/autocaptions.py): preset = studio_clean | capcut_pop | capcut_pill | capcut_box | vox_highlight | off. Dùng word timestamps của ElevenLabs; đặt gọn trong Zone C (layout_grid.captions).",
     "enabled": true,
-    "preset": "capcut_pop",
-    "max_words": 3,
-    "max_chars": 22,
-    "y": 1420
+    "preset": "studio_clean",
+    "max_words": 4,
+    "max_chars": 26,
+    "y": 1395,
+    "suppress_on_text_beats": true
   },
   "outro": {
     "_doc": "Research 2026: CTA 'follow' ở cuối không có dữ liệu chứng minh hiệu quả và làm gãy loop → giữ ngắn (≤2.5s) và nối frame cuối về frame đầu. Chữ CTA lấy từ copy.<language> (next_prefix, follow). code=true: outro dựng bằng engine (engines/three/scenes/outro.js); false: template 2D cũ.",
@@ -246,13 +262,13 @@
     }
   },
   "script": {
-    "_doc": "Quy tắc viết script tiếng Anh (cartoon-short-kit): ~3.7 từ/giây, câu 8–15 từ, dạng rút gọn, số viết bằng chữ, câu đầu là hook nghịch lý, kết bằng twist.",
-    "words_per_sec": 3.7,
-    "words_per_sec_min": 3.0,
-    "words_per_sec_max": 4.3,
+    "_doc": "Quy tắc viết script tiếng Anh (chuẩn Adult Explainer Vòng 12): ~3.0 từ/giây (2.4–3.6), câu 7–14 từ, dạng rút gọn, số viết bằng chữ, câu đầu là hook nghịch lý, kết bằng twist.",
+    "words_per_sec": 3.0,
+    "words_per_sec_min": 2.4,
+    "words_per_sec_max": 3.6,
     "sentence_words": [
-      8,
-      15
+      7,
+      14
     ],
     "sentence_words_hard_max": 20,
     "structure": [
@@ -283,8 +299,8 @@
   },
   "qa": {
     "blocking": ["kích thước", "fps", "số audio track", "codec", "loudness", "true peak", "freeze", "black frame",
-                 "chữ đúng chính tả", "màu BT.709", "pix_fmt", "faststart", "audio 48 kHz", "file hỏng", "nền tảng",
-                 "quyền thương mại BỊ CẤM"],
+                 "chữ đúng chính tả", "không chồng chữ", "màu BT.709", "pix_fmt", "faststart", "audio 48 kHz",
+                 "file hỏng", "nền tảng", "quyền thương mại BỊ CẤM"],
     "_doc_blocking": "Cổng QA (vidlib/qagate.py): dòng kiểm không đạt mà nhãn bắt đầu bằng một mục ở đây → ĐỎ, chặn publish/deliver, exit 12. Còn lại → VÀNG.",
     "true_peak_max": -1.0,
     "max_mbps": 20,
