@@ -97,6 +97,21 @@ def run_video(argv, prog="video"):
     return r.run()
 
 
+def run_review(argv):
+    """python studio.py review <slug> [--model gemini-4-hydrogen] — chấm video out/final.mp4 bằng Gemini đa phương thức."""
+    from vidlib import aireview  # noqa: PLC0415
+    ap = argparse.ArgumentParser(prog="studio.py review")
+    ap.add_argument("target", help="slug dự án đã có out/final.mp4")
+    ap.add_argument("--model", help="model Gemini (mặc định gemini-4-hydrogen)")
+    a = ap.parse_args(argv)
+    proj, _, new = pipeline.project_for(a.target)
+    if new:
+        print(f"✖ Không có dự án '{a.target}'.")
+        return 1
+    res = aireview.review_video(proj, model=a.model)
+    return 0 if res.get("verdict") != "REDO" else 12
+
+
 def run_deliver(argv):
     """python studio.py deliver <slug> [--platforms a,b|all] — xuất lại gói nền tảng từ out/final.mp4 có sẵn."""
     from vidlib import deliver, qagate  # noqa: PLC0415
@@ -328,6 +343,8 @@ def main(argv=None):
         ffbin("ffmpeg")
         if cmd == "deliver":
             return run_deliver(rest)
+        if cmd == "review":
+            return run_review(rest)
         if cmd in ("versions", "cost", "clean"):
             return run_project_tool(cmd, rest)
         if cmd == "rerender":
