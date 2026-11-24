@@ -336,9 +336,6 @@ def main(argv=None):
             return run_trim(rest)
         if cmd == "video":
             return run_video(rest)
-        if cmd == "ui":
-            from ui.server.__main__ import main as ui_main  # noqa: PLC0415
-            return ui_main(rest)
         if cmd == "status":
             pipeline.status(rest[0] if rest else "")
             return 0
@@ -442,9 +439,6 @@ def main(argv=None):
                 return 1
             print(f"(lệnh cũ '{cmd}' → video {' '.join(LEGACY[cmd])})")
             return run_video([rest[0], *LEGACY[cmd], *rest[1:]], cmd)
-        if cmd in ("setup", "looks"):
-            print("Hệ 'look' đã được thay bằng style bible brand: sửa brand/style.json và config/channel.json.")
-            return 0
         # cho phép gõ thẳng ý tưởng: python studio.py "What happens if…" — nhưng MỘT từ không dấu cách mà không phải
         # dự án có sẵn thì là lệnh gõ sai (vd "stauts") → báo lỗi, không tạo dự án rác (AUD-112)
         if len(argv) == 1 and " " not in cmd and pipeline.project_for(cmd)[2]:

@@ -1,5 +1,0 @@
-{
- "http://127.0.0.1:8797/#/projects/steel-ball-1000c-ice-water?tab=qa": [
-  "Framing 'http://127.0.0.1:8797/' violates the following Content Security Policy directive: \"frame-ancestors 'none'\". The request has been blocked.\n"
- ]
-}
