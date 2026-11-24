@@ -20,9 +20,16 @@ prompts from the semantic fields you write. **Do not write long prompts**: descr
 ## 1. Script (narration, `vo`) — the rules that make it work
 - Pace ≈ **{wps} words per second**: 20 s ≈ 75 words, 30 s ≈ 110, 45 s ≈ 165. Count only spoken words.
 - {narrative_block}
-  Every shot still maps to a `beat` tag (`hook`, `setup`, `escalate`, `payoff`, `twist`, `outro`), and the twist is the LAST spoken line: short, ironic, set up earlier. End with `outro.teaser`.
-- **Sentence 1 is the hook: a paradox stated as fact** ("A man sold the Eiffel Tower. Twice."). No question, no
-  "did you know", no greeting. Frame 0 is already the hook image.
+  Every shot still maps to a `beat` tag (`hook`, `setup`, `escalate`, `payoff`, `twist`, `outro`), and the twist is the LAST spoken line: short, ironic, set up earlier. End with `outro.teaser` (or a seamless loop back to Shot 1 when `outro.mode` is `"loop"`).
+- {archetype_block}
+
+### The 5 Viral Agency Screenwriting Laws (MANDATORY — 3-Second & Rewatch Test)
+1. **Cold-Open Paradox (0–2 s):** Zero lecture preamble, zero definitions, zero "Did you know", zero greetings. Frame 0 starts mid-action or on the visual extremity/paradox stated as cold fact ("A man sold the Eiffel Tower. Twice."), paired with an opening impact (`sub_drop` or visceral motion).
+2. **"But / Therefore" Causal Tension Chain (BAN "And then" lists):** Never chain two shots with linear *"And then… Next…"* exposition. Every shot transition must pivot through causality or contradiction (*"But…"*, *"Yet…"*, *"Instead…"*, *"Which forces…"*, *"Until…"*, *"Except…"*), raising the stakes or overturning the previous beat.
+3. **Mid-Video Pattern Interrupt / Re-Hook (12–16 s):** Insert a deliberate reversal, hidden-layer reveal, or new curiosity loop right around 12–16 seconds, paired with an engine switch (e.g., 3D exterior `stage` diving straight into 2D `xray_cutaway` or flipping to a `dossier` evidence card) and an agency transition (`iris_match`, `tape_stop`, or `whip_match`).
+4. **Visual Craft Diversity (Anti-PowerPoint):** At least **40%** of shots must be high-craft cinema scenes — `dossier`, `xray_cutaway`, `hero_stat`, cinematic 3D `stage` with varied camera presets (`ecu_macro`, `low_hero`, `tracking_low`, `over_shoulder`, `dolly_zoom`), or multi-actor `scene` with real motion. **Never stack more than 2 consecutive flat single-icon cards.** When explaining internal physiology or hidden mechanics, show the system live (`xray_cutaway` with flow particles or 3D `ecu_macro`/`low_hero`) — never a static floating icon. Use top-level `story_hud` when continuous rising telemetry sharpens tension.
+5. **Seamless Loop Option (`outro.mode: "loop"`):** When the archetype specifies `"loop"`, set `"outro": {{"mode": "loop", "bridge_frames": 8}}` (omitting any static "Follow for more" card) and write the final spoken clause so its grammar and momentum feed seamlessly back into Shot 1's opening line for AVD > 100%.
+
 - Sentences of about 8–15 words. Contractions ("it's", "don't", "won't"). Plain spoken English.
 - **Numbers as words in the VO** ("one thousand degrees", not "1,000°C"). Digits belong in `text_fx`.
 - Never describe what the viewer already sees. Say the cause, the mechanism, the surprise.
@@ -38,7 +45,7 @@ prompts from the semantic fields you write. **Do not write long prompts**: descr
 - Something changes at least every {change_every}s (a text_fx pop, punch-in, new element, a counter). The tool adds a
   virtual camera on every Flow clip (constant creep, a 7-frame kick on every hit SFX, momentum carried across cuts),
   so nothing ever freezes — but still plan the action.
-- `transition_in`: "cut" (default), "flash" (reveal; ≤ 2 per video), "whip" (topic change), "match".
+- `transition_in`: `"cut"` (default), `"iris_match"` (scale-through match cut into subject — great for 3D ↔ `xray_cutaway` dives), `"whip_match"` (directional momentum whip), `"tape_stop"` (abrupt pattern interrupt / myth-busting cut), `"flash"` (reveal; ≤ 2 per video), `"whip"` (topic change), `"match"`, `"dip"`.
 - Set `"hold": true` on a shot ONLY if a deliberate freeze is wanted (QA rejects freezes ≥ 0.4 s otherwise).
 
 ## 3. Picture (English)
@@ -117,7 +124,7 @@ keyword, the twist is a crossed-out thesis. Other styles ignore it, so always fi
 ## 6. Thumbnail, outro, publish
 - `thumbnail.variants`: 3 variants; `text` ≤ {thumb_words} English words, a question or curiosity claim ("IT FLOATS?!"),
   never the title. Archetypes: before_disaster, split, big_number, vs, red_circle. `scene` = background, no text.
-- `outro.teaser`: the next experiment, short ("Liquid nitrogen vs boiling water"). The outro is a code scene by default.
+- `outro`: either `"mode": "loop"` with `"bridge_frames": 8` (preferred for seamless AVD > 100% loops — no static CTA card; bridge the last line straight into Shot 1), or `"mode": "code"` with a short `outro.teaser` ("Liquid nitrogen vs boiling water").
 - `publish`: 3 `titles` (≤ 60 characters, how English-speaking viewers search), `description` (exactly 2 sentences),
   `hashtags` (5–8, no "#"). Check search phrasing with a web search.
 

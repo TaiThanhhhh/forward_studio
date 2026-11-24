@@ -9,8 +9,17 @@
   "style": "auto",
   "voice": "auto",
   "narrative": "classic",
+  "archetype": "auto",
   "assembly": "auto",
   "captions": "studio_clean",
+  "story_hud": {
+    "kind": "temp",
+    "label": "CORE TEMP",
+    "from": 37.0,
+    "to": 41.2,
+    "unit": "°C",
+    "role": "hot"
+  },
   "flow": {
     "video_model": "<tool fills>",
     "image_model": "<tool fills>"

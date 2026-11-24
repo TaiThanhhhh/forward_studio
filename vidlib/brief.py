@@ -32,7 +32,10 @@ def engine_help():
            "error. `role` is hot | cold | accent | ink | dim. All on-screen strings must be short natural English."
            + _user_assets_help()]
     for name, mod in (("html", html), ("manim", manim)):
-        beats = " · ".join(f"`{b}` — {mod.PARAMS[b][1]}" for b in mod.BEATS)
+        beats = " · ".join(
+            f"`{b}` — {mod.PARAMS[b][1]}" if b in mod.PARAMS else f"`{b}`"
+            for b in mod.BEATS
+        )
         out.append(f"Engine `{name}` (styles: {', '.join(by.get(name, [])) or '—'}): {beats}")
     lh = getattr(html, "LAYOUT_HELP", None) or {}        # mô tả bố cục (engines/html, nếu có) — không viết tay ở đây
     layouts = " · ".join(f"`{b}`: " + " | ".join(f"{o} ({lh[b][o]})" if (lh.get(b) or {}).get(o) else o for o in opts)
@@ -100,7 +103,25 @@ def mix_help():
         "clean dark-background anatomical cutaway shot when explaining internal organs.\n"
         "  - **Cinematic Adult Pacing & 3-Zone 9:16 Grid**: calm, authoritative ~3.0 wps narration, 2.4–3.8 s per shot "
         "(10–13 high-craft shots for a 40 s short) with continuous internal motion; keep all visual subjects and labels "
-        "cleanly inside Zone B (`y: 390–1240`) so Zone C captions never touch characters or labels."
+        "cleanly inside Zone B (`y: 390–1240`) so Zone C captions never touch characters or labels.\n"
+        "\n**AGENCY CINEMA TOOLKIT (Round 13 — Anti-PowerPoint Craft):**\n"
+        "  - **3 Cinema 2D Beats (engine `html`):**\n"
+        "    - `dossier` *(LEMMiNO / Fern archival card)*: `{tag, stamp?, headline, evidence: [{k, v}], highlight, "
+        "visual_icon?, cite?}` — structured dark-mode evidence card with animated highlighter sweep.\n"
+        "    - `xray_cutaway` *(Zack D. Films / Fern anatomical cutaway)*: `{shell_icon, core_icon, flow: [{from, to, "
+        "via?, count, color_role, speed}], pulse_rate?, callout_num?, callout_label?}` — 2-layer X-ray silhouette with "
+        "live Bézier flow particles (blood, nerve signals, heat, oxygen).\n"
+        "    - `hero_stat` *(Vox / Cleo Abram architectural stat)*: `{number, prefix?, suffix?, unit?, label, "
+        "sub_bar?: {from, to}, bg_motif?: \"rings\"|\"bars\"|\"grid\"|\"wave\", role?}` — full-frame kinetic "
+        "typography reacting to the number.\n"
+        "  - **Persistent `story_hud` (top-level or per-shot):** `{kind: \"clock\"|\"temp\"|\"bpm\"|\"meter\"|\"chapter\", "
+        "label, from, to, unit, role}` — ultra-clean telemetry bar in Zone A (`y: 260–310`) that smoothly interpolates "
+        "across shots to build continuous rising stakes.\n"
+        "  - **5 Cinematic 3D `stage` Camera Presets (`frame.preset`):** `ecu_macro` (extreme close-up hook), "
+        "`low_hero` (dramatic low upward angle), `tracking_low` (low side-tracking motion), `over_shoulder` "
+        "(perspective clash/target view), `dolly_zoom` (Vertigo tension push/FOV shift). Vary presets across 3D shots.\n"
+        "  - **3 Agency Transitions (`transition_in`):** `iris_match` (scale-through match cut into the subject), "
+        "`whip_match` (directional momentum whip), `tape_stop` (pattern interrupt / myth-busting cut)."
     )
     return "\n".join(lines)
 
@@ -209,6 +230,7 @@ def build(idea, slug, video_model=None, proj=None, plan=None):
         "style": (plan or {}).get("style") or cfg.get("styles", {}).get("default", "auto"),
         "styles": ", ".join(styles.available()), "plan_block": plan_block(plan),
         "narrative_block": narratives.block((plan or {}).get("narrative")),
+        "archetype_block": narratives.archetype_block((plan or {}).get("archetype")).replace("{", "{{").replace("}", "}}"),
         "scenes": ", ".join(s for s in codeshot.scenes() if s != "charsheet"), "scene_help": scene_help(),
         # §4c motion: cơ chế cho chủ đề + không lặp video trước + verb (ngoặc nhân đôi để qua bước gộp {{ }} bên dưới)
         "motion_block": motionplan.brief_block(idea, slug, plan, proj, d0).replace("{", "{{").replace("}", "}}"),

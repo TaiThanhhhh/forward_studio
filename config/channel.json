@@ -391,5 +391,26 @@
     "metaphor_min_score": 1,
     "shot_hint_min_score": 2,
     "block": false
+  },
+  "viral": {
+    "_doc": "Chuẩn Agency Viral (Vòng 13): ngưỡng điểm Viral & Craft Scorecard, tỉ lệ cảnh điện ảnh giàu chiều sâu, giới hạn thẻ phẳng liên tiếp, danh sách transition và outro_mode hợp lệ.",
+    "min_score": 75,
+    "min_rich_shot_share": 0.4,
+    "max_consecutive_flat_cards": 2,
+    "valid_transitions": [
+      "cut",
+      "flash",
+      "whip",
+      "match",
+      "dip",
+      "iris_match",
+      "whip_match",
+      "tape_stop"
+    ],
+    "valid_outro_modes": [
+      "code",
+      "loop",
+      "template"
+    ]
   }
 }
