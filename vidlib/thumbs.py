@@ -112,6 +112,20 @@ def background(proj, sb, v, size, trims, ingested):
         p = os.path.join(proj, s["start_frame"]["file"])
         if os.path.exists(p):
             return Image.open(p).convert("RGB"), s["start_frame"]["file"]
+    final_mp4 = os.path.join(proj, "out", "final.mp4")
+    if os.path.exists(final_mp4) and os.path.getsize(final_mp4) > 1024:
+        from .common import probe  # noqa: PLC0415
+        try:
+            dur = float((probe(final_mp4) or {}).get("duration") or 0.0)
+        except Exception:  # noqa: BLE001
+            dur = 0.0
+        if dur > 2.0:
+            frac_map = {"T1": 0.48, "T2": 0.64, "T3": 0.16}
+            frac = frac_map.get(str(v.get("id", "")).upper(), 0.50)
+            t_pick = max(0.5, min(dur - 2.6, dur * frac))
+            fr = _frame_at(final_mp4, t_pick)
+            if fr is not None:
+                return fr, f"final {t_pick:.1f}s"
     return _code_bg(size), "code"
 
 
