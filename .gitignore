@@ -17,6 +17,9 @@ assets/sfx/_builtin/
 # khoá API cục bộ
 .env
 .env.*
+config/yt_client_secret.json
+config/yt_token.json
+*client_secret*.json
 
 # dữ liệu OCR (tải bằng ocr.setup(); ~15 MB mỗi ngôn ngữ)
 assets/tessdata/*.traineddata

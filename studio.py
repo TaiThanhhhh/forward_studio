@@ -14,6 +14,9 @@ Giao diện web (không cần gõ lệnh):
   python studio.py ui [--port 8765] [--no-open]   mở http://127.0.0.1:8765 — tạo video, tải clip, duyệt look, xem QA
 
 Khác:
+  python studio.py review <slug>     chấm QA video out/final.mp4 bằng Gemini đa phương thức (cần GEMINI_API_KEY)
+  python studio.py upload-yt <slug> [--dry-run] [--privacy private|unlisted|public] [--title-idx 1|2|3] [--comment]
+                                     tải video YouTube Shorts lên Draft/Private kèm SEO + captions.srt
   python studio.py status <slug>     trạng thái từng cảnh
   python studio.py models            bảng capability Flow (config/flow-models.json)
   python studio.py stages            danh sách stage
@@ -110,6 +113,36 @@ def run_review(argv):
         return 1
     res = aireview.review_video(proj, model=a.model)
     return 0 if res.get("verdict") != "REDO" else 12
+
+
+def run_upload_yt(argv):
+    """python studio.py upload-yt <slug> [--privacy private|unlisted|public] [--title-idx 1|2|3] [--no-srt]
+    [--comment] [--dry-run] [--client-secret PATH] — tải video lên YouTube Shorts ở chế độ Draft/Private."""
+    from vidlib import ytupload  # noqa: PLC0415
+    ap = argparse.ArgumentParser(prog="studio.py upload-yt", description="Tải video lên YouTube Shorts (Draft/Private)")
+    ap.add_argument("target", help="slug dự án đã render xong")
+    ap.add_argument("--privacy", choices=["private", "unlisted", "public"], default="private",
+                    help="trạng thái hiển thị (mặc định: private — an toàn nhất)")
+    ap.add_argument("--title-idx", type=int, default=1, help="chọn phương án tiêu đề 1, 2 hoặc 3 trong publish SEO")
+    ap.add_argument("--no-srt", action="store_true", help="không tự tải kèm phụ đề captions.srt")
+    ap.add_argument("--comment", action="store_true", help="tự động đăng Seed/Pinned Comment sau khi tải xong")
+    ap.add_argument("--dry-run", action="store_true", help="xem trước payload SEO & file sẽ tải, không gọi API")
+    ap.add_argument("--client-secret", help="file OAuth client_secret.json (mặc định config/yt_client_secret.json)")
+    a = ap.parse_args(argv)
+    proj, _, new = pipeline.project_for(a.target)
+    if new:
+        print(f"✖ Không có dự án '{a.target}'.")
+        return 1
+    ytupload.upload(
+        proj,
+        title_idx=a.title_idx - 1,
+        privacy=a.privacy,
+        upload_srt=not a.no_srt,
+        post_comment=a.comment,
+        dry_run=a.dry_run,
+        client_secret=a.client_secret,
+    )
+    return 0
 
 
 def run_deliver(argv):
@@ -345,6 +378,8 @@ def main(argv=None):
             return run_deliver(rest)
         if cmd == "review":
             return run_review(rest)
+        if cmd == "upload-yt":
+            return run_upload_yt(rest)
         if cmd in ("versions", "cost", "clean"):
             return run_project_tool(cmd, rest)
         if cmd == "rerender":
@@ -462,8 +497,8 @@ def main(argv=None):
         # dự án có sẵn thì là lệnh gõ sai (vd "stauts") → báo lỗi, không tạo dự án rác (AUD-112)
         if len(argv) == 1 and " " not in cmd and pipeline.project_for(cmd)[2]:
             import difflib  # noqa: PLC0415
-            cmds = ["video", "ui", "doctor", "deliver", "versions", "cost", "clean", "status", "models", "stages", "ideas",
-                    "voices", "styles", "narratives", "charsheet", "perf", "sb", *LEGACY]
+            cmds = ["video", "ui", "doctor", "deliver", "review", "upload-yt", "versions", "cost", "clean", "status",
+                    "models", "stages", "ideas", "voices", "styles", "narratives", "charsheet", "perf", "sb", *LEGACY]
             near = difflib.get_close_matches(cmd, cmds, n=3)
             print(f"✖ Không có lệnh '{cmd}'" + (f" — ý anh là: {', '.join(near)}?" if near else "")
                   + " · Ý tưởng video cần có dấu cách (vd \"What happens if…\"). Xem: python studio.py help")
