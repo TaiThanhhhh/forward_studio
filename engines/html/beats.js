@@ -2158,7 +2158,167 @@ function hero_stat(c0, P) {                            // typography kiến trú
   };
 }
 
-export const BEATS = { title, drop, counter, compare, graph, process, scale, callout, fact, scene, outro, units, timeline, split, meter, dossier, xray_cutaway, hero_stat };
+// ================= VÒNG 16 — 2 BEAT TRỰC QUAN CHO TECH/AI (Fireship / ByteByteGo — 0 icon trừu tượng) =================
+function code_terminal(c0, P) {
+  const N = c0.N;
+  const rawLines = (P.lines || []).slice(0, 6);
+  const lines = rawLines.map((ln) => (typeof ln === 'string' ? { text: ln } : ln || { text: '' }));
+  const tokens = (P.tokens || []).slice(0, 5);
+  const hitF = Math.round((P.hit ?? 0.55) * N);
+  const cues = [{ f: 2, name: 'click' }, ...lines.map((_, i) => ({ f: Math.min(N - 6, 4 + i * 7), name: 'typing' }))];
+  if (P.status || lines.some((l) => l.bug)) cues.push({ f: hitF, name: 'hit', kick: 0.7 });
+  const texts = names(P.kicker, P.title, P.filename, P.status, ...lines.map((l) => l.text),
+    ...tokens.flatMap((t) => [t.text, t.id !== undefined ? String(t.id) : '']));
+  return {
+    cues, texts,
+    draw(c) {
+      const g = c.g, cx = c.A.cx;
+      const yb = drawHeader(c, P, c.k(1, 9), true);
+      const cardW = Math.min(920, c.A.x1 - c.A.x0 - 16), x0 = cx - cardW / 2;
+      const hasTok = tokens.length > 0;
+      const tokH = hasTok ? 156 : 0;
+      const statH = P.status ? 72 : 0;
+      const maxTermH = Math.max(260, c.A.bottom - yb - tokH - statH - 54);
+      const termH = Math.min(maxTermH, 86 + Math.max(2, lines.length) * 66);
+      const y0 = yb + 18 + Math.max(0, (c.A.bottom - yb - termH - tokH - statH - 36) * 0.35);
+      const ke = c.k(1, 10);
+
+      // Khung terminal tối có thanh tiêu đề 3 chấm
+      g.save();
+      g.globalAlpha = ke;
+      g.fillStyle = '#0B0E14';
+      g.strokeStyle = c.col('dim'); g.lineWidth = 2;
+      g.beginPath(); if (g.roundRect) g.roundRect(x0, y0, cardW, termH, 18); else g.rect(x0, y0, cardW, termH);
+      g.fill(); g.stroke();
+      g.fillStyle = '#151A24';
+      g.beginPath(); if (g.roundRect) g.roundRect(x0 + 1, y0 + 1, cardW - 2, 52, [17, 17, 0, 0]); else g.rect(x0 + 1, y0 + 1, cardW - 2, 52);
+      g.fill();
+      ['#FF5F56', '#FFBD2E', '#27C93F'].forEach((col, i) => {
+        g.fillStyle = col; g.beginPath(); g.arc(x0 + 30 + i * 26, y0 + 26, 7.5, 0, c.TAU); g.fill();
+      });
+      g.restore();
+      if (P.filename) {
+        c.text(String(P.filename), cx, y0 + 34, { size: 24, font: 'mono', role: 'dim', k: ke, enter: 'none', weight: 600 });
+      }
+
+      // Từng dòng code gõ lần lượt + highlight đỏ dòng lỗi
+      const rowH = Math.min(64, (termH - 74) / Math.max(1, lines.length));
+      lines.forEach((ln, i) => {
+        const ly = y0 + 68 + i * rowH + rowH * 0.56;
+        const lk = c.k(4 + i * 7, 10);
+        if (ln.bug && c.f >= hitF - 4) {
+          const bk = c.clamp((c.f - (hitF - 4)) / 8);
+          g.save();
+          g.fillStyle = c.col('hot'); g.globalAlpha = 0.22 * bk;
+          g.fillRect(x0 + 10, ly - rowH * 0.52, cardW - 20, rowH * 0.84);
+          g.globalAlpha = 0.95 * bk;
+          g.fillRect(x0 + 10, ly - rowH * 0.52, 6, rowH * 0.84);
+          g.restore();
+        }
+        c.text(String(i + 1).padStart(2, '0'), x0 + 38, ly, { size: 26, font: 'mono', role: 'dim', align: 'left', k: lk, enter: 'none', quiet: true });
+        c.text(String(ln.text || ''), x0 + 96, ly, {
+          size: 32, font: 'mono', role: ln.bug ? 'hot' : (ln.role || 'ink'), align: 'left',
+          k: lk, enter: 'type', maxW: cardW - 124, weight: ln.bug ? 700 : 600,
+        });
+      });
+
+      // Dải thẻ token chips ([STR] -> 496) phía dưới terminal
+      let curY = y0 + termH + 24;
+      if (hasTok) {
+        const gap = 18, chipW = Math.min(260, (cardW - gap * (tokens.length - 1)) / tokens.length);
+        const startX = cx - (chipW * tokens.length + gap * (tokens.length - 1)) / 2;
+        tokens.forEach((tk, i) => {
+          const kChip = c.k(Math.max(hitF - 6, 12) + i * 5, 10);
+          const bx = startX + i * (chipW + gap);
+          const rCol = c.col(tk.role || (i === tokens.length - 1 ? 'hot' : 'accent'));
+          g.save();
+          g.globalAlpha = kChip;
+          g.fillStyle = '#10151F'; g.strokeStyle = rCol; g.lineWidth = 3;
+          g.beginPath(); if (g.roundRect) g.roundRect(bx, curY, chipW, 126, 14); else g.rect(bx, curY, chipW, 126);
+          g.fill(); g.stroke();
+          g.restore();
+          c.text(String(tk.text || ''), bx + chipW / 2, curY + 48, { size: 32, font: 'mono', role: 'ink', k: kChip, enter: 'none', maxW: chipW - 20, weight: 700 });
+          if (tk.id !== undefined && tk.id !== null) {
+            c.text(String(tk.id), bx + chipW / 2, curY + 100, { size: 36, font: 'mono', role: tk.role || 'accent', k: kChip, enter: 'none', maxW: chipW - 20, weight: 800 });
+          }
+        });
+        curY += 146;
+      }
+
+      if (P.status) {
+        const ks = c.k(hitF, 8);
+        c.K.tag(c, String(P.status), cx, Math.min(c.A.bottom - 34, curY + 34), ks);
+      }
+    },
+  };
+}
+
+function chat_prompt(c0, P) {
+  const N = c0.N, aiF = Math.round(N * 0.28), stampF = Math.round((P.hit ?? 0.62) * N);
+  const cues = [{ f: 2, name: 'pop' }, { f: aiF, name: 'typing' }];
+  if (P.verdict) cues.push({ f: stampF, name: 'stamp', kick: 0.85 });
+  const texts = names(P.kicker, P.title, P.user, P.ai, P.verdict, P.note);
+  return {
+    cues, texts,
+    draw(c) {
+      const g = c.g, cx = c.A.cx;
+      const yb = drawHeader(c, P, c.k(1, 9), true);
+      const stageW = Math.min(900, c.A.x1 - c.A.x0 - 20), x0 = cx - stageW / 2;
+      const bxW = stageW * 0.82;
+      let curY = yb + 34;
+
+      // 1. Bong bóng Prompt người dùng (căn phải, viền accent)
+      const ku = c.k(2, 10);
+      const uFit = fitText(c, String(P.user || ''), x0 + stageW - bxW + 28, [40, 34, 30], { align: 'left', maxW: bxW - 56, maxH: 150 });
+      const uH = Math.max(96, uFit.h + 52);
+      const ux = x0 + stageW - bxW;
+      g.save();
+      g.globalAlpha = ku;
+      g.fillStyle = '#141B29'; g.strokeStyle = c.col('accent'); g.lineWidth = 3;
+      g.beginPath(); if (g.roundRect) g.roundRect(ux, curY, bxW, uH, 22); else g.rect(ux, curY, bxW, uH);
+      g.fill(); g.stroke();
+      g.restore();
+      c.text('USER PROMPT', ux + 28, curY + 28, { size: 20, font: 'mono', role: 'accent', align: 'left', k: ku, enter: 'none', quiet: true, weight: 700 });
+      c.text(String(P.user || ''), ux + 28, curY + 52 - uFit.b.y0, { size: uFit.size, align: 'left', role: 'ink', k: ku, enter: 'none', maxW: bxW - 56, weight: 700 });
+      curY += uH + 34;
+
+      // 2. Bong bóng phản hồi AI (căn trái)
+      const ka = c.k(aiF, 12);
+      const aFit = fitText(c, String(P.ai || ''), x0 + 28, [42, 36, 32], { align: 'left', maxW: bxW - 56, maxH: 160 });
+      const aH = Math.max(106, aFit.h + 56);
+      g.save();
+      g.globalAlpha = ka;
+      g.fillStyle = '#18141A'; g.strokeStyle = c.col(P.verdict ? 'hot' : 'dim'); g.lineWidth = 3;
+      g.beginPath(); if (g.roundRect) g.roundRect(x0, curY, bxW, aH, 22); else g.rect(x0, curY, bxW, aH);
+      g.fill(); g.stroke();
+      g.restore();
+      c.text('AI MODEL', x0 + 28, curY + 28, { size: 20, font: 'mono', role: 'dim', align: 'left', k: ka, enter: 'none', quiet: true, weight: 700 });
+      c.text(String(P.ai || ''), x0 + 28, curY + 54 - aFit.b.y0, { size: aFit.size, align: 'left', role: 'ink', k: ka, enter: 'type', maxW: bxW - 56, weight: 700 });
+      curY += aH + 44;
+
+      // 3. Con dấu kiểm chứng (VERIFIED / WRONG) đóng mạnh
+      if (P.verdict && c.f >= stampF) {
+        const ks = c.k(stampF, 7), sc = c.lerp(1.45, 1, c.EASE.back(ks));
+        const vCol = c.col(P.verdict_role || 'hot');
+        const vy = Math.min(c.A.bottom - (P.note ? 115 : 54), curY + 34);
+        g.save();
+        g.translate(cx, vy); g.scale(sc, sc); g.rotate(-0.06);
+        g.strokeStyle = vCol; g.lineWidth = 6; g.fillStyle = '#0A0B0E';
+        g.beginPath(); if (g.roundRect) g.roundRect(-240, -40, 480, 80, 12); else g.rect(-240, -40, 480, 80);
+        g.fill(); g.stroke();
+        g.restore();
+        c.text(String(P.verdict).toUpperCase(), cx, vy + 16, { size: 46, font: 'mono', role: P.verdict_role || 'hot', k: ks, enter: 'none', weight: 900, maxW: 440 });
+        curY = vy + 66;
+      }
+
+      if (P.note) {
+        c.text(String(P.note), cx, Math.min(c.A.bottom - 28, curY + 36), { size: 32, font: 'mono', role: 'dim', k: c.k(stampF + 6, 10), maxW: stageW - 24, weight: 600 });
+      }
+    },
+  };
+}
+
+export const BEATS = { title, drop, counter, compare, graph, process, scale, callout, fact, scene, outro, units, timeline, split, meter, dossier, xray_cutaway, hero_stat, code_terminal, chat_prompt };
 
 // ---- công cụ nội bộ (KHÔNG cho storyboard dùng): bảng xem đạo cụ theo look — scripts/icon_sheet.py
 function catalog(c0, P) {

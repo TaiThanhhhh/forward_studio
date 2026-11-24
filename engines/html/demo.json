@@ -857,5 +857,28 @@
       "to": 102.9,
       "max": 110
     }
+  },
+  "code_terminal": {
+    "kicker": "TOKENIZER INSPECTOR",
+    "filename": "tokenizer.py",
+    "lines": [
+      "word = 'strawberry'",
+      "chunks = encode(word)",
+      {"text": "ids = [496, 675, 15717]", "bug": true}
+    ],
+    "tokens": [
+      {"text": "str", "id": 496, "role": "accent"},
+      {"text": "aw", "id": 675, "role": "cold"},
+      {"text": "berry", "id": 15717, "role": "hot"}
+    ],
+    "status": "ZERO LETTERS VISIBLE"
+  },
+  "chat_prompt": {
+    "kicker": "LIVE TEST",
+    "user": "How many R's are in strawberry?",
+    "ai": "There are 2 R's in strawberry.",
+    "verdict": "WRONG: IT'S 3",
+    "verdict_role": "hot",
+    "note": "Model only saw IDs: 496 · 675 · 15717"
   }
 }

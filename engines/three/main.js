@@ -40,7 +40,7 @@ const C = (k) => (ST.colors && ST.colors[k]) || k;
 // của khối tròn (low-poly) · tm: tone map ACES · bloom/bloom_th · grain · ink_px: ghi đè độ dày nét (0 = không nét).
 const LOOK3D = {
   toon: { mat: 'toon' },
-  clay: { mat: 'standard', rough: 0.92, metal: 0, env: 0.45, bump: 0.012, tm: 1, exposure: 1.05, grain: 0.035 },
+  clay: { mat: 'standard', rough: 0.82, metal: 0.04, env: 0.72, bump: 0.012, tm: 1, exposure: 1.06, bloom: 0.14, bloom_th: 0.72, grain: 0.03 },
   plastic: { mat: 'physical', rough: 0.3, metal: 0, clearcoat: 1, coat_rough: 0.08, env: 1.0, tm: 1, exposure: 1.0, bloom: 0.18 },
   glass: { mat: 'physical', rough: 0.06, metal: 0, transmission: 0.5, thickness: 0.6, ior: 1.5, env: 2.4, glow: 0.14, clearcoat: 1,
     coat_rough: 0.04, tm: 1, exposure: 1.15, bloom: 0.3, bloom_th: 0.45, ink_px: 1.2 },
@@ -328,12 +328,13 @@ if ((LK.env ?? 0) > 0 && (LK.mat === 'standard' || LK.mat === 'physical')) {
     const m = new THREE.Mesh(new THREE.PlaneGeometry(w * ew, h * ew), new THREE.MeshBasicMaterial({ color: new THREE.Color(col).multiplyScalar(k), side: THREE.DoubleSide }));
     m.position.set(...pos); m.lookAt(0, 0, 0); es.add(m);
   };
-  panel(4.5, 3, '#ffffff', 2.6, [-3.5, 3.2, 3.5]);                 // softbox chính (trước-trái-trên)
-  panel(6, 1.2, '#ffffff', 1.1, [0, 5.5, 0]);                       // đèn trần
-  panel(1.1, 7, C(L.rim_color || 'accent'), 3.0, [4, 1, -3.5]);     // dải rim màu accent phía sau
-  panel(3, 2, '#ffffff', 0.5, [3, 0.5, 4]);                         // fill yếu bên phải
+  panel(4.8, 3.2, '#fff6eb', 2.8, [-3.6, 3.4, 3.4]);                // softbox chính ấm (trước-trái-trên kiểu Fern/Blender)
+  panel(6.4, 1.4, '#eef4ff', 1.25, [0, 5.6, 0.4]);                  // đèn trần studio rộng
+  panel(1.2, 7.2, C(L.rim_color || 'accent'), 3.2, [4.2, 1.2, -3.5]); // dải rim màu accent phía sau
+  panel(3.2, 2.2, '#d8e6ff', 0.65, [3.2, 0.7, 4.0]);                // fill lạnh bên phải tạo tương phản ấm/lạnh
+  panel(5.0, 5.0, '#18202c', 0.45, [0, -4.5, 0]);                   // phản xạ sàn mềm giữ chi tiết gầm khối 3D
   const pm = new THREE.PMREMGenerator(renderer);
-  scene.environment = pm.fromScene(es, 0.03).texture; pm.dispose();
+  scene.environment = pm.fromScene(es, 0.025).texture; pm.dispose();
 }
 
 // ---------- cards (nhân vật 2D trong không gian 3D — cơ chế của kit) ----------

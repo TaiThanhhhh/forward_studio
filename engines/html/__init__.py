@@ -9,7 +9,7 @@ import os
 import re
 
 BEATS = ("title", "drop", "counter", "compare", "graph", "process", "scale", "callout", "fact", "scene", "outro",
-         "units", "timeline", "split", "meter", "dossier", "xray_cutaway", "hero_stat")
+         "units", "timeline", "split", "meter", "dossier", "xray_cutaway", "hero_stat", "code_terminal", "chat_prompt")
 LOOKS = ("flat", "boil", "iso", "hud", "synth", "sticker", "swiss", "spy", "picto", "zoom", "flow", "sketch", "gallery",
          "halftone", "comic", "pixel16", "sprite8", "silhouette", "cutout", "lineart", "vox", "story")
 
@@ -76,6 +76,15 @@ PARAMS = {
         ("number",),
         "number, prefix, suffix, unit, label, sub_bar{from, to, max}, bg_motif rings|bars|grid|wave, role — "
         "ARCHITECTURAL HERO STAT (Cleo Abram/Vox/Ordinary Folk): giant 180-230px number over reactive full-bleed graphics",
+    ),
+    "code_terminal": (
+        ("lines",),
+        "filename, lines[str|{text, role?, bug?}] (≤6), tokens[{text, id, role?}] (≤5), status — "
+        "LITERAL CODE/TOKEN TERMINAL (Fireship/ByteByteGo): dark editor typing lines, red bug highlight & token ID chips",
+    ),
+    "chat_prompt": (
+        ("user", "ai"),
+        "user, ai, verdict, verdict_role, note — LITERAL AI CHAT PROOF: user prompt bubble, AI reply & verdict stamp",
     ),
     "outro": ((), "teaser, follow, next_prefix — thẻ kết + vòng lặp"),
 }
