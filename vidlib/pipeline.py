@@ -1060,7 +1060,7 @@ class Run:
         """Gói theo nền tảng (Shorts/Reels/TikTok/16:9) — chỉ chạy khi cổng QA không đỏ (hoặc --accept-qa)."""
         from . import deliver, manifest  # noqa: PLC0415
         ai = (getattr(self, "rights_report", None) or {}).get("ai") or {}
-        res = deliver.build(self.proj, self.platforms, meta=manifest.metadata_tags(self.csb, ai), log=self.log)
+        res = deliver.build(self.proj, self.platforms, meta=manifest.metadata_tags(self.csb, ai), log=self.log, sb=self.csb)
         self.deliver_res = res
         reds = [f"{r['label']}: {row['label']} = {row['value']}" for r in res.values() for row in r["rows"]
                 if row["level"] == "red"]
@@ -1084,6 +1084,7 @@ class Run:
         L += ["", "## Gói theo nền tảng", ""]
         for r in res.values():
             L.append(f"- **{r['label']}** ({r['verdict']}): `{r['video']}` · bìa `{r['cover']}`"
+                     + (f" · `{r['caption']}`" if r.get("caption") else "")
                      + (" · `captions.srt`" if r["srt"] else "") + f" — {r['ai_label']}")
         L += ["", "## Checklist trước khi đăng", "",
               "- [ ] Xem hết video ở tốc độ thật, có tiếng (lỗi khựng, chữ sai, tiếng click)",

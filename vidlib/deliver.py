@@ -152,11 +152,15 @@ def verify(video, p):
     return out
 
 
-def build(proj, names=None, meta=None, log=print):
-    """Xuất mọi preset → {preset: {"dir", "video", "cover", "srt", "checks": {...}, "ok"}}; ghi out/deliver/deliver.json."""
+def build(proj, names=None, meta=None, log=print, sb=None):
+    """Xuất mọi preset → {preset: {"dir", "video", "cover", "srt", "caption", "checks": {...}, "ok"}}; ghi deliver.json."""
+    from . import qareport  # noqa: PLC0415
+    from . import storyboard as sbm  # noqa: PLC0415
     final = os.path.join(proj, "out", "final.mp4")
     if not os.path.exists(final):
         raise StudioError("Chưa có out/final.mp4 để xuất.")
+    if sb is None:
+        sb = sbm.load(proj) or {}
     srt = os.path.join(proj, "out", "captions.srt")
     endscreen = os.path.join(proj, "out", "endscreen_16x9.mp4")
     c = cfg()
@@ -174,13 +178,17 @@ def build(proj, names=None, meta=None, log=print):
         has_srt = os.path.exists(srt)
         if has_srt and p.get("srt"):
             shutil.copyfile(srt, os.path.join(d, "captions.srt"))
+        cap_path = os.path.join(d, "caption.txt")
+        with open(cap_path, "w", encoding="utf-8", newline="\n") as fh:
+            fh.write(qareport.render_platform_caption(sb, name))
         checks = verify(video, p)
         checks[f"gói {p['label']}: bìa"] = (cov_note, cov is not None or None)
         checks.update(safe_zone_checks(p))
         rows = qagate.classify(checks)
         res[name] = {"label": p["label"], "dir": os.path.relpath(d, proj), "video": os.path.relpath(video, proj),
                      "cover": os.path.relpath(cov, proj) if cov else None, "srt": has_srt and bool(p.get("srt")),
-                     "ai_label": p.get("ai_label", ""), "rows": rows, "verdict": qagate.verdict(rows)}
+                     "caption": os.path.relpath(cap_path, proj), "ai_label": p.get("ai_label", ""),
+                     "rows": rows, "verdict": qagate.verdict(rows)}
         save_json(os.path.join(d, "deliver.json"), res[name])
         log(f"  · {p['label']}: {qagate.verdict(rows)} · {os.path.getsize(video) / 1e6:.1f} MB")
     save_json(os.path.join(proj, "out", "deliver", "deliver.json"), res)
