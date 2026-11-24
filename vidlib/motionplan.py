@@ -28,10 +28,13 @@ import time
 
 from .common import CONFIG_DIR, PROJECTS, ROOT, channel, load_json, save_json
 
+R13_MECHANISM_SCENES = ("dossier", "xray_cutaway", "hero_stat")
+R13_STAGE_PRESETS = frozenset({"ecu_macro", "low_hero", "tracking_low", "over_shoulder", "dolly_zoom"})
+
 DEFAULTS = {
     "avoid_recent": 3, "apply_since": "2026-11-20", "generic_beats": ["title", "counter", "compare", "fact"],
     "mechanism_scenes": ["scene", "drop", "process", "callout", "scale", "stage", "vectors", "units", "timeline",
-                         "split", "meter", "zoomin"],
+                         "split", "meter", "zoomin", "dossier", "xray_cutaway", "hero_stat"],
     "flow_is_mechanism": True, "generic_max_share": 0.45, "min_mechanism_shots": 3, "skeleton_sim_max": 0.6,
     "metaphors_top_k": 6, "metaphor_min_score": 1, "shot_hint_min_score": 2, "block": False,
 }
@@ -40,7 +43,13 @@ ENGINES_DIR = os.path.join(ROOT, "engines")
 
 
 def cfg():
-    return {**DEFAULTS, **{k: v for k, v in (channel().get("motion") or {}).items() if not k.startswith("_")}}
+    out = {**DEFAULTS, **{k: v for k, v in (channel().get("motion") or {}).items() if not k.startswith("_")}}
+    ms = list(out.get("mechanism_scenes") or [])
+    for b in R13_MECHANISM_SCENES:
+        if b not in ms:
+            ms.append(b)
+    out["mechanism_scenes"] = ms
+    return out
 
 
 # ====================================================================== kho cơ chế
@@ -152,13 +161,14 @@ def _vocab(_stamp):
     params = {}
     for b in html.BEATS:
         req, desc = html.PARAMS.get(b, ((), ""))
-        params[b] = _tokens(desc) | set(req) | {"kicker", "title", "hit", "layout", "index", "sub"}
+        params[b] = _tokens(desc) | set(req) | {"kicker", "title", "hit", "layout", "index", "sub", "story_hud"}
     fx_html = set()
     for b in html.BEATS:
         fx_html |= _alts(html.PARAMS.get(b, ((), ""))[1], "kind")
     stage_src = _read("three", "scenes", "stage.js")
     head = _header(stage_src)
     mk = _obj_keys(stage_src, "const mk = {")
+    stage_presets = _obj_keys(stage_src, "const PRESETS = {") | set(R13_STAGE_PRESETS)
     m_set = re.search(r"^ ?set:", head, flags=re.M)          # dòng "// set: …" (danh sách bối cảnh) tới "props[]:"
     i_set = m_set.start() if m_set else -1
     i_end = head.find("props[]:", max(0, i_set))
@@ -196,7 +206,9 @@ def _vocab(_stamp):
     return {
         "html_beats": set(html.BEATS), "html_params": params, "layouts": {k: set(v) for k, v in html.LAYOUTS.items()},
         "html_fx": fx_html, "icons": set(html.icon_table()[0]), "html_looks": set(html.LOOKS),
-        "three_scenes": set(codeshot.scenes("three")), "stage_types": mk, "stage_tokens": _tokens(head),
+        "three_scenes": set(codeshot.scenes("three")), "stage_types": mk,
+        "stage_tokens": _tokens(head) | {"preset", "spotlight", "fovEnd"},
+        "stage_presets": stage_presets,
         "stage_sets": sets | {"black"}, "poses": _alts(head, "pose"),
         "stage_fx": _alts("\n".join(ln for ln in head.splitlines() if "fx" in ln), "kind"),
         "stage_creature": "creature" in mk or bool(re.search(r"\bcreature\b", head)),
@@ -375,6 +387,9 @@ def recipe_errors(rec, v=None):
                 errs.append(f"{p}: expr '{val}' không có")
             elif k == "pose" and engine == "three" and isinstance(val, str) and v["poses"] and val not in v["poses"]:
                 errs.append(f"{p}: pose '{val}' không có")
+            elif (k == "preset" and engine == "three" and isinstance(val, str) and not PLACEHOLDER.match(val)
+                  and v.get("stage_presets") and val not in v["stage_presets"]):
+                errs.append(f"{p}: preset camera 3D '{val}' không có (có: {', '.join(sorted(v['stage_presets']))})")
             elif k == "set" and engine == "three" and isinstance(val, str):
                 need(f"set:{val}")
             if isinstance(val, (dict, list)):
