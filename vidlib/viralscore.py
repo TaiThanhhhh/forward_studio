@@ -47,6 +47,13 @@ TECH_RICH_SCENES = frozenset({
     "process", "split", "xray_cutaway", "dossier", "hero_stat", "stage", "code_terminal", "chat_prompt",
 })
 ZOOM_RICH_SCENES = frozenset({"scale", "timeline", "xray_cutaway", "stage"})
+EXPLAINER_2D_RICH_SCENES = frozenset({
+    "scene", "xray_cutaway", "hero_stat", "dossier", "process", "compare", "scale", "timeline",
+    "split", "callout", "code_terminal", "chat_prompt",
+})
+EXPLAINER_2D_STYLES = frozenset({
+    "kurzgesagt-black", "school-of-life-black", "infographics-show-black", "cartoon-story-black",
+})
 RICH_SCENES = frozenset({"dossier", "xray_cutaway", "hero_stat", "stage", "code_terminal", "chat_prompt"})
 FLAT_CARDS = frozenset({"title", "fact", "counter", "compare"})
 PURPOSEFUL_TRANSITIONS = frozenset({"iris_match", "whip_match", "tape_stop", "match", "whip"})
@@ -148,6 +155,9 @@ def detect_format(sb, eng_scenes):
     scale_n = sum(1 for _, sc in eng_scenes if sc == "scale")
     if style == "scale-zoom-black" or scale_n >= 2:
         return "infinite_zoom_journey"
+
+    if style in EXPLAINER_2D_STYLES:
+        return "illustrated_2d_explainer"
 
     return "editorial_infographic"
 
@@ -384,10 +394,11 @@ def _score_visual_craft(sb, shots, eng_scenes, fmt, suggestions):
             suggestions.append("Đa dạng hoá thêm góc máy, ánh sáng và bối cảnh 3D (mục tiêu ≥ 4 bố cục khác nhau).")
         return max(0, min(MAX_AXES["visual_craft"], rich_pts + depth_pts + div_pts))
 
-    # editorial_infographic / infinite_zoom_journey / fast_tech_autopsy
+    # editorial_infographic / infinite_zoom_journey / fast_tech_autopsy / illustrated_2d_explainer
     extra_rich = (
         ZOOM_RICH_SCENES if fmt == "infinite_zoom_journey"
         else TECH_RICH_SCENES if fmt == "fast_tech_autopsy"
+        else EXPLAINER_2D_RICH_SCENES if fmt == "illustrated_2d_explainer"
         else RICH_SCENES
     )
     rich_count = 0
@@ -414,7 +425,7 @@ def _score_visual_craft(sb, shots, eng_scenes, fmt, suggestions):
     hud_pts = 4 if has_hud else 0
 
     unique_scenes = len({sc for _, sc in eng_scenes if sc})
-    target_div = 4.0 if fmt == "infinite_zoom_journey" else 5.0
+    target_div = 4.0 if fmt in ("infinite_zoom_journey", "illustrated_2d_explainer") else 5.0
     div_pts = round(7 * min(1.0, unique_scenes / target_div))
     if unique_scenes < int(target_div):
         suggestions.append(
@@ -509,6 +520,18 @@ def _score_camera_matchcut(sb, shots, eng_scenes, fmt, suggestions):
         else:
             cam_pts = 2
             suggestions.append("Thiếu đa dạng góc máy 3D — dùng ≥ 3 `frame.preset` khác nhau.")
+    elif fmt == "illustrated_2d_explainer":
+        unique_2d = {sc for eng, sc in eng_scenes if eng == "html" and sc}
+        has_2d_stage = has_2d_cinematic or any(sc == "scene" for _, sc in eng_scenes)
+        if len(unique_2d) >= 3 and has_2d_stage:
+            cam_pts = 7
+        elif len(unique_2d) >= 2:
+            cam_pts = 5
+        else:
+            cam_pts = 2
+            suggestions.append(
+                "Đa dạng hoá thêm ≥ 3 bố cục 2D (`scene` đa nhân vật, `xray_cutaway`, `process`, `hero_stat`)."
+            )
     elif len(presets) >= 2:
         cam_pts = 7
     elif "three" in engines_used and "html" in engines_used and (len(presets) >= 1 or has_2d_cinematic):

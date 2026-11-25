@@ -1,0 +1,122 @@
+{
+  "name": "Infographics Show Black",
+  "description": "Đồ hoạ giải thích 2D tốc độ cao viền đậm sắc nét (cảm hứng The Infographics Show): nền tối sọc biên tập, khối vector viền đen dứt khoát, xanh cobalt + đỏ nhấn + vàng nổi bật, thẻ số liệu và so sánh trực diện dễ hiểu ngay lập tức.",
+  "source": {
+    "repo": "studio — engine html (vòng 19)",
+    "url": "engines/html/looks.js · styles/infographics-show-black.json",
+    "sha": "—",
+    "license": "mã của kênh; font BeVietnamPro / RobotoMono (OFL-1.1)",
+    "from": "2D illustrated fast-paced infographic explainer (The Infographics Show dark-mode aesthetic)",
+    "how": "look `infographics` trên engine html: nền navy đậm kẻ trục, vector viền đậm 3.5px, thanh so sánh & thẻ nhãn mạnh mẽ, easing snap"
+  },
+  "code_engine": "html",
+  "code_only": true,
+  "captions": "studio_clean",
+  "tags": [
+    "history",
+    "military",
+    "survival",
+    "versus",
+    "comparison",
+    "facts",
+    "hypothetical",
+    "danger",
+    "extreme",
+    "infographics",
+    "war",
+    "scenario",
+    "money",
+    "speed"
+  ],
+  "black_min": 0.52,
+  "palette": {
+    "bg": "#0B1018",
+    "ink": "#F8FAFC",
+    "a": "#EF4444",
+    "b": "#3B82F6",
+    "c": "#FACC15",
+    "_doc": "nền navy than đậm + trắng tinh + đỏ báo động + xanh cobalt + vàng nhấn"
+  },
+  "pacing": {
+    "fps": "30 fps sắc nét",
+    "easing": "snap — trượt vào nhanh rồi khoá đứng chính xác, không lê thê",
+    "bounce": false,
+    "stagger_frames": 2,
+    "cut_rule": "whip_match hoặc cắt dứt khoát sang dữ kiện/so sánh kế tiếp",
+    "rule": "mỗi khung hình là 1 tấm poster so sánh hoặc sự kiện trực quan với số liệu lớn rõ ràng"
+  },
+  "marks": {
+    "arrow": "mũi tên đậm góc vuông sắc nét",
+    "circle": "vòng đỏ/vàng khoanh mục tiêu dứt khoát",
+    "label": "thẻ góc bo vừa, thanh màu nhấn bên trái, chữ in đậm dễ đọc trên mobile"
+  },
+  "transitions": [
+    "whip_match",
+    "tape_stop",
+    "cut"
+  ],
+  "sfx_pack": {
+    "pop": "pop",
+    "hit": "hit",
+    "whoosh": "whoosh",
+    "tick": "tick",
+    "ding": "ding"
+  },
+  "music": {
+    "mood": "nhịp điều tra/hành động hiện đại gãy gọn, 122 BPM",
+    "bpm": 122
+  },
+  "voice_persona": "người dẫn tin sắc bén, giàu năng lượng, nhấn nhá rõ số liệu",
+  "thumbnail": "hai vật thể/nhân vật 2D viền đậm đối đầu + con số lớn vàng/đỏ tương phản mạnh",
+  "flow": {
+    "medium": "Bold-outline 2D infographic animation",
+    "look": "Crisp illustrated 2D vector characters and diagrams with bold dark outlines on deep navy-black background, cobalt blue, crimson red, and gold accents",
+    "motion": "snappy linear-out slides, bold counter reveals, sharp split comparisons"
+  },
+  "font": "BeVietnamPro-ExtraBold.ttf",
+  "size": 114,
+  "uppercase": true,
+  "fill": "#F8FAFC",
+  "stroke": 7,
+  "stroke_color": "#0B1018",
+  "intro": "pop",
+  "intro_frames": 6,
+  "boil": {
+    "px": 0,
+    "every": 2
+  },
+  "number_fill": "#FACC15",
+  "sfx_role": {
+    "size_mult": 1.3,
+    "rotate": -4,
+    "fill": "#EF4444"
+  },
+  "html": {
+    "look": "infographics",
+    "font": "BeVietnamPro-ExtraBold.ttf",
+    "mono": "RobotoMono-Variable.ttf",
+    "palette": {
+      "bg": "#0B1018",
+      "ink": "#F8FAFC",
+      "a": "#EF4444",
+      "b": "#3B82F6",
+      "c": "#FACC15"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    }
+  },
+  "not": [
+    "không mờ nhạt hay chuyển động lờ đờ",
+    "không dùng icon trừu tượng khó đoán thay cho vật thể/nhân vật thật",
+    "không đặt chữ tràn vào vùng đáy 20% của màn hình điện thoại"
+  ],
+  "voice_tags": [
+    "energetic",
+    "confident",
+    "clear",
+    "american"
+  ]
+}

@@ -763,7 +763,119 @@ const story = {
   },
 };
 
-const RAW = { flat, boil, iso, hud, synth, sticker, swiss, spy, picto, zoom, flow, sketch, gallery, halftone, comic, pixel16, sprite8, silhouette, cutout, lineart, vox, story };
+// Kurzgesagt / Life Noggin Dark-Mode: bầu trời đêm vũ trụ sâu + sao lấp lánh tinh tế + vòng quỹ đạo + vector phẳng rực rỡ nảy đàn hồi
+const kurzgesagt = {
+  tokens: {
+    palette: { bg: '#070B1A', ink: '#F6F7FB', a: '#FF5E5B', b: '#38BDF8', c: '#FFB703' },
+    roles: { hot: 'a', cold: 'b', accent: 'c' },
+    pen: { fill: true, stroke: 0, line: 7, cap: 'round', join: 'round', seg: 48 },
+    type: { weight: 800, upper: false, align: 'center', enter: 'pop', lh: 1.06 },
+    motion: { ease: 'bounce', enter: 'pop', creep: 0.014, stagger: 3 },
+    post: { grain: 0.025, vignette: 0.22 },
+    rig: { editorial: true },
+  },
+  bg(c) {
+    const g = c.g, cx = c.A.cx, cy = (c.A.stageTop + c.A.bottom) * 0.52;
+    const sky = g.createRadialGradient(cx, cy - 120, 40, cx, cy, c.H * 0.68);
+    sky.addColorStop(0, '#131E3E'); sky.addColorStop(0.55, '#0B1126'); sky.addColorStop(1, '#070B1A');
+    g.fillStyle = sky; g.fillRect(0, 0, c.W, c.H);
+    // vòng khí quyển / quỹ đạo mảnh tinh tế (tạo chiều sâu Kurzgesagt mà vẫn giữ 1 điểm nhìn)
+    g.save(); g.strokeStyle = c.col('cold'); g.lineWidth = 1.6;
+    for (const [r, al] of [[240, 0.14], [360, 0.1], [480, 0.07]]) {
+      g.globalAlpha = al; g.beginPath(); g.arc(cx, cy, r, 0, TAU); g.stroke();
+    }
+    // 26 ngôi sao tất định nhấp nháy dịu
+    for (let i = 0; i < 26; i++) {
+      const sx = c.hash(i, 71) * c.W, sy = c.A.top - 90 + c.hash(i, 72) * (c.A.bottom - c.A.top + 160);
+      const sr = 1.4 + c.hash(i, 73) * 2.4;
+      const tw = 0.28 + 0.45 * (0.5 + 0.5 * Math.sin(c.f * 0.07 + c.hash(i, 74) * TAU));
+      g.globalAlpha = tw; g.fillStyle = i % 5 === 0 ? c.col('accent') : c.col('ink');
+      g.beginPath(); g.arc(sx, sy, sr, 0, TAU); g.fill();
+    }
+    g.restore();
+  },
+  tag(c, str, x, y, k, role = 'accent') {
+    if (k <= 0) return null;
+    const b = c.text(str, x, y, { size: 58, k: 0, maxW: 820 }), w = b.x1 - b.x0 + 68, h = b.y1 - b.y0 + 32;
+    c.enter(k, [x - w / 2, b.y0 - 16, w, h], () => c.draw([{ k: 'rect', x: -w / 2, y: b.y0 - 16 - y, w, h, rad: h / 2, role }], { x, y, s: 1, plain: true }));
+    return c.text(str, x, y, { size: 58, k: c.clamp(k * 1.5 - 0.45), role: 'bg', maxW: 820, enter: 'pop' });
+  },
+  ground(c, x, y, w) {
+    c.draw([{ k: 'circle', x: 0, y: 0, r: 1, rx: w * 0.5, ry: w * 0.07, role: 'cold' }], { x, y, s: 1, alpha: 0.22, plain: true });
+  },
+};
+
+// The School of Life / Psych2Go / TED-Ed Dark-Mode: giấy than ấm tối giản, viền mực mảnh, màu đất nung/xanh sage dịu, chuyển động êm ái nhiều khoảng thở
+const schooloflife = {
+  tokens: {
+    palette: { bg: '#101012', ink: '#F4ECE1', a: '#E07A5F', b: '#81B29A', c: '#F2CC8F' },
+    roles: { hot: 'a', cold: 'b', accent: 'c' },
+    pen: { fill: true, stroke: 2.6, strokeRole: '#1E1D21', line: 5, cap: 'round', join: 'round', seg: 44 },
+    type: { weight: 700, upper: false, align: 'center', enter: 'mask', lh: 1.12 },
+    motion: { ease: 'smooth', enter: 'pop', creep: 0.008, stagger: 4 },
+    post: { grain: 0.055, vignette: 0.28 },
+    rig: { editorial: true },
+  },
+  bg(c) {
+    const g = c.g, cx = c.A.cx, cy = (c.A.stageTop + c.A.bottom) * 0.5;
+    const gr = g.createRadialGradient(cx, cy, 40, cx, cy, c.H * 0.6);
+    gr.addColorStop(0, '#1B1A1E'); gr.addColorStop(0.65, '#131316'); gr.addColorStop(1, '#101012');
+    g.fillStyle = gr; g.fillRect(0, 0, c.W, c.H);
+    // khung tranh tối giản mảnh trang nhã kiểu sách triết học / essay
+    g.save(); g.strokeStyle = c.col('accent'); g.lineWidth = 1.4; g.globalAlpha = 0.16;
+    g.strokeRect(c.A.x0 - 12, c.A.top - 22, c.A.x1 - c.A.x0 + 24, c.A.bottom - c.A.top + 44);
+    g.restore();
+  },
+  tag(c, str, x, y, k, role = 'accent') {
+    if (k <= 0) return null;
+    const b = c.text(str, x, y, { size: 52, k: 0, maxW: 800 }), w = b.x1 - b.x0 + 60, h = b.y1 - b.y0 + 28;
+    const e = c.EASE.smooth(k);
+    c.g.save(); c.g.globalAlpha = e;
+    c.g.fillStyle = '#19181C'; c.g.strokeStyle = c.col(role); c.g.lineWidth = 2.4;
+    c.g.beginPath(); c.g.roundRect(x - w / 2, b.y0 - 14, w, h, 10); c.g.fill(); c.g.stroke();
+    c.g.restore();
+    return c.text(str, x, y, { size: 52, k: c.clamp(k * 1.4 - 0.25), role: 'ink', maxW: 800, enter: 'mask' });
+  },
+  ground(c, x, y, w) {
+    const g = c.g; g.save(); g.strokeStyle = c.col('dim'); g.lineWidth = 2.2; g.globalAlpha = 0.45;
+    g.beginPath(); g.moveTo(x - w * 0.48, y); g.lineTo(x + w * 0.48, y); g.stroke(); g.restore();
+  },
+};
+
+// The Infographics Show Dark-Mode: vector viền đậm sắc nét, sọc nền biên tập tối, màu cobalt/đỏ/vàng tương phản mạnh, easing snap dứt khoát
+const infographics = {
+  tokens: {
+    palette: { bg: '#0B1018', ink: '#F8FAFC', a: '#EF4444', b: '#3B82F6', c: '#FACC15' },
+    roles: { hot: 'a', cold: 'b', accent: 'c' },
+    pen: { fill: true, stroke: 3.6, strokeRole: '#070A10', line: 6, cap: 'round', join: 'round', seg: 40 },
+    type: { weight: 800, upper: true, align: 'center', enter: 'mask', lh: 1.05 },
+    motion: { ease: 'snap', enter: 'pop', creep: 0.01, stagger: 2 },
+    post: { grain: 0.02, vignette: 0.22 },
+    rig: { editorial: true },
+  },
+  bg(c) {
+    const g = c.g;
+    g.fillStyle = '#0B1018'; g.fillRect(0, 0, c.W, c.H);
+    editorialStageGlow(c, { role: 'cold', strength: 0.095 });
+    // sọc dọc mờ kiểu bảng infographic dữ liệu tốc độ cao
+    g.save(); g.strokeStyle = '#1E293B'; g.lineWidth = 1.5; g.globalAlpha = 0.35;
+    for (let x = 90; x < c.W; x += 90) { g.beginPath(); g.moveTo(x, c.A.top - 40); g.lineTo(x, c.A.bottom + 40); g.stroke(); }
+    g.restore();
+  },
+  tag(c, str, x, y, k, role = 'accent') {
+    if (k <= 0) return null;
+    const b = c.text(str, x, y, { size: 56, k: 0, maxW: 820 }), w = b.x1 - b.x0 + 64, h = b.y1 - b.y0 + 30;
+    c.enter(k, [x - w / 2, b.y0 - 15, w, h], () => {
+      c.draw([
+        { k: 'rect', x: -w / 2, y: b.y0 - 15 - y, w, h, rad: 10, role: '#131B2A' },
+        { k: 'rect', x: -w / 2, y: b.y0 - 15 - y, w: 12, h, rad: 4, role },
+      ], { x, y, s: 1, plain: true });
+    });
+    return c.text(str, x + 6, y, { size: 56, k: c.clamp(k * 1.6 - 0.35), role: 'ink', maxW: 800, enter: 'mask' });
+  },
+};
+
+const RAW = { flat, boil, iso, hud, synth, sticker, swiss, spy, picto, zoom, flow, sketch, gallery, halftone, comic, pixel16, sprite8, silhouette, cutout, lineart, vox, story, kurzgesagt, schooloflife, infographics };
 export const LOOKS = Object.fromEntries(Object.entries(RAW).map(([k, v]) => [k, { ...base, ...v }]));
 export const LOOK_NAMES = Object.keys(RAW);
 /** token mặc định chung ← token của look ← styles/<id>.json → html */

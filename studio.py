@@ -15,6 +15,8 @@ Giao diện web (không cần gõ lệnh):
 
 Khác:
   python studio.py review <slug>     chấm QA video out/final.mp4 bằng Gemini đa phương thức (cần GEMINI_API_KEY)
+  python studio.py learn "<bài học>" [--category visual|pacing|script|2d|audio|qa] | --list
+                                     ghi bài học vào cẩm nang nghề brand/DIRECTOR_SKILL.md (AI tự nhớ cho video sau)
   python studio.py upload-yt <slug> [--dry-run] [--privacy private|unlisted|public] [--title-idx 1|2|3] [--comment]
                                      tải video YouTube Shorts lên Draft/Private kèm SEO + captions.srt
   python studio.py status <slug>     trạng thái từng cảnh
@@ -115,6 +117,25 @@ def run_review(argv):
         return 1
     res = aireview.review_video(proj, model=a.model)
     return 0 if res.get("verdict") != "REDO" else 12
+
+
+def run_learn(argv):
+    """python studio.py learn "<bài học>" [--category visual|pacing|script|2d|audio|qa] | --list"""
+    from vidlib import director_skill  # noqa: PLC0415
+    ap = argparse.ArgumentParser(prog="studio.py learn", description="Cập nhật cẩm nang nghề brand/DIRECTOR_SKILL.md")
+    ap.add_argument("lesson", nargs="?", help="quy tắc / lỗi cần tránh cho các video sau")
+    ap.add_argument("--category", choices=list(director_skill.VALID_CATEGORIES), default="visual")
+    ap.add_argument("--list", action="store_true", help="xem các bài học đã lưu")
+    a = ap.parse_args(argv)
+    if a.list or not a.lesson:
+        items = director_skill.list_lessons()
+        print(f"Cẩm nang nghề ({director_skill.SKILL_PATH}) — {len(items)} bài học:")
+        for it in items:
+            print(f"  · {it}")
+        return 0
+    path, entry, added = director_skill.add_lesson(a.lesson, category=a.category)
+    print(f"✔ Đã ghi vào {path}: {entry}" if added else f"· Bài học đã có sẵn trong {path}.")
+    return 0
 
 
 def run_upload_yt(argv):
@@ -380,6 +401,8 @@ def main(argv=None):
             return run_deliver(rest)
         if cmd == "review":
             return run_review(rest)
+        if cmd == "learn":
+            return run_learn(rest)
         if cmd == "upload-yt":
             return run_upload_yt(rest)
         if cmd in ("versions", "cost", "clean"):
@@ -499,8 +522,9 @@ def main(argv=None):
         # dự án có sẵn thì là lệnh gõ sai (vd "stauts") → báo lỗi, không tạo dự án rác (AUD-112)
         if len(argv) == 1 and " " not in cmd and pipeline.project_for(cmd)[2]:
             import difflib  # noqa: PLC0415
-            cmds = ["video", "ui", "doctor", "deliver", "review", "upload-yt", "versions", "cost", "clean", "status",
-                    "models", "stages", "ideas", "voices", "styles", "narratives", "charsheet", "perf", "sb", *LEGACY]
+            cmds = ["video", "ui", "doctor", "deliver", "review", "learn", "upload-yt", "versions", "cost", "clean",
+                    "status", "models", "stages", "ideas", "voices", "styles", "narratives", "charsheet", "perf", "sb",
+                    *LEGACY]
             near = difflib.get_close_matches(cmd, cmds, n=3)
             print(f"✖ Không có lệnh '{cmd}'" + (f" — ý anh là: {', '.join(near)}?" if near else "")
                   + " · Ý tưởng video cần có dấu cách (vd \"What happens if…\"). Xem: python studio.py help")

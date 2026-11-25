@@ -232,6 +232,7 @@ class Round14FormatFamiliesTests(unittest.TestCase):
                 "editorial_infographic",
                 "infinite_zoom_journey",
                 "fast_tech_autopsy",
+                "illustrated_2d_explainer",
             },
         )
         for fid in fids:

@@ -61,6 +61,18 @@
       "tags": ["ai", "llm", "code", "api", "ocr", "server", "cpu", "gpu", "algorithm", "compression", "network", "database", "developer", "tech"],
       "strong": ["\\b(ai|llm|api|gpu|cpu|ocr|algorithm|server|database|code)\\b"],
       "base": 1.0
+    },
+    "illustrated_2d_explainer": {
+      "name": "Hoạt hình 2D Giải thích & Tâm lý (Kurzgesagt · TED-Ed · Psych2Go · Infographics Show)",
+      "reference_studios": ["Kurzgesagt", "TED-Ed", "The Infographics Show", "The School of Life", "Psych2Go", "Life Noggin", "MinuteEarth"],
+      "assembly": "cuts",
+      "styles": ["kurzgesagt-black", "school-of-life-black", "infographics-show-black", "flat-vector-black", "cartoon-story-black", "sketchnote-black"],
+      "pov": "Character-led, visually crystal-clear 2D animated explainer that simplifies complex science, psychology, philosophy, or hypothetical scenarios into unmistakable literal metaphors — calm authority, poster-grade framing, zero visual clutter.",
+      "visual_grammar": "Rich multi-actor 2D `scene` staging with depth parallax (`z` + `camera`), expressive `rig:*` 2D characters (`rig:adult`, `rig:kid`, `rig:bird`, `rig:cat`), clean `compare`, `process`, `scale`, `xray_cutaway`, and `hero_stat` beats using motivated `iris_match` / `whip_match` transitions and ≤ 5 words on-screen.",
+      "forbidden_habits": "NEVER use generic abstract clipart, karaoke walls of text, or gratuitous shaking/flickering props. Keep ONE unmistakable focal point per frame.",
+      "tags": ["psychology", "mind", "habit", "philosophy", "space", "cosmos", "evolution", "biology", "mental", "anxiety", "society", "earth", "story", "behavior", "life", "explainer"],
+      "strong": ["\\b(psychology|mental|anxiety|philosophy|kurzgesagt|evolution|universe|habit|relationship)\\b"],
+      "base": 1.05
     }
   }
 }

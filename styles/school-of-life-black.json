@@ -1,0 +1,125 @@
+{
+  "name": "School of Life Black",
+  "description": "Minh hoạ 2D tâm lý & triết lý tối giản trầm ấm (cảm hứng The School of Life, Psych2Go & TED-Ed): nền giấy than ấm dịu mắt, nhân vật 2D biểu cảm gần gũi, bảng màu đất nung + xanh xô thơm + vàng kem, chuyển động điềm tĩnh nhiều khoảng thở.",
+  "source": {
+    "repo": "studio — engine html (vòng 19)",
+    "url": "engines/html/looks.js · styles/school-of-life-black.json",
+    "sha": "—",
+    "license": "mã của kênh; font Montserrat / RobotoMono (OFL-1.1)",
+    "from": "2D minimalist psychology & philosophy essay explainer (The School of Life / Psych2Go / TED-Ed)",
+    "how": "look `schooloflife` trên engine html: nền than giấy ấm, viền mực mảnh, màu đất nung/xanh sage dịu, nhịp smooth không giật"
+  },
+  "code_engine": "html",
+  "code_only": true,
+  "captions": "studio_clean",
+  "tags": [
+    "psychology",
+    "mind",
+    "habit",
+    "emotion",
+    "relationship",
+    "philosophy",
+    "anxiety",
+    "focus",
+    "behavior",
+    "mental",
+    "stress",
+    "decision",
+    "memory",
+    "psych2go",
+    "ted-ed",
+    "story"
+  ],
+  "black_min": 0.55,
+  "palette": {
+    "bg": "#101012",
+    "ink": "#F4ECE1",
+    "a": "#E07A5F",
+    "b": "#81B29A",
+    "c": "#F2CC8F",
+    "_doc": "nền giấy than ấm + trắng ngà + đất nung (ấm) + xanh sage (dịu) + vàng cát"
+  },
+  "pacing": {
+    "fps": "30 fps êm ái",
+    "easing": "smooth — trượt vào dịu mắt, dừng nhẹ nhàng, tuyệt đối không giật hay rung",
+    "bounce": false,
+    "stagger_frames": 4,
+    "cut_rule": "chuyển cảnh mềm theo mạch suy nghĩ, giữ khoảng thở cho người xem ngẫm",
+    "rule": "một nhân vật hoặc ẩn dụ thị giác rõ ràng trong không gian thoáng, chữ ngắn gọn trang nhã"
+  },
+  "marks": {
+    "arrow": "nét mảnh đầu chấm tròn thanh lịch",
+    "circle": "vòng gạch nhẹ màu vàng cát",
+    "label": "khung viền mảnh góc bo nhẹ trên nền than"
+  },
+  "transitions": [
+    "cut",
+    "dip",
+    "iris_match"
+  ],
+  "sfx_pack": {
+    "pop": "pop",
+    "hit": "thud",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ding"
+  },
+  "music": {
+    "mood": "piano mộc / lo-fi trầm ấm suy tư, 88 BPM",
+    "bpm": 88
+  },
+  "voice_persona": "người trò chuyện sâu sắc, điềm tĩnh, thấu cảm",
+  "thumbnail": "nhân vật 2D tối giản trên nền than ấm + 2–3 từ đánh trúng tâm lý",
+  "flow": {
+    "medium": "Calm editorial 2D psychology illustration",
+    "look": "Warm minimalist 2D illustration on soft dark charcoal paper with ivory, muted terracotta, sage green, and warm gold accents, clean thin ink outlines",
+    "motion": "gentle unhurried entrances, subtle character breathing, calm dissolves"
+  },
+  "font": "Montserrat-Variable.ttf",
+  "size": 106,
+  "uppercase": false,
+  "fill": "#F4ECE1",
+  "stroke": 5,
+  "stroke_color": "#101012",
+  "intro": "fade",
+  "intro_frames": 9,
+  "boil": {
+    "px": 0,
+    "every": 2
+  },
+  "number_fill": "#F2CC8F",
+  "sfx_role": {
+    "size_mult": 1.15,
+    "rotate": -2,
+    "fill": "#E07A5F"
+  },
+  "variation": "Bold",
+  "html": {
+    "look": "schooloflife",
+    "font": "Montserrat-Variable.ttf",
+    "mono": "RobotoMono-Variable.ttf",
+    "palette": {
+      "bg": "#101012",
+      "ink": "#F4ECE1",
+      "a": "#E07A5F",
+      "b": "#81B29A",
+      "c": "#F2CC8F"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    }
+  },
+  "not": [
+    "không hiệu ứng chớp nhoáng, rung lắc hay neon chói mắt",
+    "không dùng font hoạt hình quá trẻ con",
+    "không nhồi nhiều biểu đồ kỹ thuật dày đặc"
+  ],
+  "voice_tags": [
+    "calm",
+    "warm",
+    "deep",
+    "british"
+  ]
+}
