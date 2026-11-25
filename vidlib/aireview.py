@@ -14,6 +14,7 @@ import os
 import tempfile
 import time
 
+from . import director_skill
 from . import storyboard as sbm
 from .common import StudioError, env, run, save_json, save_text
 
@@ -21,6 +22,7 @@ DEFAULT_MODEL = "gemini-4-hydrogen"
 FALLBACK_MODELS = (
     "gemini-4-hydrogen",
     "gemini-3.8-flash",
+    "gemini-3.6-flash",
     "gemini-3.5-flash",
     "gemini-3.5-flash-lite",
 )
@@ -38,6 +40,17 @@ REVIEW_SCHEMA = {
         "muted_hook_score": {"type": "integer", "minimum": 0, "maximum": 10},
         "visual_realism_score": {"type": "integer", "minimum": 0, "maximum": 10},
         "pacing_score": {"type": "integer", "minimum": 0, "maximum": 10},
+        "poster_frame_score": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10,
+            "description": "Poster Freeze-Frame Test: if paused on key moments, do frames look print-ready?",
+        },
+        "anti_slop_flags": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Detected AI-slop flaws (wiggle/flicker, slow zoom, karaoke text, generic icons, mobile clip).",
+        },
         "summary": {"type": "string", "description": "Concise 2-sentence Vietnamese critique for the creator."},
         "issues": {
             "type": "array",
@@ -59,6 +72,8 @@ REVIEW_SCHEMA = {
         "muted_hook_score",
         "visual_realism_score",
         "pacing_score",
+        "poster_frame_score",
+        "anti_slop_flags",
         "summary",
         "issues",
     ],
@@ -69,23 +84,31 @@ def build_prompt(sb=None):
     sb = sb or {}
     title = sb.get("title") or sb.get("topic") or "Short-form explainer video"
     fmt = sb.get("format_family_resolved") or sb.get("format_family") or "short"
+    skill_txt = director_skill.load_text()
+    skill_sec = f"\nChannel Director Craft Rules (`brand/DIRECTOR_SKILL.md`):\n{skill_txt}\n\n" if skill_txt else "\n"
     return (
-        f"You are a ruthless senior creative director for viral YouTube Shorts & TikTok science/tech channels "
-        f"(like Veritasium, Fern, Johnny Harris, Zack D. Films). Watch this rendered vertical short carefully.\n"
+        f"You are a ruthless senior creative director for viral YouTube Shorts & TikTok 2D/3D explainer channels "
+        f"(Kurzgesagt, TED-Ed, The Infographics Show, Veritasium, Fern). Watch this rendered vertical video carefully.\n"
         f"Title: {title}\n"
-        f"Intended format family: {fmt}\n\n"
-        "Evaluate the video strictly from a real viewer's perspective across 4 criteria (0–10 each):\n"
+        f"Intended format family: {fmt}\n"
+        f"{skill_sec}"
+        "Evaluate the video strictly from a real viewer's perspective across 5 criteria (0–10 each):\n"
         "1. clarity_score: Can an average viewer follow the single core logic effortlessly on the first watch?\n"
         "2. muted_hook_score: In the first 3 seconds with sound OFF, is the visual hook & on-screen text instantly clear?\n"
         "3. visual_realism_score: Do the on-screen objects LITERALLY match what is being explained? Penalize heavily if "
-        "abstract/confusing clipart icons (stars/atoms/palettes) appear instead of real objects, code, or text.\n"
-        "4. pacing_score: Does the viewer have enough time to read text and absorb each visual beat without whiplash?\n\n"
+        "abstract/confusing clipart icons (stars/atoms/palettes) replace real objects, characters, code, or text.\n"
+        "4. pacing_score: Does the viewer have enough time to read text and absorb each visual beat without whiplash?\n"
+        "5. poster_frame_score (Poster Freeze-Frame Test): If paused on key frames, does the layout look clean, balanced, "
+        "and aligned enough to print as a poster (zero overlap, zero clipped text, clear focal point, mobile safe zone)?\n\n"
+        "Also populate `anti_slop_flags` (empty list if clean) for any of the 5 AI-slop flaws spotted: "
+        "gratuitous wiggle/flicker, monotonous slow zoom, karaoke text wall on stage, generic abstract icons, or mobile "
+        "safe-zone clipping.\n\n"
         "Set verdict to:\n"
         "- READY if all scores >= 8 and there are zero high-severity issues.\n"
         "- NEEDS_POLISH if fixable with targeted tweaks.\n"
         "- REDO if visuals are confusing, abstract, too fast, or logic feels broken.\n\n"
-        "Write `summary` and every item in `issues` (with exact MM:SS timestamps) in concise, practical Vietnamese "
-        "with proper Vietnamese diacritics (tiếng Việt có dấu chuẩn, UTF-8)."
+        "Write `summary`, `anti_slop_flags`, and every item in `issues` (with exact MM:SS timestamps) in concise, practical "
+        "Vietnamese with proper Vietnamese diacritics (tiếng Việt có dấu chuẩn, UTF-8)."
     )
 
 
@@ -125,12 +148,16 @@ def format_markdown(data, title="", model=""):
         f"| 3 giây đầu khi tắt tiếng (`muted_hook`) | **{data.get('muted_hook_score', 0)}** |",
         f"| Hình ảnh khớp thực tế (`visual_realism`) | **{data.get('visual_realism_score', 0)}** |",
         f"| Nhịp chuyển cảnh & đọc chữ (`pacing`) | **{data.get('pacing_score', 0)}** |",
+        f"| Kiểm tra khung hình Poster (`poster_frame`) | **{data.get('poster_frame_score', 0)}** |",
         "",
         "## Nhận xét tổng quan",
         "",
         data.get("summary") or "—",
         "",
     ]
+    slop = data.get("anti_slop_flags") or []
+    if slop:
+        L += ["## Cờ lỗi AI-Slop phát hiện", ""] + [f"- {s}" for s in slop] + [""]
     issues = data.get("issues") or []
     if issues:
         L += ["## Điểm cần sửa theo mốc thời gian", "", "| Mốc | Mức | Vấn đề | Cách sửa |", "|---|---|---|---|"]
@@ -282,7 +309,7 @@ def review_video(proj, video_path=None, model=None, log=print):
     log(
         f"✔ Gemini QA ({used_model}): {data['verdict']} · Dễ hiểu {data['clarity_score']}/10 · "
         f"Tắt tiếng {data['muted_hook_score']}/10 · Khớp thực tế {data['visual_realism_score']}/10 · "
-        f"Nhịp {data['pacing_score']}/10"
+        f"Nhịp {data['pacing_score']}/10 · Poster {data.get('poster_frame_score', '-')}/10"
     )
     log(f"  · {data.get('summary', '')}")
     for it in data.get("issues") or []:

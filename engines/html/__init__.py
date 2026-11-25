@@ -11,7 +11,8 @@ import re
 BEATS = ("title", "drop", "counter", "compare", "graph", "process", "scale", "callout", "fact", "scene", "outro",
          "units", "timeline", "split", "meter", "dossier", "xray_cutaway", "hero_stat", "code_terminal", "chat_prompt")
 LOOKS = ("flat", "boil", "iso", "hud", "synth", "sticker", "swiss", "spy", "picto", "zoom", "flow", "sketch", "gallery",
-         "halftone", "comic", "pixel16", "sprite8", "silhouette", "cutout", "lineart", "vox", "story")
+         "halftone", "comic", "pixel16", "sprite8", "silhouette", "cutout", "lineart", "vox", "story",
+         "kurzgesagt", "schooloflife", "infographics")
 
 # beat → (trường bắt buộc, mô tả một dòng cho brief). Mọi beat nhận thêm: kicker, title, hit (0..1).
 PARAMS = {

@@ -14,7 +14,8 @@ from .common import PROJECTS, channel, load_json
 
 # Thứ tự ưu tiên khi style = "auto" (bỏ qua style đã dùng trong avoid_recent video gần nhất). Style board (vòng 6) xen kẽ
 # với style cắt cảnh để kênh không lặp một kiểu ghép; silent-film-black để cuối (hợp video có đoạn lịch sử).
-PREFERENCE = ["forward", "board-black", "flat-vector-black", "chalk", "swiss-motion-black", "comic", "lab-notebook-black",
+PREFERENCE = ["forward", "kurzgesagt-black", "board-black", "school-of-life-black", "infographics-show-black",
+              "flat-vector-black", "chalk", "swiss-motion-black", "comic", "lab-notebook-black",
               "hud-black", "blueprint", "toon3d-lab", "clay3d-black", "line-boil-black", "chalk-case-black", "scale-zoom-black", "neon",
               "sticker-explainer-black", "ink", "isometric-black", "paper_cutout", "flowchart-black", "pictogram-black",
               "physics-diagram-black", "spy-titles-black", "sketchnote-black", "synthwave-black", "silent-film-black",

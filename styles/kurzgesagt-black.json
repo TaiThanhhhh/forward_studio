@@ -1,0 +1,124 @@
+{
+  "name": "Kurzgesagt Black",
+  "description": "Hoạt hình vector phẳng giàu chiều sâu vũ trụ/khoa học trên nền đêm sâu (cảm hứng Kurzgesagt – In a Nutshell & Life Noggin): hình khối hình học sắc nét, bầu trời sao lấp lánh tinh tế, bảng màu xanh cyan + vàng hổ phách + san hô rực rỡ, vào cảnh nảy đàn hồi so le.",
+  "source": {
+    "repo": "studio — engine html (vòng 19)",
+    "url": "engines/html/looks.js · styles/kurzgesagt-black.json",
+    "sha": "—",
+    "license": "mã của kênh; font Baloo2 / RobotoMono (OFL-1.1)",
+    "from": "2D illustrated science explainer (Kurzgesagt / Life Noggin dark-mode aesthetic)",
+    "how": "look `kurzgesagt` trên engine html: nền vũ trụ sâu, vòng quỹ đạo & sao tinh tế, khối vector phẳng đa sắc nảy đàn hồi"
+  },
+  "code_engine": "html",
+  "code_only": true,
+  "captions": "studio_clean",
+  "tags": [
+    "science",
+    "space",
+    "cosmos",
+    "universe",
+    "galaxy",
+    "evolution",
+    "immune",
+    "biology",
+    "cell",
+    "earth",
+    "energy",
+    "explainer",
+    "kurzgesagt",
+    "life-noggin",
+    "future"
+  ],
+  "black_min": 0.55,
+  "palette": {
+    "bg": "#070B1A",
+    "ink": "#F6F7FB",
+    "a": "#FF5E5B",
+    "b": "#38BDF8",
+    "c": "#FFB703",
+    "_doc": "nền đêm vũ trụ sâu + trắng sao + san hô rực + cyan quang học + vàng hổ phách"
+  },
+  "pacing": {
+    "fps": "30 fps mượt (ones)",
+    "easing": "bounce đàn hồi (overshoot nhẹ, dừng dứt khoát)",
+    "bounce": true,
+    "stagger_frames": 3,
+    "cut_rule": "zoom nối mạch hoặc trượt sang vật thể kế tiếp",
+    "rule": "một điểm nhìn chủ đạo mỗi khung hình, hình học phẳng rõ khối, không nhồi chữ"
+  },
+  "marks": {
+    "arrow": "mũi tên vector bo tròn phát sáng nhẹ",
+    "circle": "vòng quỹ đạo mảnh màu nhấn",
+    "label": "thẻ viên thuốc nổi gọn gàng, chữ tương phản cao"
+  },
+  "transitions": [
+    "iris_match",
+    "whip_match",
+    "cut"
+  ],
+  "sfx_pack": {
+    "pop": "pop",
+    "hit": "thud",
+    "whoosh": "whoosh_soft",
+    "tick": "tick",
+    "ding": "ding"
+  },
+  "music": {
+    "mood": "synth ambient khoa học giàu cảm hứng kiểu vũ trụ, 112 BPM",
+    "bpm": 112
+  },
+  "voice_persona": "người dẫn khoa học trầm ấm, tò mò, truyền cảm hứng lớn",
+  "thumbnail": "hình minh hoạ 2D phẳng rực rỡ giữa bầu trời đêm sâu + 2–3 từ chữ đậm sạch sẽ",
+  "flow": {
+    "medium": "Flat geometric 2D science vector illustration",
+    "look": "Vibrant geometric 2D vector art on deep cosmic navy-black background with clean silhouettes, glowing cyan and amber accents, and layered atmospheric depth",
+    "motion": "elastic staggered pop-ins, smooth orbital motion, crisp scale transitions"
+  },
+  "font": "Baloo2-Variable.ttf",
+  "size": 118,
+  "uppercase": false,
+  "fill": "#F6F7FB",
+  "stroke": 7,
+  "stroke_color": "#070B1A",
+  "intro": "pop",
+  "intro_frames": 7,
+  "boil": {
+    "px": 0,
+    "every": 2
+  },
+  "number_fill": "#FFB703",
+  "sfx_role": {
+    "size_mult": 1.25,
+    "rotate": -4,
+    "fill": "#FF5E5B"
+  },
+  "variation": "ExtraBold",
+  "html": {
+    "look": "kurzgesagt",
+    "font": "Baloo2-Variable.ttf",
+    "mono": "RobotoMono-Variable.ttf",
+    "palette": {
+      "bg": "#070B1A",
+      "ink": "#F6F7FB",
+      "a": "#FF5E5B",
+      "b": "#38BDF8",
+      "c": "#FFB703"
+    },
+    "roles": {
+      "hot": "a",
+      "cold": "b",
+      "accent": "c"
+    }
+  },
+  "not": [
+    "không dùng icon 1 màu nhàm chán hay khung PowerPoint",
+    "không rung lắc nét vẽ (giữ nét hình học phẳng sạch sẽ)",
+    "không nhồi câu chữ dài lên sân khấu hình"
+  ],
+  "voice_tags": [
+    "curious",
+    "warm",
+    "storyteller",
+    "british"
+  ]
+}

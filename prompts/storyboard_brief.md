@@ -25,6 +25,8 @@ prompts from the semantic fields you write. **Do not write long prompts**: descr
 - {format_block}
 - {archetype_block}
 
+{director_skill_block}
+
 ### The 5 Viral Agency Screenwriting Laws (MANDATORY — 3-Second & Rewatch Test)
 1. **Cold-Open Paradox (0–2 s):** Zero lecture preamble, zero definitions, zero "Did you know", zero greetings. Frame 0 starts mid-action or on the visual extremity/paradox stated as cold fact ("A man sold the Eiffel Tower. Twice."), paired with an opening impact (`sub_drop` or visceral motion).
 2. **"But / Therefore" Causal Tension Chain (BAN "And then" lists):** Never chain two shots with linear *"And then… Next…"* exposition. Every shot transition must pivot through causality or contradiction (*"But…"*, *"Yet…"*, *"Instead…"*, *"Which forces…"*, *"Until…"*, *"Except…"*), raising the stakes or overturning the previous beat.

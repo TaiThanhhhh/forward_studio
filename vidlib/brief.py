@@ -193,7 +193,7 @@ def plan_block(plan):
 
 
 def build(idea, slug, video_model=None, proj=None, plan=None):
-    from . import codeshot, lang, motionplan, narratives, styles  # noqa: PLC0415
+    from . import codeshot, director_skill, lang, motionplan, narratives, styles  # noqa: PLC0415
     from .common import duration_profile  # noqa: PLC0415
     cfg = channel()
     extra = ""
@@ -255,6 +255,7 @@ def build(idea, slug, video_model=None, proj=None, plan=None):
         "scenes": ", ".join(s for s in codeshot.scenes() if s != "charsheet"), "scene_help": scene_help(),
         # §4c motion: cơ chế cho chủ đề + không lặp video trước + verb (ngoặc nhân đôi để qua bước gộp {{ }} bên dưới)
         "motion_block": motionplan.brief_block(idea, slug, plan, proj, d0).replace("{", "{{").replace("}", "}}"),
+        "director_skill_block": director_skill.brief_block().replace("{", "{{").replace("}", "}}"),
     }
     return re.sub(r"\{(\w+)\}", lambda m: str(vals.get(m.group(1), m.group(0))), tpl).replace("{{", "{").replace("}}", "}")
 
