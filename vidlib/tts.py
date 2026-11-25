@@ -20,6 +20,111 @@ TAG_RE = re.compile(r"\[([a-zA-Z ]{2,24})\]")
 API = "https://api.elevenlabs.io/v1"
 CHUNK_MAX_CHARS = 1400
 
+EDGE_VOICE_MAP = {
+    "george": "en-GB-RyanNeural",
+    "daniel": "en-GB-RyanNeural",
+    "brian": "en-US-BrianMultilingualNeural",
+    "eric": "en-US-BrianMultilingualNeural",
+    "bill": "en-US-BrianMultilingualNeural",
+    "roger": "en-US-BrianMultilingualNeural",
+    "adam": "en-US-AndrewMultilingualNeural",
+    "chris": "en-US-AndrewMultilingualNeural",
+    "will": "en-US-AndrewMultilingualNeural",
+    "john": "en-US-AndrewMultilingualNeural",
+    "liam": "en-US-ChristopherNeural",
+    "charlie": "en-US-ChristopherNeural",
+    "sarah": "en-US-AvaMultilingualNeural",
+    "alice": "en-GB-SoniaNeural",
+    "bella": "en-US-AvaMultilingualNeural",
+    "matilda": "en-US-AvaMultilingualNeural",
+    "lily": "en-GB-SoniaNeural",
+    "laura": "en-US-EmmaMultilingualNeural",
+    "jessica": "en-US-EmmaMultilingualNeural",
+    "river": "en-US-AndrewMultilingualNeural",
+}
+
+
+def _edge_voice_for(voice_name):
+    """Map tên giọng ElevenLabs sang giọng Microsoft Neural tương đương (miễn phí, không giới hạn)."""
+    raw = str(voice_name or "").strip()
+    if raw.lower().startswith("edge:"):
+        return raw.split(":", 1)[1].strip()
+    if raw.endswith("Neural"):
+        return raw
+    first = raw.split()[0].lower() if raw else ""
+    return EDGE_VOICE_MAP.get(first, "en-US-AndrewMultilingualNeural")
+
+
+def _align_boundary_words(spoken_text, words, boundaries):
+    """Khớp danh sách WordBoundary từ edge-tts về từng từ hiển thị `{w, line, start, end}`."""
+    def _norm(s):
+        return re.sub(r"[^a-z0-9]", "", str(s or "").lower())
+
+    b_idx = 0
+    nb = len(boundaries)
+    out = []
+    last_t = 0.0
+    for w in words:
+        target = _norm(spoken_text[w["a"]:w["b"]]) or _norm(w["w"])
+        if b_idx >= nb:
+            out.append({"w": w["w"], "line": w["line"], "start": round(last_t, 3), "end": round(last_t + 0.15, 3)})
+            last_t += 0.15
+            continue
+        start = boundaries[b_idx][1]
+        end = boundaries[b_idx][2]
+        acc = _norm(boundaries[b_idx][0])
+        b_idx += 1
+        while target and acc and len(acc) < len(target) and target.startswith(acc) and b_idx < nb:
+            nxt = _norm(boundaries[b_idx][0])
+            if not target.startswith(acc + nxt):
+                break
+            acc += nxt
+            end = boundaries[b_idx][2]
+            b_idx += 1
+        last_t = max(last_t, end)
+        out.append({"w": w["w"], "line": w["line"], "start": round(start, 3), "end": round(max(end, start + 0.04), 3)})
+    return out
+
+
+def _synth_edge(lines, cfg, log=print):
+    """Tổng hợp giọng Neural miễn phí qua `edge-tts` kèm mốc từng từ (`WordBoundary`)."""
+    import asyncio  # noqa: PLC0415
+
+    try:
+        import edge_tts  # noqa: PLC0415
+    except ImportError as ex:
+        raise StudioError("Chưa cài edge-tts cho giọng Neural dự phòng. Chạy: pip install edge-tts") from ex
+
+    clean_cfg = {**cfg, "audio_tags": {"enabled": False}}
+    spoken_text, words = build_text(lines, clean_cfg)
+    ev = _edge_voice_for((cfg.get("voice") or {}).get("name"))
+    log(f"  · Edge Neural TTS (miễn phí): {ev} · {len(spoken_text)} ký tự")
+
+    async def _run():
+        comm = edge_tts.Communicate(spoken_text, ev, boundary="WordBoundary")
+        buf = bytearray()
+        bounds = []
+        async for ch in comm.stream():
+            if ch["type"] == "audio":
+                buf.extend(ch["data"])
+            elif ch["type"] == "WordBoundary":
+                st = ch["offset"] / 1e7
+                en = (ch["offset"] + ch["duration"]) / 1e7
+                bounds.append((ch["text"], st, en))
+        return bytes(buf), bounds
+
+    audio, bounds = asyncio.run(_run())
+    if not audio:
+        raise StudioError("Edge Neural TTS không trả về dữ liệu âm thanh.")
+    wt = _align_boundary_words(spoken_text, words, bounds)
+    dur = wt[-1]["end"] if wt else 0.0
+    return audio, wt, round(dur, 3), ev
+
+
+def _is_elevenlabs_quota_err(ex):
+    msg = str(ex).lower()
+    return any(k in msg for k in ("quota", "http 401", "http 402", "http 429", "character_limit", "credits"))
+
 
 def voice_cfg():
     return load_json(os.path.join(CONFIG_DIR, "voice.json"))
@@ -217,25 +322,49 @@ def synthesize(proj, lines, log=print, force=False, voice=None):
         from . import cost  # noqa: PLC0415
         cost.record(proj, "tts", provider="elevenlabs", chars=len(text), cached=True, model=cfg["model_id"])
         return ap
+    provider_pref = (env("TTS_PROVIDER") or os.environ.get("TTS_PROVIDER") or "elevenlabs").strip().lower()
     api_key = env(cfg.get("api_key_env", "ELEVENLABS_API_KEY"))
-    if not api_key:
-        raise StudioError("Chưa có ELEVENLABS_API_KEY (biến môi trường hoặc file .env ở gốc repo).")
-    chunks = _split_chunks(lines, cfg)
-    if len(chunks) > 1:
-        audio, wt, dur = _synth_chunked(adir, chunks, cfg, api_key, log=log)
-    else:
+    used_provider = "elevenlabs"
+    used_model = cfg["model_id"]
+    used_voice_name = cfg["voice"].get("name")
+
+    def _run_elevenlabs():
+        chunks = _split_chunks(lines, cfg)
+        if len(chunks) > 1:
+            return _synth_chunked(adir, chunks, cfg, api_key, log=log)
         log(f"  · ElevenLabs: {cfg['voice']['name']} · {cfg['model_id']} · {len(text)} ký tự")
         r = _post(f"/text-to-speech/{cfg['voice']['id']}/with-timestamps?output_format={cfg['output_format']}",
                   {"text": text, "model_id": cfg["model_id"], "voice_settings": cfg["voice_settings"]}, api_key)
-        audio = base64.b64decode(r["audio_base64"])
+        raw_audio = base64.b64decode(r["audio_base64"])
         align = r.get("alignment") or r.get("normalized_alignment")
         if not align or len(align.get("characters", [])) != len(text):
             align = r.get("normalized_alignment") or align
-        wt = word_times(words, align)
-        dur = align["character_end_times_seconds"][-1] if align.get("character_end_times_seconds") else 0
+        raw_wt = word_times(words, align)
+        raw_dur = align["character_end_times_seconds"][-1] if align.get("character_end_times_seconds") else 0
+        return raw_audio, raw_wt, raw_dur
+
+    if provider_pref == "edge":
+        audio, wt, dur, ev = _synth_edge(lines, cfg, log=log)
+        used_provider, used_model, used_voice_name = "edge_tts", ev, ev
+    elif not api_key:
+        if provider_pref == "elevenlabs":
+            raise StudioError("Chưa có ELEVENLABS_API_KEY (biến môi trường hoặc file .env ở gốc repo).")
+        log("  ⚠ Không có ELEVENLABS_API_KEY → chuyển tự động sang Edge Neural TTS (miễn phí).")
+        audio, wt, dur, ev = _synth_edge(lines, cfg, log=log)
+        used_provider, used_model, used_voice_name = "edge_tts", ev, ev
+    else:
+        try:
+            audio, wt, dur = _run_elevenlabs()
+        except StudioError as ex:
+            if provider_pref != "elevenlabs" and _is_elevenlabs_quota_err(ex):
+                log(f"  ⚠ ElevenLabs hết quota/giới hạn ({ex}) → chuyển tự động sang Edge Neural TTS (miễn phí).")
+                audio, wt, dur, ev = _synth_edge(lines, cfg, log=log)
+                used_provider, used_model, used_voice_name = "edge_tts", ev, ev
+            else:
+                raise
     from . import cost  # noqa: PLC0415
-    cost.record(proj, "tts", provider="elevenlabs", chars=len(text), cached=False, model=cfg["model_id"],
-                voice=cfg["voice"].get("name"))
+    cost.record(proj, "tts", provider=used_provider, chars=len(text), cached=False, model=used_model,
+                voice=used_voice_name)
     tmp = mp3 + ".part"                         # ghi nguyên tử (AUD-208): bị ngắt không để lại vo.mp3 cụt
     with open(tmp, "wb") as f:
         f.write(audio)
