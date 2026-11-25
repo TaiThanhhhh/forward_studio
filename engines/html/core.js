@@ -453,7 +453,7 @@ const STAGE_BOTTOM = CAPTIONS_ON
 const BASE_TOP = SAFE.top + 20;
 const A = {
   x0: Math.max(84, SAFE.left + 24), x1: W - Math.max(84, SAFE.left + 24),
-  top: STORY_HUD ? Math.max(BASE_TOP, HUD_BOX.y1 + 40) : BASE_TOP,
+  top: STORY_HUD ? Math.max(BASE_TOP, HUD_BOX.y1 + 92) : BASE_TOP,
   bottom: STAGE_BOTTOM, stageBottom: STAGE_BOTTOM,
   stageTop: (GRID.stage && GRID.stage[0]) || 390,
   header: GRID.header || [250, 370], captions: GRID.captions || [1340, 1460],

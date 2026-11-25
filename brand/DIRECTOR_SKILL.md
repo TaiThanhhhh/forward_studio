@@ -25,3 +25,4 @@ Mỗi lần bạn sửa một lỗi trên video thật, chạy `python studio.py
 
 ## 4. Bài học thực chiến đã tích luỹ (tự cập nhật bằng `studio.py learn`)
 - [2d] Một video chỉ giữ 1 trục logic duy nhất dễ hiểu ngay lần xem đầu; tránh nhồi quá 3 thuật ngữ chuyên ngành hoặc nhảy cảnh quá nhanh khiến người xem không kịp đọc.
+- [2d · 2026-11-26] Trong shot scene 2D, đặt size nhân vật rig:* từ 400–450 và đạo cụ phụ 230–280 ở y: 0.55–0.62 để lấp đầy sân khấu như poster.
