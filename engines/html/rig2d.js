@@ -25,16 +25,19 @@ export const SPECIES = {
   sheep: { plan: 'quad', body: [0.45, 0.27], legs: 0.27, legw: 0.055, head: 0.19, snout: [0.1, 0.1], ears: 'side', tail: 'stub', role: 'ink', belly: 'ink', nose: 'bg', wool: 1, face: 'bg', hooves: 1 },
   lion: { plan: 'quad', body: [0.5, 0.22], legs: 0.36, legw: 0.08, head: 0.25, snout: [0.12, 0.11], ears: 'round', tail: 'tuft', role: 'accent', belly: 'accent', nose: 'bg', lionmane: 'hot' },
   bird: { plan: 'bird', body: [0.36, 0.25], legs: 0.26, head: 0.2, role: 'cold', belly: 'ink', beak: 'accent' },
+  duck: { plan: 'bird', body: [0.4, 0.28], legs: 0.24, head: 0.23, role: 'cold', belly: 'ink', beak: 'accent' },
+  owl: { plan: 'bird', body: [0.35, 0.29], legs: 0.22, head: 0.25, role: 'accent', belly: 'ink', beak: 'hot' },
   fish: { plan: 'fish', body: [0.55, 0.32], head: 0.3, role: 'accent', belly: 'ink', fins: 'hot' },
   frog: { plan: 'frog', body: [0.42, 0.28], legs: 0.34, head: 0.3, role: 'cold', belly: 'ink', mouth: 'bg' },
   kid: { plan: 'biped', head: 0.31, body: [0.2, 0.25], legs: 0.34, role: 'hot', skin: 'ink', hair: 'accent', pants: 'cold', style: 'short' },
   adult: { plan: 'biped', head: 0.22, body: [0.2, 0.32], legs: 0.5, role: 'cold', skin: 'ink', hair: 'dim', pants: 'dim', style: 'long' },
+  scientist: { plan: 'biped', head: 0.24, body: [0.21, 0.31], legs: 0.48, role: 'ink', skin: 'ink', hair: 'accent', pants: 'cold', style: 'curly' },
 };
 export const PLANS = ['quad', 'bird', 'fish', 'frog', 'biped'];
 export const ACTIONS = ['idle', 'walk', 'run', 'jump', 'point', 'cheer', 'sit', 'sniff', 'sleep', 'eat', 'fall', 'wave'];
 export const EXPRS = ['neutral', 'happy', 'sad', 'angry', 'shock', 'sleepy', 'sniff', 'love'];
 export const HAIRS = ['short', 'long', 'bun', 'curly', 'cap', 'bald'];
-export const RIG_ALIASES = { puppy: 'dog', hound: 'dog', dachshund: 'dog', kitten: 'cat', kitty: 'cat', bunny: 'rabbit', hare: 'rabbit', rat: 'mouse', hamster: 'mouse', calf: 'cow', bull: 'cow', piglet: 'pig', pony: 'horse', lamb: 'sheep', cub: 'bear', toad: 'frog', goldfish: 'fish', chick: 'bird', pigeon: 'bird', child: 'kid', boy: 'kid', girl: 'kid', man: 'adult', woman: 'adult', person: 'adult', human: 'adult' };
+export const RIG_ALIASES = { puppy: 'dog', hound: 'dog', dachshund: 'dog', kitten: 'cat', kitty: 'cat', bunny: 'rabbit', hare: 'rabbit', rat: 'mouse', hamster: 'mouse', calf: 'cow', bull: 'cow', piglet: 'pig', pony: 'horse', lamb: 'sheep', cub: 'bear', toad: 'frog', goldfish: 'fish', chick: 'bird', pigeon: 'bird', kurzbird: 'duck', doctor: 'scientist', researcher: 'scientist', child: 'kid', boy: 'kid', girl: 'kid', man: 'adult', woman: 'adult', person: 'adult', human: 'adult' };
 const FACES = ['left', 'right'];
 const DEF_EXPR = { sleep: 'sleepy', fall: 'shock', cheer: 'happy', sniff: 'sniff', eat: 'happy', jump: 'happy', run: 'neutral' };
 
