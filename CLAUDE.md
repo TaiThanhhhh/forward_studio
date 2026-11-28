@@ -35,6 +35,13 @@ script cài đặt; license + rà soát ở `docs/STYLE_AUDIT.md`, SHA ở `vend
   `python scripts/style_compare.py --styles a,b,c` (cùng một storyboard, nhiều style → `qa/style-compare.mp4` + bảng đo)
 - Phim câm đứng riêng: `python -m engines.board.render <board.json> insert <id> <out.mp4> [--sec 4]`
   (cũng có `stills <f1,f2…> <dir>`, `range <f0> <f1> <out.mp4>`, `full <out.mp4> [--workers N]`).
+- Vòng 22: `python studio.py policy [slug…|--all]` (rủi ro chính sách YouTube: khung lặp giữa video, persona sức khoẻ,
+  metadata, spam, Made for Kids → `qa/policy.md`; căn cứ `docs/YOUTUBE_RISK.md`) · `python scripts/icon_sheet.py <style>
+  --detail` (đạo cụ chi tiết)
+- Vòng 21: `python studio.py facts <slug>` (sổ dữ kiện + điểm SEO → `qa/facts.md`) · `python scripts/parts_sheet.py [style]` · `python scripts/portal_check.py [style]` (zoom xuyên bộ phận → `qa/round21/`)
+- Vòng 23: **đầu ra gọn** (`channel.json → output.lean`, mặc định bật): qua cổng QA → chỉ giữ `out/final.mp4`,
+  `out/cover-16x9.jpg`, `out/captions.srt`, `out/post.md` (+ storyboard, lời đọc, file nhỏ trong work/) · `clean <slug|--all>
+  --lean` (đóng gói gọn dự án cũ) · cổng giữ chân `vidlib/retention.py` (hook / re-hook / diễn viên — chặn đỏ + linter).
 - Vòng 9: `python studio.py doctor` (kiểm môi trường) · `deliver <slug> [--platforms …|all]` (gói Shorts/Reels/TikTok/16:9) ·
   `versions <slug>` · `cost <slug>` · `clean <slug> [--yes]` · `rerender <slug> <C03>` (dựng lại MỘT shot) ·
   `trim <slug> <C03> --in s --out s | --auto` · `shots <slug> --order C02,C01,…` · cờ video `--accept-qa`, `--platforms`
@@ -48,7 +55,8 @@ script cài đặt; license + rà soát ở `docs/STYLE_AUDIT.md`, SHA ở `vend
 ## Luồng & nguồn sự thật
 `projects/<slug>/storyboard.json` là **nguồn duy nhất**. Stage:
 `idea → script → storyboard → prompts → page → [CHỜ CLIP] → ingest → trim → voice → assemble → text → outro → audio →
-look → [CHỜ XEM SHEET: --look-ok] → code → render → thumbnails → qa → [CỔNG QA: đỏ = dừng, exit 12] → publish → deliver`
+look → [CHỜ XEM SHEET: --look-ok] → code → render → thumbnails → qa → [CỔNG QA: đỏ = dừng, exit 12] → publish → pack`
+(`pack` = đầu ra gọn vòng 23; `output.lean: false` → `deliver` + version như cũ)
 (+ `out/versions/vNNN/` + `out/manifest.json` + `out/provenance.json` sau khi qua cổng).
 **Kế hoạch** `plan.json` (style + giọng + dạng kịch bản `narrative`, chọn theo chủ đề TRƯỚC khi viết brief; brief báo ngày
 có Flow / toàn code và khung kể của video — `config/narratives.json`, không lặp 3 video gần nhất).
@@ -112,6 +120,19 @@ Idempotent nhờ dấu vân tay trong `work/state.json` (gồm hash mã `engines
   vào/ra bằng iris, outro = TITLE_GLITCH · `cuts` — cắt cứng như cũ, shot board render thành frame riêng.
   Style board-* (`board-black`, `lab-notebook-black`, `chalk-case-black`, `silent-film-black`) mặc định `board_spine`.
 - Nối Flow ↔ code: `start_frame.seed_from` / `end_frame.seed_from` = id shot code → xuất frame của shot code làm ảnh Flow.
+- **Vòng 22 — hình nhận ra được, có chiều sâu, không lặp**: đạo cụ chi tiết `engines/html/icons_detail.js` (path SVG →
+  poly, tô bóng bằng `tone`; ghi đè icon đơn giản cùng tên) · người tả thực `engines/html/rig_human.js` (bộ xương `human`:
+  athlete/marathoner/runnerf/lifter/casual/casualf + vòng 23 coach/lifterf/bigguy/elder/student/office/cyclist/medic/
+  trailrunner, `view` side|front|back (đổi theo key), `outfit`/`hair`/`beard`/`glasses`/`build`, deadlift, dáng đi/chạy
+  theo đường cong góc khớp, đạp xe IK (gối gập ra trước), x-ray
+  spine/muscles/vessels/fuel/liver; vai màu `skin`/`hair`) · bối cảnh đêm nhiều lớp `engines/html/backdrops.js`
+  (`params.backdrop`, lớp tĩnh vẽ sẵn vào canvas phụ rồi đặt theo thị sai) · kính lúp `params.lenses` + `freeze` + nhãn
+  tự né vật/kính/nhau (chọn chỗ một lần cho cả đời nhãn, `fixed: true` giữ chỗ) + kẹp vùng an toàn trong beat `scene` · profile `explainer` (`length_profile`, shot 4–6.5 s, không punch-in tự
+  chèn cho shot code, kiểu bay spine êm `spine.CALM`) · `vidlib/policy.py` (cổng QA: dòng "khung lặp giữa các video" chặn đỏ).
+- **Zoom xuyên bộ phận (vòng 21)**: `transition_in: "zoom_through"` + `through: "hero.eye"` | `[x, y]` (bộ phận của shot
+  TRƯỚC). html→html liền mạch = kiểu bay `portal` (`spine.py`, core.js vẽ khô tìm điểm neo, lỗ tròn); cặp khác = hậu kỳ
+  `vidlib/partzoom.py` (điểm neo từ `meta.json → anchors_end`, job có `anchors_out`). Rig 2D: `PARTS`/`rigAnchors`,
+  `xray`+`organs`, `talk`, `gaze`, `hold`, `focus`, bong bóng; 3D: `frame.dive`.
 
 ## Bản đồ code
 | Module | Việc |
@@ -154,6 +175,9 @@ Idempotent nhờ dấu vân tay trong `work/state.json` (gồm hash mã `engines
 | `vidlib/userassets.py` | tài sản người dùng (SVG/Lottie/Rive): tìm theo tên, đổi thành dữ liệu engine, kiểm tên/giấy phép, `studio.py svg` |
 | `vidlib/assets3d.py` | kho mô hình 3D CC0 (glTF/GLB) + icon SVG thư viện (`config/assets3d.json`, `studio.py assets`) |
 | `vidlib/motionplan.py` | bộ não motion: kho 175 cơ chế (`config/metaphors.json`), chữ ký motion, chống lặp bố cục/kiểu bay/cơ chế giữa các video |
+| `vidlib/policy.py` | rủi ro chính sách YouTube (vòng 22): khoá khung + so 10 video trước, persona sức khoẻ, số trong tiêu đề/thumbnail, giật gân, spam, Made for Kids, dòng "not medical advice" |
+| `vidlib/retention.py` / `lean.py` | vòng 23: cổng giữ chân (hook / re-hook / câu độn / xin tương tác / diễn viên đa góc, không lặp người chính) · đầu ra gọn (bìa 16:9 + post.md theo nền tảng, dọn phần còn lại) |
+| `vidlib/partzoom.py` / `facts.py` / `seo.py` | zoom_through hậu kỳ + kiểm `through` · sổ dữ kiện (claims/sources, lint, chip nguồn, `qa/facts.md`) · SEO đa nền tảng + brand-safety + category/nhãn nội dung tổng hợp cho upload |
 | `vidlib/sbedit.py` | sửa `storyboard.json` & `ideas.json` có kiểm + lịch sử hoàn tác + xem trước 1 frame (`studio.py sb`, UI gọi qua job) |
 
 ## Cấu hình (không hard-code ở module)
@@ -163,7 +187,8 @@ Idempotent nhờ dấu vân tay trong `work/state.json` (gồm hash mã `engines
 - `config/narratives.json` (10 dạng kịch bản: `shape`/`visual` tiếng Anh cho brief, `tags`, `strong` regex tiêu đề, `moves`
   kiểu bay camera, `avoid_recent`).
 - `config/voice.json` (ElevenLabs: `pools.<ngôn ngữ>` kho giọng có tags/giới tính, `rotation.avoid_recent`, model v3, audio
-  tags, phát âm; `voice` = giọng dự phòng/video cũ) · `channel.json → vo.speed_auto/target_wps/speed_min/speed_max`
+  tags, phát âm; `voice` = giọng dự phòng/video cũ; vòng 23: mỗi giọng có `edge` {voice, rate, pitch} riêng khi đọc bằng
+  Edge, id `edge:<ShortName>` = giọng chỉ có trên Edge, `edge_tone` = tông theo vai câu) · `channel.json → vo.speed_auto/target_wps/speed_min/speed_max`
   (atempo theo giọng) · `styles.default = auto`, `flow_share`, `balance_window` · `config/mix.json` (khoá mức, ducking, payoff, master).
 - `config/delivery.json` (preset nền tảng + safe zone + nguồn spec) · `config/costs.json` (đơn giá) · `config/atlas.json`
   (phân tích 37 style Atlas) · `rights/ledger.json` (sổ quyền + quyết định chờ chủ kênh)
@@ -177,6 +202,8 @@ Idempotent nhờ dấu vân tay trong `work/state.json` (gồm hash mã `engines
 - Key API trong `.env` (gitignored) — không bao giờ ghi vào repo.
 
 ## Quy ước
+- **Dữ kiện có nguồn**: mọi số/khẳng định → `claims` + `sources` (nguồn gốc, đã mở trang); giả định/tranh cãi phải rào
+  đón trong VO. **Không ghi tên kênh/studio khác** vào bất cứ chữ nào khán giả thấy/nghe hay prompt hình (`seo.brand_blocklist`).
 - Không để Flow vẽ chữ/số: chữ qua `text_fx` (hậu kỳ), chữ 3D trong shot three.js, hoặc nhãn/thẻ của engine board. Linter chặn.
 - Không bao giờ text-to-video. Ingredients ở bước ẢNH, Frames ở bước VIDEO.
 - Âm thanh cuối chỉ gồm VO + nhạc + SFX của pipeline; tiếng Flow bị bỏ khi ingest. audio.py chỉ xuất stems. Không dùng

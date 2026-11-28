@@ -8,12 +8,12 @@ from vidlib import aireview, brief, director_skill, narratives, storyboard, styl
 from vidlib.common import ROOT
 
 
-def _kurzgesagt_2d_sb():
+def _cosmic_2d_sb():
     return storyboard.normalize({
-        "slug": "kurzgesagt-demo",
+        "slug": "cosmic-flat-demo",
         "topic": "Why your immune system is secretly fighting a war right now",
         "title": "Your Immune System's Hidden War",
-        "style": "kurzgesagt-black",
+        "style": "cosmic-flat-black",
         "format_family": "illustrated_2d_explainer",
         "archetype": "forensic_dossier",
         "outro": {"mode": "loop", "bridge_frames": 8},
@@ -111,13 +111,19 @@ def _kurzgesagt_2d_sb():
 
 class TestRound19ExplainersAndSkill(unittest.TestCase):
     def test_three_new_2d_looks_and_styles_registered(self):
-        for look_name in ("kurzgesagt", "schooloflife", "infographics"):
+        for look_name in ("cosmic", "essay", "bold"):
             self.assertIn(look_name, html.LOOKS)
+        # vòng 21: tên vòng 19 (theo kênh có thật) chỉ còn là bí danh tương thích ngược
+        self.assertEqual(html.LOOK_ALIASES["kurzgesagt"], "cosmic")
+        for old, new in (("kurzgesagt-black", "cosmic-flat-black"), ("school-of-life-black", "essay-ink-black"),
+                         ("infographics-show-black", "bold-infographic-black")):
+            self.assertEqual(textstyle.load_style(old)["id"], new)
+            self.assertNotIn(old, styles.available())
 
         expected = {
-            "kurzgesagt-black": "kurzgesagt",
-            "school-of-life-black": "schooloflife",
-            "infographics-show-black": "infographics",
+            "cosmic-flat-black": "cosmic",
+            "essay-ink-black": "essay",
+            "bold-infographic-black": "bold",
         }
         av = styles.available()
         for sid, expected_look in expected.items():
@@ -129,7 +135,7 @@ class TestRound19ExplainersAndSkill(unittest.TestCase):
 
     def test_illustrated_2d_explainer_format_and_viralscore(self):
         self.assertIn("illustrated_2d_explainer", narratives.format_ids())
-        sb = _kurzgesagt_2d_sb()
+        sb = _cosmic_2d_sb()
         errs, _ = storyboard.validate(sb)
         self.assertEqual(errs, [])
         res = viralscore.score_storyboard(sb)
@@ -141,7 +147,7 @@ class TestRound19ExplainersAndSkill(unittest.TestCase):
 
     def test_director_skill_loaded_in_brief_and_learn_appends(self):
         self.assertTrue(os.path.isfile(director_skill.SKILL_PATH))
-        b = brief.build("Why anxiety hijacks focus", "anxiety-focus", plan={"style": "school-of-life-black"})
+        b = brief.build("Why anxiety hijacks focus", "anxiety-focus", plan={"style": "essay-ink-black"})
         self.assertIn("CHANNEL DIRECTOR SKILL", b)
         self.assertIn("Poster Rule", b)
 

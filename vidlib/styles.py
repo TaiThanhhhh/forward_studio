@@ -14,7 +14,7 @@ from .common import PROJECTS, channel, load_json
 
 # Thứ tự ưu tiên khi style = "auto" (bỏ qua style đã dùng trong avoid_recent video gần nhất). Style board (vòng 6) xen kẽ
 # với style cắt cảnh để kênh không lặp một kiểu ghép; silent-film-black để cuối (hợp video có đoạn lịch sử).
-PREFERENCE = ["forward", "kurzgesagt-black", "board-black", "school-of-life-black", "infographics-show-black",
+PREFERENCE = ["forward", "cosmic-flat-black", "board-black", "essay-ink-black", "bold-infographic-black",
               "flat-vector-black", "chalk", "swiss-motion-black", "comic", "lab-notebook-black",
               "hud-black", "blueprint", "toon3d-lab", "clay3d-black", "line-boil-black", "chalk-case-black", "scale-zoom-black", "neon",
               "sticker-explainer-black", "ink", "isometric-black", "paper_cutout", "flowchart-black", "pictogram-black",
@@ -177,7 +177,7 @@ def history(exclude=None):
         fin = os.path.join(PROJECTS, slug, "out", "final.mp4")
         t = os.path.getmtime(fin) if os.path.exists(fin) else os.path.getmtime(sp)
         sb = load_json(sp, {})
-        out.append((t, slug, sb.get("style_resolved") or sb.get("style") or "forward"))
+        out.append((t, slug, textstyle.canonical(sb.get("style_resolved") or sb.get("style") or "forward")))
     return sorted(out, reverse=True)
 
 
@@ -188,12 +188,12 @@ def recent(n=None, exclude=None):
 
 def resolve(sb, slug):
     """(style, ghi chú|None). 'auto' → style đầu tiên theo PREFERENCE chưa nằm trong N video gần nhất."""
-    want = sb.get("style") or channel().get("styles", {}).get("default", "auto")
+    want = textstyle.canonical(sb.get("style") or channel().get("styles", {}).get("default", "auto"))
     rec = recent(exclude=slug)
     names = available()
     if want == "auto":
-        if sb.get("style_resolved") in names:          # đã chọn ở lần chạy trước → giữ ổn định
-            return sb["style_resolved"], None
+        if textstyle.canonical(sb.get("style_resolved")) in names:   # đã chọn ở lần chạy trước → giữ ổn định
+            return textstyle.canonical(sb["style_resolved"]), None
         rk = ranked(sb, slug)
         pick, sc = rk[0] if rk else (names[0], 0)
         why = f"hợp chủ đề {sc} nhãn" if sc else "không nhãn nào khớp chủ đề → theo thứ tự xoay vòng"

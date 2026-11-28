@@ -15,6 +15,7 @@ Giao diện web (không cần gõ lệnh):
 
 Khác:
   python studio.py review <slug>     chấm QA video out/final.mp4 bằng Gemini đa phương thức (cần GEMINI_API_KEY)
+  python studio.py facts <slug>      sổ dữ kiện (claim · nguồn · hạng nguồn) + điểm SEO Shorts → qa/facts.md
   python studio.py learn "<bài học>" [--category visual|pacing|script|2d|audio|qa] | --list
                                      ghi bài học vào cẩm nang nghề brand/DIRECTOR_SKILL.md (AI tự nhớ cho video sau)
   python studio.py upload-yt <slug> [--dry-run] [--privacy private|unlisted|public] [--title-idx 1|2|3] [--comment]
@@ -119,6 +120,61 @@ def run_review(argv):
     return 0 if res.get("verdict") != "REDO" else 12
 
 
+def run_facts(argv):
+    """python studio.py facts <slug> — sổ dữ kiện (claim · nguồn · hạng nguồn) + điểm SEO Shorts → qa/facts.md."""
+    from vidlib import facts, seo  # noqa: PLC0415
+    from vidlib import storyboard as sbm  # noqa: PLC0415
+    from vidlib.common import ROOT, save_text  # noqa: PLC0415
+    ap = argparse.ArgumentParser(prog="studio.py facts")
+    ap.add_argument("target", help="slug dự án có storyboard.json")
+    a = ap.parse_args(argv)
+    proj, _, new = pipeline.project_for(a.target)
+    if new or not os.path.exists(os.path.join(proj, "storyboard.json")):
+        print(f"✖ Không có storyboard cho '{a.target}'.")
+        return 1
+    sb = sbm.load(proj)
+    iss = facts.lint(sb, proj) + seo.lint(sb)
+    out = os.path.join(proj, "qa", "facts.md")
+    save_text(out, facts.report_md(sb, iss))
+    sc, rows = seo.score(sb)
+    print(f"Sổ dữ kiện: {len(facts.claims(sb))} claim · {len(facts.sources(sb))} nguồn · "
+          f"hạng nguồn {''.join(sorted(facts.tier(s) for s in facts.sources(sb))) or '—'} · SEO {sc}/100")
+    for i in iss:
+        print(f"  {'✖' if i['level'] == 'error' else '⚠' if i['level'] == 'warn' else '·'} [{i['where']}] {i['msg']}")
+    print(f"→ {os.path.relpath(out, ROOT)}")
+    return 1 if any(i["level"] == "error" for i in iss) else 0
+
+
+def run_policy(argv):
+    """python studio.py policy [slug…|--all] — rủi ro chính sách YouTube (khung lặp, persona, metadata) → qa/policy.md."""
+    from vidlib import motionplan, policy  # noqa: PLC0415
+    from vidlib.common import PROJECTS, load_json, save_text  # noqa: PLC0415
+    ap = argparse.ArgumentParser(prog="studio.py policy")
+    ap.add_argument("targets", nargs="*", help="slug dự án (bỏ trống / --all = mọi dự án)")
+    ap.add_argument("--all", action="store_true")
+    a = ap.parse_args(argv)
+    slugs = a.targets if a.targets and not a.all else sorted(motionplan.projects(), key=lambda s: motionplan.birth(s) or 0)
+    bad = 0
+    for s in slugs:
+        sb = load_json(os.path.join(PROJECTS, s, "storyboard.json"), None)
+        if not sb:
+            print(f"✖ {s}: không có storyboard")
+            continue
+        iss = policy.lint(sb, s)
+        save_text(os.path.join(PROJECTS, s, "qa", "policy.md"), policy.report_md(sb, iss, s))
+        rep = policy.repetition(sb, s)
+        err = sum(i["level"] == "error" for i in iss)
+        warn = sum(i["level"] == "warn" for i in iss)
+        bad += bool(err)
+        mark = '✖' if err else '⚠' if warn else '✓'
+        print(f"{mark} {s[:52]:52s} lặp khung {int(rep['ratio'] * 100):3d}% · {err} lỗi · {warn} cảnh báo")
+        if a.targets:
+            for i in iss:
+                lv = '✖' if i['level'] == 'error' else '⚠' if i['level'] == 'warn' else '·'
+                print(f"    {lv} [{i['code']}] {i['msg']}")
+    return 1 if bad else 0
+
+
 def run_learn(argv):
     """python studio.py learn "<bài học>" [--category visual|pacing|script|2d|audio|qa] | --list"""
     from vidlib import director_skill  # noqa: PLC0415
@@ -186,13 +242,24 @@ def run_deliver(argv):
 
 
 def run_project_tool(cmd, argv):
-    """versions <slug> · cost <slug> · clean <slug> [--yes] (xoá file trung gian sinh lại được, giữ out/ + nguồn)."""
+    """versions <slug> · cost <slug> · clean <slug|--all> [--yes] (xoá file trung gian sinh lại được, giữ out/ + nguồn)
+    · clean <slug|--all> --lean (vòng 23: chỉ giữ final.mp4 + cover-16x9.jpg + captions.srt + post.md + nguồn)."""
     import json  # noqa: PLC0415
 
     from vidlib import cost, manifest  # noqa: PLC0415
     if not argv:
         print(f"Cách dùng: python studio.py {cmd} <slug>")
         return 1
+    if cmd == "clean" and "--lean" in argv:       # vòng 23: đóng gói gọn dự án đã qua QA (bìa 16:9 + post.md) rồi dọn
+        from vidlib import lean  # noqa: PLC0415
+        from vidlib.common import PROJECTS  # noqa: PLC0415
+        targets = ([os.path.join(PROJECTS, s) for s in sorted(os.listdir(PROJECTS))
+                    if os.path.isfile(os.path.join(PROJECTS, s, "storyboard.json"))] if "--all" in argv
+                   else [pipeline.project_for(argv[0])[0]])
+        for t in targets:
+            print(f"▶ {os.path.basename(t)}")
+            lean.pack_existing(t)
+        return 0
     proj = pipeline.project_for(argv[0])[0]
     if cmd == "versions":
         for v in sorted(os.listdir(manifest.versions_dir(proj))) if os.path.isdir(manifest.versions_dir(proj)) else []:
@@ -403,6 +470,10 @@ def main(argv=None):
             return run_review(rest)
         if cmd == "learn":
             return run_learn(rest)
+        if cmd == "policy":
+            return run_policy(rest)
+        if cmd == "facts":
+            return run_facts(rest)
         if cmd == "upload-yt":
             return run_upload_yt(rest)
         if cmd in ("versions", "cost", "clean"):
@@ -522,9 +593,9 @@ def main(argv=None):
         # dự án có sẵn thì là lệnh gõ sai (vd "stauts") → báo lỗi, không tạo dự án rác (AUD-112)
         if len(argv) == 1 and " " not in cmd and pipeline.project_for(cmd)[2]:
             import difflib  # noqa: PLC0415
-            cmds = ["video", "ui", "doctor", "deliver", "review", "learn", "upload-yt", "versions", "cost", "clean",
-                    "status", "models", "stages", "ideas", "voices", "styles", "narratives", "charsheet", "perf", "sb",
-                    *LEGACY]
+            cmds = ["video", "ui", "doctor", "deliver", "review", "learn", "facts", "policy", "upload-yt", "versions",
+                    "cost", "clean", "status", "models", "stages", "ideas", "voices", "styles", "narratives", "charsheet",
+                    "perf", "sb", *LEGACY]
             near = difflib.get_close_matches(cmd, cmds, n=3)
             print(f"✖ Không có lệnh '{cmd}'" + (f" — ý anh là: {', '.join(near)}?" if near else "")
                   + " · Ý tưởng video cần có dấu cách (vd \"What happens if…\"). Xem: python studio.py help")

@@ -1,6 +1,7 @@
 """Bảng xem MỌI đạo cụ (icon) của engine html theo từng style — để soát chất lượng khi thêm/sửa icon.
 
-  python scripts/icon_sheet.py [style1,style2,…]        (mặc định: một style đại diện cho mỗi look)
+  python scripts/icon_sheet.py [style1,style2,…] [--only a,b,…|--detail]   (mặc định: một style đại diện cho mỗi look)
+  --detail = chỉ các đạo cụ chi tiết vòng 22 (engines/html/icons_detail.js).
 → qa/icons/<style>.jpg (mỗi trang 40 icon, ghép dọc) + qa/icons/_all.jpg (các style cạnh nhau, thu nhỏ).
 """
 
@@ -28,8 +29,14 @@ DEFAULT = [
 PER_PAGE = 40
 
 
-def sheet(style, out_dir):
-    names = sorted(html.icon_table()[0])
+def detail_names():
+    import re  # noqa: PLC0415
+    src = open(os.path.join(ROOT, "engines", "html", "icons_detail.js"), encoding="utf-8").read()
+    return re.findall(r"'(\w+)'", src[src.index("export const DETAIL_GROUP"):])
+
+
+def sheet(style, out_dir, names=None):
+    names = names or sorted(html.icon_table()[0])
     pages = [names[i : i + PER_PAGE] for i in range(0, len(names), PER_PAGE)]
     eng = adapter.get("html")
     imgs = []
@@ -57,10 +64,18 @@ def sheet(style, out_dir):
 
 
 def main(argv):
+    only = None
+    if "--detail" in argv:
+        only = detail_names()
+        argv = [a for a in argv if a != "--detail"]
+    if "--only" in argv:
+        i = argv.index("--only")
+        only = argv[i + 1].split(",")
+        argv = argv[:i] + argv[i + 2:]
     styles = argv[0].split(",") if argv else DEFAULT
     out_dir = os.path.join(ROOT, "qa", "icons")
     os.makedirs(out_dir, exist_ok=True)
-    paths = [sheet(s, out_dir) for s in styles]
+    paths = [sheet(s, out_dir, only) for s in styles]
     ims = [Image.open(p) for p in paths]
     sw = 900
     ims = [im.resize((sw, int(im.height * sw / im.width))) for im in ims]

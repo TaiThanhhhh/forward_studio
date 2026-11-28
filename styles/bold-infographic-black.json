@@ -1,13 +1,13 @@
 {
-  "name": "Infographics Show Black",
-  "description": "Đồ hoạ giải thích 2D tốc độ cao viền đậm sắc nét (cảm hứng The Infographics Show): nền tối sọc biên tập, khối vector viền đen dứt khoát, xanh cobalt + đỏ nhấn + vàng nổi bật, thẻ số liệu và so sánh trực diện dễ hiểu ngay lập tức.",
+  "name": "Bold Infographic Black",
+  "description": "Đồ hoạ giải thích 2D tốc độ cao viền đậm sắc nét (thể loại bold-outline infographic explainer): nền tối sọc biên tập, khối vector viền đen dứt khoát, cobalt + đỏ nhấn + vàng, thẻ số liệu và so sánh trực diện dễ hiểu ngay lập tức.",
   "source": {
     "repo": "studio — engine html (vòng 19)",
-    "url": "engines/html/looks.js · styles/infographics-show-black.json",
+    "url": "engines/html/looks.js · styles/bold-infographic-black.json",
     "sha": "—",
     "license": "mã của kênh; font BeVietnamPro / RobotoMono (OFL-1.1)",
-    "from": "2D illustrated fast-paced infographic explainer (The Infographics Show dark-mode aesthetic)",
-    "how": "look `infographics` trên engine html: nền navy đậm kẻ trục, vector viền đậm 3.5px, thanh so sánh & thẻ nhãn mạnh mẽ, easing snap"
+    "from": "2D illustrated fast-paced infographic explainer genre (dark mode)",
+    "how": "look `bold` trên engine html: nền navy đậm kẻ trục, vector viền đậm 3.5px, thanh so sánh & thẻ nhãn mạnh mẽ, easing snap"
   },
   "code_engine": "html",
   "code_only": true,
@@ -22,11 +22,11 @@
     "hypothetical",
     "danger",
     "extreme",
-    "infographics",
     "war",
     "scenario",
     "money",
-    "speed"
+    "speed",
+    "infographic"
   ],
   "black_min": 0.52,
   "palette": {
@@ -92,7 +92,7 @@
     "fill": "#EF4444"
   },
   "html": {
-    "look": "infographics",
+    "look": "bold",
     "font": "BeVietnamPro-ExtraBold.ttf",
     "mono": "RobotoMono-Variable.ttf",
     "palette": {

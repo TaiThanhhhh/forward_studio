@@ -51,7 +51,7 @@ function drawPrims2d(g, prims, { x, y, s, pal, look = 'flat', cutEdge = false, s
   const col = (role) => {
     if (!role) return pal.ink;
     if (String(role)[0] === '#') return role;
-    const map = { hot: pal.a, cold: pal.b, accent: pal.c, ink: pal.ink, dim: pal.dim, bg: pal.bg };
+    const map = { hot: pal.a, cold: pal.b, accent: pal.c, ink: pal.ink, dim: pal.dim, bg: pal.bg, skin: pal.skin || '#c98d66', hair: pal.hair || '#3a2a22' };
     return map[role] || pal.ink;
   };
   g.save();

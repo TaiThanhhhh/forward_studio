@@ -4,74 +4,230 @@
   "formats": {
     "evidence_board_doc": {
       "name": "Hồ sơ điều tra bảng đen 1 cú máy (Johnny Harris · LEMMiNO)",
-      "reference_studios": ["Johnny Harris", "LEMMiNO", "Vox Investigations"],
+      "reference_studios": [
+        "Johnny Harris",
+        "LEMMiNO",
+        "Vox Investigations"
+      ],
       "assembly": "board_spine",
-      "styles": ["board-black", "lab-notebook-black", "chalk-case-black", "silent-film-black"],
+      "styles": [
+        "board-black",
+        "lab-notebook-black",
+        "chalk-case-black",
+        "silent-film-black"
+      ],
       "pov": "Investigative micro-documentary grounded in a real date, place, event, or incident. Tell it as a tense factual reconstruction with physical evidence, circled records, and red-string causality — NEVER as a generic '21 studies show' slideshow.",
       "visual_grammar": "ONE continuous camera flying across a matte black evidence board (`engines/board/`): `DOC_FOCUS` (circled report lines), `NUMBER_CARD` / `COUNTER`, `REVEAL_PHOTO` (pinned 3D/Flow polaroids), `STAMP`, `CONNECT` (red yarn string cause→effect), `THESIS` (red cross-out twist), ending with `NETWORK_REVEAL` pulling back over the entire investigation wall.",
       "forbidden_habits": "Do NOT use `cuts` infographic widgets (`hero_stat`, `xray_cutaway`, `fact:flip`). Every shot lives on the shared board via `beat_recipe` + `board`.",
-      "tags": ["history", "disaster", "bug", "rocket", "crash", "mystery", "case", "true-story", "code", "incident", "secret", "failure", "software", "investigation"],
-      "strong": ["\\b(19\\d\\d|20\\d\\d)\\b", "\\b(blew up|crashed|destroyed|exploded|disaster|bug|incident|heist|scandal)\\b"],
+      "tags": [
+        "history",
+        "disaster",
+        "bug",
+        "rocket",
+        "crash",
+        "mystery",
+        "case",
+        "true-story",
+        "code",
+        "incident",
+        "secret",
+        "failure",
+        "software",
+        "investigation"
+      ],
+      "strong": [
+        "\\b(19\\d\\d|20\\d\\d)\\b",
+        "\\b(blew up|crashed|destroyed|exploded|disaster|bug|incident|heist|scandal)\\b"
+      ],
       "base": 1.1
     },
     "cinema_3d_film": {
       "name": "Phim ngắn 3D vật lý 100% không slide 2D (Fern · Zack D. Films)",
-      "reference_studios": ["Fern", "Zack D. Films", "Blender Documentary"],
+      "reference_studios": [
+        "Fern",
+        "Zack D. Films",
+        "Blender Documentary"
+      ],
       "assembly": "cuts",
-      "styles": ["clay3d-black", "toon3d-lab", "retro90-lowpoly-black", "glass3d-black"],
+      "styles": [
+        "clay3d-black",
+        "toon3d-lab",
+        "retro90-lowpoly-black",
+        "glass3d-black"
+      ],
       "pov": "Pure visual cinema — narrate a physical event or simulation in real time with clinical, deadpan clarity while 3D actors and physics carry 100% of the story.",
       "visual_grammar": "100% `three/stage` shots with continuous spatial staging, Rapier physics or acting creatures/mannequins, volumetric lighting, and ≥ 3 distinct cinematic camera angles (`ecu_macro`, `low_hero`, `tracking_low`, `over_shoulder`, `dolly_zoom`) connected by `iris_match` / `whip_match` + `seamless_loop`.",
       "forbidden_habits": "ZERO 2D infographic slides (`dossier`, `meter`, `compare`, `fact:flip`). Show everything physically in 3D space.",
-      "tags": ["physics", "drop", "impact", "gravity", "body", "animal", "horse", "fall", "burn", "freeze", "survive", "simulate"],
-      "strong": ["\\bwhat happens if\\b", "\\bphysics\\b", "\\bsurvive\\b"],
+      "tags": [
+        "physics",
+        "drop",
+        "impact",
+        "gravity",
+        "body",
+        "animal",
+        "horse",
+        "fall",
+        "burn",
+        "freeze",
+        "survive",
+        "simulate"
+      ],
+      "strong": [
+        "\\bwhat happens if\\b",
+        "\\bphysics\\b",
+        "\\bsurvive\\b"
+      ],
       "base": 1.0
     },
     "editorial_infographic": {
       "name": "Giải mã cơ chế biên tập cao cấp (Vox · Cleo Abram)",
-      "reference_studios": ["Vox", "Cleo Abram", "Neo"],
+      "reference_studios": [
+        "Vox",
+        "Cleo Abram",
+        "Neo"
+      ],
       "assembly": "cuts",
-      "styles": ["vox-editorial-black", "swiss-motion-black", "hud-black"],
+      "styles": [
+        "vox-editorial-black",
+        "swiss-motion-black",
+        "hud-black"
+      ],
       "pov": "Sharp analytical explainer built on a paradox, But/Therefore tension chain, mid-video pattern interrupt (`tape_stop` / `iris_match`), and `seamless_loop`.",
       "visual_grammar": "Mix `dossier`, `xray_cutaway`, `hero_stat`, `story_hud`, and varied 3D `stage` shots with `iris_match`, `whip_match`, and `tape_stop`.",
       "forbidden_habits": "Avoid repeating the same 3-beat opener across consecutive videos; max 2 consecutive flat cards.",
-      "tags": ["science", "muscle", "heart", "brain", "running", "marathon", "heat", "caffeine", "sleep", "study", "data"],
+      "tags": [
+        "science",
+        "muscle",
+        "heart",
+        "brain",
+        "running",
+        "marathon",
+        "heat",
+        "caffeine",
+        "sleep",
+        "study",
+        "data"
+      ],
       "strong": [],
       "base": 0.9
     },
     "infinite_zoom_journey": {
       "name": "Cú máy zoom vô tận 1-shot góc nhìn thứ 2 (Kurzgesagt · Ordinary Folk)",
-      "reference_studios": ["Kurzgesagt", "Ordinary Folk", "Giant Ant"],
+      "reference_studios": [
+        "Kurzgesagt",
+        "Ordinary Folk",
+        "Giant Ant"
+      ],
       "assembly": "cuts",
-      "styles": ["scale-zoom-black", "sketchnote-black", "isometric-black"],
+      "styles": [
+        "scale-zoom-black",
+        "sketchnote-black",
+        "isometric-black"
+      ],
       "pov": "Immersive second-person sensory journey ('Imagine you shrink down…' / 'Step inside…') following ONE hero traveller continuously from macro scale down to microscopic/molecular reality.",
       "visual_grammar": "Continuous HTML spine (`dive`, `push_through`, `truck_parallax`) using `scale` (logarithmic zoom), depth-layered `scene` shots (`z` + `camera`), and `timeline`.",
       "forbidden_habits": "Do NOT break immersion with static report cards or `fact:flip`; keep ONE continuous spatial journey.",
-      "tags": ["inside", "journey", "micro", "tiny", "atom", "cell", "scale", "universe", "ocean", "deep", "shrink"],
-      "strong": ["\\bimagine you\\b", "\\bshrink\\b", "\\binside (a|your|the)\\b"],
+      "tags": [
+        "inside",
+        "journey",
+        "micro",
+        "tiny",
+        "atom",
+        "cell",
+        "scale",
+        "universe",
+        "ocean",
+        "deep",
+        "shrink"
+      ],
+      "strong": [
+        "\\bimagine you\\b",
+        "\\bshrink\\b",
+        "\\binside (a|your|the)\\b"
+      ],
       "base": 0.95
     },
     "fast_tech_autopsy": {
       "name": "Giải phẫu Tech/AI nhịp sắc bén (Fireship · ByteByteGo)",
-      "reference_studios": ["Fireship", "ByteByteGo", "Branch Education"],
+      "reference_studios": [
+        "Fireship",
+        "ByteByteGo",
+        "Branch Education"
+      ],
       "assembly": "cuts",
-      "styles": ["hud-black", "flowchart-black", "flat-vector-black"],
+      "styles": [
+        "hud-black",
+        "flowchart-black",
+        "flat-vector-black"
+      ],
       "pov": "Crisp, witty, high-signal engineering breakdown of an AI model, algorithm, protocol, or developer bottleneck — zero fluff, dry wit, concrete numbers and system flows.",
       "visual_grammar": "Architectural system flow (`process`, `split` live throughput comparison, `xray_cutaway` packet/tensor flow, 3D `server`/`chip`/`laptop`/`bug` props) with sharp `tape_stop` & `whip_match` cuts.",
       "forbidden_habits": "No slow biological metaphors or generic inspirational closing lines.",
-      "tags": ["ai", "llm", "code", "api", "ocr", "server", "cpu", "gpu", "algorithm", "compression", "network", "database", "developer", "tech"],
-      "strong": ["\\b(ai|llm|api|gpu|cpu|ocr|algorithm|server|database|code)\\b"],
+      "tags": [
+        "ai",
+        "llm",
+        "code",
+        "api",
+        "ocr",
+        "server",
+        "cpu",
+        "gpu",
+        "algorithm",
+        "compression",
+        "network",
+        "database",
+        "developer",
+        "tech"
+      ],
+      "strong": [
+        "\\b(ai|llm|api|gpu|cpu|ocr|algorithm|server|database|code)\\b"
+      ],
       "base": 1.0
     },
     "illustrated_2d_explainer": {
-      "name": "Hoạt hình 2D Giải thích & Tâm lý (Kurzgesagt · TED-Ed · Psych2Go · Infographics Show)",
-      "reference_studios": ["Kurzgesagt", "TED-Ed", "The Infographics Show", "The School of Life", "Psych2Go", "Life Noggin", "MinuteEarth"],
+      "name": "Hoạt hình 2D giải thích & tâm lý (vector phẳng khoa học · essay tâm lý · infographic nhịp nhanh · nhân vật dẫn chuyện)",
+      "reference_studios": [
+        "Kurzgesagt",
+        "TED-Ed",
+        "The Infographics Show",
+        "The School of Life",
+        "Psych2Go",
+        "Life Noggin",
+        "MinuteEarth"
+      ],
       "assembly": "cuts",
-      "styles": ["kurzgesagt-black", "school-of-life-black", "infographics-show-black", "flat-vector-black", "cartoon-story-black", "sketchnote-black"],
+      "styles": [
+        "cosmic-flat-black",
+        "essay-ink-black",
+        "bold-infographic-black",
+        "flat-vector-black",
+        "cartoon-story-black",
+        "sketchnote-black"
+      ],
       "pov": "Character-led, visually crystal-clear 2D animated explainer that simplifies complex science, psychology, philosophy, or hypothetical scenarios into unmistakable literal metaphors — calm authority, poster-grade framing, zero visual clutter.",
-      "visual_grammar": "Rich multi-actor 2D `scene` staging with depth parallax (`z` + `camera`), expressive `rig:*` 2D characters (`rig:adult`, `rig:kid`, `rig:bird`, `rig:cat`), clean `compare`, `process`, `scale`, `xray_cutaway`, and `hero_stat` beats using motivated `iris_match` / `whip_match` transitions and ≤ 5 words on-screen.",
+      "visual_grammar": "Rich multi-actor 2D `scene` staging with depth parallax (`z` + `camera`), expressive `rig:*` 2D characters (`rig:adult`, `rig:kid`, `rig:bird`, `rig:cat`), clean `compare`, `process`, `scale`, `xray_cutaway`, and `hero_stat` beats using motivated `zoom_through` part dives (camera flies INTO a character's eye/brain/heart or a prop's window/screen and the next scene opens inside it), `iris_match` / `whip_match` transitions, living-part reveals (`xray` + `organs`, `focus`, `hold`, `talk`) and ≤ 5 words on-screen.",
       "forbidden_habits": "NEVER use generic abstract clipart, karaoke walls of text, or gratuitous shaking/flickering props. Keep ONE unmistakable focal point per frame.",
-      "tags": ["psychology", "mind", "habit", "philosophy", "space", "cosmos", "evolution", "biology", "mental", "anxiety", "society", "earth", "story", "behavior", "life", "explainer"],
-      "strong": ["\\b(psychology|mental|anxiety|philosophy|kurzgesagt|evolution|universe|habit|relationship)\\b"],
+      "tags": [
+        "psychology",
+        "mind",
+        "habit",
+        "philosophy",
+        "space",
+        "cosmos",
+        "evolution",
+        "biology",
+        "mental",
+        "anxiety",
+        "society",
+        "earth",
+        "story",
+        "behavior",
+        "life",
+        "explainer"
+      ],
+      "strong": [
+        "\b(psychology|mental|anxiety|philosophy|evolution|universe|habit|relationship|immune|brain|body)\b"
+      ],
       "base": 1.05
     }
   }

@@ -1,5 +1,91 @@
 # CHANGELOG
 
+## 4.3.0 — 28/11/2026 · Vòng 23: đầu ra gọn · QA tự chặn · người nhiều góc/nhiều kiểu · giọng + tông · kịch bản giữ chân
+
+Kế hoạch `docs/ROUND23_PLAN.md`, báo cáo `docs/ROUND23_REPORT.md`.
+
+- **Dọn dung lượng** (~8,3 GB → ~0,5 GB không tính .git): khung render/version/gói trùng của 13 dự án, `.venv` bản macOS
+  (không chạy trên Windows), repo tham khảo trong `vendor/` (tải lại bằng `scripts/vendor_fetch.py`), ảnh QA sinh ra.
+- **Đầu ra gọn** (`channel.json → output.lean`, `vidlib/lean.py`, `studio.py clean <slug|--all> --lean`): sau khi qua cổng QA
+  chỉ còn `out/final.mp4` + `out/cover-16x9.jpg` + `out/captions.srt` + `out/post.md` (tiêu đề/mô tả/tag/caption theo YouTube
+  Shorts, TikTok, Instagram/Facebook Reels + nguồn + cài đặt đăng). Bỏ bước thừa: 3 bản MP4 giống nhau, version vNNN,
+  15 ảnh bìa, báo cáo QA (cổng đỏ thì giữ để sửa).
+- **QA tự chặn** (chủ kênh không đọc QA): chữ còn đè hình > 30% (engine tự báo `labelReport`), video "như slide"
+  (< 4,5% khung chuyển động nhanh), OCR < 80%, số liệu thiếu nguồn, SEO < 70, và mới: **hook** (≤ 16 từ, có khoảng trống
+  tò mò, không mở đầu chậm), **kịch bản giữ chân** (không câu độn/xin like, có re-hook giữa video, kết ngắn hoặc nối
+  về đầu, câu ≤ 24 từ), **diễn viên** (≥ 2 góc nhìn khi ≥ 4 shot người, người chính không trùng video trước) —
+  `vidlib/retention.py`, chặn cả ở linter trước khi render.
+- **Người tả thực**: góc **chính diện / sau lưng** (`view`, đổi được theo key) cho idle/đi/chạy/nhảy/vẫy/chỉ/mệt/curl/squat/
+  deadlift/ngồi; 9 người mới (coach, lifterf, bigguy, elder, student, office, cyclist, medic, trailrunner); tóc afro/đầu
+  đinh/mũ bảo hiểm, râu, kính, trang phục hoodie/sơ mi/áo đấu/áo blouse; **deadlift** (gập hông, đòn thẳng đứng);
+  **đạp xe** sửa gối gập ngược → gối ra trước, khuỷu gập xuống; squat bàn chân đứng yên, tay nắm đòn sau gáy, bánh tạ
+  không che mặt; curl cầm tạ đơn đúng tư thế.
+- **Giọng**: 27 giọng Neural khác nhau (trước 22 tên dồn vào 5 giọng), tông riêng mỗi giọng (tốc độ/cao độ), tông theo
+  vai câu (`voice.json → edge_tone`: hook nhanh/sáng, payoff chậm/trầm) — đọc từng đoạn rồi nối, mốc từng từ khớp.
+- **Motion**: cảnh không khai camera tự đẩy chậm + trôi về vật chính (`auto_camera`). Cổng chuyển động tính ngưỡng theo
+  độ sáng video (look tối không bị phạt oan), thêm "> 25% cặp khung đứng yên" và **video quá tối** (< 8/255) → đỏ.
+- Nhãn né theo **từng mảnh hình** (`iconParts`), đúng góc nhìn và camera bám bộ phận; lưới chỗ thử tới ±720 px.
+- Brief: luật giữ chân + cách chọn diễn viên/góc nhìn. Làm lại 13 video (người chính khác nhau mỗi video, ≥ 2 góc, hook
+  và re-hook mới).
+
+## 4.2.1 — 28/11/2026 · Vòng 22 (bổ sung): nhãn né vật
+
+Duyệt lại 13 video vòng 22: chữ còn đè lên vật (nhãn chỉ né nhãn khác và kính lúp).
+
+- **Beat `scene`**: nhãn tự do và nhãn bám vật chọn chỗ ít đè nhất (dưới/trên/trái/phải vật; nhãn tự do: lưới dời quanh
+  chỗ đặt, phạt theo quãng dời) từ quỹ đạo keyframe + camera của cảnh — chọn MỘT LẦN cho cả đời nhãn (không nhảy giữa
+  frame, worker nào cũng giống nhau). Vật cản: hình (khung bao thật `iconBox` trong `core.js`, rig người đối xứng), kính lúp,
+  tag tiêu đề kính, nhãn chọn trước. Không còn chỗ trống → lót nền tối mờ sau chữ. `labels[].fixed: true` giữ đúng chỗ.
+- Tag tiêu đề kính lúp: dưới/trên kính + dời ngang, chừa khe theo chiều cao thật của tag (tag 2 dòng từng đè viền kính).
+- Lượt chống chồng mỗi frame dùng cùng hình hộp với bước chọn chỗ và dời tối đa 160 px (trước đây đẩy nhãn tụt cả nửa khung).
+- Sửa bố cục 4 video (twos, wall, shorter, hồng cầu) cho vật nhỏ lại/lên cao chừa chỗ chữ; render lại 13 video.
+
+## 4.2.0 — 28/11/2026 · Vòng 22: hình nhận ra được · người tả thực · bối cảnh đêm · kính lúp · rủi ro YouTube
+
+Góp ý chủ kênh cho 11 video (26–27/11) + rà rủi ro ban/giảm hiển thị. Kế hoạch `docs/ROUND22_PLAN.md`, báo cáo
+`docs/ROUND22_REPORT.md`, căn cứ chính sách `docs/YOUTUBE_RISK.md`.
+
+- **Rủi ro YouTube** (`vidlib/policy.py`, `studio.py policy`): khoá khung (beat + bố cục + đạo cụ + bối cảnh) so 10 video
+  trước → dòng QA "khung lặp giữa các video" (đỏ ≥ 40%); lặp trong video; persona sức khoẻ (mệnh lệnh/liều lượng/tự xưng
+  chuyên gia); số trong tiêu đề/thumbnail phải có trong lời đọc (đọc cả số bằng chữ); từ giật gân; spam/kéo tương tác;
+  Made for Kids. Upload + publish.md tự thêm "Educational content, not medical advice." cho video sức khoẻ.
+- **Đạo cụ chi tiết** (`engines/html/icons_detail.js`): ~47 vật vẽ bằng path SVG có tô bóng, ghi đè bản đơn giản cùng tên.
+- **Người tả thực** (`engines/html/rig_human.js`): 6 loài, dáng đi/chạy theo đường cong góc khớp sinh cơ học, chạm đất
+  đúng, đạp xe (IK chân theo bàn đạp, tay theo ghi đông), x-ray cột sống/cơ/mạch/nhiên liệu/gan; vai màu `skin`/`hair`.
+- **Bối cảnh đêm** 2D (`engines/html/backdrops.js`, 8 loại, lớp tĩnh vẽ sẵn → nhanh ~10×) + 3D (`set: gym | bedroom`).
+- **Beat `scene`**: kính lúp `lenses`, `freeze`, nhãn tự né nhau + kẹp vùng an toàn, tag tiêu đề kính lúp kẹp mép.
+- **Nhịp**: profile `explainer` (shot 4–6.5 s, hook ≤ 5.6 s), `vo.target_wps` 2.8, không punch-in tự chèn cho shot
+  code, kiểu bay spine êm (`spine.CALM`); viral score đếm khung khác nhau thay vì loại beat và thôi gợi ý khung mẫu.
+- Look nét (boil, sketch…): nét vai `bg` tự thành màu mực (hình vẽ trong khung phim/tờ giấy không biến mất).
+- Làm lại 13 video từ 26/11 (+ caffeine) với kịch bản và nguồn kiểm lại.
+
+## 4.1.0 — 27/11/2026 · Vòng 21: zoom xuyên bộ phận · nhân vật có bộ phận sống · sổ dữ kiện có nguồn · SEO Shorts · trung lập thương hiệu
+
+Prompt: `docs/ROUND21_PROMPT.md` (Claude Opus 5.5 xhigh). Kiểm định vòng 19–20 ở mục 1 của prompt.
+
+- **Trung lập thương hiệu**: style `kurzgesagt-black` / `school-of-life-black` / `infographics-show-black` → `cosmic-flat-black`
+  / `essay-ink-black` / `bold-infographic-black` (look `cosmic` / `essay` / `bold`); tên cũ là bí danh
+  (`textstyle.STYLE_ALIASES`, `looks.js → LOOK_ALIASES`). Bỏ bí danh rig `kurzbird`. Brand-safety (`vidlib/seo.py`):
+  tên kênh/studio tham chiếu trong chữ khán giả thấy = **lỗi chặn** ở bước prompts + dòng đỏ ở cổng QA.
+- **Rig 2D có bộ phận** (`engines/html/rig2d.js`): `PARTS` (21 điểm neo) + `rigAnchors()` theo đúng dáng frame;
+  `xray` + `organs` (não, tim đập theo `bpm`, phổi thở, dạ dày, xương); miệng nói (`talk`); mắt nhìn theo (`gaze`);
+  chống trượt chân (pha bước theo quãng đường); cú/vịt/nhà khoa học có đặc điểm riêng (túm lông + đĩa mặt; mỏ dẹt +
+  chân màng; áo blouse + kính).
+- **Beat `scene`**: tham chiếu `"id.part"` ở labels/arrows/fx/camera/look_at; camera `at` + `zoom` (0.5–40, vector
+  sắc nét, nhãn tự lui); `focus`, `hold`, `talk`, `look_at`; nhãn `bubble: speech|thought`; nhãn có `out`.
+- **Chuyển cảnh `zoom_through`** + `through` (`vidlib/partzoom.py`): html→html trong cú máy liền = kiểu bay `portal`
+  (ô sau nằm trong bộ phận, lộ qua lỗ tròn rồi nở ra — vẽ lại vector); mọi cặp khác = hậu kỳ (đuôi lao về điểm neo đọc
+  từ `meta.json → anchors_end`, đầu shot sau mở qua lỗ tròn). SFX `swish_match` tự thêm.
+- **3D**: `stage` `frame.dive {of, part, u, dist, fov}` — camera tự căn khung rồi lao vào đầu/mắt/ngực của prop.
+- **Sổ dữ kiện** (`vidlib/facts.py`): `sources` có cấu trúc + `claims` + shot `claims`; lint nguồn yếu/thiếu URL/
+  không rào đón/số lệch claim/khẳng định tuyệt đối/tỉ lệ phi thực tế; chip "Source: …" trên màn; `qa/facts.md`;
+  `python studio.py facts <slug>`. Brief `--ai claude` bật **web search + web fetch** (`web_search_20260209`,
+  `web_fetch_20260209`, xử lý `pause_turn`) và ghi URL thật vào `work/research.json` để đối chiếu.
+- **SEO** (`vidlib/seo.py`): từ khoá chính trong tiêu đề/câu đầu mô tả/lời đọc 1–2 shot đầu, 2–4 hashtag, tag ≤ 500
+  ký tự, dòng nguồn trong mô tả; `publish.md` có mục SEO check; upload YouTube đặt category theo chủ đề,
+  `status.containsSyntheticMedia`, `localizations`.
+- Công cụ kiểm hình: `scripts/parts_sheet.py`, `scripts/portal_check.py` (→ `qa/round21/`).
+
 ## 3.9.0 — 23/11/2026 · Vòng 10: 90s Low Poly + 10 Style Viral · Bộ não Motion · Kho tài sản CC0/MIT · Hybrid 2D ↔ 3D · UI không copy/paste · Dọn repo
 
 - **3D thời 90 & Nhân vật 3D (WP-T)**:

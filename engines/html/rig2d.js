@@ -11,6 +11,8 @@
 
 // plan = bộ xương; body [nửa dài, nửa cao]; legs = chiều dài chân; head = bán kính đầu; snout [dài, cao]; ears/tail = kiểu.
 // role = vai màu thân (ghi đè bằng role của icon), belly/muzzle/spots = vai màu phụ.
+import { HUMAN_STRIDE, human } from './rig_human.js';
+
 export const SPECIES = {
   dog: { plan: 'quad', body: [0.46, 0.21], legs: 0.34, legw: 0.07, head: 0.25, snout: [0.2, 0.12], ears: 'floppy', tail: 'wag', role: 'accent', belly: 'ink', nose: 'bg' },
   cat: { plan: 'quad', body: [0.43, 0.17], legs: 0.31, legw: 0.055, head: 0.23, snout: [0.07, 0.08], ears: 'pointy', tail: 'long', role: 'dim', belly: 'ink', nose: 'hot', whiskers: 1 },
@@ -25,20 +27,61 @@ export const SPECIES = {
   sheep: { plan: 'quad', body: [0.45, 0.27], legs: 0.27, legw: 0.055, head: 0.19, snout: [0.1, 0.1], ears: 'side', tail: 'stub', role: 'ink', belly: 'ink', nose: 'bg', wool: 1, face: 'bg', hooves: 1 },
   lion: { plan: 'quad', body: [0.5, 0.22], legs: 0.36, legw: 0.08, head: 0.25, snout: [0.12, 0.11], ears: 'round', tail: 'tuft', role: 'accent', belly: 'accent', nose: 'bg', lionmane: 'hot' },
   bird: { plan: 'bird', body: [0.36, 0.25], legs: 0.26, head: 0.2, role: 'cold', belly: 'ink', beak: 'accent' },
-  duck: { plan: 'bird', body: [0.4, 0.28], legs: 0.24, head: 0.23, role: 'cold', belly: 'ink', beak: 'accent' },
-  owl: { plan: 'bird', body: [0.35, 0.29], legs: 0.22, head: 0.25, role: 'accent', belly: 'ink', beak: 'hot' },
+  duck: { plan: 'bird', body: [0.42, 0.27], legs: 0.16, head: 0.21, role: 'cold', belly: 'ink', beak: 'accent', bill: 'flat', webbed: 1 },
+  owl: { plan: 'bird', body: [0.31, 0.37], legs: 0.14, head: 0.27, role: 'accent', belly: 'ink', beak: 'hot', owl: 1 },
   fish: { plan: 'fish', body: [0.55, 0.32], head: 0.3, role: 'accent', belly: 'ink', fins: 'hot' },
   frog: { plan: 'frog', body: [0.42, 0.28], legs: 0.34, head: 0.3, role: 'cold', belly: 'ink', mouth: 'bg' },
   kid: { plan: 'biped', head: 0.31, body: [0.2, 0.25], legs: 0.34, role: 'hot', skin: 'ink', hair: 'accent', pants: 'cold', style: 'short' },
   adult: { plan: 'biped', head: 0.22, body: [0.2, 0.32], legs: 0.5, role: 'cold', skin: 'ink', hair: 'dim', pants: 'dim', style: 'long' },
-  scientist: { plan: 'biped', head: 0.24, body: [0.21, 0.31], legs: 0.48, role: 'ink', skin: 'ink', hair: 'accent', pants: 'cold', style: 'curly' },
+  athlete: { plan: 'human', build: 1, top: 'singlet', bottom: 'shorts', role: 'hot', pants: 'dim', style: 'short' },
+  marathoner: { plan: 'human', build: 0.94, top: 'singlet', bottom: 'shorts', role: 'cold', pants: 'dim', style: 'cap', hairRole: 'accent', number: 1 },
+  runnerf: { plan: 'human', build: 0.9, female: 1, top: 'singlet', bottom: 'tights', role: 'accent', pants: 'dim', style: 'pony' },
+  lifter: { plan: 'human', build: 1.24, top: 'tank', bottom: 'shorts', role: 'dim', pants: 'ink', style: 'short', shoe: 'hot' },
+  casual: { plan: 'human', build: 1, top: 'tee', bottom: 'pants', role: 'cold', pants: 'dim', style: 'short' },
+  casualf: { plan: 'human', build: 0.9, female: 1, top: 'tee', bottom: 'pants', role: 'hot', pants: 'dim', style: 'long' },
+  // vòng 23: thêm người khác hẳn nhau (không chỉ đổi màu): tóc, râu, kính, vóc dáng, trang phục, tuổi
+  coach: { plan: 'human', build: 1.08, top: 'hoodie', bottom: 'pants', role: 'cold', pants: 'ink', style: 'cap', beard: 'stubble', shoe: 'dim' },
+  lifterf: { plan: 'human', build: 0.95, female: 1, top: 'tank', bottom: 'tights', role: 'hot', pants: 'dim', style: 'bun' },
+  bigguy: { plan: 'human', build: 1.36, top: 'tee', bottom: 'shorts', role: 'dim', pants: 'cold', style: 'buzz', beard: 'full', shoe: 'ink' },
+  elder: { plan: 'human', build: 1.04, top: 'shirt', bottom: 'pants', role: 'accent', pants: 'dim', style: 'bald', beard: 'full', glasses: 1, hairRole: 'ink' },
+  student: { plan: 'human', build: 0.9, top: 'hoodie', bottom: 'pants', role: 'accent', pants: 'dim', style: 'curly', shoe: 'hot' },
+  office: { plan: 'human', build: 0.92, female: 1, top: 'shirt', bottom: 'pants', role: 'cold', pants: 'ink', style: 'bun', glasses: 1 },
+  cyclist: { plan: 'human', build: 0.95, top: 'jersey', bottom: 'tights', role: 'accent', pants: 'ink', style: 'helmet', hairRole: 'hot', bike: 'cold' },
+  medic: { plan: 'human', build: 0.9, female: 1, top: 'labcoat', bottom: 'pants', role: 'cold', pants: 'dim', style: 'long', glasses: 1 },
+  trailrunner: { plan: 'human', build: 0.96, top: 'tee', bottom: 'shorts', role: 'cold', pants: 'ink', style: 'afro', shoe: 'hot' },
+  scientist: { plan: 'biped', head: 0.24, body: [0.21, 0.31], legs: 0.48, role: 'cold', skin: 'ink', hair: 'accent', pants: 'dim', style: 'curly', coat: 'ink', glasses: 1 },
 };
-export const PLANS = ['quad', 'bird', 'fish', 'frog', 'biped'];
-export const ACTIONS = ['idle', 'walk', 'run', 'jump', 'point', 'cheer', 'sit', 'sniff', 'sleep', 'eat', 'fall', 'wave'];
+export const PLANS = ['quad', 'bird', 'fish', 'frog', 'biped', 'human'];
+// Vòng 21 — điểm neo bộ phận (zoom xuyên bộ phận, nhãn/mũi tên/fx/camera bám bộ phận, đạo cụ cầm tay). Loài không có
+// bộ phận đó → lùi theo PART_FALLBACK cho tới 'center' (mọi bộ xương đều có). Neo = [x, y, r] trong toạ độ đơn vị.
+export const PARTS = ['head', 'eye', 'brain', 'mouth', 'ear', 'nose', 'neck', 'chest', 'heart', 'lungs', 'belly', 'stomach', 'hand', 'hand_far', 'foot', 'foot_far', 'back', 'tail', 'wing', 'center', 'top',
+  'knee', 'knee_far', 'thigh', 'calf', 'heel', 'ankle', 'sole', 'sole_far', 'elbow', 'elbow_far', 'shoulder', 'arm', 'liver', 'spine', 'hip'];
+export const ORGANS = ['brain', 'heart', 'lungs', 'stomach', 'skeleton', 'liver', 'spine', 'muscles', 'vessels', 'fuel'];
+const PART_FALLBACK = { knee: 'foot', knee_far: 'knee', thigh: 'center', calf: 'foot', heel: 'foot', ankle: 'foot', sole: 'foot', sole_far: 'sole', elbow: 'hand', elbow_far: 'elbow',
+  shoulder: 'chest', arm: 'hand', liver: 'belly', spine: 'back', hip: 'center', eye: 'head', brain: 'head', mouth: 'head', ear: 'head', nose: 'mouth', top: 'head', head: 'center', neck: 'chest', heart: 'chest', lungs: 'chest', chest: 'center', stomach: 'belly', belly: 'center', hand: 'mouth', hand_far: 'hand', foot: 'center', foot_far: 'foot', back: 'center', tail: 'back', wing: 'back' };
+/** [x, y, r] của bộ phận (lùi theo PART_FALLBACK nếu loài không có). */
+export function partOf(anchors, part) {
+  let p = part || 'center';
+  for (let i = 0; i < 8 && p; i++) { if (anchors[p]) return anchors[p]; p = PART_FALLBACK[p]; }
+  return anchors.center || [0, 0.3, 0.6];
+}
+/** Độ dài một chu kỳ bước (đơn vị toạ độ rig) — scene dùng để chu kỳ chân khớp quãng đường đi thật (không trượt chân). */
+export function strideOf(name, action) {
+  const r = parseRig(name), sp = r && r.species, S = SPECIES[sp] || SPECIES.dog, run = action === 'run';
+  if (S.plan === 'human') return HUMAN_STRIDE[action === 'cycle' ? 'cycle' : run ? 'run' : 'walk'];
+  if (S.plan === 'biped') return 4.16 * Math.sin(run ? 0.75 : 0.38) * (sp === 'adult' ? 0.54 : S.legs);
+  if (S.plan === 'quad') return S.hop ? (run ? 1.0 : 0.6) : 4.16 * Math.sin(run ? 0.85 : 0.42) * S.legs;
+  if (S.plan === 'frog') return run ? 1.1 : 0.7;
+  if (S.plan === 'bird') return run ? 0.7 : 0.45;
+  return 1.2;
+}
+export const ACTIONS = ['idle', 'walk', 'run', 'jump', 'point', 'cheer', 'sit', 'sniff', 'sleep', 'eat', 'fall', 'wave', 'tired', 'curl', 'squat', 'cycle', 'deadlift'];
 export const EXPRS = ['neutral', 'happy', 'sad', 'angry', 'shock', 'sleepy', 'sniff', 'love'];
-export const HAIRS = ['short', 'long', 'bun', 'curly', 'cap', 'bald'];
-export const RIG_ALIASES = { puppy: 'dog', hound: 'dog', dachshund: 'dog', kitten: 'cat', kitty: 'cat', bunny: 'rabbit', hare: 'rabbit', rat: 'mouse', hamster: 'mouse', calf: 'cow', bull: 'cow', piglet: 'pig', pony: 'horse', lamb: 'sheep', cub: 'bear', toad: 'frog', goldfish: 'fish', chick: 'bird', pigeon: 'bird', kurzbird: 'duck', doctor: 'scientist', researcher: 'scientist', child: 'kid', boy: 'kid', girl: 'kid', man: 'adult', woman: 'adult', person: 'adult', human: 'adult' };
+export const HAIRS = ['short', 'long', 'bun', 'curly', 'cap', 'bald', 'pony', 'afro', 'buzz', 'helmet'];
+export const OUTFITS = ['singlet', 'tank', 'tee', 'jersey', 'hoodie', 'shirt', 'labcoat'];
+export const RIG_ALIASES = { runner: 'athlete', jogger: 'athlete', sprinter: 'athlete', gymgoer: 'lifter', bodybuilder: 'lifter', weightlifter: 'lifter', puppy: 'dog', hound: 'dog', dachshund: 'dog', kitten: 'cat', kitty: 'cat', bunny: 'rabbit', hare: 'rabbit', rat: 'mouse', hamster: 'mouse', calf: 'cow', bull: 'cow', piglet: 'pig', pony: 'horse', lamb: 'sheep', cub: 'bear', toad: 'frog', goldfish: 'fish', chick: 'bird', pigeon: 'bird', doctor: 'scientist', researcher: 'scientist', child: 'kid', boy: 'kid', girl: 'kid', man: 'adult', woman: 'adult', person: 'adult', human: 'adult' };
 const FACES = ['left', 'right'];
+export const VIEWS = ['side', 'front', 'back'];                     // vòng 23: góc nhìn người tả thực (rig_human.js)
 const DEF_EXPR = { sleep: 'sleepy', fall: 'shock', cheer: 'happy', sniff: 'sniff', eat: 'happy', jump: 'happy', run: 'neutral' };
 
 /** "rig:dog:walk:happy" → {species, action, expr, face, bad:[token lạ]} (null nếu không phải tên rig). */
@@ -53,6 +96,7 @@ export function parseRig(name) {
     else if (EXPRS.includes(tok)) out.expr = tok;
     else if (FACES.includes(tok)) out.face = tok;
     else if (HAIRS.includes(tok)) out.hair = tok;
+    else if (VIEWS.includes(tok)) out.view = tok;
     else out.bad.push(tok);
   }
   return out;
@@ -65,6 +109,8 @@ const lerp = (a, b, t) => a + (b - a) * t;
 const sm = (t) => { t = clamp(t); return t * t * (3 - 2 * t); };
 const E = (x, y, rx, ry, role, o = {}) => ({ k: 'circle', x, y, r: 1, rx, ry, rot: o.rot || 0, role, ...o });
 const PG = (pts, role, o = {}) => ({ k: 'poly', pts, role, ...o });
+/** marker điểm neo vô hình: đi qua CÙNG phép xoay/nghiêng/lật với hình vẽ, rigPrims tách ra trước khi vẽ (vòng 21). */
+const MK = (name, x, y, r) => ({ k: 'circle', x, y, r: 1, rx: r, ry: r, role: 'ink', anchor: name, fine: true, alpha: 0 });
 const add = (a, b) => [a[0] + b[0], a[1] + b[1]];
 const pol = (p, r, a) => [p[0] + Math.cos(a) * r, p[1] + Math.sin(a) * r];
 /** ống thuôn qua các điểm (bán kính ra → rb), hai đầu tròn → một poly kín (chân, đuôi, cổ, tay). */
@@ -117,7 +163,7 @@ function thermalCore(cx, cy, rx, ry, heat, breath = 0) {
 // ---------- mặt: mắt (lòng trắng, con ngươi, đốm sáng), mí, lông mày, miệng — theo biểu cảm + chớp mắt ----------
 // F = {eyes:[[x,y,r],…] (mắt gần trước), brow, mouth:[x,y,w], look:[dx,dy], skin (vai màu da quanh mắt)}
 function face(F, X, blink, t, o = {}) {
-  const out = [], [lx, ly] = F.look || [0.25, 0];
+  const out = [], [lx, ly] = o.gaze || F.look || [0.25, 0], talk = clamp(Number(o.talk) || 0);   // gaze/talk: vòng 21
   const closed = blink >= 1 || X === 'sniff' || o.asleep, happyEye = X === 'happy' && !o.openHappy, half = X === 'sleepy' ? 0.55 : X === 'angry' ? 0.32 : blink > 0 ? 0.6 : 0;
   if (o.editorial) {                                   // chế độ người lớn tối giản (Vox/Fern/Kurzgesagt): không mắt tròn trắng googly + đốm sáng
     F.eyes.forEach(([x, y, r], i) => {
@@ -137,7 +183,8 @@ function face(F, X, blink, t, o = {}) {
     });
     if (F.mouth) {
       const [mx, my, mw] = F.mouth;
-      if (X === 'shock') out.push(E(mx, my + mw * 0.1, mw * 0.18, mw * 0.24, 'bg', { fine: true, alpha: 0.85 }));
+      if (talk > 0.04 && X !== 'shock') out.push(E(mx, my + mw * 0.06, mw * 0.24, mw * (0.05 + 0.22 * talk), 'bg', { fine: true, alpha: 0.85 }));
+      else if (X === 'shock') out.push(E(mx, my + mw * 0.1, mw * 0.18, mw * 0.24, 'bg', { fine: true, alpha: 0.85 }));
       else if (X === 'sad' || X === 'angry') out.push(tube([[mx - mw * 0.32, my + mw * 0.08], [mx + mw * 0.32, my - (X === 'angry' ? mw * 0.04 : 0)]], mw * 0.065, mw * 0.065, 'bg', { fine: true, alpha: 0.8 }));
       else if (X === 'happy' || X === 'love') out.push(crescent(mx, my - mw * 0.12, mw * 0.36, mw * 0.22, 0.45, PI - 0.45, mw * 0.08, 'bg', { fine: true, alpha: 0.85 }));
       else out.push(tube([[mx - mw * 0.26, my], [mx + mw * 0.26, my]], mw * 0.055, mw * 0.055, 'bg', { fine: true, alpha: 0.72 }));
@@ -171,7 +218,10 @@ function face(F, X, blink, t, o = {}) {
   });
   if (F.mouth) {
     const [mx, my, mw] = F.mouth, chew = o.chew ? (Math.sin(t * TAU * 2.6) > 0 ? 1 : 0.35) : 0;
-    if (X === 'shock' || chew) out.push(E(mx, my + mw * 0.15, mw * 0.32, mw * (0.42 * (chew || 1)), 'bg', { fine: true }));
+    if (talk > 0.04 && X !== 'shock' && !chew) {     // đang nói: miệng mở theo độ mở âm tiết (scene tính từ `talk`)
+      out.push(E(mx, my + mw * 0.12, mw * 0.3, mw * (0.08 + 0.34 * talk), 'bg', { fine: true }));
+      if (talk > 0.45 && !F.noTongue) out.push(E(mx + mw * 0.04, my + mw * (0.18 + 0.2 * talk), mw * 0.16, mw * 0.07, 'hot', { fine: true }));
+    } else if (X === 'shock' || chew) out.push(E(mx, my + mw * 0.15, mw * 0.32, mw * (0.42 * (chew || 1)), 'bg', { fine: true }));
     else if (X === 'happy' || X === 'love' || X === 'sniff') {
       out.push(PG([...Array.from({ length: 9 }, (_, i) => { const a = i / 8 * PI; return [mx + Math.cos(a) * mw * 0.55, my + Math.sin(a) * mw * 0.5]; }), [mx - mw * 0.55, my]], 'bg', { fine: true }));
       if (!F.noTongue) out.push(E(mx + mw * 0.08, my + mw * 0.3, mw * 0.25, mw * 0.15, 'hot', { fine: true }));
@@ -185,8 +235,9 @@ function face(F, X, blink, t, o = {}) {
 }
 
 // ---------- chu kỳ hành động chung ----------
-function motion(action, t, ph) {                       // → các pha/biên độ dùng cho mọi bộ xương
-  const w = (hz) => (t * hz + ph) % 1;
+function motion(action, t, ph, cyc) {                  // → các pha/biên độ dùng cho mọi bộ xương
+  // cyc (vòng 21): pha chu kỳ bước tính từ QUÃNG ĐƯỜNG đi thật (scene) → chân không trượt; không có → theo thời gian
+  const w = (hz) => (cyc !== undefined && cyc !== null ? ((cyc % 1) + 1) % 1 : (t * hz + ph) % 1);
   return {
     breath: Math.sin((t * 0.32 + ph) * TAU), walk: w(1.45), run: w(2.5), hop: w(1.9), jump: w(0.85), wag: Math.sin((t * (action === 'run' ? 3.4 : 2.6) + ph) * TAU),
     twitch: Math.sin((t * 7 + ph) * TAU), cheer: w(1.8), wave: Math.sin((t * 2.2 + ph) * TAU), sleepZ: w(0.45),
@@ -197,7 +248,7 @@ const fallK = (t) => clamp(t / 0.75);                 // ngã: 0 → 1 trong 0.7
 
 // ================= bộ xương bốn chân =================
 function quad(S, A, X, t, ph, body, blink, opt = {}) {
-  const m = motion(A, t, ph), out = [], ground = 0.9, ed = !!opt.editorial, edHorse = ed && opt.species === 'horse';
+  const m = motion(A, t, ph, opt.cycle), out = [], ground = 0.9, ed = !!opt.editorial, edHorse = ed && opt.species === 'horse';
   const [L, Hh] = edHorse ? [0.57, 0.2] : S.body, legL = edHorse ? 0.54 : S.legs, lw = edHorse ? 0.058 : S.legw, hr = edHorse ? 0.155 : S.head, belly = S.belly || body;
   let dy = 0, pitch = 0, headDrop = 0, headRot = 0, tailBase = -0.5, tailAmp = 0.25, earSwing = 0, lie = 0, whole = 0;
   const legs = [                                     // [x hông/vai theo thân, trước?, xa?, pha]
@@ -248,6 +299,8 @@ function quad(S, A, X, t, ph, body, blink, opt = {}) {
     return [leg, paw, { ...E(hip[0], hip[1], 0.025, 0.025, 'ink'), pin: true, fine: true }];
   }).flat();
   let P = [...legPrims(true)];
+  const nearFoot = (() => { const l = legs.find((q) => q.front && !q.far); const hip = rotAbout([bx + l.x * L, by + Hh * 0.35], piv, pitch); return seg2(hip, legL * 0.54, l.th, legL * 0.54, l.th - l.kn * (lie ? 0 : 1))[2]; })();
+  P.push(MK('foot', nearFoot[0], nearFoot[1], lw * 1.2));
   // ---- đuôi (trễ pha so với thân: follow-through) ----
   const rump = rotAbout([bx - L * 0.92, by - Hh * 0.25], piv, pitch), wag = m.wag * tailAmp;
   const tA = tailBase + wag, tl = { wag: 0.34, long: 0.5, bushy: 0.42, stub: 0.08, puff: 0.07, thin: 0.55, tuft: 0.42, curl: 0.16, hair: 0.45 }[S.tail] || 0.3;
@@ -263,13 +316,18 @@ function quad(S, A, X, t, ph, body, blink, opt = {}) {
   if (S.spots) torso.push(E(bx - L * 0.35, by - Hh * 0.2, L * 0.24, Hh * 0.42, S.spots, { rot: 0.4 }), E(bx + L * 0.3, by - Hh * 0.35, L * 0.18, Hh * 0.3, S.spots, { rot: -0.3 }));
   if (S.wool) for (let i = 0; i < 7; i++) torso.push(E(bx - L * 0.8 + i * L * 0.27, by - Hh * (0.75 - (i % 2) * 0.12), Hh * 0.42, Hh * 0.36, 'ink'));
   if (opt.heat > 0.05) torso.push(...thermalCore(bx + L * 0.12, by, L * 0.68, Hh * 0.86, opt.heat, m.breath));
+  torso.push(MK('center', bx, by, Hh), MK('chest', bx + L * 0.55, by, Hh * 0.72), MK('heart', bx + L * 0.5, by + Hh * 0.12, Hh * 0.42),
+    MK('lungs', bx + L * 0.32, by - Hh * 0.1, Hh * 0.72), MK('belly', bx, by + Hh * 0.42, Hh * 0.6), MK('stomach', bx + L * 0.05, by + Hh * 0.18, Hh * 0.5),
+    MK('back', bx, by - Hh * 0.95, Hh * 0.4));
   P.push(...xform(torso, piv, pitch));
+  P.push(MK('tail', tip[0], tip[1], 0.07));
   P.push(...legPrims(false));
   // ---- cổ + đầu ----
   const neckL = edHorse ? 0.4 : (S.neck || 0.1), sh = rotAbout([bx + L * 0.78, by - Hh * 0.45], piv, pitch);
   let hc = [sh[0] + 0.06 + (S.neck ? neckL * 0.45 : 0), sh[1] - hr * 0.55 - neckL * 0.75 + headDrop * 1.6];
   if (headRot > 0) hc = [hc[0] + headRot * hr * 0.75, hc[1] + headRot * hr * 1.5 + legL * headRot * 0.55];
   if (lie) hc = [bx + L * 0.95, ground - hr * 0.95];
+  P.push(MK('neck', sh[0], sh[1], lw * 1.6));
   P.push(tube([[sh[0] - 0.05, sh[1] + 0.06], [hc[0] - hr * 0.25, hc[1] + hr * 0.2]], edHorse ? 0.088 : S.neck ? 0.1 : lw * 1.6, edHorse ? 0.068 : S.neck ? 0.085 : lw * 1.4, body));
   if (S.mane) for (let i = 0; i < 5; i++) { const q = [lerp(sh[0] - 0.08, hc[0] - hr * 0.5, i / 4), lerp(sh[1] - 0.04, hc[1] - hr * 0.6, i / 4)]; P.push(E(q[0] - 0.03, q[1], 0.07, 0.05, 'dim', { rot: -0.9 + Math.sin(t * 3 + i) * 0.08 })); }
   if (S.lionmane) for (let i = 0; i < 12; i++) { const a = i / 12 * TAU + Math.sin(t * 2 + i) * 0.03; P.push(E(hc[0] + Math.cos(a) * hr * 1.0, hc[1] + Math.sin(a) * hr * 1.0, hr * 0.42, hr * 0.3, S.lionmane, { rot: a })); }
@@ -299,9 +357,13 @@ function quad(S, A, X, t, ph, body, blink, opt = {}) {
     head.push(E(nose[0], nose[1], hr * 0.14, hr * 0.1, S.nose || 'bg', { fine: true }));
   }
   head.push(...ear(false));
-  const fc = face({ eyes: [[hc[0] + hr * 0.44, hc[1] - hr * 0.2, hr * 0.25], [hc[0] - hr * 0.04, hc[1] - hr * 0.24, hr * 0.21]], mouth: S.disc ? [hc[0] + hr * 0.55, hc[1] + hr * 0.6, hr * 0.42] : [snc[0] + sn[0] * 0.1, snc[1] + sn[1] * 0.55, hr * 0.42], skin: S.face || body, look: [0.4, headRot > 0 ? 0.6 : 0] }, X, blink, t, { asleep: A === 'sleep', chew: A === 'eat', editorial: ed });
+  const fc = face({ eyes: [[hc[0] + hr * 0.44, hc[1] - hr * 0.2, hr * 0.25], [hc[0] - hr * 0.04, hc[1] - hr * 0.24, hr * 0.21]], mouth: S.disc ? [hc[0] + hr * 0.55, hc[1] + hr * 0.6, hr * 0.42] : [snc[0] + sn[0] * 0.1, snc[1] + sn[1] * 0.55, hr * 0.42], skin: S.face || body, look: [0.4, headRot > 0 ? 0.6 : 0] }, X, blink, t, { asleep: A === 'sleep', chew: A === 'eat', editorial: ed, gaze: opt.gaze, talk: opt.talk });
   head.push(...fc);
   if (S.whiskers) for (const s of [-1, 1]) head.push(tube([[snc[0] + 0.02, snc[1] + s * 0.01], [snc[0] + 0.24, snc[1] - 0.02 + s * 0.05]], 0.005, 0.003, 'ink', { fine: true }));
+  { const mo = S.disc ? [hc[0] + hr * 0.55, hc[1] + hr * 0.6] : [snc[0] + sn[0] * 0.1, snc[1] + sn[1] * 0.55];
+    head.push(MK('head', hc[0], hc[1], hr), MK('top', hc[0], hc[1] - hr * 0.9, hr * 0.3), MK('eye', hc[0] + hr * 0.44, hc[1] - hr * 0.2, hr * 0.25),
+      MK('brain', hc[0] - hr * 0.12, hc[1] - hr * 0.3, hr * 0.55), MK('mouth', mo[0], mo[1], hr * 0.22),
+      MK('nose', snc[0] + hr * 0.3 + sn[0] * 0.5, snc[1] - sn[1] * 0.55, hr * 0.14), MK('ear', hc[0] - hr * 0.38, hc[1] - hr * 0.72, hr * 0.25)); }
   P.push(...xform(head, [hc[0] - hr * 0.3, hc[1] + hr * 0.5], hdTilt));
   if (A === 'sleep') for (let i = 0; i < 3; i++) { const u = (m.sleepZ + i / 3) % 1; P.push(zee(hc[0] + 0.1 + u * 0.25, hc[1] - hr - 0.1 - u * 0.5, 0.06 + u * 0.05, 'ink', 1 - u)); }
   return whole ? xform(P, [bx, by], whole) : P;
@@ -309,7 +371,7 @@ function quad(S, A, X, t, ph, body, blink, opt = {}) {
 
 // ================= chim =================
 function bird(S, A, X, t, ph, body, blink, opt = {}) {
-  const m = motion(A, t, ph), out = [], [L, Hh] = S.body, hr = S.head, ground = 0.9;
+  const m = motion(A, t, ph, opt.cycle), out = [], [L, Hh] = S.body, hr = S.head, ground = 0.9;
   let dy = 0, flap = Math.sin(t * TAU * 0.6 + ph * 5) * 0.15, peck = 0, legK = 1, whole = 0, tilt = 0;
   if (A === 'walk' || A === 'run') { const u = A === 'run' ? m.run : m.hop; dy = -Math.abs(Math.sin(u * PI)) * (A === 'run' ? 0.12 : 0.06); }
   else if (A === 'jump' || A === 'cheer') { const u = A === 'jump' ? m.jump : m.cheer; dy = A === 'jump' ? jumpY(u) * 1.2 - 0.05 : -0.08 - Math.abs(Math.sin(u * TAU)) * 0.08; flap = Math.sin(t * TAU * 5) * 1.0; legK = 0.4; }
@@ -321,17 +383,46 @@ function bird(S, A, X, t, ph, body, blink, opt = {}) {
   const P = [];
   for (const s of [1, 0]) {                        // chân mảnh
     const hip = [bx + (s ? 0.06 : -0.06), by + Hh * 0.6], foot = [hip[0] + 0.02, hip[1] + S.legs * legK];
-    P.push(tube([hip, foot], 0.022, 0.018, 'accent', { tone: s ? 0.3 : 0 }), tube([foot, [foot[0] + 0.09, foot[1]]], 0.016, 0.014, 'accent', { tone: s ? 0.3 : 0 }));
+    P.push(tube([hip, foot], 0.022, 0.018, 'accent', { tone: s ? 0.3 : 0 }));
+    if (S.webbed) P.push(PG([[foot[0] - 0.03, foot[1] - 0.012], [foot[0] + 0.14, foot[1] - 0.02], [foot[0] + 0.13, foot[1] + 0.025], [foot[0] - 0.03, foot[1] + 0.022]], 'accent', { tone: s ? 0.3 : 0 }));
+    else if (S.owl) for (const a of [-0.5, 0, 0.5]) P.push(tube([foot, [foot[0] + Math.cos(a) * 0.07, foot[1] + Math.abs(Math.sin(a)) * 0.02]], 0.014, 0.01, 'accent', { tone: s ? 0.3 : 0 }));
+    else P.push(tube([foot, [foot[0] + 0.09, foot[1]]], 0.016, 0.014, 'accent', { tone: s ? 0.3 : 0 }));
   }
   P.push(PG([[bx - L * 0.8, by - Hh * 0.1], [bx - L * 1.45, by - Hh * 0.55 + Math.sin(t * 3) * 0.02], [bx - L * 1.5, by + Hh * 0.15], [bx - L * 0.7, by + Hh * 0.3]], body, { tone: 0.15 }));
   P.push(E(bx, by, L, Hh, body, { rot: -0.12 }), E(bx + L * 0.2, by + Hh * 0.35, L * 0.6, Hh * 0.55, S.belly, { rot: -0.1 }));
   if (opt.heat > 0.05) P.push(...thermalCore(bx, by, L * 0.72, Hh * 0.78, opt.heat, m.breath));
+  P.push(MK('center', bx, by, Hh), MK('chest', bx + L * 0.45, by + Hh * 0.05, Hh * 0.6), MK('heart', bx + L * 0.42, by + Hh * 0.12, Hh * 0.38),
+    MK('lungs', bx + L * 0.25, by - Hh * 0.05, Hh * 0.6), MK('belly', bx + L * 0.1, by + Hh * 0.45, Hh * 0.5), MK('stomach', bx + L * 0.1, by + Hh * 0.25, Hh * 0.42),
+    MK('back', bx - L * 0.1, by - Hh * 0.9, Hh * 0.35), MK('tail', bx - L * 1.35, by - Hh * 0.2, Hh * 0.35), MK('foot', bx + 0.08, by + Hh * 0.6 + S.legs * legK, 0.06));
   const wingBase = [bx + L * 0.05, by - Hh * 0.15];
+  P.push(MK('wing', wingBase[0] - L * 0.35, wingBase[1] + Hh * 0.1, Hh * 0.45));
   P.push(...xform([E(wingBase[0] - L * 0.35, wingBase[1] + Hh * 0.1, L * 0.62, Hh * 0.48, body, { tone: 0.22, rot: 0.25 })], wingBase, -flap));
-  const hc0 = [bx + L * 0.85, by - Hh * 0.95], hp = [hc0[0] + peck * 0.18, hc0[1] + peck * 0.42];
-  const head = [E(hp[0], hp[1], hr, hr, body),
-    PG([[hp[0] + hr * 0.82, hp[1] - hr * 0.22], [hp[0] + hr * 1.75, hp[1] + hr * 0.05], [hp[0] + hr * 0.82, hp[1] + hr * 0.3]], S.beak || 'accent'),
-    ...face({ eyes: [[hp[0] + hr * 0.38, hp[1] - hr * 0.2, hr * 0.3], [hp[0] - hr * 0.12, hp[1] - hr * 0.25, hr * 0.24]], brow: X === 'neutral' ? false : true, mouth: null, skin: body }, X, blink, t, { asleep: A === 'sleep', editorial: !!opt.editorial })];
+  const hc0 = S.owl ? [bx + L * 0.12, by - Hh * 1.05] : [bx + L * 0.85, by - Hh * 0.95], hp = [hc0[0] + peck * 0.18, hc0[1] + peck * 0.42];
+  const head = [];
+  let beakTip;
+  if (S.owl) {                                     // cú: đầu nhìn thẳng, đĩa mặt, túm lông tai, mắt tròn to, mỏ quặp nhỏ
+    head.push(PG([[hp[0] - hr * 0.95, hp[1] - hr * 0.45], [hp[0] - hr * 0.72, hp[1] - hr * 1.35], [hp[0] - hr * 0.35, hp[1] - hr * 0.72]], body),
+      PG([[hp[0] + hr * 0.95, hp[1] - hr * 0.45], [hp[0] + hr * 0.72, hp[1] - hr * 1.35], [hp[0] + hr * 0.35, hp[1] - hr * 0.72]], body));
+    head.push(E(hp[0], hp[1], hr * 1.05, hr * 0.98, body));
+    head.push(E(hp[0] - hr * 0.42, hp[1] - hr * 0.02, hr * 0.5, hr * 0.5, S.belly, { tone: 0.08 }), E(hp[0] + hr * 0.42, hp[1] - hr * 0.02, hr * 0.5, hr * 0.5, S.belly, { tone: 0.08 }));
+    beakTip = [hp[0], hp[1] + hr * 0.52];
+    head.push(PG([[hp[0] - hr * 0.12, hp[1] + hr * 0.18], [hp[0] + hr * 0.12, hp[1] + hr * 0.18], beakTip], S.beak || 'hot'));
+    head.push(...face({ eyes: [[hp[0] + hr * 0.42, hp[1] - hr * 0.02, hr * 0.34], [hp[0] - hr * 0.42, hp[1] - hr * 0.02, hr * 0.34]], brow: X === 'neutral' ? false : true, mouth: null, skin: S.belly, look: [0, 0.1] }, X, blink, t, { asleep: A === 'sleep', editorial: !!opt.editorial, gaze: opt.gaze, talk: opt.talk }));
+  } else {
+    head.push(E(hp[0], hp[1], hr, hr, body));
+    if (S.bill === 'flat') {                       // vịt: mỏ dẹt rộng, hai nửa trên/dưới (mở nhẹ khi nói)
+      const op = clamp(Number(opt.talk) || 0) * hr * 0.18;
+      head.push(PG([[hp[0] + hr * 0.6, hp[1] - hr * 0.12], [hp[0] + hr * 1.55, hp[1] - hr * 0.06], [hp[0] + hr * 1.8, hp[1] + hr * 0.04], [hp[0] + hr * 1.78, hp[1] + hr * 0.2], [hp[0] + hr * 0.66, hp[1] + hr * 0.22]], S.beak || 'accent'));
+      head.push(PG([[hp[0] + hr * 0.68, hp[1] + hr * 0.24 + op], [hp[0] + hr * 1.62, hp[1] + hr * 0.26 + op], [hp[0] + hr * 1.5, hp[1] + hr * 0.4 + op], [hp[0] + hr * 0.76, hp[1] + hr * 0.42 + op]], S.beak || 'accent', { tone: 0.22 }));
+      beakTip = [hp[0] + hr * 1.75, hp[1] + hr * 0.14];
+    } else {
+      head.push(PG([[hp[0] + hr * 0.82, hp[1] - hr * 0.22], [hp[0] + hr * 1.75, hp[1] + hr * 0.05], [hp[0] + hr * 0.82, hp[1] + hr * 0.3]], S.beak || 'accent'));
+      beakTip = [hp[0] + hr * 1.75, hp[1] + hr * 0.05];
+    }
+    head.push(...face({ eyes: [[hp[0] + hr * 0.38, hp[1] - hr * 0.2, hr * 0.3], [hp[0] - hr * 0.12, hp[1] - hr * 0.25, hr * 0.24]], brow: X === 'neutral' ? false : true, mouth: null, skin: body }, X, blink, t, { asleep: A === 'sleep', editorial: !!opt.editorial, gaze: opt.gaze, talk: opt.talk }));
+  }
+  head.push(MK('head', hp[0], hp[1], hr), MK('top', hp[0], hp[1] - hr * 0.95, hr * 0.3), MK('brain', hp[0] - hr * 0.1, hp[1] - hr * 0.3, hr * 0.55),
+    MK('eye', hp[0] + hr * (S.owl ? 0.42 : 0.38), hp[1] - hr * (S.owl ? 0.02 : 0.2), hr * (S.owl ? 0.34 : 0.3)), MK('mouth', beakTip[0], beakTip[1], hr * 0.2));
   P.push(...xform(head, hp, tilt));
   if (A === 'sleep') for (let i = 0; i < 3; i++) { const u = (m.sleepZ + i / 3) % 1; P.push(zee(hp[0] + 0.1 + u * 0.25, hp[1] - hr - 0.1 - u * 0.5, 0.06 + u * 0.05, 'ink', 1 - u)); }
   return whole ? xform(P, [bx, by], whole) : P;
@@ -339,7 +430,7 @@ function bird(S, A, X, t, ph, body, blink, opt = {}) {
 
 // ================= cá =================
 function fish(S, A, X, t, ph, body, blink, opt = {}) {
-  const m = motion(A, t, ph), [L, Hh] = S.body, hr = S.head;
+  const m = motion(A, t, ph, opt.cycle), [L, Hh] = S.body, hr = S.head;
   const hz = { run: 3.2, walk: 1.8, cheer: 3.6, jump: 2.4 }[A] || 0.9, amp = { run: 0.35, cheer: 0.45 }[A] || 0.22;
   let dy = Math.sin(t * TAU * 0.5 + ph * 4) * 0.03, whole = Math.sin(t * TAU * 0.5 + ph) * 0.04;
   if (A === 'jump') { const u = m.jump; dy = jumpY(u) * 1.1; whole = -0.6 * Math.cos(u * PI) * (u > 0.15 && u < 0.85 ? 1 : 0); }
@@ -355,14 +446,18 @@ function fish(S, A, X, t, ph, body, blink, opt = {}) {
   for (let i = 0; i < 3; i++) P.push({ ...E(bx - L * 0.25 + i * 0.13, by - Hh * 0.05, 0.07, Hh * 0.55, 'bg', { alpha: 0.18 }), fine: true });
   P.push(...xform([E(bx + L * 0.15, by + Hh * 0.3, 0.14, 0.06, S.fins || body, { rot: 0.5 })], [bx + L * 0.25, by + Hh * 0.2], Math.sin(t * TAU * 2) * 0.4));
   const ex = bx + L * 0.55, ey = by - Hh * 0.2;
-  P.push(...face({ eyes: [[ex, ey, hr * 0.32]], brow: X !== 'neutral', mouth: [bx + L * 0.88, by + Hh * 0.25, hr * 0.38], skin: body, noTongue: true, look: [0.5, 0] }, X, blink, t, { asleep: A === 'sleep', chew: A === 'eat', editorial: !!opt.editorial }));
+  P.push(MK('center', bx, by, Hh), MK('head', bx + L * 0.6, by - Hh * 0.05, hr), MK('eye', ex, ey, hr * 0.32), MK('mouth', bx + L * 0.88, by + Hh * 0.25, hr * 0.2),
+    MK('brain', bx + L * 0.52, by - Hh * 0.45, hr * 0.35), MK('tail', tailBase[0] - 0.25, by, 0.18), MK('top', bx + L * 0.1, by - Hh * 1.2, 0.12),
+    MK('back', bx - L * 0.1, by - Hh * 0.9, Hh * 0.3), MK('heart', bx + L * 0.35, by + Hh * 0.25, Hh * 0.3), MK('chest', bx + L * 0.3, by + Hh * 0.15, Hh * 0.45),
+    MK('belly', bx + L * 0.1, by + Hh * 0.45, Hh * 0.45), MK('stomach', bx + L * 0.05, by + Hh * 0.2, Hh * 0.4), MK('lungs', bx + L * 0.3, by, Hh * 0.45));
+  P.push(...face({ eyes: [[ex, ey, hr * 0.32]], brow: X !== 'neutral', mouth: [bx + L * 0.88, by + Hh * 0.25, hr * 0.38], skin: body, noTongue: true, look: [0.5, 0] }, X, blink, t, { asleep: A === 'sleep', chew: A === 'eat', editorial: !!opt.editorial, gaze: opt.gaze, talk: opt.talk }));
   if (A === 'eat' || A === 'sleep' || A === 'idle') for (let i = 0; i < 3; i++) { const u = ((t * 0.6 + ph + i / 3) % 1); P.push(E(bx + L * 1.0 + Math.sin(u * 9 + i) * 0.05, by - u * 0.9, 0.03 + u * 0.03, 0.03 + u * 0.03, 'ink', { fine: true, alpha: 1 - u, fill: false })); }
   return whole ? xform(P, [bx, by], whole) : P;
 }
 
 // ================= ếch =================
 function frog(S, A, X, t, ph, body, blink, opt = {}) {
-  const m = motion(A, t, ph), [L, Hh] = S.body, hr = S.head, ground = 0.9;
+  const m = motion(A, t, ph, opt.cycle), [L, Hh] = S.body, hr = S.head, ground = 0.9;
   let dy = 0, ext = 0, whole = 0, tongue = 0, armUp = 0, throat = (Math.sin(t * TAU * 1.6) + 1) * 0.5;
   if (A === 'walk' || A === 'run' || A === 'jump' || A === 'cheer') {
     const u = A === 'jump' ? m.jump : A === 'run' ? m.run : A === 'cheer' ? m.cheer : m.hop, hgt = A === 'jump' ? 1 : A === 'run' ? 0.5 : 0.25;
@@ -385,8 +480,13 @@ function frog(S, A, X, t, ph, body, blink, opt = {}) {
   }
   const ey = by - Hh * 0.85;
   for (const [x, r] of [[bx + L * 0.12, 0.13], [bx + L * 0.62, 0.15]]) P.push(E(x, ey, r, r, body));
-  P.push(...face({ eyes: [[bx + L * 0.62, ey, 0.1], [bx + L * 0.12, ey, 0.085]], mouth: null, skin: body, brow: X !== 'neutral', look: [0.3, 0] }, X, blink, t, { asleep: A === 'sleep', editorial: !!opt.editorial }));
+  P.push(...face({ eyes: [[bx + L * 0.62, ey, 0.1], [bx + L * 0.12, ey, 0.085]], mouth: null, skin: body, brow: X !== 'neutral', look: [0.3, 0] }, X, blink, t, { asleep: A === 'sleep', editorial: !!opt.editorial, gaze: opt.gaze, talk: opt.talk }));
   const mx = bx + L * 0.6, my = by - Hh * 0.05;
+  P.push(MK('center', bx, by, Hh), MK('head', bx + L * 0.38, ey + 0.05, 0.24), MK('eye', bx + L * 0.62, ey, 0.1), MK('top', bx + L * 0.38, ey - 0.15, 0.1),
+    MK('mouth', mx + 0.12, my - 0.02, 0.08), MK('brain', bx + L * 0.36, ey + 0.06, 0.12), MK('chest', bx + L * 0.4, by + Hh * 0.25, Hh * 0.5),
+    MK('heart', bx + L * 0.38, by + Hh * 0.28, Hh * 0.3), MK('lungs', bx + L * 0.2, by + Hh * 0.05, Hh * 0.5), MK('belly', bx + L * 0.15, by + Hh * 0.45, Hh * 0.5),
+    MK('stomach', bx + L * 0.05, by + Hh * 0.3, Hh * 0.4), MK('back', bx - L * 0.1, by - Hh * 0.9, Hh * 0.35), MK('hand', bx + L * 0.58, ground - 0.02, 0.07),
+    MK('foot', bx - L * 0.4, ground - 0.02, 0.09));
   P.push(crescent(mx - 0.05, my - 0.08, 0.28, 0.12, 0.25, PI - 0.6, 0.035, 'bg', { fine: true }));
   if (tongue > 0.02) P.push(tube([[mx + 0.15, my], [mx + 0.15 + tongue * 0.55, my - tongue * 0.12]], 0.03, 0.035, 'hot', { fine: true }));
   if (A === 'sleep') for (let i = 0; i < 3; i++) { const u = (m.sleepZ + i / 3) % 1; P.push(zee(bx + 0.4 + u * 0.25, ey - 0.15 - u * 0.5, 0.06 + u * 0.05, 'ink', 1 - u)); }
@@ -395,7 +495,7 @@ function frog(S, A, X, t, ph, body, blink, opt = {}) {
 
 // ================= người (kid/adult) =================
 function biped(S, A, X, t, ph, body, blink, opt = {}) {
-  const m = motion(A, t, ph), ed = !!opt.editorial, edAdult = ed && opt.species === 'adult';
+  const m = motion(A, t, ph, opt.cycle), ed = !!opt.editorial, edAdult = ed && opt.species === 'adult';
   const hr = edAdult ? 0.18 : (ed ? S.head * 0.9 : S.head);
   const legL = edAdult ? 0.54 : S.legs, [tw, th] = edAdult ? [0.175, 0.335] : S.body, ground = 0.9, skin = opt.skin || S.skin, pants = opt.pants || S.pants;
   const hair = opt.hairRole || S.hair, style = opt.hair || (edAdult ? 'short' : S.style);
@@ -422,13 +522,16 @@ function biped(S, A, X, t, ph, body, blink, opt = {}) {
   const leg = (i, far) => {
     const top = [hip[0] + (i ? -0.05 : 0.05), hip[1]], pts = seg2(top, legL * 0.52, legA[i], legL * 0.52, legA[i] - kn[i]);
     const ra = edAdult ? tw * 0.3 : tw * 0.33, rb = edAdult ? tw * 0.23 : tw * 0.28;
-    return [tube(pts, ra, rb, pants, { tone: far ? 0.3 : 0 }), E(pts[2][0] + 0.06, pts[2][1] + 0.02, edAdult ? 0.095 : 0.1, edAdult ? 0.042 : 0.05, 'bg', { tone: 0 }), { ...E(top[0], top[1], 0.02, 0.02, 'ink'), pin: true, fine: true }];
+    return [tube(pts, ra, rb, pants, { tone: far ? 0.3 : 0 }), E(pts[2][0] + 0.06, pts[2][1] + 0.02, edAdult ? 0.095 : 0.1, edAdult ? 0.042 : 0.05, 'bg', { tone: 0 }), { ...E(top[0], top[1], 0.02, 0.02, 'ink'), pin: true, fine: true },
+      MK(far ? 'foot_far' : 'foot', pts[2][0] + 0.06, pts[2][1] + 0.02, 0.08)];
   };
   const arm = (i, far) => {
     const sh = rotAbout([0.02 * (i ? -1 : 1), hipY - th * 1.75], hip, lean), pts = seg2(sh, th * 0.75, armA[i], th * 0.72, armA[i] + elb[i] * (armA[i] >= 0 ? 1 : -1));
     const ra = edAdult ? tw * 0.22 : tw * 0.24, rb = edAdult ? tw * 0.17 : tw * 0.2;
     const out = [tube(pts, ra, rb, body, { tone: far ? 0.38 : 0.16 }), E(pts[2][0], pts[2][1], edAdult ? tw * 0.22 : tw * 0.26, edAdult ? tw * 0.22 : tw * 0.26, skin, { tone: far ? 0.3 : 0 }), { ...E(sh[0], sh[1], 0.02, 0.02, 'ink'), pin: true, fine: true }];
     if (A === 'point' && i === 0) out.push(tube([pts[2], [pts[2][0] + Math.sin(armA[0]) * 0.12, pts[2][1] + Math.cos(armA[0]) * 0.12]], 0.025, 0.02, skin));
+    out.push(MK(i ? 'hand_far' : 'hand', pts[2][0], pts[2][1], edAdult ? tw * 0.22 : tw * 0.26));
+    if (S.coat && A !== 'sleep') out.splice(0, 1, tube(pts, ra * 1.12, rb * 1.1, S.coat, { tone: far ? 0.38 : 0.06 }));   // tay áo blouse
     return out;
   };
   P.push(...arm(1, true), ...leg(1, true), ...leg(0, false));
@@ -436,6 +539,15 @@ function biped(S, A, X, t, ph, body, blink, opt = {}) {
     ? PG([[-tw * 1.06, hipY - th * 1.98], [tw * 1.06, hipY - th * 1.98], [tw * 0.86, hipY + 0.02], [-tw * 0.86, hipY + 0.02]], body)
     : PG([[-tw * 0.95, hipY - th * 1.95], [tw * 0.95, hipY - th * 1.95], [tw * 1.05, hipY + 0.02], [-tw * 1.05, hipY + 0.02]], body);
   const torsoGrp = [torso, E(0, hipY, edAdult ? tw * 0.92 : tw * 1.05, tw * 0.42, pants)];
+  if (S.coat) {                                   // áo blouse phòng thí nghiệm: vạt dài tới gối, ve áo + túi ngực
+    const cy0 = hipY - th * 1.98, cy1 = hipY + legL * 0.42;
+    torsoGrp.push(PG([[-tw * 1.14, cy0], [-tw * 0.05, cy0], [-tw * 0.02, cy1], [-tw * 1.24, cy1]], S.coat), PG([[tw * 0.05, cy0], [tw * 1.14, cy0], [tw * 1.24, cy1], [tw * 0.02, cy1]], S.coat, { tone: 0.06 }),
+      tube([[0, cy0 + 0.01], [0, cy1 - 0.02]], 0.008, 0.008, 'dim', { fine: true }), PG([[-tw * 0.05, cy0], [-tw * 0.42, cy0 + th * 0.5], [-tw * 0.05, cy0 + th * 0.75]], 'dim', { fine: true, alpha: 0.6 }),
+      E(tw * 0.62, cy0 + th * 0.62, tw * 0.24, tw * 0.1, 'dim', { fine: true, alpha: 0.55 }));
+  }
+  torsoGrp.push(MK('center', 0, hipY - th, tw), MK('neck', 0, hipY - th * 2, tw * 0.4), MK('chest', tw * 0.15, hipY - th * 1.45, tw * 0.78),
+    MK('heart', tw * 0.22, hipY - th * 1.5, tw * 0.58), MK('lungs', 0, hipY - th * 1.38, tw * 0.95), MK('belly', tw * 0.1, hipY - th * 0.55, tw * 0.72),
+    MK('stomach', tw * 0.25, hipY - th * 0.78, tw * 0.45), MK('back', -tw * 0.9, hipY - th * 1.2, tw * 0.4));
   if (opt.heat > 0.05) torsoGrp.push(...thermalCore(0, hipY - th * 1.05, tw * 0.92, th * 0.72, opt.heat, m.breath));
   P.push(...xform(torsoGrp, hip, lean));
   const hc = [neck[0] + Math.sin(lean) * hr * 0.6, neck[1] - hr * 0.82 + Math.sin(m.breath * PI) * 0.004];
@@ -448,8 +560,15 @@ function biped(S, A, X, t, ph, body, blink, opt = {}) {
   if (style === 'curly') for (let i = 0; i < 9; i++) { const a = PI + 0.1 + i / 8 * (PI - 0.2); H.push(E(hc[0] + Math.cos(a) * hr * 0.92, hc[1] + Math.sin(a) * hr * 0.92, hr * 0.32, hr * 0.32, hair)); }
   else if (style === 'cap') H.push(PG([...Array.from({ length: 11 }, (_, i) => { const a = PI + i / 10 * PI; return [hc[0] + Math.cos(a) * hr * 1.03, hc[1] - hr * 0.12 + Math.sin(a) * hr * 1.0]; })], hair), PG([[hc[0] + hr * 0.6, hc[1] - hr * 0.2], [hc[0] + hr * 1.55, hc[1] - hr * 0.1], [hc[0] + hr * 0.9, hc[1] - hr * 0.35]], hair, { tone: 0.2 }));
   else if (style !== 'bald') H.push(PG([...Array.from({ length: 11 }, (_, i) => { const a = PI + 0.05 + i / 10 * (PI - 0.1); return [hc[0] + Math.cos(a) * hr * 1.06, hc[1] + Math.sin(a) * hr * 1.06]; }), [hc[0] + hr * 0.5, hc[1] - hr * 0.42], [hc[0] - hr * 0.2, hc[1] - hr * 0.5], [hc[0] - hr * 0.9, hc[1] + hr * 0.1]], hair));
-  H.push(...face({ eyes: [[hc[0] + hr * 0.42, hc[1] + hr * 0.02, hr * 0.19], [hc[0] - hr * 0.16, hc[1] + hr * 0.0, hr * 0.16]], mouth: [hc[0] + hr * 0.2, hc[1] + hr * 0.5, hr * 0.4], skin, look: [0.5, A === 'sniff' ? 0.5 : 0] }, X, blink, t, { asleep: A === 'sleep', chew: A === 'eat', editorial: ed }));
+  H.push(MK('head', hc[0], hc[1], hr), MK('top', hc[0], hc[1] - hr * 0.95, hr * 0.3), MK('eye', hc[0] + hr * 0.42, hc[1] + hr * 0.02, hr * 0.19),
+    MK('brain', hc[0] - hr * 0.05, hc[1] - hr * 0.28, hr * 0.62), MK('mouth', hc[0] + hr * 0.2, hc[1] + hr * 0.5, hr * 0.2),
+    MK('ear', hc[0] - hr * 0.88, hc[1] + hr * 0.05, hr * 0.2), MK('nose', hc[0] + hr * 0.86, hc[1] + hr * 0.26, hr * 0.12));
+  H.push(...face({ eyes: [[hc[0] + hr * 0.42, hc[1] + hr * 0.02, hr * 0.19], [hc[0] - hr * 0.16, hc[1] + hr * 0.0, hr * 0.16]], mouth: [hc[0] + hr * 0.2, hc[1] + hr * 0.5, hr * 0.4], skin, look: [0.5, A === 'sniff' ? 0.5 : 0] }, X, blink, t, { asleep: A === 'sleep', chew: A === 'eat', editorial: ed, gaze: opt.gaze, talk: opt.talk }));
   if (!ed) H.push(E(hc[0] + hr * 0.66, hc[1] + hr * 0.28, hr * 0.09, hr * 0.07, skin, { tone: 0.25, fine: true }));
+  if (S.glasses) {                                // kính tròn gọng mảnh (nhà khoa học)
+    for (const [ex, er] of [[hc[0] + hr * 0.42, hr * 0.27], [hc[0] - hr * 0.16, hr * 0.23]]) H.push(E(ex, hc[1] + hr * 0.02, er, er, 'dim', { fine: true, fill: false, w: 0.45 }));
+    H.push(tube([[hc[0] + hr * 0.07, hc[1] - hr * 0.02], [hc[0] + hr * 0.15, hc[1] - hr * 0.02]], hr * 0.025, hr * 0.025, 'dim', { fine: true }));
+  }
   P.push(...xform(H, [hc[0], hc[1] + hr], headTilt));
   P.push(...arm(0, false));
   let out = P;
@@ -459,18 +578,51 @@ function biped(S, A, X, t, ph, body, blink, opt = {}) {
   return out;
 }
 
-const PLAN_FN = { quad, bird, fish, frog, biped };
+const PLAN_FN = { quad, bird, fish, frog, biped, human };
 const blinkAt = (f, seed) => { const per = 46 + (((seed % 31) + 31) % 31), q = (((f + seed * 13) % per) + per) % per; return q < 2 ? 0.5 : q < 4 ? 1 : 0; };
 
-/** Primitive của một nhân vật. name = "rig:<loài>…"; o = {f, fps, seed, role, args:{action, expr, face, t0, hair, colors}}.
- *  Tên sai → chấm tròn + nhân vật mặc định (Python kiểm trước khi render: engines/html/rig2d.py). */
-export function rigPrims(name, o = {}) {
+// ---------- cơ quan bên trong (x-ray, vòng 21): vẽ tại điểm neo, xoay theo trục thân (nằm/ngã vẫn đúng chỗ) ----------
+const lubdub = (t, bpm) => { const p = ((t * bpm / 60) % 1 + 1) % 1; return Math.exp(-(((p - 0.06) / 0.045) ** 2)) + 0.6 * Math.exp(-(((p - 0.27) / 0.05) ** 2)); };
+function organPrims(an, organs, t, ph, k, o = {}) {
+  const out = [], al = clamp(k * 1.25), at = (n) => partOf(an, n), breath = Math.sin((t * 0.32 + ph) * TAU);
+  const c = at('center'), h = at('head');
+  const axis = Math.atan2(h[0] - c[0], -(h[1] - c[1]));          // 0 = đứng thẳng; ±π/2 = nằm
+  const rot = (prims, p) => xform(prims, [p[0], p[1]], axis);
+  for (const name of organs) {
+    if (name === 'brain') {
+      const [x, y, r] = at('brain'), q = [E(x, y, r * 1.0, r * 0.78, 'hot', { alpha: al, organ: 1 }), E(x - r * 0.55, y + r * 0.52, r * 0.36, r * 0.24, 'hot', { alpha: al, tone: 0.2, organ: 1 })];
+      for (let i = 0; i < 4; i++) { const yy = y - r * 0.42 + i * r * 0.28; q.push(tube(curve([x - r * 0.72, yy], [x, yy - r * 0.2 * (i % 2 ? -1 : 1)], [x + r * 0.72, yy + r * 0.05]), r * 0.035, r * 0.035, 'bg', { fine: true, alpha: al * 0.5, organ: 1 })); }
+      q.push(tube([[x, y - r * 0.7], [x - r * 0.06, y + r * 0.6]], r * 0.04, r * 0.03, 'bg', { fine: true, alpha: al * 0.55, organ: 1 }));
+      out.push(...rot(q, [x, y]));
+    } else if (name === 'heart') {
+      const [x, y, r] = at('heart'), s = r * (1 + 0.16 * lubdub(t, o.bpm || 72));
+      out.push(...rot([PG(heartPts(x, y - s * 0.1, s), 'hot', { alpha: al, organ: 1 }), E(x - s * 0.3, y - s * 0.35, s * 0.18, s * 0.12, 'ink', { fine: true, alpha: al * 0.45, organ: 1 })], [x, y]));
+    } else if (name === 'lungs') {
+      const [x, y, r] = at('lungs'), b = 1 + 0.07 * breath;
+      out.push(...rot([tube([[x, y - r * 1.05], [x, y - r * 0.3]], r * 0.1, r * 0.08, 'cold', { alpha: al, organ: 1 }),
+        E(x - r * 0.46, y + r * 0.1, r * 0.4 * b, r * 0.78 * b, 'cold', { alpha: al * 0.9, organ: 1 }), E(x + r * 0.46, y + r * 0.1, r * 0.4 * b, r * 0.78 * b, 'cold', { alpha: al * 0.9, organ: 1 })], [x, y]));
+    } else if (name === 'stomach') {
+      const [x, y, r] = at('stomach'), w = Math.sin(t * 2.1 + ph * 3) * 0.08;
+      out.push(...rot([E(x, y, r * 0.95, r * 0.62, 'accent', { alpha: al, rot: -0.5 + w, organ: 1 }), E(x + r * 0.35, y - r * 0.4, r * 0.32, r * 0.28, 'accent', { alpha: al, tone: 0.15, organ: 1 }),
+        crescent(x, y + r * 0.05, r * 0.6, r * 0.32, 0.4, PI - 0.4, r * 0.1, 'bg', { fine: true, alpha: al * 0.45, organ: 1 })], [x, y]));
+    } else if (name === 'skeleton') {
+      const [hx, hy, hr] = h, nk = at('neck'), ch = at('chest');
+      out.push(E(hx, hy, hr * 0.84, hr * 0.84, 'ink', { fine: true, fill: false, w: 0.5, alpha: al, organ: 1 }));
+      out.push(tube([[nk[0], nk[1]], [c[0], c[1] + c[2] * 0.9]], nk[2] * 0.16 + 0.006, nk[2] * 0.14 + 0.006, 'ink', { fine: true, alpha: al * 0.9, organ: 1 }));
+      for (let i = 0; i < 4; i++) { const yy = ch[1] - ch[2] * 0.55 + i * ch[2] * 0.34; out.push(...rot([crescent(ch[0], yy, ch[2] * (0.95 - i * 0.08), ch[2] * 0.32, 0.25, PI - 0.25, ch[2] * 0.07, 'ink', { fine: true, alpha: al * 0.85, organ: 1 })], [ch[0], yy])); }
+    }
+  }
+  return out;
+}
+
+function build(name, o) {
   const r = parseRig(name) || { species: null, bad: [] }, a = o.args || {};
   const sp = SPECIES[(a.species && (SPECIES[a.species] ? a.species : RIG_ALIASES[a.species])) || r.species] ? ((a.species && (SPECIES[a.species] ? a.species : RIG_ALIASES[a.species])) || r.species) : 'dog';
   const S = SPECIES[sp], action = ACTIONS.includes(a.action) ? a.action : r.action || 'idle';
   const expr = EXPRS.includes(a.expr) ? a.expr : r.expr || DEF_EXPR[action] || 'neutral';
   const fps = o.fps || 30, seed = (o.seed ?? 1) | 0, ph = ((seed * 0.6180339) % 1 + 1) % 1;
-  const f = (o.f ?? 0) - (a.t0 ? a.t0 * fps : 0), t = Math.max(0, f) / fps;
+  const fr = a.freeze_f !== undefined ? Math.min(o.f ?? 0, a.freeze_f) : (o.f ?? 0);     // vòng 22: freeze = đứng hình từ frame đó
+  const f = fr - (a.t0 ? a.t0 * fps : 0), t = Math.max(0, f) / fps;
   const blink = blinkAt(Math.round(f), seed);
   const body = (a.colors && a.colors.body) || o.role || S.role;
   const editorial = Boolean(
@@ -480,11 +632,32 @@ export function rigPrims(name, o = {}) {
   const heat = clamp(Number(a.heat ?? o.heat ?? 0) || 0, 0, 1);
   let prims = PLAN_FN[S.plan](S, action, expr, t, ph, body, blink, {
     species: sp, hair: a.hair || r.hair, skin: a.colors?.skin, pants: a.colors?.pants,
-    hairRole: a.colors?.hair, editorial, heat,
+    hairRole: a.colors?.hair, editorial, heat, cycle: a.cycle, gaze: a.gaze, talk: a.talk,
+    ...(S.plan === 'human' ? { xray: a.xray, organs: Array.isArray(a.organs) ? a.organs : a.organs ? [a.organs] : [], p: a.p, bpm: a.bpm, sweat: a.sweat,
+      view: a.view || r.view, outfit: a.outfit, bottom: a.bottom, beard: a.beard ?? S.beard, glasses: a.glasses ?? S.glasses, build: a.build } : {}),
   });
-  if (a.colors) prims = prims.map((p) => (a.colors[p.role] ? { ...p, role: a.colors[p.role] } : p));
   const faceDir = a.face === 'editorial' ? r.face : (a.face || r.face);
-  return faceDir === 'left' ? mirror(prims) : prims;
+  if (faceDir === 'left') prims = mirror(prims);
+  const anchors = {};
+  prims = prims.filter((p) => { if (p.anchor) { anchors[p.anchor] = [p.x, p.y, p.rx]; return false; } return true; });
+  const xr = clamp(Number(a.xray) || 0), organs = (Array.isArray(a.organs) ? a.organs : a.organs ? [a.organs] : []).filter((x) => ORGANS.includes(x));
+  if (xr > 0.02 && organs.length && S.plan !== 'human') {   // x-ray (người tả thực tự vẽ cơ quan theo khung thân): thân mờ dần, cơ quan hiện lên trên cùng (mọi look tự vẽ bằng bút của nó)
+    prims = prims.map((p) => (p.fine ? p : { ...p, alpha: (p.alpha ?? 1) * (1 - 0.62 * xr) }));
+    prims.push(...organPrims(anchors, organs, t, ph, xr, { bpm: Number(a.bpm) || 72 }));
+  }
+  if (a.colors) prims = prims.map((p) => (a.colors[p.role] ? { ...p, role: a.colors[p.role] } : p));
+  return { prims, anchors };
+}
+
+/** Primitive của một nhân vật. name = "rig:<loài>…"; o = {f, fps, seed, role, args:{action, expr, face, t0, hair, colors,
+ *  cycle (pha bước theo quãng đường), gaze [dx,dy], talk 0..1, xray 0..1, organs [], bpm}}.
+ *  Tên sai → chấm tròn + nhân vật mặc định (Python kiểm trước khi render: engines/html/rig2d.py). */
+export function rigPrims(name, o = {}) {
+  return build(name, o).prims;
+}
+/** Điểm neo bộ phận ở đúng dáng của frame: {part: [x, y, r]} trong toạ độ đơn vị (cùng hệ với primitive). */
+export function rigAnchors(name, o = {}) {
+  return build(name, o).anchors;
 }
 export const isRig = (name) => typeof name === 'string' && name.trim().toLowerCase().startsWith('rig:');
 export const RIG_NAMES = Object.keys(SPECIES);

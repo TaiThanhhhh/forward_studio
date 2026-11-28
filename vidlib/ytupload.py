@@ -83,8 +83,11 @@ def _trim_tags(raw_tags, max_total=MAX_TAGS_TOTAL_CHARS):
     return kept
 
 
-def build_payload(sb, title_idx=0, privacy="private", category_id=DEFAULT_CATEGORY_ID, made_for_kids=False):
-    """Xây payload `videos.insert` (snippet + status) từ `qareport.platform_seo(sb)['youtube_shorts']`."""
+def build_payload(sb, title_idx=0, privacy="private", category_id=None, made_for_kids=False):
+    """Xây payload `videos.insert` (snippet + status [+ localizations]) từ `qareport.platform_seo(sb)['youtube_shorts']`.
+    Vòng 21: category theo chủ đề (vidlib/seo.py), `status.containsSyntheticMedia` theo nhãn nội dung tổng hợp,
+    dòng "Sources: …" từ sổ dữ kiện, tiêu đề/mô tả đa ngôn ngữ (`publish.localizations`)."""
+    from . import facts, seo as seomod  # noqa: PLC0415
     if privacy not in PRIVACY_CHOICES:
         raise StudioError(f"Chế độ privacy không hợp lệ '{privacy}' (chọn: {', '.join(PRIVACY_CHOICES)}).")
     seo = qareport.platform_seo(sb)["youtube_shorts"]
@@ -103,6 +106,13 @@ def build_payload(sb, title_idx=0, privacy="private", category_id=DEFAULT_CATEGO
         description = f"{desc_base}\n\n{tag_line}".strip() if desc_base else tag_line
     else:
         description = desc_base
+    src_line = facts.description_block(sb)
+    if src_line and "source" not in description.lower():
+        description = f"{description}\n\n{src_line}".strip()
+    from . import policy  # noqa: PLC0415 — vòng 22: video sức khoẻ ghi rõ là nội dung giáo dục (AI persona / y tế)
+    disc = policy.disclaimer_for(sb)
+    if disc and disc.lower() not in description.lower():
+        description = f"{description}\n{disc}".strip()
     description = description[:MAX_DESC_CHARS]
 
     tags = _trim_tags(seo.get("tags") or [])
@@ -112,7 +122,7 @@ def build_payload(sb, title_idx=0, privacy="private", category_id=DEFAULT_CATEGO
     snippet = {
         "title": title,
         "description": description,
-        "categoryId": str(category_id or DEFAULT_CATEGORY_ID),
+        "categoryId": str(category_id or seomod.category_id(sb) or DEFAULT_CATEGORY_ID),
         "defaultLanguage": lang,
         "defaultAudioLanguage": lang,
     }
@@ -123,8 +133,16 @@ def build_payload(sb, title_idx=0, privacy="private", category_id=DEFAULT_CATEGO
         "privacyStatus": privacy,
         "selfDeclaredMadeForKids": bool(made_for_kids),
     }
+    synthetic = seomod.altered_content(sb)
+    if synthetic is not None:
+        status["containsSyntheticMedia"] = bool(synthetic)
+    body = {"snippet": snippet, "status": status}
+    loc = seomod.localizations(sb)
+    if loc:
+        body["localizations"] = loc
     return {
-        "body": {"snippet": snippet, "status": status},
+        "body": body,
+        "synthetic_undecided": synthetic is None,
         "pinned_comment": (seo.get("pinned_comment") or "").strip(),
         "language": lang,
         "titles": titles,
@@ -196,7 +214,7 @@ def upload(
     dry_run=False,
     client_secret=None,
     token_path=None,
-    category_id=DEFAULT_CATEGORY_ID,
+    category_id=None,
     service=None,
     log=print,
 ):
@@ -217,6 +235,12 @@ def upload(
             f"  · Privacy : {body['status']['privacyStatus']} · "
             f"Category: {sn['categoryId']} · Lang: {sn['defaultLanguage']}"
         )
+        st = body["status"]
+        log("  · Nội dung tổng hợp (containsSyntheticMedia): "
+            + ("CHƯA QUYẾT — có clip Flow: ghi publish.youtube_shorts.altered_content" if payload.get("synthetic_undecided")
+               else str(st.get("containsSyntheticMedia"))))
+        if body.get("localizations"):
+            log(f"  · Localizations: {', '.join(body['localizations'])}")
         log(f"  · Title   : {sn['title']} ({len(sn['title'])} chars)")
         log(f"  · Tags    : {', '.join(sn.get('tags') or []) or '(trống)'}")
         log("  · Description:")
@@ -236,7 +260,7 @@ def upload(
     log(f"▶ Đang tải lên YouTube ({privacy}): {os.path.basename(vid)} ({size_mb:.2f} MB)…")
     media = _media_upload(vid, "video/mp4", resumable=True, chunksize=8 * 1024 * 1024)
     req = yt.videos().insert(
-        part="snippet,status",
+        part="snippet,status" + (",localizations" if body.get("localizations") else ""),
         body=body,
         media_body=media,
         notifySubscribers=True,

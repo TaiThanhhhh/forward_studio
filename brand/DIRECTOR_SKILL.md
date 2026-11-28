@@ -17,11 +17,21 @@ Mỗi lần bạn sửa một lỗi trên video thật, chạy `python studio.py
 - **Không dùng icon trừu tượng chung chung:** Cấm thay thế khái niệm cụ thể bằng ngôi sao/bóng đèn/nguyên tử/bảng màu vô nghĩa; phải dùng vật thể thật, nhân vật 2D (`rig:adult`, `rig:kid`, `rig:bird`...), `code_terminal`, `chat_prompt`, hoặc sơ đồ đúng cơ chế thực tế.
 - **Luôn bảo vệ vùng an toàn di động 9:16:** Toàn bộ chữ và mặt nhân vật nằm gọn trong `x: 65..940`, `y: 270..1240` để không bị thanh UI TikTok/Shorts che khuất.
 
-## 3. Gu thẩm mỹ 2D Animated Explainer của kênh
-- **Khoa học / Vũ trụ / Sinh học (`kurzgesagt-black`):** Cảm hứng *Kurzgesagt – In a Nutshell* & *Life Noggin* — vector phẳng sắc nét, bầu trời sao/chiều sâu khí quyển dịu mắt, màu nhấn rực rỡ có kiểm soát, nhân vật/hành tinh/tế bào rõ hình khối.
-- **Tâm lý / Triết lý / Hành vi (`school-of-life-black`):** Cảm hứng *The School of Life*, *Psych2Go* & *TED-Ed* — nền giấy than ấm dịu mắt, nhân vật 2D biểu cảm gần gũi (`rig:adult`, `rig:cat`...), chuyển động chậm rãi điềm tĩnh, nhiều khoảng thở.
-- **Lịch sử / Sự thật / Giả định nhanh (`infographics-show-black`):** Cảm hứng *The Infographics Show* — đồ hoạ viền đậm tương phản cao, số liệu so sánh trực diện, nhịp gãy gọn rõ ràng.
-- **Vẽ tay / Phác thảo khoa học (`sketchnote-black`):** Cảm hứng *MinuteEarth* & *Minutephysics* — nét bút vẽ ra từng nét kèm sơ đồ tối giản dễ hiểu ngay khi tắt tiếng.
+## 3. Gu thẩm mỹ 2D Animated Explainer của kênh (tên style = thể loại, KHÔNG mang tên kênh khác)
+- **Khoa học / Vũ trụ / Cơ thể (`cosmic-flat-black`):** vector phẳng sắc nét, bầu trời sao/chiều sâu khí quyển dịu mắt, màu nhấn rực có kiểm soát; nhân vật/hành tinh/tế bào rõ hình khối; zoom xuyên bộ phận (mắt → võng mạc → tế bào) để đi từ vĩ mô vào vi mô.
+- **Tâm lý / Triết lý / Hành vi (`essay-ink-black`):** nền than ấm, nhân vật 2D biểu cảm gần gũi, bong bóng suy nghĩ (`labels[].bubble: "thought"`) cho giọng nội tâm, nhịp chậm nhiều khoảng thở.
+- **Lịch sử / Sự thật / Giả định nhanh (`bold-infographic-black`):** viền đậm tương phản cao, số liệu so sánh trực diện, nhịp gãy gọn.
+- **Vẽ tay / Phác thảo khoa học (`sketchnote-black`):** nét bút vẽ dần + sơ đồ tối giản hiểu được khi tắt tiếng.
+- **Tham chiếu kênh lớn chỉ để học nghề** — tuyệt đối không ghi tên kênh/studio khác vào lời đọc, chữ trên màn, tiêu đề, mô tả, tag, hashtag hay prompt hình (linter chặn; rủi ro chính sách spam/metadata gây hiểu lầm).
+
+## 3b. Zoom xuyên bộ phận & bộ phận sống (vòng 21)
+- Mỗi video tối đa 1–2 cú `zoom_through`, đặt đúng khoảnh khắc "đi vào bên trong" (mắt → não, màn hình → mạch điện, cửa sổ → căn phòng). Shot trước kết thúc bằng camera `{"at": "hero.eye", "zoom": 12}` (2D) hoặc `frame.dive` (3D); shot sau `transition_in: "zoom_through"`, `through: "hero.eye"`.
+- Cho thấy cơ chế BÊN TRONG nhân vật thay vì icon: `xray` 0→1 + `organs`, `focus` đúng bộ phận lời đọc đang nói, `hold` đồ vật thật trên tay, `talk` + bong bóng cho thoại, `look_at` để nhân vật phản ứng với nhau.
+- Nhãn đặt trên bộ phận sẽ bị zoom tới phải có `out` trước cú lao (engine tự làm mờ khi zoom sâu, nhưng nhãn sát điểm đích vẫn nên rút sớm).
+
+## 3c. Dữ kiện có nguồn & SEO
+- Mọi con số/khẳng định → `claims` + `sources` (nguồn gốc: cơ quan, tạp chí, viện, bộ dữ liệu; mở trang để đối chiếu). Không chắc thì làm tròn + rào đón (`estimate`) hoặc bỏ. Hình đúng tỉ lệ thật (người ≈ 1.7 m, cửa ≈ 2 m).
+- Từ khoá chính nằm trong 40 ký tự đầu tiêu đề, câu đầu mô tả và được NÓI ở 1–2 shot đầu; 2–4 hashtag; mô tả kết bằng dòng "Sources: …".
 
 ## 4. Bài học thực chiến đã tích luỹ (tự cập nhật bằng `studio.py learn`)
 - [2d] Một video chỉ giữ 1 trục logic duy nhất dễ hiểu ngay lần xem đầu; tránh nhồi quá 3 thuật ngữ chuyên ngành hoặc nhảy cảnh quá nhanh khiến người xem không kịp đọc.

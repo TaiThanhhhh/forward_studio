@@ -13,7 +13,10 @@ from .common import channel, run
 
 DEFAULT_BLOCKING = ["kích thước", "fps", "số audio track", "codec", "loudness", "true peak", "freeze", "black frame",
                     "chữ đúng chính tả", "không chồng chữ", "màu BT.709", "pix_fmt", "faststart", "audio 48 kHz",
-                    "file hỏng", "nền tảng", "quyền thương mại BỊ CẤM"]
+                    "file hỏng", "nền tảng", "quyền thương mại BỊ CẤM", "khung lặp giữa các video",
+                    # vòng 23: chủ kênh không đọc QA → lỗi chất lượng thấy được cũng chặn
+                    "chữ không đè hình", "chuyển động", "OCR đọc được", "sổ dữ kiện", "SEO Shorts", "hook", "diễn viên",
+                    "kịch bản giữ chân", "độ sáng video"]
 
 
 def blocking():

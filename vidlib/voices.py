@@ -26,9 +26,18 @@ def pool(language=None, include_manual=False):
     c = cfg()
     lg = (language or lang.language() or "en")[:2]
     out = [v for v in (c.get("pools") or {}).get(lg, []) if isinstance(v, dict) and v.get("id")]
+    if not _edge_mode():                     # vòng 23: giọng chỉ có trên Edge không dùng được khi đọc bằng ElevenLabs
+        out = [v for v in out if v.get("provider") != "edge"]
     if not out:  # cấu hình cũ: chỉ có voice + alternates
         out = [c["voice"]] + [v for v in c.get("alternates", []) if v.get("id")]
     return [v for v in out if include_manual or v.get("auto", True)]
+
+
+def _edge_mode():
+    """Đang đọc bằng Edge Neural TTS? (TTS_PROVIDER=edge, hoặc không có key ElevenLabs)."""
+    from .common import env  # noqa: PLC0415
+    pref = (env("TTS_PROVIDER") or os.environ.get("TTS_PROVIDER") or "").strip().lower()
+    return pref == "edge" or not env(cfg().get("api_key_env", "ELEVENLABS_API_KEY"))
 
 
 def short(v):

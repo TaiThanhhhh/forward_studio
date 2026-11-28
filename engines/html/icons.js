@@ -1,4 +1,5 @@
 import { CHANNEL_ALIASES, CHANNEL_ICONS, GROUPS } from './icons_channel.js';
+import { DETAIL_ALIASES, DETAIL_ICONS } from './icons_detail.js';
 
 // Thư viện đạo cụ của engine html — mỗi icon là danh sách primitive trong hệ đơn vị [-1,1] (y xuống dưới), mỗi mảnh có
 // "vai màu" (ink | dim | hot | cold | accent | bg) thay vì màu cụ thể → look nào cũng tô được theo bảng màu của nó
@@ -238,7 +239,7 @@ export const ICONS = {
             PG(tear(w, -0.42, 0.16, 0.4), 'hot'), PG(tear(w * 0.6, -0.36, 0.08, 0.2), 'accent')]; },
 };
 
-Object.assign(ICONS, CHANNEL_ICONS);
+Object.assign(ICONS, CHANNEL_ICONS, DETAIL_ICONS);         // vòng 22: bản chi tiết (icons_detail.js) ghi đè bản đơn giản cùng tên
 export { GROUPS };
 
 /** Icon tự ghép do storyboard viết: {"parts": [{"k": "circle"|"rect"|"poly"|"line"|"arc", …, "role": "hot"}]} — toạ độ trong
@@ -274,12 +275,12 @@ const ALIASES = [
   [['tree', 'forest', 'wood'], 'tree'], [['mountain', 'everest', 'hill'], 'mountain'], [['volcano', 'eruption', 'magma'], 'volcano'],
   [['cloud', 'sky'], 'cloud'], [['wave', 'ocean', 'sea', 'tsunami'], 'wave'], [['tornado', 'hurricane', 'storm'], 'tornado'],
   [['moon'], 'moon'], [['black hole', 'blackhole', 'singularity'], 'blackhole'], [['galaxy', 'milky way', 'universe'], 'galaxy'],
-  [['satellite', 'station', 'iss'], 'satellite'], [['heart', 'blood', 'pulse'], 'heart'], [['brain', 'mind', 'neuron', 'memory', 'think'], 'brain'],
+  [['satellite', 'station', 'iss'], 'satellite'], [['heart', 'blood', 'pulse'], 'heart'], [['brain', 'mind', 'memory', 'think'], 'brain'],
   [['bone', 'skeleton'], 'bone'], [['eye', 'vision', 'see'], 'eye'], [['hand', 'finger', 'touch'], 'hand'], [['tooth', 'teeth'], 'tooth'],
   [['cell', 'bacteria', 'microbe'], 'cell'], [['virus', 'germ', 'infection'], 'virus'], [['dna', 'gene', 'genetic'], 'dna'],
   [['pill', 'medicine', 'drug', 'vitamin'], 'pill'], [['fish'], 'fish'], [['bird', 'chicken', 'eagle', 'pigeon'], 'bird'],
   [['animal', 'dog', 'cat', 'horse', 'cow', 'mammal'], 'animal'], [['insect', 'bee', 'ant', 'fly', 'mosquito'], 'insect'],
-  [['plant', 'flower', 'seed', 'leaf'], 'plant'], [['food', 'meal', 'pizza', 'bread', 'burger'], 'food'],
+  [['plant', 'flower', 'seed', 'leaf'], 'plant'], [['food', 'meal', 'pizza', 'burger'], 'food'],
   [['bottle', 'soda', 'vinegar', 'coke'], 'bottle'], [['can', 'tin'], 'can'], [['gear', 'machine', 'engine', 'motor'], 'gear'],
   [['robot', 'android'], 'robot'], [['chip', 'processor', 'cpu', 'circuit'], 'chip'], [['wifi', 'signal', 'radio', 'internet'], 'wifi'],
   [['diamond', 'gem', 'jewel'], 'diamond'], [['crystal', 'salt', 'sugar', 'quartz'], 'crystal'], [['hammer', 'tool'], 'hammer'],
@@ -292,13 +293,13 @@ const ALIASES = [
   [['balance', 'scale', 'weigh', 'weighing'], 'balance'], [['ruler', 'measure', 'length', 'millimeter', 'centimeter', 'inch'], 'ruler'],
   [['earth', 'planet earth', 'world', 'globe'], 'earth'], [['bed', 'sleep', 'nap', 'mattress', 'asleep'], 'bed'],
   [['cup', 'mug', 'coffee', 'tea', 'hot chocolate'], 'cup'], [['hourglass', 'sand', 'countdown'], 'hourglass'],
-  [['speaker', 'sound', 'noise', 'music', 'loud', 'volume', 'audio', 'scream'], 'speaker'],
+  [['speaker', 'sound', 'music', 'loud', 'volume', 'audio', 'scream'], 'speaker'],
   [['radiation', 'radioactive', 'nuclear', 'uranium', 'reactor'], 'radiation'], [['umbrella'], 'umbrella'],
   [['chart', 'graph', 'data', 'statistics', 'percent', 'growth'], 'chart'], [['syringe', 'needle', 'vaccine', 'injection'], 'syringe'],
   [['candle', 'wax'], 'candle'],
 ];
 // Phẳng hoá + xếp từ khoá dài trước (cùng thuật toán với engines/html/__init__.py → icon_for).
-const FLAT = [...ALIASES, ...CHANNEL_ALIASES].flatMap(([keys, id]) => keys.map((k) => [k, id])).sort((a, b) => b[0].length - a[0].length);
+const FLAT = [...DETAIL_ALIASES, ...ALIASES, ...CHANNEL_ALIASES].flatMap(([keys, id]) => keys.map((k) => [k, id])).sort((a, b) => b[0].length - a[0].length);
 export function iconFor(name) {
   const s = String(name || '').toLowerCase().trim();
   if (ICONS[s]) return s;

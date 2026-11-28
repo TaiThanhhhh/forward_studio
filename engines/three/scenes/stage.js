@@ -6,7 +6,9 @@
 //          | "stadium" (wider stadium track diorama) | "diorama" (Futurepedia Tiny Diorama floating soil/grass slab + trail + trees)
 //          | "meadow" (floating grass island: tufts, flowers, rocks, far hills — every edge fades into black)
 //          | "tabletop" (wooden table + room corner, top at 0.76 m; prop y from the top)
-//          | "street" (a low-poly street: road at y=0, sidewalk, buildings, lamp). Sets auto-size to the props.
+//          | "street" (a low-poly street: road at y=0, sidewalk, buildings, lamp)
+//          | "gym" (NIGHT gym: rubber floor, windows onto a lit city, squat rack, dumbbell rack, hanging lamps + light pools)
+//          | "bedroom" (NIGHT bedroom: wood floor, window with moon + stars, moonbeam, bedside lamp). Sets auto-size to the props.
 //          set_opts: {r (meadow radius m), w, d, top, seed, grass, flowers, rocks, hills, buildings, wall, corner, lamp,
 //          trees, colors: {grass, flower, dirt, hill, wood, wall, asphalt, brick…}} · blob: 0.5 = round contact shadow
 //          under every prop (default on in the 90s looks retro90/psx, which have no shadow maps; false = off)
@@ -59,6 +61,9 @@
 //            tilt, pose, text, visible, opacity, expr, armL, armR, ease: smooth|easeOut|easeIn|back|anticip|linear|spring
 //            |bounceOut|elastic|expoOut|circOut|sine|backIn|steps}]
 // fx[]:    [{kind: steam|smoke|sparks|burst|splash|bubbles|shockwave|fire, at:[x,y,z], of:"propId", u:[u0,u1], r, color}]
+// frame.dive: {of: propId, part: head|eye|brain|top|chest|heart|belly|center|thigh|feet, u (start 0.05..0.95, default 0.62),
+//           dist m, fov} — the auto camera DIVES into that part from u to the end (pair with the next shot's
+//           transition_in "zoom_through" for a seamless "fly into the head/eye/chest" cut). Ignored with explicit camera[].
 // camera[]: [{t|u, pos, look, fov, roll, ease, path}] — LEAVE EMPTY to auto-frame every prop for 9:16 (safe margin,
 //           slow push-in + small orbit, never static). frame: {elev deg, azim deg, margin 1.15, push 0.08, orbit 6,
 //           headroom 0.16, footroom 0.28 = bottom Zone C kept empty for auto-captions}. Backdrop props → "frame": false
@@ -296,7 +301,7 @@ export function build(ctx, params) {
 
   // ---- bối cảnh black/track/stadium/diorama/meadow/tabletop/street: tự vừa vùng đặt prop (đo theo keyframe, chưa tính vật lý)
   let SET = null;
-  if (PROPS.setScene && ['black', 'track', 'stadium', 'diorama', 'meadow', 'tabletop', 'street'].includes(P.set)) {
+  if (PROPS.setScene && ['black', 'track', 'stadium', 'diorama', 'meadow', 'tabletop', 'street', 'gym', 'bedroom'].includes(P.set)) {
     const eb = new THREE.Box3(), tb = new THREE.Box3();
     for (const u of [0, 0.5, 1]) {
       const f = Math.round(u * (N - 1));
@@ -491,6 +496,32 @@ export function build(ctx, params) {
     keys = [{ f: 0, pos: at(c0, F.azim - F.orbit / 2, d), look: [c0.x, c0.y, c0.z], fov: F.fov },
       { f: N - 1, pos: at(c1, F.azim + F.orbit / 2, d * (1 - F.push)), look: [c1.x, c1.y, c1.z], fov: fovEnd, ease: 'smooth' }];
     camDist = d; camFov = F.fov;
+    // ---- vòng 21: frame.dive {of, part, u, dist, fov} — từ u camera lao vào một bộ phận của prop (nối `zoom_through`)
+    const DV = F.dive;
+    const diveIt = DV && DV.of ? items.find((it) => it.id === DV.of) : null;
+    if (diveIt && diveIt.o.g) {
+      const fEnd = N - 1, fStart = Math.round(Math.max(0.05, Math.min(0.95, DV.u ?? 0.62)) * (N - 1));
+      apply(fEnd); ctx.world.updateMatrixWorld(true);
+      const bb = new THREE.Box3(); boxNoFx(diveIt.o.g, bb);
+      if (!bb.isEmpty() && fEnd > fStart) {
+        const part = DV.part || 'head', cc = bb.getCenter(new THREE.Vector3()), sz = bb.getSize(new THREE.Vector3());
+        const FR = { head: 0.86, eye: 0.88, top: 0.98, brain: 0.92, chest: 0.66, heart: 0.64, belly: 0.5, center: 0.5, thigh: 0.3, feet: 0.05 };
+        let P0 = new THREE.Vector3(cc.x, bb.min.y + sz.y * (FR[part] ?? 0.5), cc.z);
+        const headish = ['head', 'eye', 'brain', 'top'].includes(part);
+        const hm = diveIt.o.joints && diveIt.o.joints.headMesh;       // con vật/người thủ tục: đầu thật (không đoán theo hộp)
+        let rH = sz.y * 0.09;                                          // bán kính đầu ≈ 1/11 chiều cao (người nộm)
+        if (hm && headish) { hm.getWorldPosition(P0); const hb = new THREE.Box3().setFromObject(hm), hs = hb.getSize(new THREE.Vector3()); if (!hb.isEmpty()) rH = Math.max(hs.x, hs.y, hs.z) / 2; }
+        const endPos = new THREE.Vector3(...keys[keys.length - 1].pos), dir = endPos.clone().sub(P0).normalize();
+        if (part === 'eye') P0.add(dir.clone().multiplyScalar(rH * 0.85));   // mắt nằm trên mặt đầu hướng về máy
+        const fovEnd = DV.fov ?? Math.max(18, F.fov * 0.72), lens = Math.tan(13.5 * Math.PI / 180) / Math.tan(fovEnd * Math.PI / 360);
+        const unit = headish ? rH : sz.y * 0.12;                      // thân: theo chiều cao vật (ngực ≈ nửa thân trên lọt khung)
+        const mult = { eye: 3.0, head: 5.5, brain: 5.0, top: 5.5, chest: 4.0, heart: 3.5, belly: 4.0, center: 6.0, thigh: 3.2, feet: 4.0 }[part] ?? 5;
+        const dist = DV.dist ?? Math.max(0.05, unit * mult * lens);
+        const pos = P0.clone().add(dir.multiplyScalar(dist)), mid = MO.camFromKeys(keys, fStart, { creep: 0 });
+        keys = [keys[0], { f: fStart, pos: [...mid.pos], look: [...mid.look], fov: mid.fov, ease: 'smooth' },
+          { f: fEnd, pos: [pos.x, pos.y, pos.z], look: [P0.x, P0.y, P0.z], fov: fovEnd, ease: 'easeIn' }];
+      }
+    }
   }
   const kicks = P.kicks.map((k) => ({ f: Math.round(fOf(k)), a: k.a ?? 0.07 })).concat(phys ? phys.kicks : []);
   const flashes = P.flash.map((k) => ({ f: Math.round(fOf(k)), n: k.frames ?? 2 }));

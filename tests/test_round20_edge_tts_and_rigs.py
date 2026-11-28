@@ -11,7 +11,8 @@ class TestRound20EdgeTtsAndRigs(unittest.TestCase):
         for name in ("duck", "owl", "scientist"):
             self.assertIn(name, sp)
             self.assertIsNone(rig2d.check(f"rig:{name}:idle:happy"))
-        self.assertIsNone(rig2d.check("rig:kurzbird:wave:happy"))
+        # vòng 21: bí danh mang tên kênh khác bị bỏ (brand-safety)
+        self.assertIsNotNone(rig2d.check("rig:kurzbird:wave:happy"))
         self.assertIsNone(rig2d.check("rig:doctor:point:neutral"))
         self.assertIsNone(rig2d.check("rig:kitty:sit:love"))
 

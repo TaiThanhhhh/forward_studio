@@ -301,8 +301,10 @@ def spine_context(sb, tl, style, extra=None):
             p["index"] = [ids.index(sh["id"]) + 1, len(ids)]
         return {"scene": sh["code"]["scene"], "params": p}
 
+    from .common import duration_profile  # noqa: PLC0415
     return spine.context(tl["segments"], shots, style, sb.get("slug") or sb.get("topic", ""), in_run, entry,
-                         narratives.moves(sb.get("narrative_resolved")))
+                         narratives.moves(sb.get("narrative_resolved")),
+                         calm=duration_profile(sb).get("name") == "explainer")
 
 
 def _job_engine(job_path):

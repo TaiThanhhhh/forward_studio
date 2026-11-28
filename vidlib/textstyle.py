@@ -25,12 +25,27 @@ DEFAULTS = {"size": 120, "uppercase": True, "fill": "#FFFFFF", "stroke": 0, "str
             "sfx_role": {"size_mult": 1.3, "rotate": -6}, "frost_color": "#9FC0FF", "heat_color": "#FF2D2D"}
 
 
+# Vòng 21: style vòng 19 từng đặt theo tên kênh có thật → đổi sang tên thể loại (tên thương hiệu lọt vào brief rồi vào
+# metadata khán giả thấy). Bí danh giữ cho storyboard/plan cũ chạy tiếp; không liệt kê bí danh trong list_styles().
+STYLE_ALIASES = {
+    "kurzgesagt-black": "cosmic-flat-black",
+    "school-of-life-black": "essay-ink-black",
+    "infographics-show-black": "bold-infographic-black",
+}
+
+
+def canonical(name):
+    """Tên style chuẩn (bí danh cũ → id mới; tên khác giữ nguyên)."""
+    return STYLE_ALIASES.get(name, name) if isinstance(name, str) else name
+
+
 def list_styles():
     return sorted(os.path.splitext(f)[0] for f in os.listdir(STYLES_DIR) if f.endswith(".json"))
 
 
 @cache
 def load_style(name):
+    name = canonical(name)
     p = os.path.join(STYLES_DIR, f"{name}.json")
     if not os.path.exists(p):
         raise StudioError(f"Không có style '{name}'. Có: {', '.join(list_styles())}")

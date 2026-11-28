@@ -23,8 +23,15 @@ Tham số người dùng: `$ARGUMENTS`
      hành động dựng bằng `scene` (nhiều vật di chuyển, fx), không chuỗi thẻ một-icon; chọn đạo cụ (`icon`) đúng chủ đề,
      không có thì tự ghép `{"parts": [...]}`. Báo người dùng một dòng: style + giọng + dạng kịch bản đã chọn và lý do (họ
      có thể đổi bằng `--style`/`--voice`/`--narrative`).
-     - Kiểm chứng mọi con số khoa học bằng WebSearch. Đưa nguồn vào `sources`. Chỗ nào là giả định tưởng tượng thì
-       VO phải nói rõ.
+     - **Sổ dữ kiện**: kiểm chứng mọi con số/khẳng định bằng WebSearch rồi MỞ trang nguồn (WebFetch) để đối chiếu số.
+       Ghi `sources` dạng object `{id, title, publisher, year, url, kind}` (ưu tiên nguồn gốc: cơ quan, tạp chí, viện,
+       bộ dữ liệu — không blog/mạng xã hội) và `claims` `{id, text, value, unit, source, status}`; mỗi shot ghi
+       `"claims": ["K1"]`. Không chắc → làm tròn + rào đón (`estimate`) hoặc bỏ. Giả định/tranh cãi: VO phải nói rõ.
+     - **SEO**: `publish.primary_keyword` = cụm người ta gõ tìm; nằm trong 40 ký tự đầu tiêu đề, câu đầu mô tả và được
+       NÓI ở shot 1–2. Không ghi tên kênh/studio khác vào bất cứ chữ nào (linter chặn).
+     - **Zoom xuyên bộ phận** khi ý tưởng có khoảnh khắc "đi vào bên trong": shot trước kết bằng camera
+       `{"at": "hero.eye", "zoom": 12}` (2D) hoặc `frame.dive` (3D), shot sau `transition_in: "zoom_through"` +
+       `through`. Nhân vật dùng `xray`/`organs`/`focus`/`hold`/`talk`/bong bóng để cho thấy cơ chế thật.
      - Viết `<project>/storyboard.json` (JSON hợp lệ, đúng schema trong brief). Chỉ điền **trường ngữ nghĩa**
        (vo, onscreen, subject, camera, action, start_frame.desc, `beat_recipe` + `board`…). KHÔNG viết prompt Flow dài:
        tool tự compile. Luôn điền `beat_recipe` (brief §4b) — style board-* dựng cả video từ đó.

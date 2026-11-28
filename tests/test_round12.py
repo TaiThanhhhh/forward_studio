@@ -183,7 +183,7 @@ class Round12Tests(unittest.TestCase):
         self.assertEqual(grid.get("header"), [250, 370])
         self.assertEqual(grid.get("stage"), [390, 1240])
         self.assertEqual(grid.get("captions"), [1340, 1460])
-        self.assertEqual(cfg["vo"]["target_wps"], 3.0)
+        self.assertEqual(cfg["vo"]["target_wps"], 2.8)   # vòng 22: explainer đọc chậm hơn (góp ý chủ kênh: nhịp quá nhanh)
         self.assertLessEqual(cfg["vo"]["speed_max"], 1.08)
         self.assertEqual(cfg["captions"]["preset"], "studio_clean")
         self.assertIn("không chồng chữ", cfg["qa"]["blocking"])

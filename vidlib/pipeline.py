@@ -364,6 +364,10 @@ class Run:
             raw = brief.ask(self.ai, text)
             from . import cost  # noqa: PLC0415
             cost.record(self.proj, "llm", **brief.LAST_USAGE)
+            if brief.LAST_RESEARCH:                           # vòng 21: URL thật đã tìm/mở → facts.py đối chiếu `sources`
+                save_json(os.path.join(self.work, "research.json"), dict(brief.LAST_RESEARCH))
+                self.log(f"  · nghiên cứu web: {len(brief.LAST_RESEARCH.get('queries', []))} truy vấn, "
+                         f"{len(brief.LAST_RESEARCH.get('urls', []))} URL → work/research.json")
             save_text(self.p("brief_response.txt"), raw)      # AUD-206: lưu phản hồi LLM trước khi parse
             data = brief.strip_json(raw)
             data["slug"] = self.slug
@@ -452,7 +456,7 @@ class Run:
         for s in self.csb["shots"]:
             if s.get("code", {}) and s["code"].get("auto_reason") and s["id"] in no_clip:
                 self.log(f"  · {s['id']}: {s['code']['auto_reason']}")
-        self.issues = linter.lint(self.csb)
+        self.issues = linter.lint(self.csb, proj=self.proj)
         fp = _fp(self.csb, os.path.join(PROMPTS_DIR, "blocks"), os.path.join(CONFIG_DIR, "flow-models.json"))
         raw = sbm.load(self.proj)
         merged = dict(self.csb)
@@ -637,8 +641,10 @@ class Run:
         ap = tts.synthesize(self.proj, [{"text": ln["raw"], "beat": ln["beat"]} for ln in lines], log=self.log,
                             force=self.tts_force, voice=self.csb.get("voice_resolved"))
         a = load_json(ap, {})
-        self.head("voice", f"ElevenLabs {a.get('model_id')} · giọng {voices.short(a.get('voice') or {})} · "
-                           f"{a.get('duration', 0):.1f}s · {a.get('words_per_sec')} từ/giây")
+        who = (f"Edge Neural TTS {a.get('provider_voice')} (dự phòng, thay giọng {voices.short(a.get('voice') or {})})"
+               if a.get("provider") == "edge_tts" else
+               f"ElevenLabs {a.get('model_id')} · giọng {voices.short(a.get('voice') or {})}")
+        self.head("voice", f"{who} · {a.get('duration', 0):.1f}s · {a.get('words_per_sec')} từ/giây")
 
     def render_inputs_fp(self):
         # Lời đọc sinh ra (vo.*) không nằm trong dấu vân tay: nó được quyết định bởi csb + config/voice.json (đã có ở
@@ -730,7 +736,7 @@ class Run:
                 self.tl["segments"], all_shots, style,
                 self.csb.get("slug") or self.csb.get("topic", ""), _in_run, _entry,
                 prefer=narratives.moves(self.csb.get("narrative_resolved")),
-                archetype=arch_id,
+                archetype=arch_id, calm=duration_profile(self.csb).get("name") == "explainer",
             )
         else:
             self.html_spine = codeshot.spine_context(self.csb, self.tl, style, {"OUTRO": oshot} if oshot else None)
@@ -745,9 +751,15 @@ class Run:
         if oshot:
             self.code_jobs["OUTRO"] = codeshot.job_for(self.proj, self.csb, oshot, segs["OUTRO"]["n"], style,
                                                        self.html_spine.get("OUTRO"))
+        order = [x["id"] for x in self.csb["shots"]]
+        zoom_next = {order[i - 1] for i in range(1, len(order))                 # vòng 21: shot đứng trước một zoom_through
+                     if shots_by_id[order[i]].get("transition_in") == "zoom_through"}
         for sid, job in self.code_jobs.items():
             jdata = load_json(job, {})
             want_cap = bool(self.csb["_captions_on"]) and sid != "OUTRO"
+            if isinstance(jdata, dict) and jdata and bool(jdata.get("anchors_out")) != (sid in zoom_next):
+                jdata["anchors_out"] = sid in zoom_next        # engine html ghi meta.anchors_end (điểm đích hậu kỳ)
+                save_json(job, jdata)
             hud_val = interpolate_story_hud(self.csb, self.tl, shots_by_id.get(sid), segs.get(sid))
             if isinstance(jdata, dict) and jdata:
                 changed = False
@@ -1035,6 +1047,7 @@ class Run:
         mg = motiongate.measure(final)
         save_json(os.path.join(self.work, "motion_gate.json"), mg)
         checks["chuyển động (không như slide)"] = motiongate.verdict(mg)
+        checks["độ sáng video (không tối như màn hình tắt)"] = motiongate.brightness_verdict(mg)
         bq = None
         if self.spine() and getattr(self, "board", None):  # QA board trên frame GIẢI MÃ từ video cuối
             vf = boardqa.VideoFrames(final, boardqa.frames_needed(self.board), self.board["width"], self.board["height"])
@@ -1048,11 +1061,29 @@ class Run:
             g_ok = sum(r["glyph_ok"] for r in ocr_rep["rows"])
             checks["chữ đúng chính tả (chuỗi code + đủ glyph)"] = (f"{g_ok}/{ocr_rep['total']}", g_ok == ocr_rep["total"])
             if ocr_rep["available"]:
-                checks["OCR đọc được (giống ≥ 70%)"] = (f"{ocr_rep['ok']}/{ocr_rep['total']}",
-                                                       ocr_rep["ok"] == ocr_rep["total"])
+                # vòng 23: chặn khi < 80% chữ đọc được (font kiểu cách quá khó đọc ở cỡ điện thoại)
+                checks["OCR đọc được (≥ 80% chữ, mỗi chữ giống ≥ 70%)"] = (
+                    f"{ocr_rep['ok']}/{ocr_rep['total']}", ocr_rep["ok"] >= 0.8 * ocr_rep["total"])
         checks.update(qa.studio_checks(self.csb, ocr_rep, captions_on=bool(self.csb.get("_captions_on", True))))
         self.rights_report, rrows = rights.write_project(self.proj, self.csb, self.dry)
         checks.update(rrows)
+        from . import facts, seo  # noqa: PLC0415 — vòng 21: sổ dữ kiện + SEO + brand-safety
+        f_iss = facts.lint(self.csb, self.proj)
+        save_text(self.p("qa", "facts.md"), facts.report_md(self.csb, f_iss))
+        f_warn = [i for i in f_iss if i["level"] in ("warn", "error")]
+        checks["sổ dữ kiện (số liệu có claim + nguồn)"] = (f"{len(f_warn)} vấn đề — qa/facts.md" if f_warn else "đạt",
+                                                          not f_warn)
+        aud, _prm = seo.brand_hits(self.csb)
+        checks["nền tảng — metadata không chứa tên kênh khác"] = ("; ".join(f"{w}: {n}" for w, n in aud[:3]) or "đạt",
+                                                                 not aud)
+        sc, _ = seo.score(self.csb)
+        checks["SEO Shorts (từ khoá/tiêu đề/mô tả/hashtag)"] = (f"{sc}/100 — xem out/publish.md", sc >= 70)
+        from . import policy  # noqa: PLC0415 — vòng 22: rủi ro chính sách YouTube (khuôn mẫu, persona, metadata)
+        p_rows, p_iss = policy.checks(self.csb, self.slug)
+        save_text(self.p("qa", "policy.md"), policy.report_md(self.csb, p_iss, self.slug))
+        checks.update(p_rows)
+        from . import retention  # noqa: PLC0415 — vòng 23: hook / kịch bản giữ chân / diễn viên đa dạng (chặn đỏ)
+        checks.update(retention.checks(self.csb, self.slug, info["duration"]))
         rows = qagate.classify(checks)
         self.gate = qagate.summary(rows)
         segs = [s for s in self.tl["segments"] if s["sid"] != "OUTRO"]
@@ -1184,7 +1215,9 @@ class Run:
                 self.trims = getattr(self, "trims", {})
                 self.s_thumbnails()
                 return self.finish("done")
-            if (self.fresh("render", fp, [final, self.p("qa", "report.html")]) and self.state.get("qa") == fp
+            from . import lean  # noqa: PLC0415 — vòng 23: đầu ra gọn (qa/ đã dọn → dấu "xong" là out/post.md)
+            done_mark = self.p("out", "post.md") if lean.enabled() and not self.dry else self.p("qa", "report.html")
+            if (self.fresh("render", fp, [final, done_mark]) and self.state.get("qa") == fp
                     and not any(self.forced(s) for s in heavy) and not self.tts_force):
                 self.head("render", "đã mới nhất + đã qua cổng QA — bỏ qua (dùng --from render để làm lại)")
                 return self.finish("done")
@@ -1221,6 +1254,13 @@ class Run:
             if self.after_only("qa"):
                 return self.finish("done")
             self.s_publish()
+            if lean.enabled() and not self.dry:             # vòng 23: một file MP4 cho mọi nền tảng + bìa 16:9 + post.md
+                self.s_version(verdict, keep=False)
+                word = {"green": "XANH", "yellow": "VÀNG", "red": "ĐỎ (duyệt tay)"}[verdict]
+                res = lean.pack(self.proj, self.csb, word, log=self.log)
+                self.head("pack", f"out/final.mp4 · out/cover-16x9.jpg · out/captions.srt · out/post.md "
+                                  f"(dọn {res['freed'] / 1e6:.0f} MB)")
+                return self.finish("done")
             self.s_deliver()
             self.s_version(verdict)
             return self.finish("done")

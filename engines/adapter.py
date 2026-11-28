@@ -229,6 +229,34 @@ def validate_three(scene, params):
         errs += stage_physics_errors(params) + [f"stage: {e}" for e in userassets.errors(params)]
         errs += stage_creature_errors(params)
         errs += stage_hybrid_errors(params)
+        errs += stage_dive_errors(params)
+    return errs
+
+
+DIVE_PARTS = ("head", "eye", "brain", "top", "chest", "heart", "belly", "center", "thigh", "feet")
+
+
+def stage_dive_errors(params):
+    """Vòng 21 — `frame.dive` của cảnh stage: prop có thật, bộ phận hợp lệ, u/dist/fov trong khoảng."""
+    dv = ((params or {}).get("frame") or {}).get("dive")
+    if dv is None:
+        return []
+    if not isinstance(dv, dict) or not dv.get("of"):
+        return ["stage: frame.dive là {of: <id prop>, part, u, dist, fov}."]
+    errs = []
+    ids = [p.get("id") for p in (params.get("props") or []) if isinstance(p, dict)]
+    if dv["of"] not in ids:
+        errs.append(f"stage: frame.dive.of '{dv['of']}' không có trong props (có: {', '.join(i for i in ids if i) or '—'}).")
+    if dv.get("part", "head") not in DIVE_PARTS:
+        errs.append(f"stage: frame.dive.part '{dv.get('part')}' không có (có: {'|'.join(DIVE_PARTS)}).")
+    u = dv.get("u", 0.62)
+    if not isinstance(u, (int, float)) or not 0.05 <= u <= 0.95:
+        errs.append("stage: frame.dive.u trong 0.05..0.95 (lúc bắt đầu lao vào).")
+    for k, lo, hi in (("dist", 0.02, 5), ("fov", 8, 60)):
+        if k in dv and not (isinstance(dv[k], (int, float)) and lo <= dv[k] <= hi):
+            errs.append(f"stage: frame.dive.{k} trong {lo}..{hi}.")
+    if params.get("camera"):
+        errs.append("stage: frame.dive chỉ chạy với camera tự căn khung — bỏ `camera[]` hoặc tự viết key lao vào.")
     return errs
 
 

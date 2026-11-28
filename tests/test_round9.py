@@ -35,13 +35,14 @@ def tearDownModule():
 class Gate(unittest.TestCase):
     def test_levels(self):
         rows = qagate.classify({"fps": ("29", False), "OCR đọc được": ("1/2", False), "kích thước": ("ok", True),
-                                "nguồn Flow ≥ 720p": ("360x640", None)})
+                                "nguồn Flow ≥ 720p": ("360x640", None), "mật độ thị giác": ("2/8", False)})
         lv = {r["label"]: r["level"] for r in rows}
         self.assertEqual(lv["fps"], "red")                      # nằm trong qa.blocking
-        self.assertEqual(lv["OCR đọc được"], "yellow")          # không chặn
+        self.assertEqual(lv["OCR đọc được"], "red")             # vòng 23: chữ khó đọc cũng chặn (chủ kênh không đọc QA)
+        self.assertEqual(lv["mật độ thị giác"], "yellow")      # vẫn chỉ cảnh báo
         self.assertEqual(lv["nguồn Flow ≥ 720p"], "yellow")     # không đo được / cảnh báo
         self.assertEqual(qagate.verdict(rows), "red")
-        self.assertEqual(qagate.summary(rows)["red"], 1)
+        self.assertEqual(qagate.summary(rows)["red"], 2)
 
     def test_audio_rows_true_peak_has_no_slack(self):
         r = qagate.audio_checks({"lufs": -14.1, "true_peak": -0.8, "lra": 6}, -14, -1.0)

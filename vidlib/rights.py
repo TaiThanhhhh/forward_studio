@@ -5,6 +5,7 @@
 """
 import fnmatch
 import glob
+import json
 import os
 
 from .common import ROOT, load_json, save_json
@@ -66,7 +67,15 @@ def usage(proj, sb, style=None):
     music = glob.glob(os.path.join(proj, "audio", "music.*"))
     out.append(("music:user", os.path.basename(music[0])) if music else ("music:synth", "nhạc tổng hợp"))
     if glob.glob(os.path.join(proj, "audio", "vo.mp3")):
-        out.append(("voice:elevenlabs", "lời đọc ElevenLabs"))
+        try:
+            with open(os.path.join(proj, "audio", "vo_alignment.json"), encoding="utf-8") as fh:
+                prov = json.load(fh).get("provider")
+        except (OSError, ValueError):
+            prov = None
+        if prov == "edge_tts":                       # vòng 21: ghi đúng nhà cung cấp giọng thật sự đã dùng
+            out.append(("voice:edge-tts", "lời đọc Edge Neural TTS (dự phòng khi ElevenLabs hết quota)"))
+        else:
+            out.append(("voice:elevenlabs", "lời đọc ElevenLabs"))
     clips = [p for p in glob.glob(os.path.join(proj, "clips", "*")) if os.path.isfile(p)]
     if clips:
         out.append(("clip:flow", f"{len(clips)} clip Google Flow"))

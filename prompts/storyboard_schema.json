@@ -97,7 +97,10 @@
             "sync": "vo_word:steel"
           }
         ]
-      }
+      },
+      "claims": [
+        "K1"
+      ]
     },
     {
       "id": "C02",
@@ -188,7 +191,7 @@
         "Curiosity search title (≤ 60)",
         "Direct question search title (≤ 60)"
       ],
-      "description": "Hook sentence. Keyword-rich explanation sentence. Verified source — True.",
+      "description": "Leidenfrost effect explained: hook sentence with the keyword. Keyword-rich explanation sentence. Sources: NASA (2024).",
       "hashtags": [
         "physics",
         "leidenfrost",
@@ -212,9 +215,27 @@
       ],
       "search_query": "hot steel ball in ice water physics",
       "comment_hook": "Did you expect it to boil instantly?"
-    }
+    },
+    "primary_keyword": "leidenfrost effect"
   },
   "sources": [
-    "https://… (one source per number)"
+    {
+      "id": "S1",
+      "title": "Title of the page you opened",
+      "publisher": "e.g. NASA / Nature / WHO",
+      "year": 2024,
+      "url": "https://… (a page you actually opened)",
+      "kind": "gov|journal|org|dataset|encyclopedia|news|book"
+    }
+  ],
+  "claims": [
+    {
+      "id": "K1",
+      "text": "Steel at 1000 °C vaporizes water on contact, creating a vapor layer (Leidenfrost effect)",
+      "value": 1000,
+      "unit": "°C",
+      "source": "S1",
+      "status": "established"
+    }
   ]
 }

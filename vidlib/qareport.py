@@ -147,6 +147,7 @@ def ocr_report(events, proj, code_jobs, code_texts, out_dir):
     rows = []
     all_overlaps = []
     all_boxes = []
+    all_on_object = []
     os.makedirs(out_dir, exist_ok=True)
     avail = ocr.available()
 
@@ -198,6 +199,8 @@ def ocr_report(events, proj, code_jobs, code_texts, out_dir):
                 all_overlaps.append({"sid": sid, **ov})
             for bx in audit.get("boxes") or []:
                 all_boxes.append({"sid": sid, **bx})
+            for ob in audit.get("on_object") or []:
+                all_on_object.append({"sid": sid, **ob})
         else:
             crops_list = codeshot.text_crops(job, qa_frames)
         for f, want, crop, tex in crops_list:  # engine báo khung bao từng chữ
@@ -224,7 +227,7 @@ def ocr_report(events, proj, code_jobs, code_texts, out_dir):
         for want, (_s, f, miss, sims, found) in best.items():
             row(f"{sid} chữ trong cảnh (code, frame {f})", want, miss, sims, found, layer="diegetic")
     return {"available": avail, "total": len(rows), "ok": sum(r["ok"] for r in rows), "rows": rows,
-            "overlaps": all_overlaps, "boxes": all_boxes}
+            "overlaps": all_overlaps, "boxes": all_boxes, "on_object": all_on_object}
 
 
 def _box_overlap_ratio(a, b):
@@ -261,6 +264,11 @@ def studio_checks(sb, ocr_rep=None, captions_on=True, overlap_th=0.05):
                         seen.add((sid, fr, a_txt, b_txt))
 
     checks = {}
+    # vòng 23: chữ còn đè lên hình sau khi engine đã né (chủ kênh không đọc QA → cổng phải chặn)
+    oo = [o for o in (oc.get("on_object") or []) if float(o.get("overlap", 0)) > 0.3]
+    checks["chữ không đè hình (text on object)"] = (
+        ("; ".join(f"{o.get('sid', '?')} '{str(o.get('text', ''))[:20]}' {float(o['overlap']):.0%}" for o in oo[:3])
+         or f"{len(oc.get('on_object') or [])} nhãn chạm nhẹ (có nền lót)"), not oo)
     if overlaps:
         sample = "; ".join(
             f"{o.get('sid', '?')}@f{o.get('frame', 0)}: '{o.get('a', '')[:18]}' ∩ '{o.get('b', '')[:18]}' "
@@ -389,6 +397,10 @@ def platform_seo(sb):
 
     yt_titles = [str(t).strip() for t in (yt_raw.get("titles") or base_titles) if str(t).strip()]
     yt_desc = (yt_raw.get("description") or base_desc).strip()
+    from . import policy  # noqa: PLC0415 — vòng 22: video sức khoẻ → dòng "not medical advice" có sẵn để dán
+    _disc = policy.disclaimer_for(sb)
+    if _disc and _disc.lower() not in yt_desc.lower():
+        yt_desc = f"{yt_desc}\n{_disc}".strip()
     yt_tags_src = yt_raw.get("hashtags") if yt_raw.get("hashtags") is not None else base_tags
     yt_hashtags = _clean_tags(yt_tags_src, drop=TIKTOK_ONLY_TAGS)[:4]
     if len(yt_hashtags) > 3 and yt_raw.get("hashtags") is None:
@@ -443,6 +455,10 @@ def render_platform_caption(sb, preset):
             lines += ["", "YOUTUBE STUDIO TAGS:", ", ".join(y["tags"])]
         if y["pinned_comment"]:
             lines += ["", "PINNED COMMENT:", y["pinned_comment"]]
+        from . import facts  # noqa: PLC0415 — vòng 21: nguồn (link Shorts không bấm được → tên nguồn + URL để tra)
+        src = facts.sources_lines(sb)
+        if src:
+            lines += ["", "SOURCES (paste under the description or in a pinned comment):"] + [f"- {x}" for x in src]
         return "\n".join(lines).strip() + "\n"
     if preset == "tiktok":
         t = seo["tiktok"]
@@ -530,6 +546,20 @@ def write_publish(sb, path):
 
     if pub.get("search_notes"):
         L += ["## Search notes", "", pub["search_notes"], ""]
+    from . import facts, seo  # noqa: PLC0415 — vòng 21
+    sc, rows = seo.score(sb)
+    kw, _ = seo.primary_keyword(sb)
+    synth = {True: "**Yes**", False: "No (toàn hoạt hình code)",
+             None: "**CHƯA QUYẾT** — có clip Flow: ghi `publish.youtube_shorts.altered_content`"}[seo.altered_content(sb)]
+    L += [f"## SEO check — {sc}/100", "",
+          f"Từ khoá chính: **{kw}** · YouTube category: {seo.category_id(sb)} · Altered/synthetic content: {synth}", "",
+          "| kiểm | đạt | gợi ý |", "|---|---|---|"]
+    L += [f"| {lab} | {'✓' if ok else '✗'} | {'' if ok else hint} |" for lab, ok, hint in rows]
+    L.append("")
+    src = facts.sources_lines(sb)
+    if src:
+        L += ["## Sources", "", "_Link trong mô tả/bình luận Shorts không bấm được — giữ tên nguồn để người xem tra._", ""]
+        L += [f"- {x}" for x in src] + ["", f"Dòng gọn cho mô tả: `{facts.description_block(sb)}`", ""]
     with open(path, "w", encoding="utf-8", newline="\n") as f:
         f.write("\n".join(L))
     return path, warns

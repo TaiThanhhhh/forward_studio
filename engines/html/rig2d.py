@@ -10,6 +10,7 @@ import re
 
 _JS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "rig2d.js")
 FACES = ("left", "right")
+VIEWS = ("side", "front", "back")          # vòng 23: góc nhìn người tả thực
 
 
 @functools.cache
@@ -63,11 +64,11 @@ def parse(name):
     parts = [p.strip() for p in name.strip().lower()[4:].split(":") if p.strip()]
     raw = parts[0] if parts else ""
     sp = raw if raw in table() else aliases().get(raw)
-    out = {"species": sp, "raw": raw, "action": None, "expr": None, "face": None, "hair": None, "bad": []}
+    out = {"species": sp, "raw": raw, "action": None, "expr": None, "face": None, "hair": None, "view": None, "bad": []}
     acts, exs, hs = actions(), exprs(), hairs()
     for tok in parts[1:]:
         key = ("action" if tok in acts else "expr" if tok in exs else "face" if tok in FACES
-               else "hair" if tok in hs else None)
+               else "hair" if tok in hs else "view" if tok in VIEWS else None)
         if key:
             out[key] = tok
         else:
@@ -93,15 +94,30 @@ def check(name):
         pool = actions() + exprs() + list(FACES) + hairs()
         bad = ", ".join(f"'{b}'{_hint(b, pool)}" for b in r["bad"])
         return (f"icon '{name}': {bad} không phải hành động ({'|'.join(actions())}), biểu cảm ({'|'.join(exprs())}), "
-                f"hướng (left|right) hay kiểu tóc ({'|'.join(hairs())}).")
+                f"hướng (left|right), góc nhìn ({'|'.join(VIEWS)}) hay kiểu tóc ({'|'.join(hairs())}).")
     return None
 
 
 def check_args(args):
     """Kiểm khối args {action, expr, face, hair} đi kèm icon rig (scene actor/keys có thể truyền)."""
     errs = []
-    for key, pool in (("action", actions()), ("expr", exprs()), ("face", FACES), ("hair", hairs())):
+    for key, pool in (("action", actions()), ("expr", exprs()), ("face", FACES), ("hair", hairs()), ("view", VIEWS),
+                      ("outfit", outfits()), ("beard", ("stubble", "full"))):
         v = (args or {}).get(key)
         if v is not None and v not in pool:
             errs.append(f"rig: {key} '{v}' không có{_hint(str(v), list(pool))} (có: {'|'.join(pool)}).")
     return errs
+
+
+def outfits():
+    return list(_arr("OUTFITS"))
+
+
+def parts():
+    """Bộ phận có điểm neo (vòng 21) — `"actor.part"` trong labels/arrows/fx/camera và `through` của zoom_through."""
+    return _arr("PARTS")
+
+
+def organs():
+    """Cơ quan vẽ được khi x-ray (`organs` của actor)."""
+    return _arr("ORGANS")

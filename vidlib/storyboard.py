@@ -13,7 +13,8 @@ from .common import channel, duration_profile, flow_models, load_json, save_json
 
 BEATS = ("hook", "setup", "escalate", "payoff", "twist", "outro")
 MODES = ("auto", "frames_start", "frames_start_end", "ingredients", "code")
-TRANSITIONS = ("cut", "flash", "whip", "match", "glitch", "fade", "dip", "iris_match", "whip_match", "tape_stop")
+TRANSITIONS = ("cut", "flash", "whip", "match", "glitch", "fade", "dip", "iris_match", "whip_match", "tape_stop",
+               "zoom_through")   # vòng 21: lao xuyên một bộ phận của shot trước (`through`) — vidlib/partzoom.py
 OUTRO_MODES = ("code", "loop", "template", "2d")
 ONSCREEN_KINDS = ("caption", "label", "counter", "arrow", "circle", "tag", "compare")
 ARCHETYPES = ("before_disaster", "split", "big_number", "vs", "red_circle")
@@ -264,7 +265,7 @@ def validate(sb):
     if len(set(ids)) != len(ids):
         errs.append("Có id shot bị trùng.")
     ing_ids = {i.get("id") for i in sb.get("ingredients", [])}
-    seen = set()
+    seen, prev_shot = set(), None
     for s in sb.get("shots", []):
         tag = s.get("id", "?")
         if not ID_RE.match(str(tag)):
@@ -275,6 +276,14 @@ def validate(sb):
             errs.append(f"{tag}: mode '{s.get('mode')}' không hợp lệ ({'|'.join(MODES)}). Text-to-video không được dùng.")
         if s.get("transition_in") not in TRANSITIONS:
             errs.append(f"{tag}: transition_in '{s.get('transition_in')}' không hợp lệ ({'|'.join(TRANSITIONS)}).")
+        if s.get("through") is not None or s.get("transition_in") == "zoom_through":
+            from . import partzoom  # noqa: PLC0415
+            prev = prev_shot
+            if s.get("transition_in") == "zoom_through" and prev is None:
+                errs.append(f"{tag}: zoom_through cần một shot đứng trước để lao xuyên vào.")
+            errs += [f"{tag}: {m}" for m in partzoom.through_errors(s.get("through"), prev)]
+            if s.get("through") is not None and s.get("transition_in") != "zoom_through":
+                warns.append(f"{tag}: có `through` nhưng transition_in không phải zoom_through — `through` bị bỏ qua.")
         for r in s.get("refs", []):
             if r not in ing_ids:
                 errs.append(f"{tag}: ref '{r}' không có trong ingredients.")
@@ -325,6 +334,7 @@ def validate(sb):
         if "story_hud" in s and s["story_hud"] is not None and not isinstance(s["story_hud"], (dict, bool)):
             errs.append(f"{tag}: story_hud phải là object JSON hoặc false/null.")
         seen.add(tag)
+        prev_shot = s
     if sb.get("assembly", "auto") not in ASSEMBLIES:
         errs.append(f"assembly '{sb.get('assembly')}' không hợp lệ ({'|'.join(ASSEMBLIES)}).")
     om = (sb.get("outro") or {}).get("mode")

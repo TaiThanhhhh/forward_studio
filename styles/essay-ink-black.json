@@ -1,13 +1,13 @@
 {
-  "name": "School of Life Black",
-  "description": "Minh hoạ 2D tâm lý & triết lý tối giản trầm ấm (cảm hứng The School of Life, Psych2Go & TED-Ed): nền giấy than ấm dịu mắt, nhân vật 2D biểu cảm gần gũi, bảng màu đất nung + xanh xô thơm + vàng kem, chuyển động điềm tĩnh nhiều khoảng thở.",
+  "name": "Essay Ink Black",
+  "description": "Minh hoạ 2D tâm lý & triết lý tối giản trầm ấm (thể loại animated psychology essay): nền giấy than ấm dịu mắt, nhân vật 2D biểu cảm gần gũi, đất nung + xanh xô thơm + vàng kem, chuyển động điềm tĩnh nhiều khoảng thở, bong bóng suy nghĩ/lời nói gắn đầu nhân vật.",
   "source": {
     "repo": "studio — engine html (vòng 19)",
-    "url": "engines/html/looks.js · styles/school-of-life-black.json",
+    "url": "engines/html/looks.js · styles/essay-ink-black.json",
     "sha": "—",
     "license": "mã của kênh; font Montserrat / RobotoMono (OFL-1.1)",
-    "from": "2D minimalist psychology & philosophy essay explainer (The School of Life / Psych2Go / TED-Ed)",
-    "how": "look `schooloflife` trên engine html: nền than giấy ấm, viền mực mảnh, màu đất nung/xanh sage dịu, nhịp smooth không giật"
+    "from": "2D minimalist psychology & philosophy essay explainer genre",
+    "how": "look `essay` trên engine html: nền than giấy ấm, viền mực mảnh, màu đất nung/xanh sage dịu, nhịp smooth không giật"
   },
   "code_engine": "html",
   "code_only": true,
@@ -26,9 +26,9 @@
     "stress",
     "decision",
     "memory",
-    "psych2go",
-    "ted-ed",
-    "story"
+    "story",
+    "lesson",
+    "feelings"
   ],
   "black_min": 0.55,
   "palette": {
@@ -95,7 +95,7 @@
   },
   "variation": "Bold",
   "html": {
-    "look": "schooloflife",
+    "look": "essay",
     "font": "Montserrat-Variable.ttf",
     "mono": "RobotoMono-Variable.ttf",
     "palette": {

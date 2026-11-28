@@ -618,7 +618,8 @@ def look_entrance(look):
 def signature(sb, style=None, jobs=None, spine_ctx=None, slug=None):
     """Chữ ký motion của một video. jobs = {sid: job.json đã dựng} (bố cục + kiểu bay thật); spine_ctx = kết quả
     codeshot.spine_context (khi chưa có job). Thiếu cả hai → bố cục ghi tay trong storyboard (nếu có)."""
-    style = style or sb.get("style_resolved") or sb.get("style") or "forward"
+    from .textstyle import canonical  # noqa: PLC0415 — id style cũ (vòng 19) → tên thể loại trong lịch sử/brief
+    style = canonical(style or sb.get("style_resolved") or sb.get("style") or "forward")
     jobs, spine_ctx = jobs or {}, spine_ctx or {}
     c = cfg()
     generic, mech_sc = set(c["generic_beats"]), set(c["mechanism_scenes"])
@@ -1023,7 +1024,8 @@ def brief_block(idea, slug=None, plan=None, proj=None, idea_extra=None):
         for h in hist:
             hm = h.get("metrics") or {}
             mech = sorted(set(h.get("mechanisms") or []) | set(h.get("mechanisms_inferred") or []))
-            L.append(f"  - `{h.get('slug')}` ({h.get('style')}, {h.get('narrative') or 'classic'}): "
+            from .textstyle import canonical  # noqa: PLC0415 — chữ ký lưu từ trước vòng 21 có thể mang id style cũ
+            L.append(f"  - `{h.get('slug')}` ({canonical(h.get('style'))}, {h.get('narrative') or 'classic'}): "
                      f"{_fmt_skel(h.get('skeleton') or [])} · generic cards {hm.get('generic_share', 0):.0%}"
                      + (f" · mechanisms: {', '.join(mech[:5])}" if mech else ""))
         lays = recent_layouts(slug, hist)

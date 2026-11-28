@@ -58,11 +58,12 @@ def _onscreen_times(s, scale):
                   if o.get("kind") != "caption")
 
 
-def punch_plan(s, dur, scale, idx):
-    """Danh sách (t, scale) — punch-in xen kẽ để mỗi ≤ change_every giây có một thay đổi thị giác."""
+def punch_plan(s, dur, scale, idx, every=None):
+    """Danh sách (t, scale) — punch-in xen kẽ để mỗi ≤ change_every giây có một thay đổi thị giác.
+    every: ghi đè change_every_sec (profile 'explainer' của vòng 22: shot code tự chuyển động → punch thưa hoặc tắt)."""
     p = channel()["pacing"]
     lo, hi = p["punch_in_scale"]
-    every = p["change_every_sec"]
+    every = p["change_every_sec"] if every is None else every
     events = [0.0] + _onscreen_times(s, scale)
     punches = [float(t) * scale for t in s.get("punch_in") or []]
     events += punches
@@ -107,6 +108,8 @@ def is_seamless_loop(sb):
 
 
 def build(sb, vo=None, beats=None, outro_sec=0.0):
+    from .common import duration_profile  # noqa: PLC0415
+    prof = duration_profile(sb)
     durs, notes = shot_durations(sb, vo)
     starts, t = [], 0.0
     for d in durs:
@@ -127,7 +130,8 @@ def build(sb, vo=None, beats=None, outro_sec=0.0):
         n = fb[i + 1] - fb[i]
         dur = n / FPS
         scale = dur / max(float(s["target_sec"]), 1e-6)
-        punches, na = punch_plan(s, dur, scale, i)
+        code_every = prof.get("code_change_every_sec") if s.get("mode_resolved", s.get("mode")) == "code" else None
+        punches, na = punch_plan(s, dur, scale, i, every=code_every)
         autos += na
         base = 1.0 if i % 2 == 0 else 1.04
         continuing = i > 0 and (s.get("start_frame", {}).get("seed_from") or trans[i] == "match")

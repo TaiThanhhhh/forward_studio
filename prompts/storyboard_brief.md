@@ -34,6 +34,23 @@ prompts from the semantic fields you write. **Do not write long prompts**: descr
 4. **Visual Craft Diversity (Anti-PowerPoint):** At least **40%** of shots must be high-craft cinema scenes — `dossier`, `xray_cutaway`, `hero_stat`, cinematic 3D `stage` with varied camera presets (`ecu_macro`, `low_hero`, `tracking_low`, `over_shoulder`, `dolly_zoom`), or multi-actor `scene` with real motion. **Never stack more than 2 consecutive flat single-icon cards.** When explaining internal physiology or hidden mechanics, show the system live (`xray_cutaway` with flow particles or 3D `ecu_macro`/`low_hero`) — never a static floating icon. Use top-level `story_hud` when continuous rising telemetry sharpens tension.
 5. **Seamless Loop Option (`outro.mode: "loop"`):** When the archetype specifies `"loop"`, set `"outro": {{"mode": "loop", "bridge_frames": 8}}` (omitting any static "Follow for more" card) and write the final spoken clause so its grammar and momentum feed seamlessly back into Shot 1's opening line for AVD > 100%.
 6. **Literal Visual Law (Zero Confusing Abstract Clipart — Must Make Sense on Mute):** Every visual object on screen MUST literally represent what the VO is saying — a viewer watching on mute must understand the exact mechanism in 2 seconds. NEVER substitute random abstract icons (`sparkle`, `atom`, `palette`, `wand`) for concrete tech/AI/science concepts; instead use literal 3D props, `code_terminal` (real code + token ID chips), `chat_prompt` (real prompt ↔ AI answer + verdict stamp), `dossier`, or chalkboard/board text cards. Keep one crystal-clear core idea per short rather than cramming 4+ jargon terms.
+7. **Retention gate (the tool BLOCKS the video if any line fails — write to pass it):**
+   - Shot 1 `vo` ≤ 16 words with a curiosity gap the rest of the video pays off: a question, a reversal ("isn't",
+     "actually", "but"), or one specific surprising number. Never open with "In this video", "Today we", "Hey guys",
+     "Welcome", "Have you ever wondered".
+   - At least one mid-video re-hook line ("But here's the weird part…", "Turns out…", a new question) between the
+     setup and the payoff. Every sentence ≤ 24 words. No filler ("basically", "let's dive in", "it's important to
+     note") and NEVER ask for likes/subscribes/comments in the VO (spam signal on every platform).
+   - The last line is a short punch (≤ 16 words) or loops back to the opening idea so a rewatch feels seamless.
+   - The hook must be true: the payoff has to deliver exactly what the hook promised (no bait-and-switch).
+8. **Cast & camera angles (people):** realistic people come in many designs — pick a cast that fits the topic and is NOT
+   the same person as the channel's last video: `rig:athlete|marathoner|runnerf|lifter|lifterf|bigguy|coach|elder|
+   student|office|cyclist|medic|trailrunner|casual|casualf`, plus `outfit` (singlet|tank|tee|jersey|hoodie|shirt|
+   labcoat), `hair` (short|long|bun|curly|afro|buzz|pony|cap|helmet|bald), `beard` (stubble|full), `glasses: true`.
+   Use at least two camera angles across the video: `view` "side" | "front" | "back" (keyable — a key `{{"u": 0.5,
+   "view": "front"}}` turns the person to camera). Gym lifts read best `front` (barbell across the shoulders /
+   in front of the thighs); cycling reads best `side`; running alternates side tracking shots and `front` shots
+   running at the camera.
 
 - Sentences of about 8–15 words. Contractions ("it's", "don't", "won't"). Plain spoken English.
 - **Numbers as words in the VO** ("one thousand degrees", not "1,000°C"). Digits belong in `text_fx`.
@@ -41,16 +58,58 @@ prompts from the semantic fields you write. **Do not write long prompts**: descr
 - Audio tags for ElevenLabs v3 may open a line: [excited], [curious], [dramatically], [whispers], [short pause]…
   Use them sparingly (hook and twist get one by default).
 - Each VO line covers 1–2 shots (a shot with empty `vo` continues the previous line).
-- **Facts must be correct.** Verify every number with a web search and put the URLs in `sources`. Anything
-  hypothetical must be said as hypothetical in the VO. Label the idea's truth status in `truth`: True / Disputed /
-  Hypothetical.
+- **FACT DISCIPLINE (claims ledger — the channel's credibility):**
+  - Every number and every factual assertion the viewer hears or sees goes into top-level `claims`:
+    `{{"id": "K1", "text": "...", "value": 243, "unit": "days", "source": "S1", "status": "established|estimate|disputed|hypothetical"}}`;
+    each shot lists the claims it uses in `"claims": ["K1"]` (the tool prints a small on-screen chip "Source: NASA (2023)").
+  - `sources` are objects `{{"id": "S1", "title", "publisher", "year", "url", "kind": "gov|journal|org|dataset|encyclopedia|news|book"}}`.
+    Prefer PRIMARY sources (agency, peer-reviewed journal, research institute, official dataset). Never cite social
+    media, blogs, content farms, or AI chat pages. Encyclopedias are only a lead — cite what they cite.
+  - Verify with a web search AND open the page for each key number; cite only pages you actually opened. Never invent a
+    URL, a study, a statistic or a quote. If you cannot confirm a number: round it and hedge ("about", "up to") with
+    `status: "estimate"`, or cut it.
+  - `disputed` / `hypothetical` claims MUST be hedged in the VO ("scientists think", "might", "if…"). No absolutes
+    ("always", "never", "100%", "proven", "studies show") without a claim behind them.
+  - On-screen numbers must equal the claim's value (rounding is fine). Label the idea's truth status in `truth`:
+    True / Disputed / Hypothetical.
+  - **Data-true visuals:** sizes, counts, rates and durations in the picture come from the claims (real proportions —
+    a person ≈ 1.7 m, a door ≈ 2 m, a dog ≈ 0.6 m). Exaggerate only as an obvious metaphor and mark that actor
+    `"scale_free": true`.
+- **Reference studios are craft references only.** NEVER write another channel's or studio's name (or "X-style") in
+  anything the viewer sees or hears — VO, text_fx, titles, descriptions, tags, hashtags, captions, thumbnail text — nor in
+  Flow picture prompts. Describe the genre instead ("flat vector science animation"). The tool blocks such names.
 
 ## 2. Pacing
 - Average shot {avg_min}–{avg_max}s, max {shot_max}s. Hook shot ≤ {hook_max}s.
 - Something changes at least every {change_every}s (a text_fx pop, punch-in, new element, a counter). The tool adds a
   virtual camera on every Flow clip (constant creep, a 7-frame kick on every hit SFX, momentum carried across cuts),
   so nothing ever freezes — but still plan the action.
-- `transition_in`: `"cut"` (default), `"iris_match"` (scale-through match cut into subject — great for 3D ↔ `xray_cutaway` dives), `"whip_match"` (directional momentum whip), `"tape_stop"` (abrupt pattern interrupt / myth-busting cut), `"flash"` (reveal; ≤ 2 per video), `"whip"` (topic change), `"match"`, `"dip"`.
+- `transition_in`: `"cut"` (default), `"zoom_through"` + `"through": "hero.eye"` (the camera DIVES INTO a part of
+  the previous shot — a character's eye/brain/heart/mouth or a prop's screen/window — and this scene opens from inside
+  it; `through` = `"actorId.part"` of the previous `scene` shot, or `[x, y]` 0..1 of its frame; best 1–2 per video, at
+  the "go inside" moment), `"iris_match"` (scale-through match cut into subject — great for 3D ↔ `xray_cutaway` dives), `"whip_match"` (directional momentum whip), `"tape_stop"` (abrupt pattern interrupt / myth-busting cut), `"flash"` (reveal; ≤ 2 per video), `"whip"` (topic change), `"match"`, `"dip"`.
+- **PART-ZOOM & LIVING-PARTS PLAYBOOK (2D/3D explainers):** show the mechanism INSIDE the subject instead of an icon:
+  `scene` actor `"xray"` (keyed 0→1) + `"organs"` to reveal brain/heart/lungs/stomach/skeleton in a character, `"focus"`
+  to glow the part the VO names, `"hold"` to put the real object in its hand, `"talk"` + `labels[].bubble` for inner
+  voice / dialogue (psychology shorts), `"look_at"` so characters react to each other; end a shot with a camera key
+  `{{"u": 1, "at": "hero.eye", "zoom": 12}}` and start the next with `zoom_through`. In 3D `stage`: `"frame": {{"dive":
+  {{"of": "hero", "part": "head"}}}}` then `zoom_through`. One dive per idea — it must MEAN "we go inside".
+- **ROUND 22 — RECOGNIZABLE, VARIED, READABLE (owner feedback + YouTube "inauthentic content" policy):**
+  - Every object must be recognizable at a glance: use the DETAILED props (laptop, phone, chip, brain, rbc, macrophage,
+    fat, glycogen, spine, disc, fiber, capillary, receptor, caffeine…) and REALISTIC people (`rig:athlete`,
+    `rig:marathoner`, `rig:runnerf`, `rig:lifter`, `rig:casual`, `rig:casualf`; actions incl. `cycle`, `curl`,
+    `squat`, `tired`). Never stand in a generic dot/box for a named thing.
+  - Give scenes a NIGHT environment with depth: `"backdrop": "gym" | "bedroom" | "track" | "road" | "city" | "office"
+    | "studio" | "lab"` (match the story's place), set `floor` ≈ the feet line. Darkmode = night, not a flat void.
+  - To show what happens INSIDE, prefer a `lenses` magnifier (ring on the part → zoomed live scene) over a camera
+    dive; freeze the character (`"freeze": u`) before zooming into a moving body part.
+  - No frame templates repeated from recent videos (the tool blocks ≥ 40% repeated frames): every shot = its own
+    mechanism, objects and place. Avoid `xray_cutaway`, `meter`, `dossier`, `hero_stat`, `compare` bars unless the
+    idea truly needs them, and never twice in a row across videos.
+  - Pace: `"length_profile": "explainer"` (34–56 s, 4–6.5 s per shot, one idea per shot, ~2.8 words/s); keep on-screen
+    text to one tag + one or two short labels per shot (the tool de-overlaps and clamps them).
+  - Health topics: inform, don't prescribe ("studies used…", not "you should take…"); never claim to be a doctor or
+    coach. The upload adds "Educational content, not medical advice."
 - Set `"hold": true` on a shot ONLY if a deliberate freeze is wanted (QA rejects freezes ≥ 0.4 s otherwise).
 
 ## 3. Picture (English)
@@ -134,6 +193,13 @@ keyword, the twist is a crossed-out thesis. Other styles ignore it, so always fi
   - `publish.youtube_shorts`: 3 search-friendly `titles` (40–55 chars, ≤ 60 max, lead keyword in first 40 chars), `description` (2–4 natural keyword-rich sentences + source), 3 focused niche `hashtags` (no "#"), `tags` (8–12 YouTube Studio search keywords), and `pinned_comment` (1 curiosity/debate question to boost replies & AVD).
   - `publish.tiktok`: `caption` (≤ 260 chars: 1-line hook + natural TikTok Search keywords + comment/save question CTA), 3–5 `hashtags` (**NEVER `#shorts`**), `search_query` (main TikTok search phrase), and `comment_hook`.
   - Also keep top-level `publish.titles`, `publish.description`, `publish.hashtags` populated for backwards compatibility. Check search phrasing with a web search.
+  - **SEARCH-FIRST SEO:** set `publish.primary_keyword` = the exact phrase people type (e.g. "why do we dream");
+    put it in the first 40 characters of title 1, in the first sentence of the YouTube description, and SAY it in the
+    VO of shot 1 or 2 (Shorts search reads the spoken transcript). 2–4 focused hashtags (the first 3 show above the
+    title). End the YouTube description with a source line ("Sources: NASA (2023); …" — links in Shorts descriptions are
+    not clickable). Optional `publish.localizations` `{{"es": {{"title", "description"}}}}` for translated metadata;
+    `publish.youtube_shorts.category` (education | science_tech) and `altered_content` (true only if a realistic AI
+    clip shows real people/places/events).
 
 ## 7. Schema (return exactly these keys)
 {schema}

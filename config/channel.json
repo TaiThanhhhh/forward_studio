@@ -50,6 +50,21 @@
       "board_maxrate": "10M",
       "rehooks": "1 mid-video pattern interrupt around 12–16s"
     },
+    "explainer": {
+      "label": "Illustrated explainer (35–55s, vòng 22: nhịp đọc được, mỗi shot một ý)",
+      "target_sec": 46,
+      "min_sec": 34,
+      "max_sec": 56,
+      "shot_avg_min": 3.6,
+      "shot_avg_max": 5.8,
+      "shot_max_sec": 6.5,
+      "code_shot_max_sec": 7.0,
+      "hook_max_sec": 5.6,
+      "board_crf": 19,
+      "board_maxrate": "10M",
+      "rehooks": "1 mid-video pattern interrupt around 18–24s",
+      "code_change_every_sec": 99
+    },
     "deep": {
       "label": "Mini Deep-Dive (65–90s · TikTok Creator Rewards 1min+ & YT Extended Shorts)",
       "target_sec": 75,
@@ -140,9 +155,9 @@
     ],
     "react_lead_default": 2,
     "speed_auto": true,
-    "speed_min": 0.96,
+    "speed_min": 0.92,
     "speed_max": 1.08,
-    "target_wps": 3.0,
+    "target_wps": 2.8,
     "_doc_speed_auto": "Vòng 7b/12: mỗi video một giọng → atempo tự tính = target_wps / nhịp nói thật của bản TTS, kẹp [speed_min, speed_max] (giọng chậm/nhanh đều ra cùng nhịp ~3.0 wps). Chỉ áp cho video có voice_resolved; video cũ giữ speed cố định."
   },
   "audio": {
@@ -279,14 +294,16 @@
       "follow": "Follow for the next experiment",
       "experiment_tag": "EXPERIMENT #{n}",
       "endscreen_title": "MORE EXPERIMENTS",
-      "dont_try": "DON'T TRY THIS AT HOME"
+      "dont_try": "DON'T TRY THIS AT HOME",
+      "source_prefix": "Source"
     },
     "vi": {
       "next_prefix": "Tiếp theo:",
       "follow": "Follow để xem thí nghiệm tiếp",
       "experiment_tag": "THÍ NGHIỆM #{n}",
       "endscreen_title": "XEM TIẾP THÍ NGHIỆM",
-      "dont_try": "ĐỪNG THỬ Ở NHÀ"
+      "dont_try": "ĐỪNG THỬ Ở NHÀ",
+      "source_prefix": "Nguồn"
     }
   },
   "script": {
@@ -326,10 +343,36 @@
     "jpeg_quality": 0.95
   },
   "qa": {
-    "blocking": ["kích thước", "fps", "số audio track", "codec", "loudness", "true peak", "freeze", "black frame",
-                 "chữ đúng chính tả", "không chồng chữ", "màu BT.709", "pix_fmt", "faststart", "audio 48 kHz",
-                 "file hỏng", "nền tảng", "quyền thương mại BỊ CẤM"],
-    "_doc_blocking": "Cổng QA (vidlib/qagate.py): dòng kiểm không đạt mà nhãn bắt đầu bằng một mục ở đây → ĐỎ, chặn publish/deliver, exit 12. Còn lại → VÀNG.",
+    "blocking": [
+      "kích thước",
+      "fps",
+      "số audio track",
+      "codec",
+      "loudness",
+      "true peak",
+      "freeze",
+      "black frame",
+      "chữ đúng chính tả",
+      "không chồng chữ",
+      "màu BT.709",
+      "pix_fmt",
+      "faststart",
+      "audio 48 kHz",
+      "file hỏng",
+      "nền tảng",
+      "quyền thương mại BỊ CẤM",
+      "khung lặp giữa các video",
+      "chữ không đè hình",
+      "chuyển động",
+      "OCR đọc được",
+      "sổ dữ kiện",
+      "SEO Shorts",
+      "hook",
+      "diễn viên",
+      "kịch bản giữ chân",
+      "độ sáng video"
+    ],
+    "_doc_blocking": "Cổng QA (vidlib/qagate.py): dòng kiểm không đạt mà nhãn bắt đầu bằng một mục ở đây → ĐỎ, chặn publish/deliver, exit 12. Còn lại → VÀNG. · Vòng 23: chủ kênh không đọc báo cáo QA → mọi lỗi chất lượng thấy được đều chặn: chữ đè hình, video như slide, chữ khó đọc (OCR < 80%), số liệu thiếu nguồn, SEO < 70, hook yếu, một diễn viên/góc lặp cả video, kịch bản giữ chân kém.",
     "true_peak_max": -1.0,
     "max_mbps": 20,
     "freeze_max_sec": 0.4,
@@ -338,9 +381,9 @@
     "ocr_required": true,
     "black_pic_th": 0.997,
     "_doc_black": "Frame 'đen' = ≥ black_pic_th điểm ảnh tối (luma ≤ 10%). Kênh toàn nền đen: đồ thị/nét mảnh hợp lệ chỉ có ~1–3% điểm sáng, nên dùng 99.7% (ffmpeg mặc định 98% báo nhầm). Frame trống thật vẫn bị bắt. Style có thể ghi đè bằng qa_black_pic_th.",
-    "motion_red": 0.035,
-    "motion_yellow": 0.06,
-    "_doc_motion": "Cổng chuyển động (vidlib/motiongate.py, học từ film_gate của huashu-art-motion): tỉ lệ cặp frame chuyển động nhanh < motion_red → CẦN XEM (video như slide), < motion_yellow → cảnh báo."
+    "motion_red": 0.045,
+    "motion_yellow": 0.08,
+    "_doc_motion": "Cổng chuyển động (vidlib/motiongate.py): tỉ lệ cặp frame chuyển động nhanh < motion_red → ĐỎ chặn (video như slide; vòng 23 nâng 3.5% → 4.5%), < motion_yellow → cảnh báo. Vòng 23: ngưỡng lệch xám theo độ sáng video (look tối không bị phạt oan), > 25% cặp khung đứng yên → đỏ; video trung bình < 8/255 → đỏ (quá tối)."
   },
   "board": {
     "_doc": "Engine board (engines/board/, vòng 6). Nhịp Shorts: beat 1.5–2.5s, nhãn mờ sau 2.5–3.5s, vòng tròn/gạch chân vẽ trong 6–10 frame và BẮT ĐẦU 0–3 frame trước từ khoá (react_lead_frames). Camera: 'di chuyển ngắn' move_sec rồi 'trôi chậm' drift_zoom_per_sec (không bao giờ đứng yên). Đơn vị world = 1 px ở zoom 1. size = null → theo format kênh; [1920, 1080] để xuất 16:9 (video dài YouTube).",
@@ -410,8 +453,26 @@
     "_doc": "Bộ não motion (vòng 10, vidlib/motionplan.py): chống lặp khuôn giữa các video. avoid_recent = số video SINH TRƯỚC được nhớ (bố cục, kiểu bay spine, cơ chế); apply_since = dự án sinh trước ngày này giữ cách chọn bố cục/kiểu bay cũ (video đã đăng không đổi hình); generic_beats = thẻ chung chung; generic_max_share = tỉ lệ tối đa thẻ chung chung; min_mechanism_shots = số shot tối thiểu cho thấy cơ chế (mechanism_scenes, cảnh 3D, clip Flow nếu flow_is_mechanism, shot khai `mechanism`); skeleton_sim_max = độ giống khung xương tối đa với một video gần đây; metaphors_top_k = số cơ chế gợi ý trong brief; metaphor_min_score = điểm khớp tối thiểu để gợi ý trong brief (mỗi từ của cụm khớp = 1 điểm, cơ chế tổng quát ×0.75); shot_hint_min_score = điểm tối thiểu để linter gợi ý cơ chế cho một câu VO; block = true → vượt ngưỡng là LỖI (dừng), false = cảnh báo.",
     "avoid_recent": 3,
     "apply_since": "2026-11-20",
-    "generic_beats": ["title", "counter", "compare", "fact"],
-    "mechanism_scenes": ["scene", "drop", "process", "callout", "scale", "stage", "vectors", "units", "timeline", "split", "meter", "zoomin"],
+    "generic_beats": [
+      "title",
+      "counter",
+      "compare",
+      "fact"
+    ],
+    "mechanism_scenes": [
+      "scene",
+      "drop",
+      "process",
+      "callout",
+      "scale",
+      "stage",
+      "vectors",
+      "units",
+      "timeline",
+      "split",
+      "meter",
+      "zoomin"
+    ],
     "flow_is_mechanism": true,
     "generic_max_share": 0.45,
     "min_mechanism_shots": 3,
@@ -441,5 +502,89 @@
       "loop",
       "template"
     ]
+  },
+  "facts": {
+    "_doc": "Sổ dữ kiện (vòng 21, vidlib/facts.py): claims + sources có cấu trúc; lint cảnh báo số liệu không nguồn, nguồn yếu, thiếu rào đón, tỉ lệ phi thực tế. onscreen_cite = chip 'Source: …' nhỏ giữa sân khấu và phụ đề ở shot có claim. web_search = brief --ai claude bật công cụ web search/fetch (Claude API), max_searches = trần lượt tìm.",
+    "onscreen_cite": true,
+    "web_search": true,
+    "max_searches": 10,
+    "max_fetches": 6
+  },
+  "policy": {
+    "_doc": "Rủi ro chính sách YouTube (vòng 22, vidlib/policy.py, căn cứ docs/YOUTUBE_RISK.md): khung lặp giữa N video gần nhất (inauthentic content), lặp trong video, persona sức khoẻ, metadata hứa số không có trong video, từ giật gân, spam, Made for Kids. repeat_error = tỉ lệ shot lặp khung → ĐỎ.",
+    "recent": 10,
+    "repeat_warn": 0.25,
+    "repeat_error": 0.4,
+    "scene_sim": 0.6,
+    "inner_max": 2,
+    "hashtags_max": 15,
+    "copy_sim": 0.8,
+    "health_disclaimer": "Educational content, not medical advice."
+  },
+  "seo": {
+    "_doc": "SEO đa nền tảng (vòng 21, vidlib/seo.py). brand_blocklist: tên kênh/thương hiệu tham chiếu — CẤM trong mọi chữ khán giả thấy (tiêu đề, mô tả, tag, hashtag, caption, text_fx, lời đọc, chữ thumbnail): gắn tên kênh khác vào metadata = rủi ro chính sách spam/metadata gây hiểu lầm của YouTube. Tên trùng từ thường (fern, vox) không đưa vào.",
+    "brand_blocklist": [
+      "kurzgesagt",
+      "in a nutshell",
+      "ted-ed",
+      "ted ed",
+      "infographics show",
+      "school of life",
+      "psych2go",
+      "life noggin",
+      "minuteearth",
+      "minute earth",
+      "minutephysics",
+      "minute physics",
+      "veritasium",
+      "johnny harris",
+      "lemmino",
+      "zack d. films",
+      "zack d films",
+      "cleo abram",
+      "fireship",
+      "bytebytego",
+      "ordinary folk",
+      "giant ant",
+      "branch education",
+      "vsauce",
+      "kaz documentary"
+    ],
+    "title_keyword_chars": 40,
+    "tags_max_chars": 500,
+    "category": {
+      "education": 27,
+      "science_tech": 28,
+      "howto": 26,
+      "entertainment": 24,
+      "people": 22
+    },
+    "education_tags": [
+      "psychology",
+      "history",
+      "philosophy",
+      "mind",
+      "habit",
+      "health",
+      "body",
+      "language",
+      "money",
+      "society",
+      "behavior",
+      "emotion",
+      "brain",
+      "learning",
+      "dream",
+      "dreams",
+      "sleep",
+      "memory",
+      "anxiety",
+      "stress",
+      "sleeping"
+    ]
+  },
+  "output": {
+    "_doc": "Vòng 23 — lean: sau khi qua cổng QA chỉ giữ out/final.mp4 + out/cover-16x9.jpg + out/captions.srt + out/post.md (+ storyboard, lời đọc, file nhỏ trong work/) — xoá khung render, version, gói trùng lặp, ảnh QA. false = giữ như cũ (deliver nhiều nền tảng + version vNNN).",
+    "lean": true
   }
 }

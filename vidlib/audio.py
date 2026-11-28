@@ -167,7 +167,7 @@ def sfx_events(sb, tl, text_sfx=(), vo=None, code_cues=()):
             tr_out = seg.get("transition")
             if tr_out in auto:
                 ev.append((t0 - 0.06, auto[tr_out]))
-            elif tr_out in ("iris_match", "whip_match"):
+            elif tr_out in ("iris_match", "whip_match", "zoom_through"):
                 ev.append((max(0.0, t0 - 0.08), "swish_match"))
             elif tr_out == "tape_stop":
                 ev.append((max(0.0, t0 - 0.08), "tape_stop"))
@@ -215,7 +215,7 @@ def sfx_events(sb, tl, text_sfx=(), vo=None, code_cues=()):
         # 2) Chuyển cảnh Agency: iris_match / whip_match → swish_match; tape_stop → tape_stop
         tr = seg.get("transition") or shot.get("transition_in")
         if seg["index"] > 0:
-            if tr in ("iris_match", "whip_match"):
+            if tr in ("iris_match", "whip_match", "zoom_through"):
                 if not _has_near(ev, t0, _SWISH_SFX, window=0.22):
                     auto_ev.append((max(0.0, t0 - 0.08), "swish_match"))
             elif tr == "tape_stop":

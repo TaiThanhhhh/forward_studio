@@ -13,7 +13,7 @@ import subprocess
 import numpy as np
 from PIL import Image, ImageDraw
 
-from . import codeshot, fx, outro, vcam
+from . import codeshot, fx, outro, partzoom, vcam
 from .common import FPS, H, W, StudioError, color, ffbin, font, replace_retry, wrap
 
 QA_SIZE = (108, 192)
@@ -91,10 +91,13 @@ def _contrast_and_flash(img, contrast=1.0, flash=0.0):
     return Image.fromarray(np.clip(arr, 0.0, 255.0).astype(np.uint8))
 
 
-def apply_transition_out(img, next_kind, i, n):
-    """Hiệu ứng phần đuôi shot A ngay trước điểm cắt (iris_match: 6f cuối zoom 1.0→1.42x; whip_match: 2f lấy đà)."""
+def apply_transition_out(img, next_kind, i, n, target=None):
+    """Hiệu ứng phần đuôi shot A ngay trước điểm cắt (iris_match: 6f cuối zoom 1.0→1.42x; whip_match: 2f lấy đà;
+    zoom_through: 10f cuối lao về điểm đích `target` (x, y, r) — vidlib/partzoom.py)."""
     if not next_kind or n <= 0:
         return img
+    if next_kind == "zoom_through":
+        return partzoom.apply_out(img, i, n, target or (img.size[0] / 2, img.size[1] / 2, 0.06 * img.size[1]))
     rem = n - i
     if next_kind == "iris_match":
         win = min(IRIS_OUT_FRAMES, max(1, n // 2))
@@ -120,8 +123,10 @@ def apply_transition_out(img, next_kind, i, n):
     return img
 
 
-def apply_transition_in(img, prev, kind, i):
+def apply_transition_in(img, prev, kind, i, target=None):
     """Áp transition vào frame thứ i của shot B (hỗ trợ 3 Agency Transitions mới + giữ nguyên các transition cũ)."""
+    if kind == "zoom_through":
+        return partzoom.apply_in(img, prev, i, target or (img.size[0] / 2, img.size[1] / 2, 0.06 * img.size[1]))
     if kind == "iris_match":
         if i >= IRIS_IN_FRAMES:
             return img
@@ -331,6 +336,8 @@ def render(proj, sb, tl, layer, trims, ingested, cams, out_video=None, stills_at
                                stdin=subprocess.PIPE)
     kinds, samples, stills = {}, [], []
     prev_clean, first_frame, first_rendered = None, None, None
+    from . import facts  # noqa: PLC0415
+    cite = facts.CiteChip(sb)
     outro_dir = codeshot.frames_dir(proj, "OUTRO")
     spine_ids, prev_sid = spine_shot_ids(proj, sb), None
     style_res = sb.get("style_resolved") or sb.get("style")
@@ -367,6 +374,10 @@ def render(proj, sb, tl, layer, trims, ingested, cams, out_video=None, stills_at
             trans = "dip" if (cross_eng and seg["transition"] in ("cut", "whip")) else seg["transition"]
             next_seg = segs[seg_idx + 1] if seg_idx + 1 < len(segs) else None
             next_trans = next_seg["transition"] if next_seg else None
+            prev_shot = shots.get(prev_sid) if prev_sid else None
+            zt_in = partzoom.target(proj, prev_shot, shot) if trans == "zoom_through" else None
+            zt_out = (partzoom.target(proj, shot, shots.get(next_seg["sid"]))
+                      if next_trans == "zoom_through" and next_seg else None)
             skip_in = bool(spine_ids and seg["sid"] in spine_ids and prev_sid in spine_ids
                            and trans not in AGENCY_TRANSITIONS)
             skip_out = bool(next_seg and spine_ids and seg["sid"] in spine_ids and next_seg["sid"] in spine_ids
@@ -384,11 +395,12 @@ def render(proj, sb, tl, layer, trims, ingested, cams, out_video=None, stills_at
                     clean = img
                 # cú máy liền: không chồng transition thường, nhưng vẫn giữ các Agency Transitions chủ đích
                 if not skip_in:
-                    img = apply_transition_in(img, prev_clean, trans, i)
+                    img = apply_transition_in(img, prev_clean, trans, i, zt_in)
                 if next_trans and not skip_out:
-                    img = apply_transition_out(img, next_trans, i, seg["n"])
+                    img = apply_transition_out(img, next_trans, i, seg["n"], zt_out)
                 if not is_outro:
                     img = layer.draw(img.copy() if img is clean else img, clean, seg, shot, fa, t_abs)
+                    img = cite.draw(img, shot, i, seg["n"])        # vòng 21: chip nguồn "Source: …" (sổ dữ kiện)
                     if captions is not None:
                         img = captions.draw(img, t_abs, shot=shot)
                 if first_frame is None:
@@ -502,7 +514,8 @@ def look_stills(proj, sb, tl, layer, trims, ingested, cams, stills_at, captions=
             clean = img
             fa = seg["start_f"] + i
             if not (seg["sid"] in spine_ids and prev_sid in spine_ids and seg["transition"] not in AGENCY_TRANSITIONS):
-                img = apply_transition_in(img, prev_clean, seg["transition"], i)
+                zt = (partzoom.target(proj, shots.get(prev_sid), shot) if seg["transition"] == "zoom_through" else None)
+                img = apply_transition_in(img, prev_clean, seg["transition"], i, zt)
             if sid != "OUTRO":
                 t_abs = fa / FPS
                 img = layer.draw(img.copy() if img is clean else img, clean, seg, shot, fa, t_abs)

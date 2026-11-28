@@ -360,9 +360,13 @@ const flow = {
     const a = c.f * 0.06; g.moveTo(cx, cy); g.lineTo(cx + Math.cos(a) * (r - 120), cy + Math.sin(a) * (r - 120)); g.stroke();
   },
   header(c, h, k) {                                  // băng tiêu đề hổ phách, chữ gần đen rất đậm
-    const y0 = c.A.top - 6, hh = 150, g = c.g;
+    const y0 = c.A.top - 6, g = c.g;
+    // vòng 22: tiêu đề phải nằm TRONG băng — co cỡ chữ tới khi vừa 1 dòng (tối đa 2 dòng ở cỡ nhỏ nhất, băng cao theo)
+    let size = h.size ? Math.min(h.size, 74) : 70, lines = 1;
+    if (h.title) for (const sz of [size, 62, 54, 48, 44]) { const b = c.text(h.title, c.A.cx, 0, { size: sz, k: 0, maxW: 900 }); size = sz; lines = b.lines || 1; if (lines <= 1) break; }
+    const hh = lines > 1 ? 150 + (lines - 1) * size * 1.05 : 150;
     g.fillStyle = c.col('accent'); g.fillRect(0, y0, c.W * c.EASE.out(k), hh);
-    if (h.title) c.text(h.title, c.A.cx, y0 + 100, { size: h.size ? Math.min(h.size, 74) : 70, k: c.clamp(k * 1.6 - 0.6), role: 'bg', maxW: 900 });
+    if (h.title) c.text(h.title, c.A.cx, y0 + 75 + size * 0.36, { size, k: c.clamp(k * 1.6 - 0.6), role: 'bg', maxW: 900 });
     let y = y0 + hh + 60;
     if (h.kicker) { c.text(h.kicker, c.A.cx, y, { size: 32, font: 'mono', role: 'dim', k, weight: 700 }); y += 30; }
     return y;
@@ -763,8 +767,8 @@ const story = {
   },
 };
 
-// Kurzgesagt / Life Noggin Dark-Mode: bầu trời đêm vũ trụ sâu + sao lấp lánh tinh tế + vòng quỹ đạo + vector phẳng rực rỡ nảy đàn hồi
-const kurzgesagt = {
+// cosmic — flat-vector science explainer (dark mode): bầu trời đêm vũ trụ sâu + sao lấp lánh tinh tế + vòng quỹ đạo + vector phẳng rực rỡ nảy đàn hồi
+const cosmic = {
   tokens: {
     palette: { bg: '#070B1A', ink: '#F6F7FB', a: '#FF5E5B', b: '#38BDF8', c: '#FFB703' },
     roles: { hot: 'a', cold: 'b', accent: 'c' },
@@ -805,8 +809,8 @@ const kurzgesagt = {
   },
 };
 
-// The School of Life / Psych2Go / TED-Ed Dark-Mode: giấy than ấm tối giản, viền mực mảnh, màu đất nung/xanh sage dịu, chuyển động êm ái nhiều khoảng thở
-const schooloflife = {
+// essay — animated psychology essay (dark mode): giấy than ấm tối giản, viền mực mảnh, màu đất nung/xanh sage dịu, chuyển động êm ái nhiều khoảng thở
+const essay = {
   tokens: {
     palette: { bg: '#101012', ink: '#F4ECE1', a: '#E07A5F', b: '#81B29A', c: '#F2CC8F' },
     roles: { hot: 'a', cold: 'b', accent: 'c' },
@@ -842,8 +846,8 @@ const schooloflife = {
   },
 };
 
-// The Infographics Show Dark-Mode: vector viền đậm sắc nét, sọc nền biên tập tối, màu cobalt/đỏ/vàng tương phản mạnh, easing snap dứt khoát
-const infographics = {
+// bold — bold-outline infographic explainer (dark mode): vector viền đậm sắc nét, sọc nền biên tập tối, màu cobalt/đỏ/vàng tương phản mạnh, easing snap dứt khoát
+const bold = {
   tokens: {
     palette: { bg: '#0B1018', ink: '#F8FAFC', a: '#EF4444', b: '#3B82F6', c: '#FACC15' },
     roles: { hot: 'a', cold: 'b', accent: 'c' },
@@ -875,11 +879,14 @@ const infographics = {
   },
 };
 
-const RAW = { flat, boil, iso, hud, synth, sticker, swiss, spy, picto, zoom, flow, sketch, gallery, halftone, comic, pixel16, sprite8, silhouette, cutout, lineart, vox, story, kurzgesagt, schooloflife, infographics };
-export const LOOKS = Object.fromEntries(Object.entries(RAW).map(([k, v]) => [k, { ...base, ...v }]));
+const RAW = { flat, boil, iso, hud, synth, sticker, swiss, spy, picto, zoom, flow, sketch, gallery, halftone, comic, pixel16, sprite8, silhouette, cutout, lineart, vox, story, cosmic, essay, bold };
+// bí danh look vòng 19 (job.json/style cũ) → look mới; không nằm trong LOOK_NAMES
+export const LOOK_ALIASES = { kurzgesagt: 'cosmic', schooloflife: 'essay', infographics: 'bold' };
+export const LOOKS = Object.fromEntries([...Object.entries(RAW), ...Object.entries(LOOK_ALIASES).map(([a, k]) => [a, RAW[k]])]
+  .map(([k, v]) => [k, { ...base, ...v }]));
 export const LOOK_NAMES = Object.keys(RAW);
 /** token mặc định chung ← token của look ← styles/<id>.json → html */
 export function mergeLook(cfg) {
-  const kind = RAW[cfg.look] ? cfg.look : 'flat';
+  const want = LOOK_ALIASES[cfg.look] || cfg.look, kind = RAW[want] ? want : 'flat';
   return { ...deep(deep(D, RAW[kind].tokens), cfg), look: kind };
 }

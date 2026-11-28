@@ -12,7 +12,8 @@ BEATS = ("title", "drop", "counter", "compare", "graph", "process", "scale", "ca
          "units", "timeline", "split", "meter", "dossier", "xray_cutaway", "hero_stat", "code_terminal", "chat_prompt")
 LOOKS = ("flat", "boil", "iso", "hud", "synth", "sticker", "swiss", "spy", "picto", "zoom", "flow", "sketch", "gallery",
          "halftone", "comic", "pixel16", "sprite8", "silhouette", "cutout", "lineart", "vox", "story",
-         "kurzgesagt", "schooloflife", "infographics")
+         "cosmic", "essay", "bold")
+LOOK_ALIASES = {"kurzgesagt": "cosmic", "schooloflife": "essay", "infographics": "bold"}   # vòng 19 → vòng 21
 
 # beat → (trường bắt buộc, mô tả một dòng cho brief). Mọi beat nhận thêm: kicker, title, hit (0..1).
 PARAMS = {
@@ -34,13 +35,44 @@ PARAMS = {
         "kicker, title, actors[{id, icon | lottie | rive (user assets), x, y (0..1 of the frame), size (px), role, rot, "
         "heat (0..1 grounded thermal glow), in, out (u 0..1), "
         "keys[{u, x, y, size, rot, p, alpha, heat, ease}]}], "
-        "labels[{text, x, y | of (actor id), u, tag}], arrows[{from, to, u}], "
+        "labels[{text, x, y | of (actor id), u, tag, fixed}] (labels auto-dodge props/people/lenses: the engine "
+        "picks the clearest spot near where you put them, once per label; fixed true = keep the exact spot), "
+        "arrows[{from, to, u}], "
         "fx[{kind: burst|shockwave|smoke|splash|sparkle, x, y | at (actor id), u}] — FREE STAGING: several props/characters "
         "moving and interacting (use it for the story's key moments, not only one centred icon). DEPTH: actor/key `z` "
         "(0 = in focus, 1–4 = far: smaller, parallax, depth-of-field blur, fades into the dark; -0.5 = right at the lens), "
         "camera[{u, x, y, z (dolly in), rot (roll °), focus (z in focus → rack focus)}], "
         "depth false|{dof, fog, layers, fg}; "
-        "MOTION VERBS: key {u, verb, dur, args} or actor `verb` + `args` (e.g. heartbeat{bpm}, shake, squash, float, spin)",
+        "MOTION VERBS: key {u, verb, dur, args} or actor `verb` + `args` (e.g. heartbeat{bpm}, shake, squash, float, spin). "
+        "LIVING PARTS (rig characters): every reference (labels.of, arrows.from/to, fx.at, camera.at, look_at) takes "
+        "\"id.part\" — part: head|eye|brain|mouth|ear|nose|neck|chest|heart|lungs|belly|stomach|hand|hand_far|foot|back|"
+        "tail|wing|center|top (plain icons: center|top|bottom|left|right|screen|window|core); actor xray 0..1 (keyable: "
+        "the body turns see-through) + organs [brain|heart|lungs|stomach|skeleton] (heart beats at `bpm`, lungs breathe), "
+        "focus \"<part>\" (pulsing glow ring, keyable), hold \"<icon>\" (prop in the hand / in an animal's mouth), "
+        "talk true|[[u0,u1]] (mouth moves), look_at \"<id>[.part]\" (eyes follow it); walk/run legs auto-sync to the "
+        "distance travelled (no foot sliding). PART ZOOM: camera key {u, at: \"hero.eye\", zoom: 12} dives INTO that part "
+        "(crisp vector zoom, labels fade out) — end a shot on it and start the next with transition_in \"zoom_through\". "
+        "labels[].bubble speech|thought = comic bubble pointing at `of` (\"hero.mouth\" / \"hero.head\"). "
+        "ROUND 23 — CAST & ANGLES: more people rig:coach|lifterf|bigguy|elder|student|office|cyclist|medic|trailrunner; "
+        "actor view side|front|back (keyable: keys[{u, view}] turns the person; lifts read best front: barbell across the "
+        "shoulders / in front of the thighs), outfit singlet|tank|tee|jersey|hoodie|shirt|labcoat, hair adds afro|buzz|"
+        "helmet, beard stubble|full, glasses true, build 0.85..1.4; action deadlift (hip hinge, bar path vertical). "
+        "ROUND 22 — REALISTIC PEOPLE: rig:athlete|marathoner|runnerf|lifter|casual|casualf (7.5-head anatomy, real "
+        "running/walking gait from joint-angle curves, clothes, shoes) with actions idle|walk|run|sit|sleep|point|wave|"
+        "cheer|jump|tired|curl|squat|cycle (cycle draws a real road bike); extra parts knee|thigh|calf|heel|ankle|sole|"
+        "elbow|shoulder|arm|liver|spine|hip; organs also liver|spine (discs, actor `p` = compression)|muscles|vessels|"
+        "fuel (glycogen stores glowing, `p` = how full). actor freeze: u (the character holds still from u — use it "
+        "before zooming into a part). BACKDROP: backdrop \"city|road|gym|bedroom|track|office|studio|lab\" or "
+        "{kind, floor (y of the floor line, ≈ feet y), dim} = layered NIGHT environment with parallax (never a flat "
+        "black void). LENSES (magnifier inset, max 2): lenses[{of: \"id.part\", x, y, r 0.08..0.45, u, out, title, "
+        "actors:[{icon, x, y (0..1 inside), size (px as on a full 1080 frame), p, keys}], flow:[{icon, count, from, to, "
+        "size, speed, spread}], labels}] — a ring on the part + tangent lines + a live zoomed scene: the clearest way to "
+        "show what is INSIDE (capillary in the sole, glycogen in the liver, fibers in a muscle). DETAILED PROPS: laptop, "
+        "phone, chip, keyboard, server, gpu, film, reel, drawing, pencil, brain, neuron, rbc, bloodcell, macrophage and "
+        "chomper (p > 0.5 = keeps chomping), fatcell, fat, glycogen, glucose, bread, pasta, vertebra, spine, disc, muscle, "
+        "musclefiber, fiber (p = micro-tears), mitochondria, heart, lungs, liver, capillary (p = pinched), vesselwall, "
+        "peptide, lipidchain, caffeine, adenosine, receptor (p = occupied), cup, coffeebean, bed, shoe, paper, bits, bike, "
+        "denoise (p 0 = noise → 1 = clean scene)",
     ),
     "units": (
         ("groups",),
@@ -203,9 +235,10 @@ def _aliases(src):
 def icon_table():
     """(tên icon, [(từ khoá, icon)]) đọc thẳng từ icons.js + icons_channel.js — một nguồn sự thật cho JS và Python.
     Thứ tự từ khoá giống JS: icons.js trước, icons_channel.js sau (sort theo độ dài là ổn định)."""
-    core, chan = _read("icons.js"), _read("icons_channel.js")
-    names = _names(core, "export const ICONS = {") | _names(chan, "export const CHANNEL_ICONS = {")
-    return names, _aliases(core[: core.index("export function iconFor")]) + _aliases(chan)
+    core, chan, det = _read("icons.js"), _read("icons_channel.js"), _read("icons_detail.js")
+    names = (_names(core, "export const ICONS = {") | _names(chan, "export const CHANNEL_ICONS = {")
+             | _names(det, "export const DETAIL_ICONS = {"))
+    return names, _aliases(det) + _aliases(core[: core.index("export function iconFor")]) + _aliases(chan)
 
 
 @functools.cache
@@ -278,7 +311,8 @@ def rig_vocab():
     sp = re.search(r"export const SPECIES = \{(.*?)\n\};", src, re.S)
     al = re.search(r"export const RIG_ALIASES = \{([^}]*)\}", src)
     toks = {"actions": _js_list("rig2d.js", "ACTIONS"), "exprs": _js_list("rig2d.js", "EXPRS"),
-            "faces": _js_list("rig2d.js", "FACES") or ("left", "right"), "hairs": _js_list("rig2d.js", "HAIRS")}
+            "faces": _js_list("rig2d.js", "FACES") or ("left", "right"), "hairs": _js_list("rig2d.js", "HAIRS"),
+            "views": _js_list("rig2d.js", "VIEWS") or ("side", "front", "back")}
     return {"species": tuple(re.findall(r"^  (\w+): \{", sp.group(1), re.M)) if sp else (),
             "aliases": dict(re.findall(r"(\w+): '(\w+)'", al.group(1))) if al else {}, **toks}
 
@@ -291,10 +325,10 @@ def check_rig(name):
     raw, *rest = [t.strip() for t in str(name)[4:].lower().split(":") if t.strip()] or [""]
     if raw not in v["species"] and raw not in v["aliases"]:
         return f"icon '{name}': loài '{raw}' không có (có: {', '.join(v['species'])}; bí danh: {', '.join(v['aliases'])})."
-    ok = set(v["actions"]) | set(v["exprs"]) | set(v["faces"]) | set(v["hairs"])
+    ok = set(v["actions"]) | set(v["exprs"]) | set(v["faces"]) | set(v["hairs"]) | set(v.get("views") or ())
     bad = [t for t in rest if t not in ok]
     return (f"icon '{name}': '{', '.join(bad)}' không phải hành động ({'|'.join(v['actions'])}) hay biểu cảm "
-            f"({'|'.join(v['exprs'])}) hay hướng (left|right).") if bad else None
+            f"({'|'.join(v['exprs'])}), hướng (left|right) hay góc nhìn (side|front|back).") if bad else None
 
 
 def check_icon(icon):
@@ -371,9 +405,113 @@ def _verb_errors(items, where):
     return fn(items, where) if callable(fn) and items else []
 
 
+GENERIC_PARTS = ("center", "top", "bottom", "left", "right", "screen", "window", "core")   # = GENERIC_PARTS của core.js
+BUBBLES = ("speech", "thought")
+
+
+def part_names():
+    """Mọi tên bộ phận hợp lệ trong `"id.part"` (rig + icon thường)."""
+    from . import rig2d  # noqa: PLC0415
+    return tuple(dict.fromkeys((*rig2d.parts(), *GENERIC_PARTS)))
+
+
+def actor_ids(p):
+    """id của mọi actor của một beat `scene` (thiếu id → a0, a1… như beats.js)."""
+    acts = (p or {}).get("actors") or []
+    return [a.get("id") or f"a{i}" for i, a in enumerate(acts) if isinstance(a, dict)]
+
+
+def ref_error(ref, ids, where):
+    """Lỗi của một tham chiếu "id" | "id.part" (None nếu hợp lệ)."""
+    if not isinstance(ref, str) or not ref.strip():
+        return f"{where}: tham chiếu phải là chuỗi \"id\" hoặc \"id.part\"."
+    aid, _, part = ref.strip().partition(".")
+    if aid not in ids:
+        return f"{where}: không có actor '{aid}' (có: {', '.join(ids) or '—'})."
+    if part and part not in part_names():
+        return f"{where}: bộ phận '{part}' không có (có: {'|'.join(part_names())})."
+    return None
+
+
+def _living_errors(a, tag, ids):
+    """Vòng 21 — bộ phận sống của một actor: xray/organs/focus/hold/talk/look_at/bpm/slide."""
+    from . import rig2d  # noqa: PLC0415
+    errs, keys = [], [k for k in a.get("keys") or [] if isinstance(k, dict)]
+    for k in [a, *keys]:
+        if "xray" in k and not (_n(k["xray"]) and 0 <= k["xray"] <= 1):
+            errs.append(f"{tag}: xray là số 0..1 (0 = thân đặc, 1 = trong suốt lộ cơ quan).")
+        fp = k.get("focus")
+        if fp is not None and fp is not False and fp not in part_names():
+            errs.append(f"{tag}: focus '{fp}' không phải bộ phận (có: {'|'.join(part_names())}).")
+    org = a.get("organs")
+    if org is not None:
+        lst = org if isinstance(org, list) else [org]
+        bad = [o for o in lst if o not in rig2d.organs()]
+        if bad:
+            errs.append(f"{tag}: organs {bad} không có (có: {'|'.join(rig2d.organs())}).")
+        if not any(_n(k.get("xray")) and k["xray"] > 0 for k in [a, *keys]):
+            errs.append(f"{tag}: organs chỉ hiện khi xray > 0 — thêm \"xray\": 1 (hoặc key {{u, xray: 1}} để lộ dần).")
+    if a.get("hold") is not None:
+        e = check_icon(a["hold"])
+        if e:
+            errs.append(f"{tag}: hold — {e}")
+    tk = a.get("talk")
+    if tk is not None and tk is not True and tk is not False:
+        ok = isinstance(tk, list) and all(isinstance(r, list) and len(r) == 2 and all(_n(v) and 0 <= v <= 1 for v in r)
+                                          and r[0] < r[1] for r in tk)
+        if not ok:
+            errs.append(f"{tag}: talk là true hoặc danh sách khoảng [[u0, u1], …] (0..1, u0 < u1).")
+    if a.get("look_at") is not None:
+        e = ref_error(a["look_at"], ids, f"{tag}: look_at")
+        if e:
+            errs.append(e)
+    if a.get("bpm") is not None and not (_n(a["bpm"]) and 20 <= a["bpm"] <= 240):
+        errs.append(f"{tag}: bpm là số 20..240 (nhịp tim khi organs có heart).")
+    return errs
+
+
 def _scene_errors(p):
     errs, rv = [], rig_vocab()
     acts = p.get("actors") or []
+    ids = actor_ids(p)
+    for i, a in enumerate(acts if isinstance(acts, list) else []):
+        if isinstance(a, dict):
+            errs += _living_errors(a, f"actor '{a.get('id') or i}'", ids)
+    for li, lab in enumerate(p.get("labels") or []):
+        if not isinstance(lab, dict):
+            continue
+        if lab.get("of") is not None:
+            e = ref_error(lab["of"], ids, f"labels[{li}].of")
+            if e:
+                errs.append(e)
+        if lab.get("side") is not None and lab["side"] not in ("left", "right"):
+            errs.append(f"labels[{li}].side là left|right (hướng đẩy bong bóng).")
+        if lab.get("bubble") is not None:
+            if lab["bubble"] not in BUBBLES:
+                errs.append(f"labels[{li}].bubble là {'|'.join(BUBBLES)}.")
+            elif not lab.get("of"):
+                errs.append(f"labels[{li}]: bong bóng cần `of` (vd \"hero.mouth\" hoặc \"hero.head\") để đuôi chỉ "
+                            "về nhân vật.")
+    for ai, ar in enumerate(p.get("arrows") or []):
+        if isinstance(ar, dict):
+            for key in ("from", "to"):
+                e = ref_error(ar.get(key), ids, f"arrows[{ai}].{key}")
+                if e:
+                    errs.append(e)
+    for fi, fx in enumerate(p.get("fx") or []):
+        if isinstance(fx, dict) and fx.get("at") is not None:
+            e = ref_error(fx["at"], ids, f"fx[{fi}].at")
+            if e:
+                errs.append(e)
+    for ci, k in enumerate(p.get("camera") or [] if isinstance(p.get("camera"), list) else []):
+        if not isinstance(k, dict):
+            continue
+        if k.get("at") is not None:
+            e = ref_error(k["at"], ids, f"camera[{ci}].at")
+            if e:
+                errs.append(e)
+        if "zoom" in k and not (_n(k["zoom"]) and 0.5 <= k["zoom"] <= 40):
+            errs.append(f"camera[{ci}].zoom là số 0.5..40 (phóng 2D về điểm nhìn; 8–20 = lao vào một bộ phận).")
     for i, a in enumerate(acts if isinstance(acts, list) else []):
         if not isinstance(a, dict):
             continue
@@ -413,6 +551,57 @@ def _scene_errors(p):
         if bad:
             errs.append(f"depth: khoá lạ {', '.join(bad)} (có: dof, fog, layers, fg).")
         errs += [f"depth.{k} là số ≥ 0." for k in ("dof", "fog") if k in d and not (_n(d[k]) and d[k] >= 0)]
+    errs += _round22_errors(p, ids)
+    return errs
+
+
+@functools.cache
+def backdrop_kinds():
+    """Bối cảnh đêm của beat scene (đọc BACKDROPS trong backdrops.js — một nguồn sự thật)."""
+    m = re.search(r"export const BACKDROPS = \[([^\]]*)\]", _read("backdrops.js"))
+    return tuple(re.findall(r"'([^']+)'", m.group(1))) if m else ()
+
+
+def _round22_errors(p, ids):
+    """Vòng 22: backdrop (bối cảnh đêm), lenses (kính lúp), freeze (đứng hình)."""
+    errs = []
+    bd = p.get("backdrop")
+    if bd is not None:
+        kind = bd.get("kind") if isinstance(bd, dict) else bd
+        if kind not in backdrop_kinds():
+            errs.append(f"backdrop '{kind}' không có (có: {'|'.join(backdrop_kinds())}).")
+        if isinstance(bd, dict):
+            for key in ("floor", "dim", "blur"):
+                if key in bd and not (_n(bd[key]) and 0 <= bd[key] <= 1.2):
+                    errs.append(f"backdrop.{key} là số 0..1.2.")
+    lenses = p.get("lenses")
+    if lenses is not None:
+        if not isinstance(lenses, list):
+            errs.append("lenses là danh sách [{of, x, y, r, u, title, actors, flow, labels}].")
+        else:
+            for li, L in enumerate(lenses[:2]):
+                if not isinstance(L, dict):
+                    errs.append(f"lenses[{li}] phải là object.")
+                    continue
+                of = L.get("of")
+                if isinstance(of, str):
+                    e = ref_error(of, ids, f"lenses[{li}].of")
+                    if e:
+                        errs.append(e)
+                elif of is not None and not (isinstance(of, list) and len(of) == 2 and all(_n(v) for v in of)):
+                    errs.append(f"lenses[{li}].of là \"id.part\" hoặc [x, y].")
+                if "r" in L and not (_n(L["r"]) and 0.08 <= L["r"] <= 0.45):
+                    errs.append(f"lenses[{li}].r là 0.08..0.45 (phần bề rộng khung).")
+                for a in (L.get("actors") or []) + (L.get("flow") or []):
+                    if isinstance(a, dict) and a.get("icon") is not None:
+                        e = check_icon(a["icon"])
+                        if e:
+                            errs.append(f"lenses[{li}]: {e}")
+            if len(lenses) > 2:
+                errs.append("tối đa 2 kính lúp mỗi shot (dễ đọc).")
+    for i, a in enumerate(p.get("actors") or []):
+        if isinstance(a, dict) and a.get("freeze") is not None and not (_n(a["freeze"]) and 0 <= a["freeze"] <= 1):
+            errs.append(f"actor '{a.get('id') or i}': freeze là u 0..1 (đứng hình từ đó).")
     return errs
 
 

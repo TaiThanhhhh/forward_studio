@@ -2,6 +2,7 @@
 
 level: "error" (phải sửa — pipeline dừng) · "warn" (nên xem) · "info".
 """
+import os
 import re
 
 from . import compiler
@@ -119,8 +120,9 @@ def lint_pacing(sb):
     shots = sb["shots"]
     if not shots:
         return [_issue("error", "storyboard", "Chưa có shot nào.")]
-    if shots[0]["target_sec"] > p["hook_max_sec"] + 1e-6:
-        out.append(_issue("warn", shots[0]["id"], f"Hook dài {shots[0]['target_sec']}s > {p['hook_max_sec']}s."))
+    hook_max = prof.get("hook_max_sec", p["hook_max_sec"])
+    if shots[0]["target_sec"] > hook_max + 1e-6:
+        out.append(_issue("warn", shots[0]["id"], f"Hook dài {shots[0]['target_sec']}s > {hook_max}s."))
     durs = [s["target_sec"] for s in shots]
     avg = sum(durs) / len(durs)
     avg_min, avg_max = prof["shot_avg_min"], prof["shot_avg_max"]
@@ -374,8 +376,8 @@ def lint_viral(sb):
     return []
 
 
-def lint(sb):
-    """sb phải là bản đã compile (compiler.compile_all)."""
+def lint(sb, proj=None):
+    """sb phải là bản đã compile (compiler.compile_all). proj: thư mục dự án (đối chiếu work/research.json)."""
     name, caps = compiler.video_caps(sb)
     _, img = compiler.image_caps(sb)
     out = []
@@ -389,6 +391,63 @@ def lint(sb):
     out += lint_clutter(sb)
     out += lint_motion(sb)
     out += lint_viral(sb)
+    out += lint_facts(sb, proj)
+    return out
+
+
+def lint_facts(sb, proj=None):
+    """Vòng 21: sổ dữ kiện (vidlib/facts.py — cảnh báo) + SEO/brand-safety (vidlib/seo.py — tên kênh khác = lỗi)."""
+    from . import facts, retention, seo  # noqa: PLC0415
+    slug = os.path.basename(os.path.normpath(proj)) if proj else None
+    # vòng 23: giữ chân (hook / re-hook / diễn viên) chặn TRƯỚC khi render
+    return facts.lint(sb, proj) + seo.lint(sb) + retention.lint(sb, slug) + lint_glyphs(sb)
+
+
+TEXT_KEYS = ("text", "title", "kicker", "sub", "label", "callout_label", "result", "headline")
+
+
+def _code_strings(params):
+    """Chữ khán giả thấy trong params của shot code html (nhãn, tag, tiêu đề kính lúp…)."""
+    out = []
+
+    def walk(x, key=""):
+        if isinstance(x, dict):
+            for k, v in x.items():
+                walk(v, k)
+        elif isinstance(x, list):
+            for v in x:
+                walk(v, key)
+        elif isinstance(x, str) and key in TEXT_KEYS:
+            out.append(x)
+    walk(params or {})
+    return out
+
+
+def lint_glyphs(sb):
+    """Vòng 22: ký tự font của style không có (→, ¹⁶…) = lỗi TRƯỚC khi render (QA sau render cũng đỏ, mất 10 phút)."""
+    from engines import adapter  # noqa: PLC0415
+
+    from . import ocr  # noqa: PLC0415
+    from .common import ROOT as _root  # noqa: PLC0415
+    style = sb.get("style_resolved") or sb.get("style")
+    if not style:
+        return []
+    try:
+        fonts = adapter.font_entries(style, "html")
+    except Exception:  # noqa: BLE001 — style lạ: phần kiểm style báo riêng
+        return []
+    fdir = os.path.join(_root, "assets", "fonts")
+    out = []
+    for s in sb.get("shots") or []:
+        code = s.get("code") or {}
+        if (code.get("engine") or "html") != "html":
+            continue
+        for txt in _code_strings(code.get("params")):
+            path = os.path.join(fdir, fonts[0]["file"])           # font chữ chính (cùng font cổng QA đo)
+            miss = set(ocr.missing_glyphs(txt, path)) if os.path.exists(path) else set()
+            if miss:
+                out.append(_issue("error", s.get("id", "?"), f"font style '{style}' không có ký tự {' '.join(sorted(miss))} "
+                                  f"trong “{txt}” — viết lại (vd → thành 'to', ¹⁶ thành chữ)."))
     return out
 
 

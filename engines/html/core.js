@@ -12,7 +12,7 @@ import { ICONS, iconFor, partsIcon } from './icons.js';
 import { LOOKS, mergeLook } from './looks.js';
 import { BEATS, TOOLS } from './beats.js';
 import { loadMedia } from './media.js';
-import { rigPrims, isRig } from './rig2d.js';
+import { rigPrims, rigAnchors, partOf, isRig } from './rig2d.js';
 import { makePost2D } from './post2d.js';
 
 window.stage = 'job';
@@ -27,7 +27,14 @@ await Promise.all((JOB.fonts || []).map(async (f) => {
 window.stage = 'canvas';
 const canvas = document.getElementById('c');
 canvas.width = W; canvas.height = H;
-const g = canvas.getContext('2d', { willReadFrequently: false });
+let g = canvas.getContext('2d', { willReadFrequently: false });
+/** vòng 22: vẽ vào canvas phụ (bút/look y hệt) — đổi tạm ngữ cảnh toàn cục rồi trả lại; dùng để vẽ sẵn lớp nền tĩnh. */
+function offscreen(w, h, fn) {
+  const cv = document.createElement('canvas'); cv.width = Math.max(1, Math.round(w)); cv.height = Math.max(1, Math.round(h));
+  const prev = g; g = cv.getContext('2d');
+  try { fn(g); } finally { g = prev; }
+  return cv;
+}
 const L = mergeLook(JOB.look || {});
 const pal = L.palette;
 const P = JOB.params || {};
@@ -66,6 +73,8 @@ const col = (role) => {
   const r = (L.roles && L.roles[role]) || role;
   if (pal[r]) return pal[r];
   if (r === 'dim') return mix(pal.bg, pal.ink, 0.42);
+  if (r === 'skin') return pal.skin || mix(mix(pal.ink, '#c98d66', 0.62), pal.bg, 0.06);     // vòng 22: da người tả thực (tông ấm, look ghi đè bằng palette.skin)
+  if (r === 'hair') return pal.hair || mix('#3a2a22', pal.ink, 0.14);
   return pal.ink;
 };
 const shade = (c, t = 0.45) => mix(c, pal.bg, t);
@@ -219,7 +228,7 @@ function draw(prims, o = {}) {
     al(sh);
     if (fine && !partial) {                           // chi tiết nhỏ (mắt, miệng, đinh khớp): luôn tô đặc, look nét (không tô) dùng màu mực
       if (sh.fillable) { g.fillStyle = (!st.fill && sh.p.role === 'bg') ? col('ink') : c; g.fill(pa); }
-      else { g.lineWidth = lw(sh.p); g.strokeStyle = c; g.stroke(pa); }
+      else { g.lineWidth = lw(sh.p); g.strokeStyle = (!st.fill && sh.p.role === 'bg') ? col('ink') : c; g.stroke(pa); }   // vòng 22: look nét → nét 'bg' thành mực (không biến mất)
       continue;
     }
     if (sh.fillable && !partial) {
@@ -251,7 +260,8 @@ function draw(prims, o = {}) {
       g.save();
       g.lineWidth = lw(sh.p);
       // viền của mảnh tô: màu vai cố định (strokeRole) hoặc chính màu mảnh tối đi (strokeTone — kiểu "selout" của pixel art)
-      g.strokeStyle = (st.fill && sh.fillable && st.strokeTone) ? shade(c, st.strokeTone) : (st.fill && sh.fillable && st.strokeRole) ? col(st.strokeRole) : c;
+      g.strokeStyle = (st.fill && sh.fillable && st.strokeTone) ? shade(c, st.strokeTone) : (st.fill && sh.fillable && st.strokeRole) ? col(st.strokeRole)
+        : (!st.fill && sh.p.role === 'bg') ? col('ink') : c;
       if (sh.p.dash) g.setLineDash(sh.p.dash.map((d) => d * (st.stroke || st.line || 6)));
       if (st.glow) { g.shadowColor = c; g.shadowBlur = st.glow; g.stroke(pa); if (st.glow2) { g.shadowBlur = st.glow2; g.globalAlpha *= 0.55; } }
       g.stroke(pa); g.restore();
@@ -323,6 +333,10 @@ function textImpl(str, x, y, o = {}) {
   if (str === undefined || str === null || str === '') return { x0: x, y0: y, x1: x, y1: y, h: 0, lines: 0 };
   const T = L.type;
   let s = String(str);
+  if (/\b(NaN|undefined|null|Infinity)\b/.test(s)) {           // vòng 22: không để giá trị hỏng lọt lên màn ("NaN oxygen")
+    console.warn('[text] giá trị hỏng trong chữ:', s); s = s.replace(/\b(NaN|undefined|null|-?Infinity)\b/g, '').replace(/\s{2,}/g, ' ').trim();
+    if (!s) return { x0: x, y0: y, x1: x, y1: y, h: 0, lines: 0 };
+  }
   if (o.upper ?? (o.font === 'mono' ? T.monoUpper : T.upper)) s = s.toUpperCase();
   let size = pxSize(o.size || 80);
   // look căn trái (swiss) mà beat đặt chữ đúng tâm khung (x = A.cx) không ghi align → ý là căn giữa;
@@ -506,18 +520,93 @@ const icon = (name, o = {}) => {
   }
   if (isRig(name)) {                                  // nhân vật hoạt hình 2D "rig:<loài>[:hành động][:biểu cảm]" (rig2d.js)
     const seed = o.seed ?? strSeed(name);
-    const args = { editorial: DEFAULT_EDITORIAL, heat, ...(o.args || {}) };
+    const args = { editorial: DEFAULT_EDITORIAL, heat, ...(o.p !== undefined ? { p: o.p } : {}), ...(o.args || {}) };
     draw(applyHeat(rigPrims(name, { f: cur.fs, fps: FPS, seed, role: o.role, args })), { ...o, seed });
     return;
   }
   const fn = ICONS[iconFor(name)] || ICONS.dot;
   draw(applyHeat(fn({ f: cur.fs, p: o.p ?? 0, role: o.role, heat, hash, ...o.args })), { ...o, seed: o.seed ?? strSeed(name) });
 };
+// ---------- điểm neo bộ phận (vòng 21): beat đăng ký → nhãn/camera/zoom_through/portal dùng ----------
+// ANCH[id] = {l: [x, y, r] toạ độ của beat (ô), s: [X, Y, R] toạ độ màn hình qua ma trận canvas lúc đăng ký}
+let ANCH = {};
+function anchor(id, x, y, r = 40) {
+  if (!id || !Number.isFinite(x) || !Number.isFinite(y)) return;
+  const M = g.getTransform(), q = M.transformPoint(new DOMPoint(x, y)), k = Math.sqrt(Math.abs(M.a * M.d - M.b * M.c)) || 1;
+  ANCH[id] = { l: [x, y, r], s: [q.x, q.y, r * k] };
+}
+const GENERIC_PARTS = { center: [0, 0, 0.8], top: [0, -0.72, 0.3], bottom: [0, 0.72, 0.3], left: [-0.72, 0, 0.3], right: [0.72, 0, 0.3],
+                        screen: [0, -0.05, 0.45], window: [0, -0.05, 0.4], core: [0, 0, 0.35] };
+/** Điểm neo của một icon ở vị trí vẽ {x, y, s, sx, sy, rot, seed, args}: rig → bộ phận thật ở đúng dáng frame;
+ *  icon thường → center/top/bottom/left/right/screen/window/core. Trả {part: [x, y, r]} toạ độ canvas của beat. */
+function iconAnchors(name, o = {}) {
+  const s = o.s ?? 100, sx = (o.sx ?? 1) * s, sy = (o.sy ?? 1) * s, rot = o.rot || 0, cr = Math.cos(rot), sr = Math.sin(rot);
+  const x0 = o.x ?? 0, y0 = o.y ?? 0;
+  let unit = GENERIC_PARTS;
+  if (isRig(name)) {
+    const seed = o.seed ?? strSeed(name), heat = clamp(o.heat ?? (o.args && o.args.heat) ?? 0);
+    unit = rigAnchors(name, { f: cur.fs, fps: FPS, seed, role: o.role, args: { editorial: DEFAULT_EDITORIAL, heat, ...(o.args || {}) } });
+  }
+  const out = {};
+  for (const [k, [ux, uy, ur]] of Object.entries(unit)) { const X = ux * sx, Y = uy * sy; out[k] = [x0 + X * cr - Y * sr, y0 + X * sr + Y * cr, Math.max(2, ur * s)]; }
+  if (isRig(name)) for (const k of ['center', 'top']) if (!out[k]) out[k] = [x0, y0, s * 0.6];
+  return out;
+}
+const pickPart = (anchors, part) => (anchors[part] ? anchors[part] : partOf(anchors, part));
+// vòng 23: khung bao THẬT của icon/rig ở toạ độ đơn vị (ô [-1, 1], frame 0) → nhãn né đúng hình (dải phim dẹt, người cao
+// gầy) thay vì cả ô vuông. Bỏ mảnh `fine` (chi tiết nhỏ) và nền `bg`. Cache theo tên + args.
+const BOXC = new Map();
+// từng mảnh (hộp bao mỗi primitive, bỏ mảnh nhỏ `fine`) — hình thưa (chuỗi phân tử, hàng tế bào) không thành một khối đặc
+const PARTC = new Map();
+function iconParts(name, o = {}) {
+  const key = typeof name === 'string' ? `${name}|${JSON.stringify(o.args || {})}` : null;
+  if (key && PARTC.has(key)) return PARTC.get(key);
+  let prims = [];
+  try {
+    if (name && typeof name === 'object') prims = partsIcon(name);
+    else if (isRig(name)) prims = rigPrims(name, { f: 0, fps: FPS, seed: o.seed ?? strSeed(name), args: { editorial: DEFAULT_EDITORIAL, ...(o.args || {}) } });
+    else prims = (ICONS[iconFor(name)] || ICONS.dot)({ f: 0, p: o.p ?? 0, hash, ...(o.args || {}) });
+  } catch (e) { prims = []; }
+  const out = [];
+  for (const p of prims || []) {
+    if (!p || p.fine || p.role === 'bg' || (p.alpha ?? 1) < 0.2) continue;
+    let pts = [];
+    try { pts = sample(p, 12).pts; } catch (e) { pts = []; }
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    for (const [px, py] of pts) if (Number.isFinite(px) && Number.isFinite(py)) { x0 = Math.min(x0, px); x1 = Math.max(x1, px); y0 = Math.min(y0, py); y1 = Math.max(y1, py); }
+    if (Number.isFinite(x0)) out.push([x0, y0, x1, y1]);
+  }
+  out.sort((a, b) => (b[2] - b[0]) * (b[3] - b[1]) - (a[2] - a[0]) * (a[3] - a[1]));
+  const res = out.slice(0, 60);
+  if (key) PARTC.set(key, res);
+  return res;
+}
+function iconBox(name, o = {}) {
+  const key = typeof name === 'string' ? `${name}|${JSON.stringify(o.args || {})}` : null;
+  if (key && BOXC.has(key)) return BOXC.get(key);
+  let prims = [];
+  try {
+    if (name && typeof name === 'object') prims = partsIcon(name);
+    else if (isRig(name)) prims = rigPrims(name, { f: 0, fps: FPS, seed: o.seed ?? strSeed(name), args: { editorial: DEFAULT_EDITORIAL, ...(o.args || {}) } });
+    else prims = (ICONS[iconFor(name)] || ICONS.dot)({ f: 0, p: o.p ?? 0, hash, ...(o.args || {}) });
+  } catch (e) { prims = []; }
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (const p of prims || []) {
+    if (!p || p.fine || p.role === 'bg' || (p.alpha ?? 1) < 0.2) continue;
+    let pts = [];
+    try { pts = sample(p, 16).pts; } catch (e) { pts = []; }
+    for (const [px, py] of pts) if (Number.isFinite(px) && Number.isFinite(py)) { x0 = Math.min(x0, px); x1 = Math.max(x1, px); y0 = Math.min(y0, py); y1 = Math.max(y1, py); }
+  }
+  const b = Number.isFinite(x0) && x1 - x0 > 0.02 ? [Math.max(-2, x0), Math.max(-2, y0), Math.min(2, x1), Math.min(2, y1)] : [-0.8, -0.8, 0.8, 0.8];
+  if (key) BOXC.set(key, b);
+  return b;
+}
 function makeCtx(f, n = N, p = P) {
   const step = L.motion.step || 1, fs = Math.floor(f / step) * step;
   cur.f = f; cur.fs = fs; cur.drawK = 1;
   return { g, W, H, N: n, FPS, f, fs, t: f / FPS, u: f / Math.max(1, n - 1), pal, L, P: p, A, SAFE, GRID, E, EASE, MO, clamp, lerp, hash, noise, strSeed,
            col, shade, mix, draw, text, later, enter, icon, fmtNum, TAU, K: lookMod, media: MEDIA, kick: cur.kick,
+           anchor, iconAnchors, iconBox, iconParts, pickPart, offscreen, fade: cur.fade ?? 1,
            // LEAD: mọi phần tử 'vào sớm' vài frame → frame 0 của shot đã có hình (cắt cứng không lộ frame đen)
            k: (f0, dur, stepped = true) => clamp(((stepped ? fs : f) + LEAD - f0) / Math.max(1, dur)) };
 }
@@ -659,6 +748,32 @@ const nb = (side) => {
   return { ...o, p, S: BEATS[o.scene](makeCtx(0, o.n, p), p) };
 };
 const PREV = nb('prev'), NEXT = nb('next');
+// ---- portal (vòng 21, transition `zoom_through`): ô sau nằm TRONG một bộ phận của shot trước (mắt, não, cửa sổ…) ----
+// Python chỉ biết tên neo (`at`); toạ độ tính ở đây bằng một lần vẽ khô tất định ở frame cuối của shot NGOÀI → shot
+// ngoài và shot trong (render riêng, song song) ra cùng một ô. tile.s = để chiều cao ô trong ≈ đường kính bộ phận.
+const PORTAL_FILL = 0.9;
+function dryAnchors(beat, n, p) {
+  const keep = { boxes, overlaps, deferred, ANCH, rb: recordBoxes };
+  ANCH = {}; recordBoxes = false;
+  g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 0;
+  try { beat.draw(makeCtx(n - 1, n, p)); } catch (e) { /* vẽ khô lỗi → dùng tâm vật chính */ }
+  g.restore();
+  const got = ANCH;
+  boxes = keep.boxes; overlaps = keep.overlaps; deferred = keep.deferred; ANCH = keep.ANCH; recordBoxes = keep.rb;
+  g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.fillStyle = pal.bg; g.fillRect(0, 0, W, H);
+  return got;
+}
+function portalTile(beat, n, p, at) {
+  let hit = null;
+  if (Array.isArray(at) && at.length >= 2) hit = { l: [at[0] * W, at[1] * H, (at[2] ?? 0.05) * H] };          // toạ độ 0..1
+  else if (at && typeof at === 'object' && at.x !== undefined) hit = { l: [at.x * W, at.y * H, (at.r ?? 0.05) * H] };
+  else if (typeof at === 'string' && at !== 'center') { const A0 = beat ? dryAnchors(beat, n, p) : {}; hit = A0[at] || A0[at.split('.')[0]] || null; }
+  const [ax, ay, ar] = hit ? hit.l : [W / 2, H / 2 + 110, 120];
+  const s = clamp(Math.max(6, ar) / (W / 2 * PORTAL_FILL), 0.008, 0.3);   // ô trong phủ kín lỗ (lỗ nằm gọn trong bề ngang ô)
+  return { x: ax - W / 2, y: ay - H / 2, s, r: 0, portal: true, pr: Math.max(6, ar), found: !!hit };
+}
+const invTile = (t) => { const s = 1 / t.s, r = -t.r, cr = Math.cos(r), sr = Math.sin(r), x = -t.x * s, y = -t.y * s; return { x: x * cr - y * sr, y: x * sr + y * cr, s, r }; };
+
 const sm = (a, b, x) => { const t = clamp((x - a) / (b - a)); return t * t * (3 - 2 * t); };
 const tEase = (x) => { x = clamp(x); return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };   // in-out cubic
 function rest(T, lf, ln) {                            // tư thế camera khi đứng trên ô T (tính trong toạ độ của ô)
@@ -702,24 +817,40 @@ function worldDots(cam) {                             // lưới chấm mờ tro
   for (let i = x0; i <= x1; i++) for (let j = y0; j <= y1; j++) g.fillRect(i * step - r, j * step - r, 2 * r, 2 * r);
   g.restore();
 }
-function drawTile(T, beat, lf, ln, lp, cam, kk, alpha, fill, isSelf) {
+function drawTile(T, beat, lf, ln, lp, cam, kk, alpha, fill, isSelf, clipR = 0, fade = 1) {
   if (alpha <= 0.005) return;
   g.save(); applyCam(cam, kk); applyTile(T);
+  if (clipR > 0) { g.beginPath(); g.arc(W / 2, H / 2, clipR, 0, TAU); g.clip(); }   // portal: cảnh trong chỉ lộ qua lỗ bộ phận
   if (fill > 0) {                                     // ô nhỏ chuyển tiếp: nền đặc mềm không vẽ khung chữ nhật cứng đè chữ
-    g.globalAlpha = fill; g.fillStyle = pal.bg; g.fillRect(-30, -30, W + 60, H + 60);
+    g.globalAlpha = fill; g.fillStyle = pal.bg;
+    if (clipR > 0) g.fillRect(-W * 4, -H * 4, W * 9, H * 9);   // lỗ tròn: nền phủ hết lỗ (lỗ có thể rộng hơn ô)
+    else g.fillRect(-30, -30, W + 60, H + 60);
   }
   g.globalAlpha = alpha;
   recordBoxes = isSelf;
+  cur.fade = fade;
   if (beat) beat.draw(makeCtx(lf, ln, lp));
+  cur.fade = 1;
   recordBoxes = true;
   g.restore();
 }
 
+let PORTAL = null;                                     // {inner: 'next'|'self', T (ô trong so với ô ngoài), R0 (bán kính lỗ, toạ độ ô trong)}
+if (NEXT && NEXT.tile && NEXT.tile.portal) {
+  const at = NEXT.tile.at, T = portalTile(S, N, P, at);
+  NEXT.tile = T; PORTAL = { inner: 'next', T, at, R0: T.pr / T.s };
+} else if (PREV && PREV.tile && PREV.tile.portal) {
+  const at = PREV.tile.at, T = portalTile(PREV.S, PREV.n, PREV.p, at);
+  PREV.tile = { ...invTile(T), portal: true }; PORTAL = { inner: 'self', T, at, R0: T.pr / T.s };
+}
+const PORTAL_REND = Math.hypot(W, H) / 2 + 60;          // lỗ nở tới phủ kín khung ở cuối chặng bay
 window.meta = { cues: [...(S.cues || []).map((q) => ({ f: q.f, name: q.name })), ...(NEXT ? [{ f: Math.max(0, N - SPL), name: 'whoosh' }] : [])],
                 texts: S.texts || [], frames: N, scene: JOB.scene, engine: 'html', look: L.look, spine: !!SP, media: MEDIA.info,
-                post2d: GLP ? GLP.info : null, hold: HOLD, captions_on: CAPTIONS_ON, stage_bottom: STAGE_BOTTOM, story_hud: !!STORY_HUD };
+                post2d: GLP ? GLP.info : null, hold: HOLD, captions_on: CAPTIONS_ON, stage_bottom: STAGE_BOTTOM, story_hud: !!STORY_HUD,
+                portal: PORTAL ? { inner: PORTAL.inner, at: PORTAL.at ?? null, found: PORTAL.T.found,
+                                   s: +PORTAL.T.s.toFixed(4) } : null };
 window.renderFrame = (f0) => {
-  boxes = []; overlaps = []; deferred = [];
+  boxes = []; overlaps = []; deferred = []; ANCH = {};
   const f = HOLD > 1 ? Math.floor(f0 / HOLD) * HOLD : f0;
   g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; g.shadowBlur = 0; g.filter = 'none';
   g.fillStyle = pal.bg; g.fillRect(0, 0, W, H);
@@ -752,16 +883,24 @@ window.renderFrame = (f0) => {
       // chuyển cỡ (dive/pull): ô đi ra mờ sớm & ô đi vào hiện dần êm — không tạo "cửa sổ cắt ngang chữ" ở giữa màn
       const fadeOut = 1 - sm(0.18, 0.68, win.e);
       const fadeIn = sm(0.22, 0.72, win.e);
-      if (!win.same) {                                // lao vào / kéo ra
+      let clipNb = 0, clipSelf = 0, fadeOuter = 1;
+      if (PORTAL && o.tile.portal) {                  // lao xuyên bộ phận: ô ngoài giữ nguyên tới khi lỗ phủ kín khung
+        const R = PORTAL.R0 * Math.exp(Math.log(Math.max(1, PORTAL_REND / PORTAL.R0)) * sm(0.15, 0.95, win.e)), outerA = 1 - sm(0.9, 1, win.e);
+        fadeOuter = 1 - sm(0.04, 0.4, win.e);          // nhãn/mũi tên của cảnh ngoài lui ngay khi lao vào (không phóng khổng lồ)
+        if (PORTAL.inner === 'next') { selfAlpha = outerA; nbAlpha = 1; nbFill = 1; clipNb = R; }
+        else { nbAlpha = outerA; selfAlpha = 1; selfFill = 1; clipSelf = R; }
+      } else if (!win.same) {                         // lao vào / kéo ra
         if (win.src === 'self') { selfAlpha = fadeOut; nbAlpha = fadeIn; }
         else { nbAlpha = fadeOut; selfAlpha = fadeIn; }
         if (o.tile.s < 1) nbFill = fadeIn * 0.92; else selfFill = fadeIn * 0.92;
       }
-      tiles.push({ T: o.tile, beat: o.S, lf, ln: o.n, lp: o.p, self: false });
+      tiles.push({ T: o.tile, beat: o.S, lf, ln: o.n, lp: o.p, self: false, clip: clipNb, fade: PORTAL && PORTAL.inner === 'self' ? fadeOuter : 1 });
+      tiles[0].clip = clipSelf;
+      tiles[0].fade = PORTAL && PORTAL.inner === 'next' && o.tile.portal ? fadeOuter : 1;
     }
     tiles.sort((a, b) => b.T.s - a.T.s);              // ô lớn vẽ trước, ô nhỏ (cổng) đè lên
     for (const t of tiles) {
-      drawTile(t.T, t.beat, t.lf, t.ln, t.lp, cam, t.self ? kk : 0, t.self ? selfAlpha : nbAlpha, t.self ? selfFill : nbFill, t.self);
+      drawTile(t.T, t.beat, t.lf, t.ln, t.lp, cam, t.self ? kk : 0, t.self ? selfAlpha : nbAlpha, t.self ? selfFill : nbFill, t.self, t.clip || 0, t.fade ?? 1);
     }
     makeCtx(f);
   }
@@ -785,5 +924,12 @@ window.textBoxes = () => boxes.map((b) => {         // + texture phẳng trắng
   return { text: b.text, box: b.box, tex: c.toDataURL('image/png') };
 });
 window.overlapPairs = () => overlaps.slice();
+window.labelReport = () => (typeof S.report === 'function' ? S.report() : []);   // vòng 23: chữ còn đè hình (QA)
+// điểm neo ở frame cuối (toạ độ màn hình) cho chuyển cảnh hậu kỳ `zoom_through` sang shot không phải html (vòng 21)
+if (JOB.anchors_out) {
+  window.renderFrame(N - 1);
+  window.meta.anchors_end = Object.fromEntries(Object.entries(ANCH).map(([k, v]) => [k, v.s.map((q) => Math.round(q * 10) / 10)]));
+}
+window.anchorsNow = () => Object.fromEntries(Object.entries(ANCH).map(([k, v]) => [k, v.s]));
 window.glInfo = 'canvas2d';
 window.ready = true;

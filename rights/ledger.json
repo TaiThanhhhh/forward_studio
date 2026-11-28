@@ -7,52 +7,338 @@
     "flow_plan": "unknown",
     "atlas_commercial": "pending",
     "cartoon_short_kit_license": "unknown",
-    "brand_avatar_origin": "unknown"
+    "brand_avatar_origin": "unknown",
+    "edge_tts": "unknown"
   },
   "assets": [
-    {"id": "font:Anton", "path": "assets/fonts/Anton-Regular.ttf", "source": "Google Fonts ofl/anton", "license": "OFL-1.1", "commercial": "yes"},
-    {"id": "font:Baloo2", "path": "assets/fonts/Baloo2-Variable.ttf", "source": "Google Fonts", "license": "OFL-1.1", "commercial": "yes"},
-    {"id": "font:Bangers", "path": "assets/fonts/Bangers-Regular.ttf", "source": "Google Fonts", "license": "OFL-1.1", "commercial": "yes"},
-    {"id": "font:BeVietnamPro", "path": "assets/fonts/BeVietnamPro-*.ttf", "source": "Google Fonts", "license": "OFL-1.1", "commercial": "yes"},
-    {"id": "font:Caladea", "path": "assets/fonts/Caladea-Bold.ttf", "source": "huertatipografica/Caladea 1.002", "license": "Apache-2.0", "commercial": "yes"},
-    {"id": "font:Comfortaa", "path": "assets/fonts/Comfortaa-Variable.ttf", "source": "Google Fonts", "license": "OFL-1.1", "commercial": "yes"},
-    {"id": "font:FreeFont", "path": "assets/fonts/Free*Bold.ttf", "source": "GNU FreeFont 20120503", "license": "GPL-3.0+ with font exception", "commercial": "yes", "note": "raster vào video không ràng buộc; phân phối lại font phải kèm GPL"},
-    {"id": "font:Inter", "path": "assets/fonts/Inter*.otf", "source": "rsms/inter", "license": "OFL-1.1", "commercial": "yes", "note": "thiếu file license kèm (AUD-608)"},
-    {"id": "font:LuckiestGuy", "path": "assets/fonts/LuckiestGuy-Regular.ttf", "source": "Google Fonts apache/luckiestguy", "license": "Apache-2.0", "commercial": "yes"},
-    {"id": "font:Montserrat", "path": "assets/fonts/Montserrat-Variable.ttf", "source": "Google Fonts", "license": "OFL-1.1", "commercial": "yes"},
-    {"id": "font:PatrickHand", "path": "assets/fonts/PatrickHand-Regular.ttf", "source": "Google Fonts", "license": "OFL-1.1", "commercial": "yes"},
-    {"id": "font:PixelifySans", "path": "assets/fonts/PixelifySans-Variable.ttf", "source": "Google Fonts ofl/pixelifysans (eifetx/Pixelify-Sans)", "license": "OFL-1.1", "commercial": "yes"},
-    {"id": "font:PressStart2P", "path": "assets/fonts/PressStart2P-Regular.ttf", "source": "Google Fonts ofl/pressstart2p (CodeMan38)", "license": "OFL-1.1", "commercial": "yes"},
-    {"id": "font:RobotoMono", "path": "assets/fonts/RobotoMono-Variable.ttf", "source": "Google Fonts", "license": "OFL-1.1", "commercial": "yes"},
-    {"id": "font:SedgwickAve", "path": "assets/fonts/SedgwickAve-Regular.ttf", "source": "Google Fonts", "license": "OFL-1.1", "commercial": "yes"},
-    {"id": "sfx:builtin", "path": "assets/sfx/_builtin/*.wav", "source": "tổng hợp bằng vidlib/sfx.py", "license": "của chủ kênh (sinh bằng code)", "commercial": "yes"},
-    {"id": "sfx:user", "path": "assets/sfx/*.wav", "source": "người dùng thả vào", "license": "không ghi", "commercial": "unknown", "note": "cần file license đi kèm (AUD-609)"},
-    {"id": "music:synth", "path": "vidlib/musicgen.py", "source": "tổng hợp bằng code", "license": "của chủ kênh", "commercial": "yes"},
-    {"id": "music:user", "path": "projects/<slug>/audio/music.*", "source": "người dùng", "license": "không ghi", "commercial": "unknown", "note": "AUD-609"},
-    {"id": "voice:elevenlabs", "path": "projects/<slug>/audio/vo.*", "source": "ElevenLabs eleven_v3 (giọng premade / Voice Library)", "license": "theo gói ElevenLabs", "commercial": "decision:elevenlabs_plan", "note": "gói free cấm thương mại + bắt ghi elevenlabs.io trong tiêu đề; gói trả phí: thương mại (trừ Beta)"},
-    {"id": "clip:flow", "path": "projects/<slug>/clips/*", "source": "Google Flow (Veo / Omni) + Nano Banana", "license": "Google ToS + Generative AI Additional Terms + Prohibited Use Policy", "commercial": "decision:flow_plan", "note": "SynthID vô hình; watermark hiển thị theo gói (AUD-603); bắt buộc nhãn AI khi trông thật"},
-    {"id": "image:user-pd", "path": "assets/user/*", "source": "người dùng (public domain)", "license": "PD (ghi trong storyboard.sources)", "commercial": "yes"},
-    {"id": "brand:avatar", "path": "assets/brand/avatar.png", "source": "chủ kênh", "license": "?", "commercial": "decision:brand_avatar_origin"},
-    {"id": "brand:refs", "path": "assets/brand/refs/*.png", "source": "ảnh chụp bài đăng mạng xã hội bên thứ ba", "license": "bản quyền bên thứ ba", "commercial": "no", "note": "chỉ tham khảo, không đưa vào video (AUD-607)"},
-    {"id": "ocr:tessdata", "path": "assets/tessdata/*.traineddata", "source": "tesseract-ocr/tessdata_best", "license": "Apache-2.0", "commercial": "yes"},
-    {"id": "code:three", "path": "vendor/three/three.module.js", "source": "three.js r160", "license": "MIT", "commercial": "yes"},
-    {"id": "code:three-addons", "path": "vendor/three/addons/{loaders/GLTFLoader,utils/SkeletonUtils,utils/BufferGeometryUtils}.js", "source": "mrdoob/three.js r160 (d04539a7)", "license": "MIT", "commercial": "yes"},
-    {"id": "lib3d:kenney", "path": "assets/lib/3d/kenney-*/", "source": "KenneyNL Starter Kits (GitHub chính chủ)", "license": "CC0-1.0", "commercial": "yes"},
-    {"id": "lib3d:kaykit", "path": "assets/lib/3d/kaykit-*/", "source": "Kay Lousberg / KayKit-Game-Assets (GitHub chính chủ)", "license": "CC0-1.0", "commercial": "yes"},
-    {"id": "lib3d:threejs-robot", "path": "assets/lib/3d/threejs-robot/", "source": "Tomás Laulhé (Quaternius) / Don McCurdy — three.js r160 RobotExpressive", "license": "CC0-1.0", "commercial": "yes"},
-    {"id": "lib3d:polyhaven", "path": "assets/lib/3d/polyhaven/", "source": "Poly Haven (polyhaven.com/models)", "license": "CC0-1.0", "commercial": "yes"},
-    {"id": "libsvg:phosphor", "path": "assets/lib/svg/phosphor/", "source": "Phosphor Icons — phosphor-icons/core 2b75f3ad", "license": "MIT", "commercial": "yes"},
-    {"id": "code:claude-animated-shorts", "path": "vendor/claude-animated-shorts/", "source": "mromidev/claude-animated-shorts e3b817b6", "license": "MIT", "commercial": "yes"},
-    {"id": "code:cartoon-short-kit", "path": "vendor/cartoon-short-kit/ → engines/three/main.js, paint.js, lib/motion/motion.js", "source": "zip người dùng đưa", "license": "không rõ", "commercial": "decision:cartoon_short_kit_license", "note": "có đoạn gần nguyên văn (AUD-605)"},
-    {"id": "code:kaz-documentary", "path": "vendor/kaz-documentary/ → ý tưởng engines/board/*", "source": "plugin Kaz 0.1.0", "license": "không có license", "commercial": "yes", "note": "mã viết lại, rủi ro thấp; bản sao trong git nên bỏ (AUD-606)"},
-    {"id": "style:mg-styles-15", "path": "styles/{flat-vector,line-boil,isometric,hud,synthwave,sticker-explainer}-black", "source": "Vincentwei1021/mg-styles-15 269f6ed7", "license": "MIT", "commercial": "yes"},
-    {"id": "style:lemo-opuscar", "path": "styles/{swiss-motion,spy-titles,pictogram,scale-zoom}-black", "source": "lemomo-ai/lemo-opuscar 3a7132b9", "license": "MIT (mã) · CC BY-NC 4.0 (tài liệu .md)", "commercial": "yes", "note": "chỉ đọc tài liệu NC, viết lại bằng lời của tool (AUD-611)"},
-    {"id": "style:huashu-art-motion", "path": "styles/physics-diagram-black, scale-zoom luật camera, gallery-pointillist-black", "source": "alchaincyf/huashu-art-motion 14681965", "license": "MIT", "commercial": "yes"},
-    {"id": "style:dashi-animationstyle", "path": "styles/{flowchart,sketchnote}-black", "source": "chuspeeism/dashi-animationstyle aa620f3b", "license": "MIT", "commercial": "yes"},
-    {"id": "style:3d-style-atlas", "path": "styles/atlas-*.json", "source": "3D Style Atlas — Futurepedia / HubSpot Media", "license": "HubSpot Website Terms of Use (cá nhân, phi thương mại)", "commercial": "decision:atlas_commercial", "note": "chỉ lấy ý tưởng thị giác, chữ + mã viết mới; bản gốc lưu cục bộ"},
-    {"id": "code:anything2explainer", "path": "vendor/anything2explainer", "source": "Vincentwei1021/anything2explainer 0b85f6c7", "license": "PolyForm-Noncommercial-1.0.0", "commercial": "no", "note": "không dùng mã/tài liệu"},
-    {"id": "code:hyperframes", "path": "vendor/hyperframes", "source": "heygen-com/hyperframes ff9c3b76", "license": "Apache-2.0", "commercial": "yes", "note": "chỉ benchmark"},
-    {"id": "lib:manim", "path": "pip manim", "source": "ManimCommunity", "license": "MIT", "commercial": "yes"},
-    {"id": "lib:tools", "path": "Pillow / numpy / OpenCV / Playwright / ffmpeg", "source": "PyPI / hệ thống", "license": "HPND / BSD / Apache-2.0 / Apache-2.0 / LGPL-GPL", "commercial": "yes"}
+    {
+      "id": "font:Anton",
+      "path": "assets/fonts/Anton-Regular.ttf",
+      "source": "Google Fonts ofl/anton",
+      "license": "OFL-1.1",
+      "commercial": "yes"
+    },
+    {
+      "id": "font:Baloo2",
+      "path": "assets/fonts/Baloo2-Variable.ttf",
+      "source": "Google Fonts",
+      "license": "OFL-1.1",
+      "commercial": "yes"
+    },
+    {
+      "id": "font:Bangers",
+      "path": "assets/fonts/Bangers-Regular.ttf",
+      "source": "Google Fonts",
+      "license": "OFL-1.1",
+      "commercial": "yes"
+    },
+    {
+      "id": "font:BeVietnamPro",
+      "path": "assets/fonts/BeVietnamPro-*.ttf",
+      "source": "Google Fonts",
+      "license": "OFL-1.1",
+      "commercial": "yes"
+    },
+    {
+      "id": "font:Caladea",
+      "path": "assets/fonts/Caladea-Bold.ttf",
+      "source": "huertatipografica/Caladea 1.002",
+      "license": "Apache-2.0",
+      "commercial": "yes"
+    },
+    {
+      "id": "font:Comfortaa",
+      "path": "assets/fonts/Comfortaa-Variable.ttf",
+      "source": "Google Fonts",
+      "license": "OFL-1.1",
+      "commercial": "yes"
+    },
+    {
+      "id": "font:FreeFont",
+      "path": "assets/fonts/Free*Bold.ttf",
+      "source": "GNU FreeFont 20120503",
+      "license": "GPL-3.0+ with font exception",
+      "commercial": "yes",
+      "note": "raster vào video không ràng buộc; phân phối lại font phải kèm GPL"
+    },
+    {
+      "id": "font:Inter",
+      "path": "assets/fonts/Inter*.otf",
+      "source": "rsms/inter",
+      "license": "OFL-1.1",
+      "commercial": "yes",
+      "note": "thiếu file license kèm (AUD-608)"
+    },
+    {
+      "id": "font:LuckiestGuy",
+      "path": "assets/fonts/LuckiestGuy-Regular.ttf",
+      "source": "Google Fonts apache/luckiestguy",
+      "license": "Apache-2.0",
+      "commercial": "yes"
+    },
+    {
+      "id": "font:Montserrat",
+      "path": "assets/fonts/Montserrat-Variable.ttf",
+      "source": "Google Fonts",
+      "license": "OFL-1.1",
+      "commercial": "yes"
+    },
+    {
+      "id": "font:PatrickHand",
+      "path": "assets/fonts/PatrickHand-Regular.ttf",
+      "source": "Google Fonts",
+      "license": "OFL-1.1",
+      "commercial": "yes"
+    },
+    {
+      "id": "font:PixelifySans",
+      "path": "assets/fonts/PixelifySans-Variable.ttf",
+      "source": "Google Fonts ofl/pixelifysans (eifetx/Pixelify-Sans)",
+      "license": "OFL-1.1",
+      "commercial": "yes"
+    },
+    {
+      "id": "font:PressStart2P",
+      "path": "assets/fonts/PressStart2P-Regular.ttf",
+      "source": "Google Fonts ofl/pressstart2p (CodeMan38)",
+      "license": "OFL-1.1",
+      "commercial": "yes"
+    },
+    {
+      "id": "font:RobotoMono",
+      "path": "assets/fonts/RobotoMono-Variable.ttf",
+      "source": "Google Fonts",
+      "license": "OFL-1.1",
+      "commercial": "yes"
+    },
+    {
+      "id": "font:SedgwickAve",
+      "path": "assets/fonts/SedgwickAve-Regular.ttf",
+      "source": "Google Fonts",
+      "license": "OFL-1.1",
+      "commercial": "yes"
+    },
+    {
+      "id": "sfx:builtin",
+      "path": "assets/sfx/_builtin/*.wav",
+      "source": "tổng hợp bằng vidlib/sfx.py",
+      "license": "của chủ kênh (sinh bằng code)",
+      "commercial": "yes"
+    },
+    {
+      "id": "sfx:user",
+      "path": "assets/sfx/*.wav",
+      "source": "người dùng thả vào",
+      "license": "không ghi",
+      "commercial": "unknown",
+      "note": "cần file license đi kèm (AUD-609)"
+    },
+    {
+      "id": "music:synth",
+      "path": "vidlib/musicgen.py",
+      "source": "tổng hợp bằng code",
+      "license": "của chủ kênh",
+      "commercial": "yes"
+    },
+    {
+      "id": "music:user",
+      "path": "projects/<slug>/audio/music.*",
+      "source": "người dùng",
+      "license": "không ghi",
+      "commercial": "unknown",
+      "note": "AUD-609"
+    },
+    {
+      "id": "voice:elevenlabs",
+      "path": "projects/<slug>/audio/vo.*",
+      "source": "ElevenLabs eleven_v3 (giọng premade / Voice Library)",
+      "license": "theo gói ElevenLabs",
+      "commercial": "decision:elevenlabs_plan",
+      "note": "gói free cấm thương mại + bắt ghi elevenlabs.io trong tiêu đề; gói trả phí: thương mại (trừ Beta)"
+    },
+    {
+      "id": "clip:flow",
+      "path": "projects/<slug>/clips/*",
+      "source": "Google Flow (Veo / Omni) + Nano Banana",
+      "license": "Google ToS + Generative AI Additional Terms + Prohibited Use Policy",
+      "commercial": "decision:flow_plan",
+      "note": "SynthID vô hình; watermark hiển thị theo gói (AUD-603); bắt buộc nhãn AI khi trông thật"
+    },
+    {
+      "id": "image:user-pd",
+      "path": "assets/user/*",
+      "source": "người dùng (public domain)",
+      "license": "PD (ghi trong storyboard.sources)",
+      "commercial": "yes"
+    },
+    {
+      "id": "brand:avatar",
+      "path": "assets/brand/avatar.png",
+      "source": "chủ kênh",
+      "license": "?",
+      "commercial": "decision:brand_avatar_origin"
+    },
+    {
+      "id": "brand:refs",
+      "path": "assets/brand/refs/*.png",
+      "source": "ảnh chụp bài đăng mạng xã hội bên thứ ba",
+      "license": "bản quyền bên thứ ba",
+      "commercial": "no",
+      "note": "chỉ tham khảo, không đưa vào video (AUD-607)"
+    },
+    {
+      "id": "ocr:tessdata",
+      "path": "assets/tessdata/*.traineddata",
+      "source": "tesseract-ocr/tessdata_best",
+      "license": "Apache-2.0",
+      "commercial": "yes"
+    },
+    {
+      "id": "code:three",
+      "path": "vendor/three/three.module.js",
+      "source": "three.js r160",
+      "license": "MIT",
+      "commercial": "yes"
+    },
+    {
+      "id": "code:three-addons",
+      "path": "vendor/three/addons/{loaders/GLTFLoader,utils/SkeletonUtils,utils/BufferGeometryUtils}.js",
+      "source": "mrdoob/three.js r160 (d04539a7)",
+      "license": "MIT",
+      "commercial": "yes"
+    },
+    {
+      "id": "lib3d:kenney",
+      "path": "assets/lib/3d/kenney-*/",
+      "source": "KenneyNL Starter Kits (GitHub chính chủ)",
+      "license": "CC0-1.0",
+      "commercial": "yes"
+    },
+    {
+      "id": "lib3d:kaykit",
+      "path": "assets/lib/3d/kaykit-*/",
+      "source": "Kay Lousberg / KayKit-Game-Assets (GitHub chính chủ)",
+      "license": "CC0-1.0",
+      "commercial": "yes"
+    },
+    {
+      "id": "lib3d:threejs-robot",
+      "path": "assets/lib/3d/threejs-robot/",
+      "source": "Tomás Laulhé (Quaternius) / Don McCurdy — three.js r160 RobotExpressive",
+      "license": "CC0-1.0",
+      "commercial": "yes"
+    },
+    {
+      "id": "lib3d:polyhaven",
+      "path": "assets/lib/3d/polyhaven/",
+      "source": "Poly Haven (polyhaven.com/models)",
+      "license": "CC0-1.0",
+      "commercial": "yes"
+    },
+    {
+      "id": "libsvg:phosphor",
+      "path": "assets/lib/svg/phosphor/",
+      "source": "Phosphor Icons — phosphor-icons/core 2b75f3ad",
+      "license": "MIT",
+      "commercial": "yes"
+    },
+    {
+      "id": "code:claude-animated-shorts",
+      "path": "vendor/claude-animated-shorts/",
+      "source": "mromidev/claude-animated-shorts e3b817b6",
+      "license": "MIT",
+      "commercial": "yes"
+    },
+    {
+      "id": "code:cartoon-short-kit",
+      "path": "vendor/cartoon-short-kit/ → engines/three/main.js, paint.js, lib/motion/motion.js",
+      "source": "zip người dùng đưa",
+      "license": "không rõ",
+      "commercial": "decision:cartoon_short_kit_license",
+      "note": "có đoạn gần nguyên văn (AUD-605)"
+    },
+    {
+      "id": "code:kaz-documentary",
+      "path": "vendor/kaz-documentary/ → ý tưởng engines/board/*",
+      "source": "plugin Kaz 0.1.0",
+      "license": "không có license",
+      "commercial": "yes",
+      "note": "mã viết lại, rủi ro thấp; bản sao trong git nên bỏ (AUD-606)"
+    },
+    {
+      "id": "style:mg-styles-15",
+      "path": "styles/{flat-vector,line-boil,isometric,hud,synthwave,sticker-explainer}-black",
+      "source": "Vincentwei1021/mg-styles-15 269f6ed7",
+      "license": "MIT",
+      "commercial": "yes"
+    },
+    {
+      "id": "style:lemo-opuscar",
+      "path": "styles/{swiss-motion,spy-titles,pictogram,scale-zoom}-black",
+      "source": "lemomo-ai/lemo-opuscar 3a7132b9",
+      "license": "MIT (mã) · CC BY-NC 4.0 (tài liệu .md)",
+      "commercial": "yes",
+      "note": "chỉ đọc tài liệu NC, viết lại bằng lời của tool (AUD-611)"
+    },
+    {
+      "id": "style:huashu-art-motion",
+      "path": "styles/physics-diagram-black, scale-zoom luật camera, gallery-pointillist-black",
+      "source": "alchaincyf/huashu-art-motion 14681965",
+      "license": "MIT",
+      "commercial": "yes"
+    },
+    {
+      "id": "style:dashi-animationstyle",
+      "path": "styles/{flowchart,sketchnote}-black",
+      "source": "chuspeeism/dashi-animationstyle aa620f3b",
+      "license": "MIT",
+      "commercial": "yes"
+    },
+    {
+      "id": "style:3d-style-atlas",
+      "path": "styles/atlas-*.json",
+      "source": "3D Style Atlas — Futurepedia / HubSpot Media",
+      "license": "HubSpot Website Terms of Use (cá nhân, phi thương mại)",
+      "commercial": "decision:atlas_commercial",
+      "note": "chỉ lấy ý tưởng thị giác, chữ + mã viết mới; bản gốc lưu cục bộ"
+    },
+    {
+      "id": "code:anything2explainer",
+      "path": "vendor/anything2explainer",
+      "source": "Vincentwei1021/anything2explainer 0b85f6c7",
+      "license": "PolyForm-Noncommercial-1.0.0",
+      "commercial": "no",
+      "note": "không dùng mã/tài liệu"
+    },
+    {
+      "id": "code:hyperframes",
+      "path": "vendor/hyperframes",
+      "source": "heygen-com/hyperframes ff9c3b76",
+      "license": "Apache-2.0",
+      "commercial": "yes",
+      "note": "chỉ benchmark"
+    },
+    {
+      "id": "lib:manim",
+      "path": "pip manim",
+      "source": "ManimCommunity",
+      "license": "MIT",
+      "commercial": "yes"
+    },
+    {
+      "id": "lib:tools",
+      "path": "Pillow / numpy / OpenCV / Playwright / ffmpeg",
+      "source": "PyPI / hệ thống",
+      "license": "HPND / BSD / Apache-2.0 / Apache-2.0 / LGPL-GPL",
+      "commercial": "yes"
+    },
+    {
+      "id": "voice:edge-tts",
+      "path": "projects/<slug>/audio/vo.*",
+      "source": "Microsoft Edge Neural TTS qua thư viện edge-tts (endpoint Read Aloud của Edge)",
+      "license": "không có giấy phép thương mại công khai cho cách gọi này",
+      "commercial": "decision:edge_tts",
+      "note": "dịch vụ đọc to của trình duyệt Edge, không phải API thương mại (Azure Speech mới có điều khoản thương mại) — chủ kênh tự quyết; an toàn nhất: lồng tiếng lại bằng ElevenLabs gói trả phí (`--tts-force`) trước khi bật kiếm tiền"
+    }
   ]
 }

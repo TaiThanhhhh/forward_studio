@@ -236,7 +236,7 @@ def text_audit(job_path, frames):
     from PIL import Image  # noqa: PLC0415
     from playwright.sync_api import sync_playwright  # noqa: PLC0415
     c = cfg()
-    crops, overlaps, boxes = [], [], []
+    crops, overlaps, boxes, on_object = [], [], [], []
     with serve() as port, sync_playwright() as p:
         b, pg, _gl = _open(p, url_for(port, job_path), c["channel"], c["gpu"])
         for f in frames:
@@ -262,8 +262,10 @@ def text_audit(job_path, frames):
                         tex = Image.new("RGB", ti.size, (0, 0, 0))
                         tex.paste(ti, (0, 0), ti)
                     crops.append((f, t["text"], im.crop(box), tex))
+        if frames:   # vòng 23: phần chữ còn đè hình (beat tự báo sau khi đã vẽ ít nhất một frame)
+            on_object = pg.evaluate("typeof window.labelReport === 'function' ? window.labelReport() : []") or []
         b.close()
-    return {"crops": crops, "overlaps": overlaps, "boxes": boxes}
+    return {"crops": crops, "overlaps": overlaps, "boxes": boxes, "on_object": on_object}
 
 
 def text_crops(job_path, frames):

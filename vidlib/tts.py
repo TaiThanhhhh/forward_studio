@@ -86,9 +86,41 @@ def _align_boundary_words(spoken_text, words, boundaries):
     return out
 
 
-def _synth_edge(lines, cfg, log=print):
-    """Tổng hợp giọng Neural miễn phí qua `edge-tts` kèm mốc từng từ (`WordBoundary`)."""
+def edge_spec(cfg, voice=None):
+    """Giọng Neural + tông gốc {voice, rate %, pitch Hz} của giọng đang dùng (vòng 23: mỗi giọng trong kho một giọng
+    riêng — trước đây 22 tên dồn vào 5 giọng). Thứ tự: voice['edge'] → mục trong kho cùng id → bảng tên cũ."""
+    v = voice or cfg.get("voice") or {}
+    spec = v.get("edge")
+    if not spec and v.get("id"):
+        for p in (cfg.get("pools") or {}).values():
+            for x in p if isinstance(p, list) else []:
+                if isinstance(x, dict) and x.get("id") == v["id"] and x.get("edge"):
+                    spec = x["edge"]
+    if not spec:
+        vid = str(v.get("id") or "")
+        name = vid.split(":", 1)[1] if vid.startswith("edge:") else _edge_voice_for(v.get("name"))
+        spec = {"voice": name, "rate": 0, "pitch": 0}
+    return {"voice": spec["voice"], "rate": int(spec.get("rate", 0)), "pitch": int(spec.get("pitch", 0))}
+
+
+def _tone_segments(lines, cfg):
+    """Câu liền nhau cùng vai (beat) → một đoạn đọc cùng tông. [(chỉ số câu đầu, [câu], beat)]."""
+    segs = []
+    for i, ln in enumerate(lines):
+        b = ln.get("beat") or "setup"
+        if segs and segs[-1][2] == b:
+            segs[-1][1].append(ln)
+        else:
+            segs.append((i, [ln], b))
+    return segs
+
+
+def _synth_edge(lines, cfg, log=print, voice=None):
+    """Tổng hợp giọng Neural miễn phí qua `edge-tts` kèm mốc từng từ (`WordBoundary`). Vòng 23: tông theo vai câu
+    (`voice.json → edge_tone`: hook nhanh/sáng hơn, payoff chậm/trầm lại) — đọc từng đoạn cùng vai rồi nối."""
     import asyncio  # noqa: PLC0415
+    import shutil  # noqa: PLC0415
+    import tempfile  # noqa: PLC0415
 
     try:
         import edge_tts  # noqa: PLC0415
@@ -96,29 +128,61 @@ def _synth_edge(lines, cfg, log=print):
         raise StudioError("Chưa cài edge-tts cho giọng Neural dự phòng. Chạy: pip install edge-tts") from ex
 
     clean_cfg = {**cfg, "audio_tags": {"enabled": False}}
-    spoken_text, words = build_text(lines, clean_cfg)
-    ev = _edge_voice_for((cfg.get("voice") or {}).get("name"))
-    log(f"  · Edge Neural TTS (miễn phí): {ev} · {len(spoken_text)} ký tự")
+    spec = edge_spec(cfg, voice)
+    tones = cfg.get("edge_tone") or {}
+    segs = _tone_segments(lines, cfg)
+    total_chars = len(build_text(lines, clean_cfg)[0])
+    log(f"  · Edge Neural TTS: {spec['voice']} (tông {spec['rate']:+d}% / {spec['pitch']:+d}Hz) · "
+        f"{len(segs)} đoạn theo vai · {total_chars} ký tự")
 
-    async def _run():
-        comm = edge_tts.Communicate(spoken_text, ev, boundary="WordBoundary")
-        buf = bytearray()
-        bounds = []
+    async def _one(text, rate, pitch):
+        comm = edge_tts.Communicate(text, spec["voice"], rate=f"{rate:+d}%", pitch=f"{pitch:+d}Hz", boundary="WordBoundary")
+        buf, bounds = bytearray(), []
         async for ch in comm.stream():
             if ch["type"] == "audio":
                 buf.extend(ch["data"])
             elif ch["type"] == "WordBoundary":
-                st = ch["offset"] / 1e7
-                en = (ch["offset"] + ch["duration"]) / 1e7
-                bounds.append((ch["text"], st, en))
+                bounds.append((ch["text"], ch["offset"] / 1e7, (ch["offset"] + ch["duration"]) / 1e7))
         return bytes(buf), bounds
 
-    audio, bounds = asyncio.run(_run())
-    if not audio:
-        raise StudioError("Edge Neural TTS không trả về dữ liệu âm thanh.")
-    wt = _align_boundary_words(spoken_text, words, bounds)
-    dur = wt[-1]["end"] if wt else 0.0
-    return audio, wt, round(dur, 3), ev
+    tmp = tempfile.mkdtemp(prefix="edge_tts_")
+    try:
+        parts, wt_all, offset = [], [], 0.0
+        for k, (start, sub, beat) in enumerate(segs):
+            t = tones.get(beat) or {}
+            rate = max(-30, min(30, spec["rate"] + int(t.get("rate", 0))))
+            pitch = max(-20, min(20, spec["pitch"] + int(t.get("pitch", 0))))
+            text, words = build_text(sub, clean_cfg)
+            audio, bounds = asyncio.run(_one(text, rate, pitch))
+            if not audio:
+                raise StudioError("Edge Neural TTS không trả về dữ liệu âm thanh.")
+            pth = os.path.join(tmp, f"seg_{k:02d}.mp3")
+            with open(pth, "wb") as fh:
+                fh.write(audio)
+            parts.append(pth)
+            for w in _align_boundary_words(text, words, bounds):
+                wt_all.append({**w, "line": w["line"] + start, "start": round(w["start"] + offset, 3),
+                               "end": round(w["end"] + offset, 3)})
+            try:
+                offset += float(probe(pth)["duration"])
+            except Exception:  # noqa: BLE001
+                offset += bounds[-1][2] if bounds else 0.0
+        if len(parts) == 1:
+            with open(parts[0], "rb") as fh:
+                audio = fh.read()
+        else:
+            lst = os.path.join(tmp, "list.txt")
+            with open(lst, "w", encoding="utf-8", newline=chr(10)) as fh:
+                fh.writelines(f"file '{os.path.abspath(q).replace(chr(92), '/')}'" + chr(10) for q in parts)
+            merged = os.path.join(tmp, "merged.mp3")
+            run(["ffmpeg", "-y", "-v", "error", "-f", "concat", "-safe", "0", "-i", lst, "-c", "copy", merged],
+                "ffmpeg (edge tts concat)")
+            with open(merged, "rb") as fh:
+                audio = fh.read()
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+    dur = wt_all[-1]["end"] if wt_all else 0.0
+    return audio, wt_all, round(dur, 3), spec["voice"]
 
 
 def _is_elevenlabs_quota_err(ex):
@@ -313,7 +377,13 @@ def synthesize(proj, lines, log=print, force=False, voice=None):
         if voice.get("settings"):
             cfg["voice_settings"] = {**cfg["voice_settings"], **voice["settings"]}
     text, words = build_text(lines, cfg)
+    provider_pref = (env("TTS_PROVIDER") or os.environ.get("TTS_PROVIDER") or "elevenlabs").strip().lower()
+    if str((voice or {}).get("id", "")).startswith("edge:"):
+        provider_pref = "edge"                     # giọng chỉ có trên Edge (vòng 23)
     key = cache_key(text, cfg)
+    if provider_pref == "edge":                    # đổi giọng/tông Edge → đọc lại (khoá cache gồm cả tông theo vai)
+        key = hashlib.sha1(json.dumps({"k": key, "edge": edge_spec(cfg, voice), "tone": cfg.get("edge_tone")},
+                                      sort_keys=True).encode()).hexdigest()[:16]
     adir = os.path.join(proj, "audio")
     os.makedirs(adir, exist_ok=True)
     mp3, ap = os.path.join(adir, "vo.mp3"), os.path.join(adir, "vo_alignment.json")
@@ -322,7 +392,6 @@ def synthesize(proj, lines, log=print, force=False, voice=None):
         from . import cost  # noqa: PLC0415
         cost.record(proj, "tts", provider="elevenlabs", chars=len(text), cached=True, model=cfg["model_id"])
         return ap
-    provider_pref = (env("TTS_PROVIDER") or os.environ.get("TTS_PROVIDER") or "elevenlabs").strip().lower()
     api_key = env(cfg.get("api_key_env", "ELEVENLABS_API_KEY"))
     used_provider = "elevenlabs"
     used_model = cfg["model_id"]
@@ -344,13 +413,13 @@ def synthesize(proj, lines, log=print, force=False, voice=None):
         return raw_audio, raw_wt, raw_dur
 
     if provider_pref == "edge":
-        audio, wt, dur, ev = _synth_edge(lines, cfg, log=log)
+        audio, wt, dur, ev = _synth_edge(lines, cfg, log=log, voice=voice)
         used_provider, used_model, used_voice_name = "edge_tts", ev, ev
     elif not api_key:
         if provider_pref == "elevenlabs":
             raise StudioError("Chưa có ELEVENLABS_API_KEY (biến môi trường hoặc file .env ở gốc repo).")
         log("  ⚠ Không có ELEVENLABS_API_KEY → chuyển tự động sang Edge Neural TTS (miễn phí).")
-        audio, wt, dur, ev = _synth_edge(lines, cfg, log=log)
+        audio, wt, dur, ev = _synth_edge(lines, cfg, log=log, voice=voice)
         used_provider, used_model, used_voice_name = "edge_tts", ev, ev
     else:
         try:
@@ -358,7 +427,7 @@ def synthesize(proj, lines, log=print, force=False, voice=None):
         except StudioError as ex:
             if provider_pref != "elevenlabs" and _is_elevenlabs_quota_err(ex):
                 log(f"  ⚠ ElevenLabs hết quota/giới hạn ({ex}) → chuyển tự động sang Edge Neural TTS (miễn phí).")
-                audio, wt, dur, ev = _synth_edge(lines, cfg, log=log)
+                audio, wt, dur, ev = _synth_edge(lines, cfg, log=log, voice=voice)
                 used_provider, used_model, used_voice_name = "edge_tts", ev, ev
             else:
                 raise
@@ -383,7 +452,8 @@ def synthesize(proj, lines, log=print, force=False, voice=None):
     save_json(ap, {"key": key, "voice": cfg["voice"], "model_id": cfg["model_id"],
                    "voice_settings": cfg["voice_settings"], "text": text, "words": wt,
                    "duration": dur, "words_per_sec": round(rate, 2), "raw_words_per_sec": round(raw, 3),
-                   "speed_at_synth": sp, "mp3_size": len(audio)})
+                   "speed_at_synth": sp, "mp3_size": len(audio),
+                   "provider": used_provider, "provider_model": used_model, "provider_voice": used_voice_name})
     log(f"  ✔ audio/vo.mp3 · {dur:.1f}s · {n_words} từ · nhịp nói {rate:.2f} từ/giây (sau atempo, bỏ khoảng ngừng)")
     lo, hi = cfg.get("min_words_per_sec", 3.2), cfg.get("max_words_per_sec", 4.3)
     if not lo <= rate <= hi:

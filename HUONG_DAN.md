@@ -401,6 +401,89 @@ nhau ở mọi worker và mọi máy.
 - **Easing mới** cho `ease` của keyframe (2D lẫn 3D): `bounceOut` (rơi nảy 3 lần), `elastic` (lò xo), `expoOut` (phóng rồi
   phanh gắt), `circOut`, `sine` (êm nhất), `backIn` (lùi lấy đà), `steps` (nhảy bậc như đồng hồ).
 
+## 7f. Zoom xuyên bộ phận · nhân vật có bộ phận sống · dữ kiện có nguồn · SEO (vòng 21)
+
+**Zoom xuyên bộ phận** (kiểu kênh giải thích lớn: lao vào mắt → thấy võng mạc, vào màn hình → thấy mạch điện):
+- Shot trước (2D `scene`): camera `{"u": 1, "at": "hero.eye", "zoom": 12}` — camera bám đúng con mắt rồi phóng vào.
+- Shot sau: `"transition_in": "zoom_through", "through": "hero.eye"` → cảnh sau mở ra từ bên trong con mắt (lỗ tròn
+  nở ra). Hai shot html liền nhau: engine vẽ lại vector nên nét ở mọi độ phóng. Shot 3D: `"frame": {"dive": {"of":
+  "hero", "part": "head"}}`.
+- Bộ phận có sẵn: head, eye, brain, mouth, ear, nose, neck, chest, heart, lungs, belly, stomach, hand, foot, back, tail,
+  wing, center, top (icon thường: center, top, bottom, left, right, screen, window, core).
+
+**Nhân vật có bộ phận sống** (trong `actors` của `scene`): `"xray": 1` + `"organs": ["brain", "heart", "lungs"]` (thân
+trong suốt, tim đập theo `bpm`), `"focus": "brain"` (vầng sáng nhịp), `"hold": "phone"` (cầm đồ vật), `"talk": true`
+(miệng nói), `"look_at": "cup"` (mắt nhìn theo); nhãn `"bubble": "thought"` = bong bóng suy nghĩ. Đi bộ tự khớp chân với
+quãng đường (không trượt). Xem mẫu: `python scripts/parts_sheet.py` → `qa/round21/`.
+
+**Dữ kiện có nguồn**: storyboard có `sources` (có `publisher`, `year`, `url`) + `claims`; shot ghi `"claims": ["K1"]` →
+góc dưới hiện chip nhỏ "Source: NASA (2024)". `python studio.py facts <slug>` in bảng claim/nguồn/hạng nguồn và lỗi
+(nguồn yếu, số không nguồn, giả định nói như thật, tỉ lệ người–vật sai thực tế) → `qa/facts.md`.
+
+**SEO Shorts**: ghi `publish.primary_keyword`; tool kiểm từ khoá ở tiêu đề/mô tả/lời đọc, hashtag, tag, dòng nguồn;
+`out/publish.md` có mục **SEO check**. Upload YouTube tự đặt category, nhãn "nội dung tổng hợp" (video toàn hoạt hình code
+= No; có clip Flow trông như thật → anh quyết trong `publish.youtube_shorts.altered_content`). **Không bao giờ** ghi tên
+kênh khác (Kurzgesagt, TED-Ed…) vào tiêu đề/tag/mô tả — tool chặn.
+
+## 7g. Hình nhận ra được · người tả thực · bối cảnh đêm · kính lúp · rủi ro YouTube (vòng 22)
+
+**Vật thể chi tiết** (tự thay bản đơn giản cùng tên): laptop, phone, chip, keyboard, server, gpu, film (khung phim có hình
+vẽ), reel, drawing, pencil, brain (có thuỳ + nếp), neuron, rbc / bloodcell, macrophage + chomper (đớp liên tục khi `p` >
+0.5), fatcell / fat, glycogen, glucose, bread, pasta, vertebra, spine (`p` = đĩa đệm bị nén), disc, muscle, musclefiber,
+fiber (`p` = vết rách nhỏ), mitochondria, heart, lungs, liver, capillary (`p` = bị ép), vesselwall, peptide, lipidchain,
+caffeine, adenosine, receptor, cup, coffeebean, bed, shoe, paper, bits, bike, denoise (`p` 0 = nhiễu → 1 = cảnh sạch).
+Xem: `python scripts/icon_sheet.py cosmic-flat-black --detail` → `qa/icons/`.
+
+**Người tả thực**: `rig:athlete`, `rig:marathoner`, `rig:runnerf`, `rig:lifter`, `rig:casual`, `rig:casualf` với hành động
+idle, walk, run, sit, sleep, point, wave, cheer, jump, tired, curl, squat, **cycle** (có xe đạp thật). Bộ phận thêm: knee,
+thigh, calf, heel, ankle, sole, elbow, shoulder, arm, liver, spine, hip. X-ray thêm: liver, spine, muscles, vessels,
+fuel (kho glycogen sáng theo `p`).
+
+**Bối cảnh đêm** (thay nền đen trơn): trong `params` của `scene` ghi `"backdrop": "gym"` (hoặc city, road, bedroom,
+track, office, studio, lab) hoặc `{"kind": "gym", "floor": 0.66}` — `floor` ≈ vạch chân nhân vật. 3D: `"set": "gym"` hoặc
+`"bedroom"` (phòng đêm có cửa sổ, đèn treo, vũng sáng).
+
+**Kính lúp** thay cho "zoom vào bộ phận đang chạy": `"lenses": [{"of": "r.sole", "x": 0.64, "y": 0.34, "r": 0.3,
+"title": "CAPILLARY IN YOUR SOLE", "actors": [{"icon": "capillary", "size": 1000}]}]` + `"freeze": 0.12` trên nhân vật
+(đứng hình trước khi soi).
+
+**Nhịp explainer**: `"length_profile": "explainer"` — 34–56 giây, mỗi shot 4–6.5 giây một ý, không tự chèn punch-in,
+camera bay êm giữa các shot. Nhãn tự né nhau và tự kẹp trong vùng an toàn.
+
+**Rủi ro YouTube**: `python studio.py policy <slug>` (hoặc `--all`) → `qa/policy.md`. Cổng QA đỏ khi ≥ 40% shot lặp khung
+của 10 video gần nhất (YouTube "inauthentic content"). Video sức khoẻ tự có dòng "Educational content, not medical
+advice." trong mô tả. Chi tiết + nguồn: `docs/YOUTUBE_RISK.md`.
+
+## 7h. Đầu ra gọn · QA tự chặn · người nhiều góc · giọng + tông (vòng 23)
+
+**Mỗi video xong chỉ còn 4 file trong `projects/<slug>/out/`:**
+
+| File | Dùng để |
+|---|---|
+| `final.mp4` | video 9:16 — đăng chung cho YouTube Shorts, TikTok, Instagram/Facebook Reels |
+| `post.md` | copy-dán theo từng nền tảng: tiêu đề (chọn 1), mô tả + nguồn, hashtag, tag YouTube, bình luận ghim, caption TikTok/Reels, cài đặt đăng (Made for kids = No…) |
+| `cover-16x9.jpg` | ảnh bìa 16:9 |
+| `captions.srt` | phụ đề (nếu muốn tải lên) |
+
+Không còn version cũ, gói nền tảng trùng lặp hay báo cáo QA — tool tự xoá sau khi video **qua cổng QA**. Muốn giữ như cũ:
+`config/channel.json → output.lean: false`. Dọn dự án render trước vòng 23: `python studio.py clean --all --lean`.
+
+**QA không cần đọc:** lỗi thấy được bằng mắt đều chặn (video không được xuất): chữ đè hình, video đứng như slide, chữ
+khó đọc, số liệu không nguồn, hook yếu (> 16 từ / không gây tò mò / mở đầu chậm), thiếu câu nối lại giữa video, câu độn
+hay xin like trong lời đọc, người chỉ một góc nghiêng, người chính trùng video trước.
+
+**Người:** `view` side | front | back (đổi giữa shot bằng key), 15 kiểu người (thêm coach, lifterf, bigguy, elder,
+student, office, cyclist, medic, trailrunner), `outfit`, `hair`, `beard`, `glasses`; động tác `deadlift`. Tập tạ nên để
+`front` (đòn tạ ngang vai/trước đùi), đạp xe để `side`.
+
+**Giọng:** 27 giọng khác nhau (Edge Neural), mỗi giọng một tông; hook đọc nhanh/sáng hơn, câu chốt chậm/trầm lại.
+
+**Kiếm tiền với giọng TTS:** YouTube không cấm giọng TTS/AI trong video bật kiếm tiền — điều kiện là nội dung tự làm,
+không lặp khuôn mẫu, có giá trị (chính sách "inauthentic content"). Điểm cần lưu ý là **giấy phép** của chính dịch vụ
+TTS: Edge TTS (thư viện `edge-tts` gọi tính năng đọc to của trình duyệt Edge) không có điều khoản thương mại công khai;
+ElevenLabs gói trả phí / Azure Speech thì có. An toàn nhất trước khi bật kiếm tiền: lồng lại bằng ElevenLabs
+(`--tts-force`).
+
 ## 8. Outro & thumbnail
 - Style cắt cảnh: outro Shorts 2,2s ("Next: …" + follow), frame cuối whip về frame đầu để loop. Style board: outro là
   tiêu đề đỏ glitch trên bảng rồi về đen.

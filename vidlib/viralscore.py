@@ -52,12 +52,14 @@ EXPLAINER_2D_RICH_SCENES = frozenset({
     "split", "callout", "code_terminal", "chat_prompt",
 })
 EXPLAINER_2D_STYLES = frozenset({
-    "kurzgesagt-black", "school-of-life-black", "infographics-show-black", "cartoon-story-black",
+    "cosmic-flat-black", "essay-ink-black", "bold-infographic-black", "cartoon-story-black",
+    # bí danh vòng 19 (storyboard cũ chưa chuẩn hoá)
+    "kurzgesagt-black", "school-of-life-black", "infographics-show-black",
 })
 RICH_SCENES = frozenset({"dossier", "xray_cutaway", "hero_stat", "stage", "code_terminal", "chat_prompt"})
 FLAT_CARDS = frozenset({"title", "fact", "counter", "compare"})
-PURPOSEFUL_TRANSITIONS = frozenset({"iris_match", "whip_match", "tape_stop", "match", "whip"})
-AGENCY_TRANSITIONS = frozenset({"iris_match", "whip_match", "tape_stop"})
+PURPOSEFUL_TRANSITIONS = frozenset({"iris_match", "whip_match", "tape_stop", "match", "whip", "zoom_through"})
+AGENCY_TRANSITIONS = frozenset({"iris_match", "whip_match", "tape_stop", "zoom_through"})
 HOOK_IMPACT_SFX = frozenset({
     "sub_drop", "boom", "hit", "impact", "sting", "thud", "whoosh", "swish_match", "tape_stop",
     "stamp", "pin", "shutter", "slam", "crash",
@@ -412,8 +414,8 @@ def _score_visual_craft(sb, shots, eng_scenes, fmt, suggestions):
     rich_pts = round(14 * min(1.0, rich_share / 0.40))
     if rich_share < 0.40:
         suggestions.append(
-            f"Tỉ lệ shot giàu chiều sâu mới đạt {rich_share:.0%} (< 40%) — thêm `dossier`, "
-            "`xray_cutaway`, `hero_stat`, 3D `stage` hoặc `scene` đa nhân vật."
+            f"Tỉ lệ shot giàu chiều sâu mới đạt {rich_share:.0%} (< 40%) — thêm `scene` có bối cảnh (`backdrop`), "
+            "kính lúp (`lenses`), nhân vật tả thực hoặc 3D `stage`."
         )
 
     has_hud = bool(isinstance(sb.get("story_hud"), dict) and sb["story_hud"]) or any(
@@ -425,6 +427,10 @@ def _score_visual_craft(sb, shots, eng_scenes, fmt, suggestions):
     hud_pts = 4 if has_hud else 0
 
     unique_scenes = len({sc for _, sc in eng_scenes if sc})
+    if fmt == "illustrated_2d_explainer":       # vòng 22: đa dạng = số KHUNG khác nhau (beat + bộ đạo cụ)
+        from . import policy  # noqa: PLC0415
+        keys = [policy.frame_key(sh) for sh in shots]
+        unique_scenes = max(unique_scenes, len({(k[1], frozenset(k[2])) for k in keys if k}))
     target_div = 4.0 if fmt in ("infinite_zoom_journey", "illustrated_2d_explainer") else 5.0
     div_pts = round(7 * min(1.0, unique_scenes / target_div))
     if unique_scenes < int(target_div):
@@ -523,14 +529,16 @@ def _score_camera_matchcut(sb, shots, eng_scenes, fmt, suggestions):
     elif fmt == "illustrated_2d_explainer":
         unique_2d = {sc for eng, sc in eng_scenes if eng == "html" and sc}
         has_2d_stage = has_2d_cinematic or any(sc == "scene" for _, sc in eng_scenes)
-        if len(unique_2d) >= 3 and has_2d_stage:
+        rich2d = sum(1 for sh in shots if ((sh.get("code") or {}).get("params") or {}).get("backdrop")
+                     or ((sh.get("code") or {}).get("params") or {}).get("lenses"))
+        if (len(unique_2d) >= 3 and has_2d_stage) or rich2d >= 3:
             cam_pts = 7
         elif len(unique_2d) >= 2:
             cam_pts = 5
         else:
             cam_pts = 2
             suggestions.append(
-                "Đa dạng hoá thêm ≥ 3 bố cục 2D (`scene` đa nhân vật, `xray_cutaway`, `process`, `hero_stat`)."
+                "Đa dạng hoá khung 2D: mỗi shot một cơ chế/đạo cụ khác (scene + backdrop + lenses), tránh khung mẫu đã dùng."
             )
     elif len(presets) >= 2:
         cam_pts = 7

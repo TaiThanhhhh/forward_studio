@@ -1,13 +1,13 @@
 {
-  "name": "Kurzgesagt Black",
-  "description": "Hoạt hình vector phẳng giàu chiều sâu vũ trụ/khoa học trên nền đêm sâu (cảm hứng Kurzgesagt – In a Nutshell & Life Noggin): hình khối hình học sắc nét, bầu trời sao lấp lánh tinh tế, bảng màu xanh cyan + vàng hổ phách + san hô rực rỡ, vào cảnh nảy đàn hồi so le.",
+  "name": "Cosmic Flat Black",
+  "description": "Hoạt hình vector phẳng khoa học/vũ trụ giàu chiều sâu trên nền đêm sâu (thể loại flat-vector science explainer): hình khối hình học sắc nét, bầu trời sao tinh tế, cyan + hổ phách + san hô có kiểm soát, vào cảnh nảy đàn hồi so le, zoom xuyên bộ phận nhân vật/vật thể để chuyển cảnh.",
   "source": {
     "repo": "studio — engine html (vòng 19)",
-    "url": "engines/html/looks.js · styles/kurzgesagt-black.json",
+    "url": "engines/html/looks.js · styles/cosmic-flat-black.json",
     "sha": "—",
     "license": "mã của kênh; font Baloo2 / RobotoMono (OFL-1.1)",
-    "from": "2D illustrated science explainer (Kurzgesagt / Life Noggin dark-mode aesthetic)",
-    "how": "look `kurzgesagt` trên engine html: nền vũ trụ sâu, vòng quỹ đạo & sao tinh tế, khối vector phẳng đa sắc nảy đàn hồi"
+    "from": "2D flat-vector science explainer genre (deep-space dark mode)",
+    "how": "look `cosmic` trên engine html: nền vũ trụ sâu, vòng quỹ đạo & sao tinh tế, khối vector phẳng đa sắc nảy đàn hồi"
   },
   "code_engine": "html",
   "code_only": true,
@@ -25,9 +25,10 @@
     "earth",
     "energy",
     "explainer",
-    "kurzgesagt",
-    "life-noggin",
-    "future"
+    "future",
+    "planet",
+    "body",
+    "health"
   ],
   "black_min": 0.55,
   "palette": {
@@ -94,7 +95,7 @@
   },
   "variation": "ExtraBold",
   "html": {
-    "look": "kurzgesagt",
+    "look": "cosmic",
     "font": "Baloo2-Variable.ttf",
     "mono": "RobotoMono-Variable.ttf",
     "palette": {

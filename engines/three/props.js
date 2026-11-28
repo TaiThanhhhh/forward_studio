@@ -1050,14 +1050,15 @@ export function fx3d(ctx, { parent = ctx.world, x = 0, y = 0, z = 0, kind = 'ste
 // Mọi mép bối cảnh tan vào ĐEN (màu đỉnh giảm dần → sân khấu đen của kênh). Màu: world.colors.<token> của style, nếu
 // không có thì SET_COL; set_opts.colors ghi đè từng token. Texture vẽ bằng code (paint.js) qua ctx.lookTex (lọc theo look).
 // ===========================================================================
-export const SETS = ['black', 'lab', 'track', 'stadium', 'diorama', 'meadow', 'tabletop', 'street'];
+export const SETS = ['black', 'lab', 'track', 'stadium', 'diorama', 'meadow', 'tabletop', 'street', 'gym', 'bedroom'];
 /** Mặt đứng của set (prop y đo từ đây, như mặt bàn lab). */
 export const setBase = (name, o = {}) => (name === 'lab' ? 0.92 : name === 'tabletop' ? (o.top ?? 0.76) : 0);
 const SET_COL = { grass: '#2B4C3B', tuft: '#365C47', dirt: '#3F362E', flower: '#D8B45A', flower_center: '#B87236', stem: '#294F39',
   rock: '#636872', hill: '#1D332B', wood: '#735036', wood_dark: '#422D1E', wall: '#283042', asphalt: '#2A2E36',
   road_line: '#C9B15A', curb: '#6A6D73', brick: '#7E5343', window: '#1D2433', window_lit: '#DFBA6E', lamp: '#E8D59C',
   leaf: '#284A39', trunk: '#4A3B30', tartan: '#943F30', track_line: '#E6E2D8', infield: '#244535', stand: '#1C212B',
-  stadium_base: '#12151C', cone: '#C96336', trail: '#7C664E' };
+  stadium_base: '#12151C', cone: '#C96336', trail: '#7C664E', rubber: '#1E2128', metal: '#5A606C', plate: '#2B2F38',
+  night_sky: '#0B1426', moon: '#E9E6D6', blanket: '#2E4A6E', sheet: '#C9CCD4', floor_wood: '#3A2A20' };
 const HAS_DOM = typeof document !== 'undefined';
 const setCol = (ctx, o, k) => {
   const own = o && o.colors && o.colors[k];
@@ -1230,7 +1231,7 @@ export function volumetricSpotlight(ctx, { parent = ctx.world, x = 0, y = 0, z =
 }
 
 /**
- * Dựng bối cảnh. name: black | meadow | tabletop | street | track | stadium | diorama (lab dựng ở stage như cũ).
+ * Dựng bối cảnh. name: black | meadow | tabletop | street | track | stadium | diorama | gym | bedroom (lab dựng ở stage như cũ).
  * ext = {cx, cz, sx, sz}: tâm + cỡ vùng đặt prop (stage đo) để bối cảnh tự vừa. o = set_opts.
  * → {root, base, frame (gợi ý góc máy), table?}
  */
@@ -1351,6 +1352,75 @@ export function setScene(ctx, name, o = {}, ext = { cx: 0, cz: 0, sx: 1, sz: 1 }
     }
     if (o.trees !== false) tree(ctx, { parent: root, x: -(o.tree_x ?? 0.3) * W, y: 0.12, z: -D / 2 - 0.55, h: 1.6 });
     return { root, base: 0, frame: { elev: 12 } };
+  }
+  if (name === 'gym' || name === 'bedroom') {      // vòng 22: phòng ĐÊM có chiều sâu (darkmode = buổi tối, không nền đen trơn)
+    const isGym = name === 'gym', W = o.w ?? Math.max(5.2, ext.sx + 3.6), D = o.d ?? Math.max(3.2, ext.sz + 2.4), wh = o.wall_h ?? 3.2;
+    root.position.set(o.at ? o.at[0] : ext.cx, 0, o.at ? o.at[1] : ext.cz);
+    const kx = (x) => 1 - 0.7 * sstep(0.3 * W, 0.52 * W, Math.abs(x));
+    const SC = (k) => (o.colors && o.colors[k] ? setCol(ctx, o, k) : SET_COL[k]);   // màu riêng của phòng đêm (không lấy màu style)
+    const fc = SC(isGym ? 'rubber' : 'floor_wood');
+    const fg = new THREE.PlaneGeometry(W, D, 16, 8); fg.rotateX(-Math.PI / 2);
+    fadeGeo(ctx, fg, (x, y, z) => kx(x) * (1 - 0.45 * sstep(0.05 * D, 0.5 * D, z)));
+    const ftex = isGym ? tx('tilesFlat', seed, fc, shadeHexP(fc, -16), 64, 4) : tx('planks', seed, fc, px);
+    setMesh(ctx, fg, mapMat(stex(ctx, ftex, Math.max(1, Math.round(W / 0.9)), Math.max(1, Math.round(D / 0.9))), isGym ? 'rubber' : 'floor_wood'), root);
+    const wc = setCol(ctx, o, 'wall'), wallT = stex(ctx, tx('tilesFlat', seed + 1, wc, shadeHexP(wc, -22), 64, 4), 4, 2);
+    const wg = new THREE.PlaneGeometry(W * 1.25, wh, 14, 6);
+    fadeGeo(ctx, wg, (x, y) => kx(x * 0.9) * (1 - 0.35 * sstep(0, wh / 2, y)) * 0.9);
+    setMesh(ctx, wg, mapMat(wallT, 'wall'), root, 0, wh / 2, -D / 2);
+    // cửa sổ: trời đêm + thành phố sáng đèn (gym) hoặc trăng + sao (phòng ngủ), khung tối, ánh trăng hắt xuống sàn
+    const wins = isGym ? [-W * 0.3, 0, W * 0.3] : [W * 0.18];
+    const ww = isGym ? 1.15 : 1.3, whh = isGym ? 1.5 : 1.6, wy = isGym ? 1.75 : 1.65;
+    for (const [i, wx] of wins.entries()) {
+      const sky = ctx.add(new THREE.PlaneGeometry(ww, whh), ctx.flat(SC('night_sky')), wx, wy, -D / 2 + 0.01, root); sky.castShadow = false;
+      if (isGym) {
+        const city = stex(ctx, tx('facade', seed + 10 + i, '#141a26', setCol(ctx, o, 'window'), setCol(ctx, o, 'window_lit'), 64), 3, 2);
+        for (let b = 0; b < 4; b++) {
+          const bw = ww / 4 * 0.9, bh = 0.35 + 0.75 * hsh(b + i * 7, seed);
+          const bm = ctx.add(new THREE.PlaneGeometry(bw, bh), city ? ctx.flat('#ffffff', { map: city }) : ctx.flat('#141a26'), wx - ww / 2 + bw * (b + 0.55), wy - whh / 2 + bh / 2, -D / 2 + 0.02, root);
+          bm.castShadow = false;
+        }
+      } else {
+        const moon = ctx.add(new THREE.CircleGeometry(0.12, 24), ctx.flat(SC('moon')), wx + 0.32, wy + 0.42, -D / 2 + 0.02, root); moon.castShadow = false;
+        ctx.glow(SC('moon'), 0.6, root, wx + 0.32, wy + 0.42, -D / 2 + 0.05, 0.5);
+        for (let k = 0; k < 14; k++) { const st = ctx.add(new THREE.CircleGeometry(0.012, 6), ctx.flat('#ffffff'), wx - ww / 2 + ww * hsh(k, seed + 3), wy - whh / 2 + whh * hsh(k, seed + 4), -D / 2 + 0.02, root); st.castShadow = false; }
+      }
+      const fr = ctx.toon(shadeHexP(wc, -30), { vertexColors: false });
+      for (const [fx, fy, fw, fh] of [[0, whh / 2, ww + 0.08, 0.06], [0, -whh / 2, ww + 0.08, 0.06], [-ww / 2, 0, 0.06, whh], [ww / 2, 0, 0.06, whh], [0, 0, 0.04, whh]]) {
+        ctx.add(new THREE.BoxGeometry(fw, fh, 0.06), fr, wx + fx, wy + fy, -D / 2 + 0.04, root);
+      }
+    }
+    if (isGym) {                                   // giá squat, giá tạ đơn, đĩa tạ dựng tường
+      const mc = ctx.toon(SC('metal')), pc = ctx.toon(SC('plate'));
+      const rx = -W * 0.36, rz = -D / 2 + 0.45;
+      for (const dx of [-0.55, 0.55]) for (const dz of [-0.25, 0.25]) ctx.add(new THREE.BoxGeometry(0.07, 2.2, 0.07), mc, rx + dx, 1.1, rz + dz, root);
+      for (const dz of [-0.25, 0.25]) ctx.add(new THREE.BoxGeometry(1.2, 0.07, 0.07), mc, rx, 2.2, rz + dz, root);
+      const bar = ctx.add(new THREE.CylinderGeometry(0.025, 0.025, 2.0, 10), mc, rx, 1.45, rz - 0.3, root); bar.rotation.z = Math.PI / 2;
+      for (const sx of [-0.85, 0.85]) { const pl = ctx.add(new THREE.CylinderGeometry(0.22, 0.22, 0.06, 24), pc, rx + sx, 1.45, rz - 0.3, root); pl.rotation.z = Math.PI / 2; }
+      const dx0 = W * 0.22;
+      ctx.add(new THREE.BoxGeometry(1.5, 0.05, 0.4), mc, dx0, 0.55, -D / 2 + 0.4, root);
+      ctx.add(new THREE.BoxGeometry(1.5, 0.05, 0.4), mc, dx0, 0.95, -D / 2 + 0.4, root);
+      for (let k = 0; k < 6; k++) for (const yy of [0.62, 1.02]) {
+        const db = ctx.add(new THREE.CylinderGeometry(0.02, 0.02, 0.3, 8), mc, dx0 - 0.6 + k * 0.24, yy, -D / 2 + 0.4, root); db.rotation.x = Math.PI / 2;
+        for (const e of [-0.13, 0.13]) { const hd = ctx.add(new THREE.CylinderGeometry(0.06, 0.06, 0.05, 8), pc, dx0 - 0.6 + k * 0.24, yy, -D / 2 + 0.4 + e, root); hd.rotation.x = Math.PI / 2; }
+      }
+      for (const [k, wx] of [[0, W * 0.42], [1, W * 0.45]]) { const pl = ctx.add(new THREE.CylinderGeometry(0.28 - k * 0.06, 0.28 - k * 0.06, 0.05, 24), pc, wx, 0.3 - k * 0.06, -D / 2 + 0.12 + k * 0.06, root); pl.rotation.x = Math.PI / 2 - 0.12; }
+    } else {                                       // tủ đầu giường + đèn ngủ ấm
+      const wd = ctx.toon(setCol(ctx, o, 'wood_dark'));
+      ctx.add(new THREE.BoxGeometry(0.5, 0.55, 0.4), wd, -W * 0.32, 0.275, -D / 2 + 0.35, root);
+      ctx.add(new THREE.CylinderGeometry(0.03, 0.05, 0.35, 8), wd, -W * 0.32, 0.72, -D / 2 + 0.35, root);
+      ctx.add(new THREE.CylinderGeometry(0.1, 0.16, 0.16, 12, 1, true), ctx.flat(setCol(ctx, o, 'lamp')), -W * 0.32, 0.95, -D / 2 + 0.35, root);
+      ctx.glow(setCol(ctx, o, 'lamp'), 0.9, root, -W * 0.32, 0.95, -D / 2 + 0.4, 0.8);
+    }
+    if (o.lamps !== false) {                       // đèn treo + cột sáng thể tích (vũng sáng trên sàn)
+      for (const lx of isGym ? [-W * 0.18, W * 0.18] : []) {
+        ctx.add(new THREE.CylinderGeometry(0.008, 0.008, 1.0, 4), ctx.toon('#30343c'), lx, wh - 0.5, 0, root);
+        ctx.add(new THREE.ConeGeometry(0.2, 0.18, 16, 1, true), ctx.toon('#2a2e36'), lx, wh - 1.05, 0, root);
+        ctx.glow(setCol(ctx, o, 'lamp'), 0.9, root, lx, wh - 1.12, 0, 0.45);
+        volumetricSpotlight(ctx, { parent: root, x: lx, y: 0, z: 0, rTop: 0.18, rBot: 1.1, h: wh - 1.12, color: setCol(ctx, o, 'lamp'), opacity: 0.07, pool: true });
+      }
+      if (!isGym) volumetricSpotlight(ctx, { parent: root, x: W * 0.18, y: 0, z: -D / 2 + 0.9, rTop: 0.5, rBot: 1.3, h: 2.2, color: SC('moon'), opacity: 0.05, pool: true });
+    }
+    return { root, base: 0, frame: { elev: 10, margin: 1.2 } };
   }
   if (name === 'track' || name === 'stadium') {
     const isStad = name === 'stadium';

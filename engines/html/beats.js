@@ -1,3 +1,5 @@
+import { strideOf } from './rig2d.js';
+import { BACKDROPS, backdropItems } from './backdrops.js';
 // Beat = "ngữ pháp giải thích" của engine html: mỗi beat nhận params (dữ liệu từ storyboard) và trả về {cues, texts, draw(c)}.
 // Beat không biết look: mọi nét đặc trưng (tiêu đề, cột, nhãn, mũi tên, vòng nhấn, mặt đất) gọi qua c.K (looks.js).
 // Mốc thời gian tính theo số frame của shot (N, do timeline theo VO quyết định) — không có mốc tuyệt đối nào trong mã;
@@ -1162,6 +1164,16 @@ function outro(c0, P) {
 //          fx:[{kind: burst|shockwave|smoke|splash|sparkle, x, y, z | at (id actor), u}],
 //          camera:[{u, x, y (điểm nhìn 0..1), z (dolly: + là tiến vào), rot (độ, máy nghiêng), focus (độ sâu nét), ease}],
 //          depth: false | true | {layers, fg, dof, fog}, seed}
+// Vòng 21 — bộ phận sống & zoom xuyên bộ phận: mọi tham chiếu (labels.of, arrows.from/to, fx.at, camera.at, look_at)
+//          nhận "id.part" (part: head|eye|brain|mouth|ear|nose|neck|chest|heart|lungs|belly|stomach|hand|hand_far|foot|
+//          foot_far|back|tail|wing|center|top; icon thường: center|top|bottom|left|right|screen|window|core).
+//          actor: xray 0..1 (key được) + organs [brain|heart|lungs|stomach|skeleton] + bpm · focus "<part>" (vầng sáng nhịp,
+//          key được) · hold "<icon>" (gắn bàn tay, thú cầm ở miệng) · talk true | [[u0,u1],…] (miệng nói) ·
+//          look_at "<id>[.part]" (mắt nhìn theo) · slide true (tắt chống trượt chân: chu kỳ bước = quãng đường đi thật).
+//          camera key: at "<id>[.part]" (bám đúng bộ phận ở từng frame) + zoom 0.5..40 (phóng 2D vector, vẫn sắc nét).
+//          labels: bubble speech|thought (bong bóng có đuôi chỉ về miệng/đầu của `of`), out (u nhãn rút) ·
+//          keep_labels: true = giữ nhãn khi camera phóng (soi kính lúp trục số/chi tiết, không phải cú lao chuyển cảnh).
+//          labels[].fixed: true = giữ đúng chỗ đặt (mặc định vòng 23: nhãn tự né vật/kính/nhãn khác, chọn một lần cho cả đời nhãn).
 // Thời gian dùng u (0..1 của shot) — shot được co giãn theo giọng đọc, nên dàn cảnh không phụ thuộc số giây.
 // Chiều sâu 2D (vòng 10): điểm (x, y, z) chiếu qua camera → cỡ × 1/(1 + (z − cam.z)/2) (phối cảnh), trôi theo camera với thị
 // sai đúng theo z, DOF = mờ theo |z − focus|, không khí = tối dần về nền đen theo z; lớp bụi xa + vật lướt sát ống kính tự
@@ -1204,19 +1216,224 @@ function verbDelta(c, items, i, n, size) {
   }
   return m;
 }
+// ---- vòng 21: bộ phận sống — miệng nói, bong bóng thoại ----
+const isRigName = (n) => typeof n === 'string' && n.trim().toLowerCase().startsWith('rig:');
+/** độ mở miệng 0..1 khi nhân vật đang nói (talk: true | [[u0,u1],…]) — nhịp âm tiết ~4 Hz + ngắt câu, tất định */
+function talkAt(a, u, t, i) {
+  const tk = a.talk;
+  if (!tk) return 0;
+  const on = tk === true || (Array.isArray(tk) && tk.some((r) => Array.isArray(r) && u >= r[0] && u <= r[1]));
+  if (!on) return 0;
+  const ph = (i * 0.37) % 1;
+  if (((t * 0.9 + ph) % 1) > 0.84) return 0;           // ngắt giữa các cụm từ
+  const v = 0.55 + 0.45 * Math.sin((t * 4.3 + ph) * Math.PI * 2) * (0.65 + 0.35 * Math.sin((t * 1.7 + ph * 3) * Math.PI * 2));
+  return Math.max(0, Math.min(1, v));
+}
+/** bong bóng lời nói/suy nghĩ có đuôi chỉ về neo A [x, y, r] (miệng/đầu) — chữ tối trên nền sáng, kẹp trong vùng an toàn */
+function bubble(c, l, A, k, yb) {
+  const size = l.size || 50, thought = l.bubble === 'thought', g = c.g;
+  const b0 = c.text(l.text, 0, 0, { size, k: 0, maxW: 640, align: 'center' });
+  const tw = b0.x1 - b0.x0, th = b0.y1 - b0.y0, padX = 34, padY = 24, w = tw + padX * 2, h = th + padY * 2;
+  // side: 'left' | 'right' đẩy bong bóng ra ngoài (hai nhân vật nói cùng lúc không chạm nhau); mặc định hướng vào giữa khung
+  const side = l.side === 'left' ? -1 : l.side === 'right' ? 1 : A[0] > c.W * 0.55 ? -1 : 1, lift = A[2] * 1.2 + 70;
+  const cx = Math.min(c.A.x1 - w / 2, Math.max(c.A.x0 + w / 2, A[0] + side * Math.min(160, w * 0.25)));
+  const top = Math.max(Math.max(c.A.top + 20, yb + 30), Math.min(c.A.bottom - h - 20, A[1] - lift - h));
+  const ty = top + padY - b0.y0, e = c.EASE.back ? c.EASE.back(Math.min(1, k * 1.15)) : k, sc = Math.max(0.001, e);
+  const tipX = Math.min(Math.max(A[0], cx - w / 2 + 30), cx + w / 2 - 30), tipY = A[1] - A[2] * 0.55;
+  const prims = [{ k: 'rect', x: -w / 2, y: 0, w, h, rad: thought ? h / 2 : Math.min(28, h / 2), role: 'ink' }];
+  if (thought) {
+    for (const [f, rr] of [[0.35, 0.16], [0.62, 0.1], [0.84, 0.06]]) prims.push({ k: 'circle', x: c.lerp(cx, tipX, f) - cx, y: c.lerp(h + 6, tipY - top, f), r: 1, rx: h * rr, ry: h * rr, role: 'ink' });
+  } else {
+    const bx = c.lerp(cx, tipX, 0.55) - cx;
+    prims.push({ k: 'poly', pts: [[bx - 22, h - 2], [bx + 22, h - 2], [tipX - cx, Math.max(h + 26, tipY - top)]], role: 'ink' });
+  }
+  g.save();
+  g.translate(cx, top + h); g.scale(sc, sc); g.translate(-cx, -(top + h));
+  c.draw(prims, { x: cx, y: top, s: 1, plain: true, alpha: Math.min(1, k * 2) });
+  g.restore();
+  // look nét (pen.fill = false: boil, sketch…) chỉ vẽ viền bong bóng → chữ màu mực, không phải màu nền (sẽ chìm)
+  const filled = !(c.L && c.L.pen && c.L.pen.fill === false);
+  c.text(l.text, cx, ty, { size, k: c.clamp(k * 1.4 - 0.2), role: filled ? 'bg' : 'ink', maxW: 640, align: 'center', enter: 'mask' });
+}
 const VID = { x: 0, y: 0, z: 0, sx: 1, sy: 1, rot: 0, alpha: 1, glow: 0, blur: 0, reveal: 1 };
+// ---- vòng 22: vẽ bối cảnh đêm (backdrops.js) qua camera của cảnh: xa vẽ trước, thị sai + DOF + tối dần theo z ----
+// Mỗi lớp (cùng z) vẽ MỘT lần vào canvas phụ theo camera gốc rồi mỗi frame chỉ đặt lại bằng một phép affine (thị sai đúng
+// theo z) + một lần lọc nhoè → nền hàng trăm cửa sổ/đèn vẫn rẻ. Sao (twinkle), bầu trời, sàn vẽ trực tiếp.
+const BD_CACHE = new Map();
+function bdRgba(hex, a) { const s = String(hex).replace('#', ''); const n = parseInt(s.length === 3 ? s.split('').map((q) => q + q).join('') : s.slice(0, 6), 16); return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`; }
+function bdItem(c, gg, it, P2, pen, dimK) {
+  gg.save();
+  gg.globalAlpha *= (it.a ?? 1) * (it.k === 'glow' || it.k === 'cone' ? 1 : (0.55 + 0.45 * dimK));
+  if (it.twinkle !== undefined) gg.globalAlpha *= 0.65 + 0.35 * Math.sin(c.f * 0.07 + it.twinkle * 1.7);
+  if (it.k === 'rect') {
+    const [x0, y0] = P2(it.x, it.y, it.z), [x1, y1] = P2(it.x + it.w, it.y + it.h, it.z);
+    const pr = { k: 'rect', x: x0, y: y0, w: x1 - x0, h: y1 - y0, rad: (it.rad || 0) * Math.min(x1 - x0, y1 - y0) * 0.5, role: it.role, tone: it.tone, ...(it.fill === false ? { fill: false, sw: it.sw || 0.4 } : {}), ...(it.fine ? { fine: true } : {}) };
+    if (it.rot) { const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2, cr = Math.cos(it.rot), sr = Math.sin(it.rot);
+      const pts = [[x0, y0], [x1, y0], [x1, y1], [x0, y1]].map(([x, y]) => [cx + (x - cx) * cr - (y - cy) * sr, cy + (x - cx) * sr + (y - cy) * cr]);
+      c.draw([{ k: 'poly', pts, role: it.role, tone: it.tone }], { x: 0, y: 0, s: 1, plain: !pen });
+    } else c.draw([pr], { x: 0, y: 0, s: 1, plain: !pen });
+  } else if (it.k === 'circle') {
+    const [x, y, s] = P2(it.x, it.y, it.z), r = it.r * c.W * s;
+    c.draw([{ k: 'circle', x, y, r: Math.max(0.8, r), role: it.role, tone: it.tone, ...(it.fill === false ? { fill: false, w: it.w || 0.3 } : {}), ...(it.fine ? { fine: true } : {}) }], { x: 0, y: 0, s: 1, plain: !pen });
+  } else if (it.k === 'line' || it.k === 'poly') {
+    c.draw([{ k: it.k, pts: it.pts.map(([x, y]) => P2(x, y, it.z).slice(0, 2)), role: it.role, tone: it.tone, w: it.w || 0.4 }], { x: 0, y: 0, s: 1, plain: !pen });
+  } else if (it.k === 'glow') {
+    const [x, y, s] = P2(it.x, it.y, it.z), r = Math.max(2, it.r * c.W * s), gr = gg.createRadialGradient(x, y, 0, x, y, r);
+    gr.addColorStop(0, bdRgba(c.col(it.role), 1)); gr.addColorStop(1, bdRgba(c.col(it.role), 0));
+    gg.globalCompositeOperation = 'lighter'; gg.fillStyle = gr; gg.fillRect(x - r, y - r, 2 * r, 2 * r);
+  } else if (it.k === 'cone') {
+    const [x, y, s] = P2(it.x, it.y, it.z), w0 = it.w0 * c.W * s, w1 = it.w1 * c.W * s, h = it.h * c.H * s;
+    const gr = gg.createLinearGradient(0, y, 0, y + h);
+    gr.addColorStop(0, bdRgba(c.col(it.role), 1)); gr.addColorStop(1, bdRgba(c.col(it.role), 0));
+    gg.globalCompositeOperation = 'lighter'; gg.fillStyle = gr;
+    gg.beginPath(); gg.moveTo(x - w0 / 2, y); gg.lineTo(x + w0 / 2, y); gg.lineTo(x + w1 / 2, y + h); gg.lineTo(x - w1 / 2, y + h); gg.closePath(); gg.fill();
+  }
+  gg.restore();
+}
+function drawBackdrop(c, items, BD, cam, proj, lens, depthOn) {
+  const g = c.g;
+  g.save(); g.beginPath(); g.rect(0, 0, c.W, c.H); g.clip();       // chỉ trong ô của shot (cú máy liền không tràn sang ô bên)
+  try { drawBackdropIn(c, items, BD, cam, proj, lens, depthOn); } finally { g.restore(); }
+}
+function drawBackdropIn(c, items, BD, cam, proj, lens, depthOn) {
+  const g = c.g, dimK = BD.dim ?? 0.85, pen = BD.pen === true;
+  const live = items.filter((it) => it.k === 'sky' || it.k === 'floor' || it.twinkle !== undefined);
+  const zs = [...new Set(items.filter((it) => !live.includes(it)).map((it) => it.z))].sort((a, b) => b - a);
+  const order = [...zs.map((z) => ({ z, layer: true })), ...live].sort((a, b) => (b.z - a.z) || (a.layer ? -1 : 1));
+  for (const L of order) {
+    const d = L.z - cam.z;
+    if (d < -1.5) continue;
+    if (L.k === 'sky') {
+      const gr = g.createLinearGradient(0, 0, 0, c.H);
+      gr.addColorStop(0, bdRgba(c.pal.bg, 1)); gr.addColorStop(0.62, bdRgba(c.mix(c.pal.bg, c.col(L.role), L.a ?? 0.1), 1)); gr.addColorStop(1, bdRgba(c.pal.bg, 1));
+      g.save(); g.fillStyle = gr; g.fillRect(0, 0, c.W, c.H); g.restore();
+      continue;
+    }
+    if (L.k === 'floor') {
+      const [, yF] = proj(c, cam, 0.5, L.y, L.z), y0 = Math.max(-10, Math.min(c.H + 10, yF));
+      c.draw([{ k: 'rect', x: -20, y: y0, w: c.W + 40, h: c.H - y0 + 20, rad: 0, role: L.role, tone: L.tone }], { x: 0, y: 0, s: 1, plain: true });
+      continue;
+    }
+    if (!L.layer) { g.save(); if (depthOn) g.filter = lens(cam, cam.focus + (L.z - cam.focus) * (BD.blur ?? 0.4), d); bdItem(c, g, L, (x, y, z) => proj(c, cam, x, y, z), pen, dimK); g.restore(); continue; }
+    // lớp tĩnh: vẽ sẵn theo camera gốc (x 0.5, y 0.5, z 0, zoom 1), mỗi frame đặt lại bằng affine theo thị sai của z
+    const z = L.z, s0 = 1 / Math.max(0.12, 1 + z / 2), X0 = (x) => c.W / 2 + (x - 0.5) * c.W * s0, Y0 = (y) => c.H / 2 + (y - 0.5) * c.H * s0;
+    const minX = X0(-1.4), maxX = X0(2.4), minY = Y0(-0.6), maxY = Y0(1.5), q = z >= 3 ? 0.55 : 0.8;
+    const key = JSON.stringify([BD, c.W, c.H, c.L.look, z]);
+    let cv = BD_CACHE.get(key);
+    if (!cv && c.offscreen) {
+      const P0 = (x, y, zz) => [X0(x) - minX, Y0(y) - minY, s0];
+      cv = c.offscreen((maxX - minX) * q, (maxY - minY) * q, (gg) => { gg.scale(q, q); for (const it of items) if (it.z === z && !live.includes(it)) bdItem(c, gg, it, (x, y) => P0(x, y), pen, dimK); });
+      BD_CACHE.set(key, cv);
+    }
+    if (!cv) continue;
+    const s = (cam.zoom || 1) / Math.max(0.12, 1 + d / 2), k = s / s0;
+    const dx = c.W / 2 + (minX - c.W / 2) * k + (0.5 - cam.x) * c.W * s, dy = c.H / 2 + (minY - c.H / 2) * k + (0.5 - cam.y) * c.H * s;
+    g.save();
+    if (cam.rot) { g.translate(c.W / 2, c.H / 2); g.rotate(-cam.rot * Math.PI / 180); g.translate(-c.W / 2, -c.H / 2); }
+    if (depthOn) g.filter = lens(cam, cam.focus + (z - cam.focus) * (BD.blur ?? 0.4), d);
+    g.drawImage(cv, dx, dy, cv.width / q * k, cv.height / q * k);
+    g.restore();
+  }
+}
+/** khung đo của một tag (viên nhãn): mỗi look vẽ tag một kiểu (mono/ngoặc ở hud, chữ đậm rộng ở essay…) → lấy bản RỘNG
+ *  nhất của hai cách đo để kẹp vùng an toàn không bao giờ thiếu. */
+function tagBox(c, str) {
+  const a = c.text(`[ ${str} ]`, 0, 0, { size: 62, font: 'mono', upper: true, k: 0, maxW: 820 });
+  const b = c.text(String(str), 0, 0, { size: 62, upper: true, k: 0, maxW: 820 });
+  const wa = a.x1 - a.x0, wb = (b.x1 - b.x0) * 1.08 + 40;
+  return wb > wa ? { x0: -wb / 2, x1: wb / 2, y0: Math.min(a.y0, b.y0), y1: Math.max(a.y1, b.y1), lines: Math.max(a.lines || 1, b.lines || 1) } : a;
+}
+// ---- vòng 22: kính lúp (inset) — vòng tròn phóng to một bộ phận, nối về đúng chỗ bằng hai tiếp tuyến; bên trong là một
+// cảnh nhỏ riêng (actors có keys, dòng hạt `flow`, nhãn) → người xem luôn thấy "đang soi vào đâu" (não, lòng bàn chân…).
+// lens: {of: "id.part" | [x,y], x, y (tâm 0..1), r (bán kính, phần bề rộng khung, mặc định 0.3), u, out, title, role, bg,
+//        actors: [{icon, x, y (0..1 trong kính), size (px như khung 1080 đầy đủ), role, p, rot, in, out, args, keys:[{u,x,y,size,p,rot,alpha}]}],
+//        flow: [{icon, count, from:[x,y], to:[x,y], size, role, speed, spread, p}], labels: [{text, x, y, u, size, role}]}
+// vòng 23: đường chân chữ của tag tiêu đề kính — dưới kính (mặc định) hoặc trên kính; chừa khe 22 px với viền kính theo
+// chiều cao THẬT của tag (tag 2 dòng trước đây đè lên viền kính)
+function lensTitleY(c, side, ly, R, tb, yb) {
+  if (side === 'above') return Math.max(yb + 10 - tb.y0, ly - R - 22 - tb.y1);
+  return Math.min(c.A.bottom - 30 - Math.max(0, tb.y1), ly + R + 22 - tb.y0);
+}
+function drawLens(c, L, ref, u, uf, yb, spot = { side: 'below', dx: 0 }) {
+  const side = spot.side || 'below';
+  const k0 = c.k(uf(L.u ?? 0.3), 12, false) * (L.out !== undefined ? 1 - c.k(uf(L.out), 8, false) : 1);
+  if (k0 <= 0) return [];
+  const g = c.g, e = c.EASE.smooth ? c.EASE.smooth(k0) : k0;
+  const A = Array.isArray(L.of) ? [L.of[0] * c.W, L.of[1] * c.H, 24] : ref(L.of);
+  const R0 = (L.r ?? 0.3) * c.W, lx0 = (L.x ?? 0.5) * c.W, ly0 = Math.max(yb + R0 + 20, Math.min(c.A.bottom - R0 - 30, (L.y ?? 0.4) * c.H));
+  const lx = A ? c.lerp(A[0], lx0, e) : lx0, ly = A ? c.lerp(A[1], ly0, e) : ly0, R = A ? c.lerp(Math.max(10, A[2] * 0.6), R0, e) : R0 * e;
+  const ring = L.role || 'accent';
+  if (A) {                                            // vòng nhỏ quanh bộ phận + hai tiếp tuyến ngoài tới kính
+    const ar = Math.max(16, A[2] * 0.75), dx = lx - A[0], dy = ly - A[1], d = Math.hypot(dx, dy);
+    c.draw([{ k: 'arc', x: 0, y: 0, r: 1, a0: 0, a1: Math.PI * 2, role: ring, w: 0.5 }], { x: A[0], y: A[1], s: ar, plain: true, alpha: Math.min(1, k0 * 2) });
+    if (d > R + ar + 4) {
+      const base = Math.atan2(dy, dx), off = Math.acos(Math.max(-1, Math.min(1, (R - ar) / d)));
+      for (const sgn of [1, -1]) {
+        const a = base + sgn * (Math.PI - off);          // tiếp tuyến ngoài: pháp tuyến chung tại hai điểm tiếp xúc
+        const t1 = [A[0] + Math.cos(a) * ar, A[1] + Math.sin(a) * ar], t2 = [lx + Math.cos(a) * R, ly + Math.sin(a) * R];
+        c.draw([{ k: 'line', pts: [[0, 0], [t2[0] - t1[0], t2[1] - t1[1]]], role: ring, w: 0.35 }], { x: t1[0], y: t1[1], s: 1, plain: true, alpha: 0.7 * Math.min(1, k0 * 2) });
+      }
+    }
+  }
+  g.save();
+  g.beginPath(); g.arc(lx, ly, R, 0, Math.PI * 2); g.closePath();
+  g.fillStyle = (c.pal && c.pal.bg) || '#000'; g.fill();
+  g.clip();
+  const sc = (2 * R) / c.W, box = (x, y) => [lx - R + x * 2 * R, ly - R + y * 2 * R];
+  if (L.bg !== false) { g.save(); g.globalAlpha *= 0.14; c.draw([{ k: 'circle', x: 0, y: 0, r: 1, role: L.bg || 'dim' }], { x: lx, y: ly, s: R, plain: true }); g.restore(); }
+  (L.actors || []).slice(0, 8).forEach((a, i) => {
+    const ks = [{ u: 0, x: a.x ?? 0.5, y: a.y ?? 0.5, size: a.size ?? 300, p: a.p ?? 0.5, rot: a.rot ?? 0, alpha: 1 }, ...(a.keys || [])].sort((p, q) => (p.u ?? 0) - (q.u ?? 0));
+    const q = { ...ks[0] };
+    for (let j = 1; j < ks.length; j++) {
+      const u0 = ks[j - 1].u ?? 0, u1 = ks[j].u ?? 0; if (u <= u0) break;
+      const t = u1 > u0 ? c.clamp((u - u0) / (u1 - u0)) : 1, ee = (c.EASE[ks[j].ease] || c.E)(t);
+      for (const key of ['x', 'y', 'size', 'p', 'rot', 'alpha']) if (ks[j][key] !== undefined) q[key] = c.lerp(ks[j - 1][key] ?? q[key], ks[j][key], ee);
+      if (u < u1) break;
+    }
+    const kin = a.in !== undefined ? c.k(uf(a.in), 8, false) : 1, kout = a.out !== undefined ? 1 - c.k(uf(a.out), 6, false) : 1;
+    if (kin * kout <= 0) return;
+    const [x, y] = box(q.x, q.y);
+    c.icon(a.icon || 'dot', { x, y, s: q.size * sc, role: a.role, p: q.p, rot: q.rot * Math.PI / 180, seed: 200 + i, alpha: (q.alpha ?? 1) * kin * kout * Math.min(1, k0 * 1.5), args: a.args });
+  });
+  for (const fl of (L.flow || []).slice(0, 4)) {      // dòng hạt chảy qua kính (hồng cầu trong mạch, phân tử…)
+    const n = Math.max(1, Math.min(30, fl.count ?? 8)), sp = fl.speed ?? 1, [fx0, fy0] = fl.from || [0, 0.5], [fx1, fy1] = fl.to || [1, 0.5];
+    for (let i = 0; i < n; i++) {
+      const t = ((c.f / c.FPS) * 0.22 * sp + i / n + c.hash(i, 5) * 0.3) % 1, wob = Math.sin(c.f * 0.05 + i) * 0.015;
+      const [x, y] = box(c.lerp(fx0, fx1, t) + wob, c.lerp(fy0, fy1, t) + (c.hash(i, 9) - 0.5) * (fl.spread ?? 0.12));
+      c.icon(fl.icon || 'dot', { x, y, s: (fl.size || 90) * sc * (0.85 + 0.3 * c.hash(i, 3)), role: fl.role, p: fl.p, rot: (fl.rot ?? c.hash(i, 7) * 6) + c.f * 0.01 * (i % 2 ? 1 : -1), seed: 300 + i, alpha: Math.min(1, k0 * 1.5) });
+    }
+  }
+  const gr = g.createRadialGradient(lx, ly, R * 0.72, lx, ly, R);   // viền trong tối dần (cảm giác thấu kính)
+  gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,0.55)'); g.fillStyle = gr; g.fillRect(lx - R, ly - R, 2 * R, 2 * R);
+  for (const l of (L.labels || []).slice(0, 3)) {
+    const kk = c.k(uf(l.u ?? (L.u ?? 0.3) + 0.08), 8, false) * k0; if (kk <= 0) continue;
+    const [x, y] = box(l.x ?? 0.5, l.y ?? 0.82);
+    c.K.label(c, l.text, x, y, kk, { align: 'center', size: Math.max(30, (l.size || 50) * Math.max(0.75, sc)), role: l.role, maxW: R * 1.7 });
+  }
+  g.restore();
+  c.draw([{ k: 'arc', x: 0, y: 0, r: 1, a0: 0, a1: Math.PI * 2, role: ring, w: 0.9 }], { x: lx, y: ly, s: R, plain: true, alpha: Math.min(1, k0 * 2) });
+  let tx = lx, tw = R * 0.9, tc = ly + R + 44, th = 84;
+  if (L.title) {                                       // tag tiêu đề kẹp trong vùng an toàn (đo bản rộng nhất: mono, in hoa, ngoặc)
+    const tb = tagBox(c, L.title), ty = lensTitleY(c, side, ly, R, tb, yb);
+    tw = Math.min((c.A.x1 - c.A.x0) / 2, (tb.x1 - tb.x0) / 2 + 40); tx = Math.min(c.A.x1 - tw, Math.max(c.A.x0 + tw, lx + (spot.dx || 0)));
+    tc = ty + (tb.y0 + tb.y1) / 2; th = tb.y1 - tb.y0 + 30;
+    c.K.tag(c, L.title, tx, ty, k0, ring);
+  }
+  return [{ x: lx, y: ly, w: R, h: 2 * R }, ...(L.title ? [{ x: tx, y: tc, w: tw, h: th }] : [])];   // vùng chiếm (nhãn né)
+}
 function scene(c0, P) {
-  const N = c0.N, acts = P.actors || [], labs = P.labels || [], arrs = P.arrows || [], fxs = P.fx || [];
+  const N = c0.N, acts = P.actors || [], labs = P.labels || [], arrs = P.arrows || [], fxs = P.fx || [], lensList = (P.lenses || []).slice(0, 2);
   const uf = (u) => Math.round(c0.clamp(u ?? 0) * (N - 1));
   const FXSFX = { burst: 'hit', shockwave: 'boom', smoke: 'whoosh_soft', splash: 'splash', sparkle: 'sparkle' };
-  const DK = ['x', 'y', 'size', 'rot', 'p', 'alpha', 'z', 'heat'];
+  const DK = ['x', 'y', 'size', 'rot', 'p', 'alpha', 'z', 'heat', 'xray'];
   const keysOf = (a) => {                              // keyframe đã sắp theo u, thuộc tính thiếu lấy từ key trước
-    const ks = [{ u: a.in ?? 0, x: a.x ?? 0.5, y: a.y ?? 0.55, size: a.size ?? 170, rot: a.rot ?? 0, p: a.p ?? 0.6, alpha: 1, z: a.z ?? 0, heat: a.heat ?? 0 },
+    const ks = [{ u: a.in ?? 0, x: a.x ?? 0.5, y: a.y ?? 0.55, size: a.size ?? 170, rot: a.rot ?? 0, p: a.p ?? 0.6, alpha: 1, z: a.z ?? 0, heat: a.heat ?? 0, xray: a.xray ?? 0 },
       ...(a.keys || []).map((k) => ({ ...k }))].sort((p, q) => (p.u ?? 0) - (q.u ?? 0));
     for (let i = 1; i < ks.length; i++) for (const key of DK) if (ks[i][key] === undefined) ks[i][key] = ks[i - 1][key];
     return ks;
   };
   const KS = Object.fromEntries(acts.map((a, i) => [a.id || `a${i}`, keysOf(a)]));
+  const movesAtAll = (id) => { const ks = KS[id]; return ks.some((k) => Math.abs(k.x - ks[0].x) + Math.abs(k.y - ks[0].y) > 1e-3); };
   const pose = (id, u, c) => {                         // nội suy keyframe (thuộc tính thiếu → giữ giá trị trước)
     const ks = KS[id];
     let cur = { ...ks[0] };
@@ -1235,26 +1452,37 @@ function scene(c0, P) {
   const VI = Object.fromEntries(acts.map((a, i) => [a.id || `a${i}`, [...(a.do || []), ...(a.keys || []).filter((k) => k.verb),
     ...(a.verb ? [{ u: a.in ?? 0, verb: a.verb, args: a.args || {} }] : [])]]));
   // ---- camera + chiều sâu ----
-  const CK = [{ u: 0, x: 0.5, y: 0.5, z: 0, rot: 0, focus: 0 }, ...(P.camera || []).map((k) => ({ ...k }))].sort((p, q) => (p.u ?? 0) - (q.u ?? 0));
-  for (let i = 1; i < CK.length; i++) for (const key of ['x', 'y', 'z', 'rot', 'focus']) if (CK[i][key] === undefined) CK[i][key] = CK[i - 1][key];
+  const CKEYS = ['x', 'y', 'z', 'rot', 'focus', 'zoom'];
+  const CK = [{ u: 0, x: 0.5, y: 0.5, z: 0, rot: 0, focus: 0, zoom: 1 }, ...(P.camera || []).map((k) => ({ ...k }))].sort((p, q) => (p.u ?? 0) - (q.u ?? 0));
+  for (let i = 1; i < CK.length; i++) for (const key of CKEYS) if (CK[i][key] === undefined && !(CK[i].at && (key === 'x' || key === 'y'))) CK[i][key] = CK[i - 1][key];
+  for (let i = 1; i < CK.length; i++) for (const key of ['x', 'y']) if (CK[i][key] === undefined) CK[i][key] = CK[i - 1][key];
   if (CK.length > 1 && (CK[1].u ?? 0) <= 0) CK.shift();           // key của người viết ở u=0 thay cho mặc định
-  const camAt = (u, c) => {
-    let cur = { ...CK[0] };
-    for (let i = 1; i < CK.length; i++) {
-      const u0 = CK[i - 1].u ?? 0, u1 = CK[i].u ?? 0;
+  const camAt = (u, c, target) => {                    // target(ref) → [x, y] thế giới của "id.part" ở frame này (key có `at`)
+    const KK = CK.map((k) => { if (!k.at || !target) return k; const w = target(k.at); return w ? { ...k, x: w[0], y: w[1] } : k; });
+    let cur = { ...KK[0] };
+    for (let i = 1; i < KK.length; i++) {
+      const u0 = KK[i - 1].u ?? 0, u1 = KK[i].u ?? 0;
       if (u <= u0) break;
-      const t = u1 > u0 ? c.clamp((u - u0) / (u1 - u0)) : 1, e = (c.EASE[CK[i].ease] || c.EASE.smooth)(t);
-      for (const key of ['x', 'y', 'z', 'rot', 'focus']) cur[key] = c.lerp(CK[i - 1][key], CK[i][key], e);
+      const t = u1 > u0 ? c.clamp((u - u0) / (u1 - u0)) : 1, e = (c.EASE[KK[i].ease] || c.EASE.smooth)(t);
+      for (const key of CKEYS) cur[key] = key === 'zoom' ? Math.exp(c.lerp(Math.log(KK[i - 1].zoom || 1), Math.log(KK[i].zoom || 1), e)) : c.lerp(KK[i - 1][key], KK[i][key], e);
       if (u < u1) break;
     }
+    cur.zoom = cur.zoom || 1;
     return cur;
   };
   const usesZ = acts.some((a) => a.z !== undefined || (a.keys || []).some((k) => k.z !== undefined)) || labs.some((l) => l.z !== undefined) || fxs.some((x) => x.z !== undefined);
   const depthOn = P.depth !== false && (P.depth === true || (P.depth && typeof P.depth === 'object') || usesZ || (P.camera || []).length > 0);
+  // vòng 23: cảnh không khai camera → máy tự đẩy chậm (zoom 1 → 1.08) và trôi nhẹ về phía vật chính: khung không bao giờ
+  // đứng như slide; tắt bằng auto_camera: false. Không bật chiều sâu (giữ nguyên look của cảnh phẳng).
+  if (!(P.camera || []).length && P.auto_camera !== false && acts.length) {
+    const hero = acts.find((a) => isRigName(a.icon)) || acts.reduce((m, a) => ((a.size ?? 170) > (m.size ?? 170) ? a : m), acts[0]);
+    const hx = c0.clamp(hero.x ?? 0.5, 0.3, 0.7), hy = c0.clamp(hero.y ?? 0.55, 0.35, 0.65);
+    CK.push({ u: 1, x: 0.5 + (hx - 0.5) * 0.12, y: 0.5 + (hy - 0.5) * 0.12, z: 0, rot: 0, focus: 0, zoom: 1.08, ease: 'smooth' });
+  }
   const DO = { layers: true, fg: true, dof: 1, fog: 0.25, ...(P.depth && typeof P.depth === 'object' ? P.depth : {}) };
   const seed = P.seed !== undefined ? (num(P.seed) | 0) : (c0.strSeed(JSON.stringify([P.title, P.kicker, acts.map((a) => a.id || a.icon)])) >>> 0);
   const proj = (c, cam, x, y, z) => {                  // điểm thế giới (0..1 khung, z) → [x px, y px, tỉ lệ phối cảnh, độ sâu so với camera]
-    const d = (z || 0) - cam.z, s = 1 / Math.max(0.12, 1 + d / 2);   // tiêu cự 2: z = 2 → nhỏ một nửa
+    const d = (z || 0) - cam.z, s = (cam.zoom || 1) / Math.max(0.12, 1 + d / 2);   // tiêu cự 2: z = 2 → nhỏ một nửa; zoom = phóng 2D về điểm nhìn
     let sx = c.W / 2 + (x - cam.x) * c.W * s, sy = c.H / 2 + (y - cam.y) * c.H * s;
     if (cam.rot) { const r = -cam.rot * Math.PI / 180, dx = sx - c.W / 2, dy = sy - c.H / 2; sx = c.W / 2 + dx * Math.cos(r) - dy * Math.sin(r); sy = c.H / 2 + dx * Math.sin(r) + dy * Math.cos(r); }
     return [sx, sy, s, d];
@@ -1263,17 +1491,209 @@ function scene(c0, P) {
     const b = Math.min(10, DO.dof * 4 * Math.abs((z || 0) - cam.focus) + extraBlur), br = Math.max(0.4, Math.exp(-DO.fog * Math.max(0, d)));
     return `${b > 0.6 ? `blur(${b.toFixed(1)}px) ` : ''}${br < 0.985 ? `brightness(${br.toFixed(3)})` : ''}`.trim() || 'none';
   };
+  const BD = P.backdrop ? (typeof P.backdrop === 'string' ? { kind: P.backdrop } : P.backdrop) : null;   // vòng 22: bối cảnh đêm nhiều lớp
+  const BDI = BD && BACKDROPS.includes(BD.kind) ? backdropItems(BD.kind, { seed: seed % 997, ...BD }).sort((p, q) => q.z - p.z) : [];
   const DUST = Array.from({ length: 26 }, (_, i) => ({ x: -1.2 + c0.hash(i, seed, 1) * 3.4, y: -0.3 + c0.hash(i, seed, 2) * 1.6, z: 1.6 + c0.hash(i, seed, 3) * 4.4, r: 5 + c0.hash(i, seed, 4) * 12, k: i % 3 }));
   const fgU = c0.hash(seed, 7, 1) < 0.5 ? 0.06 + c0.hash(seed, 7, 2) * 0.22 : 0.56 + c0.hash(seed, 7, 3) * 0.12;   // né u≈0.5 và cuối shot (frame OCR)
   const cues = [...fxs.map((x) => ({ f: uf(x.u), name: FXSFX[x.kind] || 'pop', kick: x.kind === 'burst' || x.kind === 'shockwave' ? 0.7 : 0 })),
                 ...acts.filter((a) => (a.in ?? 0) > 0.02).map((a) => ({ f: uf(a.in), name: 'pop' })),
                 ...(depthOn && DO.fg && N >= 45 ? [{ f: uf(fgU + 0.1), name: 'whoosh_soft' }] : [])];
+  // ---- vòng 23: nhãn né VẬT (trước chỉ né nhãn khác/kính). Chỗ đặt chọn MỘT LẦN cho cả đời nhãn, từ quỹ đạo keyframe (hàm
+  // thuần → worker nào cũng chọn giống nhau, nhãn không nhảy giữa các frame). Hộp vật = điểm neo bộ phận (rig người: đầu,
+  // tay, chân…) hoặc khung bao thật của icon (c.iconBox); vật rộng gần hết khung (đường chạy, mạch máu) tính nhẹ hơn.
+  // Nhãn `fixed: true` giữ đúng chỗ người viết đặt. Vị trí vật tính qua camera của cảnh (bỏ verb/rung nhỏ).
+  const IDX = Object.fromEntries(acts.map((a, i) => [a.id || `a${i}`, i]));
+  const UA = {};
+  const unitAnch = (c, id) => {
+    if (UA[id]) return UA[id];
+    const a = acts[IDX[id]];
+    let an = null;
+    const look = { action: a.action, view: a.view, outfit: a.outfit, hair: a.hair, build: a.build, ...(a.args || {}) };   // đúng góc nhìn/ngoại hình
+    try { an = c.iconAnchors ? c.iconAnchors(a.icon || 'dot', { x: 0, y: 0, s: 1, seed: IDX[id] + 3, args: look }) : null; } catch (e) { an = null; }
+    let B = [-0.9, -0.9, 0.9, 0.9];                      // dự phòng (ctx cũ không có iconBox)
+    try { if (c.iconBox) B = c.iconBox(a.icon || 'dot', { seed: IDX[id] + 3, p: a.p, args: look }); } catch (e) { /* giữ dự phòng */ }
+    const rig = isRigName(a.icon), w = Math.max(-B[0], B[2]);   // rig tự quay mặt theo hướng đi → khung đối xứng
+    let parts = null;                                    // vật thường: từng mảnh (hình thưa không bị coi là khối đặc)
+    try { if (!rig && c.iconParts) parts = c.iconParts(a.icon || 'dot', { seed: IDX[id] + 3, p: a.p, args: look }); } catch (e) { parts = null; }
+    return (UA[id] = { an: an || {}, x0: (rig ? -w : B[0]) - 0.04, x1: (rig ? w : B[2]) + 0.04, y0: B[1] - 0.04, y1: B[3] + 0.04, parts: parts && parts.length ? parts : null });
+  };
+  const actBoxAt = (c, id, t) => {
+    const a = acts[IDX[id]];
+    if (t < (a.in ?? 0) - 1e-6 || (a.out !== undefined && t >= a.out)) return null;
+    const q = pose(id, t, c); if ((q.alpha ?? 1) < 0.3) return null;
+    const [X, Y, sc] = proj(c, camAt(t, c, worldAt(c, t)), q.x, q.y, q.z), r = q.size / 2 * sc, U = unitAnch(c, id);   // toạ độ MÀN HÌNH qua camera
+    const box = [X + U.x0 * r, Y + U.y0 * r, X + U.x1 * r, Y + U.y1 * r, (U.x1 - U.x0) * r > 0.8 * c.W ? 0.6 : 1];   // vật rộng cả khung (dải phim, mạch máu): nhẹ hơn
+    if (U.parts) box.parts = U.parts.map((p) => [X + p[0] * r - 4, Y + p[1] * r - 4, X + p[2] * r + 4, Y + p[3] * r + 4]);
+    return box;
+  };
+  // vị trí thế giới của "id.part" ở thời điểm t (cho camera key có `at`) — cùng cách worldOf trong draw, không cần frame
+  const worldAt = (c, t) => (refName) => {
+    const [id, part] = String(refName).split('.'); if (IDX[id] === undefined) return null;
+    const q = pose(id, t, c);
+    if (!part) return [q.x, q.y];
+    const U = unitAnch(c, id), p = U.an[part] || U.an.center || [0, 0, 0.8];
+    return [q.x + p[0] * q.size / 2 / c.W, q.y + p[1] * q.size / 2 / c.H];
+  };
+  // phần hộp chữ đè lên vật cản: vật có từng mảnh → cộng phần đè từng mảnh (không vượt phần đè hộp bao)
+  const ovObs = (bx, o) => {
+    const base = ovA(bx, o);
+    if (!base || !o.parts) return base * (o[4] ?? 1);
+    let s = 0;
+    for (const p of o.parts) s += ovA(bx, p);
+    return Math.min(base, s) * (o[4] ?? 1);
+  };
+  const anchorAt = (c, name, t) => {
+    const [id, part] = String(name).split('.'); if (IDX[id] === undefined) return null;
+    const q = pose(id, t, c), [X, Y, sc] = proj(c, camAt(t, c, worldAt(c, t)), q.x, q.y, q.z), r = q.size / 2 * sc;
+    if (!part) return [X, Y, r];
+    const U = unitAnch(c, id), p = U.an[part] || U.an.center || [0, 0, 0.8];
+    return [X + p[0] * r, Y + p[1] * r, (p[2] ?? 0.3) * r];
+  };
+  const lensGeo = (c, L, yb) => { const R0 = (L.r ?? 0.3) * c.W; return [(L.x ?? 0.5) * c.W, Math.max(yb + R0 + 20, Math.min(c.A.bottom - R0 - 30, (L.y ?? 0.4) * c.H)), R0]; };
+  const lensBoxAt = (c, L, t, yb) => {
+    if (t < (L.u ?? 0.3) || (L.out !== undefined && t >= L.out)) return null;
+    const [lx, ly, R0] = lensGeo(c, L, yb); return [lx - R0, ly - R0, lx + R0, ly + R0];
+  };
+  const ovA = (p, q) => Math.max(0, Math.min(p[2], q[2]) - Math.max(p[0], q[0])) * Math.max(0, Math.min(p[3], q[3]) - Math.max(p[1], q[1]));
+  const span = (u0, u1) => { const a = c0.clamp(u0), b = c0.clamp(Math.max(a, u1)); return [a + 0.02, (a + b) / 2, b - 0.03].map((t) => c0.clamp(Math.max(a, t))); };
+  const labBox = (x, y, m) => [x - m.hw, y + m.y0 - 10, x + m.hw, y + m.y1 + 10];   // (x, y) = tâm ngang + chân chữ dòng đầu
+  const SIDES = ['below', 'above', 'right', 'left', 'below2', 'above2'];
+  const FREE = [0, 90, -90, 180, -180, 270, -270, 360, -360, 450, -450, 540, -540, 630, -630, 720, -720].flatMap((dy) => [0, -230, 230, -400, 400].map((dx) => [dx, dy]))
+    .sort((p, q) => Math.hypot(...p) - Math.hypot(...q));   // lưới chỗ thử quanh vị trí người viết đặt, gần trước
+  const sidePos = (A, side, m) => {
+    const yc = A[1] - (m.y0 + m.y1) / 2, lh = m.y1 - m.y0 + 24;
+    if (side === 'above') return [A[0], A[1] - A[2] - 30 - m.y1];
+    if (side === 'right') return [A[0] + A[2] + m.hw + 18, yc];
+    if (side === 'left') return [A[0] - A[2] - m.hw - 18, yc];
+    if (side === 'below2') return [A[0], A[1] + A[2] + 70 + lh];
+    if (side === 'above2') return [A[0], A[1] - A[2] - 30 - m.y1 - lh];
+    return [A[0], A[1] + A[2] + 70];
+  };
+  const clampLab = (c, x, y, m, minY) => [Math.min(c.A.x1 - m.hw, Math.max(c.A.x0 + m.hw, x)), Math.min(c.A.bottom - 26, Math.max(minY, y))];
+  const LCH = new Map(), LBOX = [], LM = [], LSIDE = new Map(), LOV = [];
+  const labMeasure = (c, li) => {
+    if (LM[li]) return LM[li];
+    const l = labs[li], bm = l.tag ? tagBox(c, l.text) : c.text(l.text, 0, 0, { size: l.size || 54, k: 0, maxW: 760 });
+    return (LM[li] = { hw: Math.min((c.A.x1 - c.A.x0) / 2, (bm.x1 - bm.x0) / 2 + (l.tag ? 40 : 20)), y0: bm.y0, y1: bm.y1, bm });
+  };
+  const obstaclesAt = (c, t, yb, upto) => {
+    const ob = [];
+    for (const id of Object.keys(IDX)) { const b = actBoxAt(c, id, t); if (b) ob.push(b); }
+    lensList.forEach((L, Li) => {
+      const b = lensBoxAt(c, L, t, yb); if (!b) return;
+      ob.push(b);
+      if (L.title) {                                     // tag tiêu đề kính (đã chọn phía) cũng là vật cản
+        const sp = lensSide(c, Li, yb), tb = tagBox(c, L.title), tw = Math.min((c.A.x1 - c.A.x0) / 2, (tb.x1 - tb.x0) / 2 + 40), [lx, ly, R0] = lensGeo(c, L, yb);
+        const tx = Math.min(c.A.x1 - tw, Math.max(c.A.x0 + tw, lx + sp.dx)), ty = lensTitleY(c, sp.side, ly, R0, tb, yb);
+        ob.push([tx - tw, ty + tb.y0 - 12, tx + tw, ty + tb.y1 + 12]);
+      }
+    });
+    for (let lj = 0; lj < upto; lj++) { const b = LBOX[lj] && LBOX[lj](t); if (b) ob.push(b); }
+    return ob;
+  };
+  const chooseSpot = (c, li, yb, minY) => {
+    const key = `${li}|${Math.round(yb)}`; if (LCH.has(key)) return LCH.get(key);
+    const l = labs[li], m = labMeasure(c, li), T = span(l.u ?? 0.2, l.out ?? 1), OB = T.map((t) => obstaclesAt(c, t, yb, li));
+    const posAt = (cand, t) => {
+      if (l.of) { const A = anchorAt(c, l.of, t); if (!A) return null; const [x, y] = sidePos(A, cand, m); return clampLab(c, x, y, m, minY); }
+      return clampLab(c, (l.x ?? 0.5) * c.W + cand[0], (l.y ?? 0.8) * c.H + cand[1], m, minY);
+    };
+    const cands = l.fixed ? [l.of ? 'below' : [0, 0]] : l.of ? SIDES : FREE;
+    let best = cands[0], bestS = Infinity, bestO = 0;
+    cands.forEach((cand, ci) => {
+      let o2 = 0;
+      T.forEach((t, ti) => {
+        const p = posAt(cand, t); if (!p) return;
+        const bx = labBox(p[0], p[1], m), area = Math.max(1, (bx[2] - bx[0]) * (bx[3] - bx[1]));
+        for (const o of OB[ti]) o2 += ovObs(bx, o) / area;
+      });
+      const s = o2 + (l.of ? 0.05 * ci : 0.00025 * Math.hypot(cand[0], cand[1]));   // nhãn tự do: phạt theo quãng dời
+      if (s < bestS - 1e-9) { bestS = s; best = cand; bestO = o2 / T.length; }
+    });
+    LCH.set(key, best);
+    LOV[li] = bestO;                                     // phần đè còn lại (0..1) → > 0.08: lót nền tối sau chữ
+    LBOX[li] = (t) => (t < (l.u ?? 0.2) || (l.out !== undefined && t >= l.out) ? null : ((p) => p && labBox(p[0], p[1], m))(posAt(best, t)));
+    return best;
+  };
+  const lensSide = (c, Li, yb) => {                    // tag tiêu đề kính: dưới (mặc định)/trên kính, dời ngang — chỗ ít đè vật nhất
+    const key = `${Li}|${Math.round(yb)}`; if (LSIDE.has(key)) return LSIDE.get(key);
+    const L = lensList[Li]; let side = { side: 'below', dx: 0 };
+    if (L.title) {
+      const tb = tagBox(c, L.title), tw = Math.min((c.A.x1 - c.A.x0) / 2, (tb.x1 - tb.x0) / 2 + 40), [lx, ly, R0] = lensGeo(c, L, yb);
+      const T = span(L.u ?? 0.3, L.out ?? 1);
+      const sc = (sd, dx) => {
+        const tx = Math.min(c.A.x1 - tw, Math.max(c.A.x0 + tw, lx + dx));
+        const ty = lensTitleY(c, sd, ly, R0, tb, yb), bx = [tx - tw, ty + tb.y0 - 12, tx + tw, ty + tb.y1 + 12], area = Math.max(1, (bx[2] - bx[0]) * (bx[3] - bx[1]));
+        if (sd === 'above' && bx[1] < yb + 4) return Infinity;
+        if (sd === 'below' && bx[1] < ly + R0 - 4) return Infinity;   // bị kẹp đáy khung → đè kính
+        let s = (sd === 'above' ? 0.05 : 0) + 0.0003 * Math.abs(dx);
+        for (const t of T) {
+          for (const id of Object.keys(IDX)) { const b = actBoxAt(c, id, t); if (b) s += ovObs(bx, b) / area; }
+          labs.forEach((l, li) => {                      // nhãn tự do ở chỗ người viết đặt: tiêu đề kính đừng chiếm chỗ của nó
+            if (l.of || l.bubble || t < (l.u ?? 0.2) || (l.out !== undefined && t >= l.out)) return;
+            const m = labMeasure(c, li), [x, y] = clampLab(c, (l.x ?? 0.5) * c.W, (l.y ?? 0.8) * c.H, m, Math.max(c.A.top + 70, yb + (l.tag ? 76 : 48)));
+            s += ovA(bx, labBox(x, y, m)) / area;
+          });
+        }
+        return s;
+      };
+      let bs = Infinity;
+      for (const sd of ['below', 'above']) for (const dx of [0, 150, -150, 300, -300]) { const v = sc(sd, dx); if (v < bs - 1e-9) { bs = v; side = { side: sd, dx }; } }
+    }
+    LSIDE.set(key, side);
+    return side;
+  };
   return {
-    cues, texts: names(P.kicker, P.title, ...labs.map((l) => l.text)),
+    cues: [...cues, ...lensList.map((L) => ({ f: uf(L.u ?? 0.3), name: 'whoosh_soft' }))],
+    texts: names(P.kicker, P.title, ...labs.map((l) => l.text), ...lensList.flatMap((L) => [L.title, ...(L.labels || []).map((l) => l.text)])),
+    // vòng 23: QA — phần hộp chữ còn đè hình sau khi né (0..1, trung bình theo đời nhãn); cần ít nhất một lần draw
+    report() { return labs.map((l, li) => ({ text: String(l.text || ''), overlap: Math.round((LOV[li] || 0) * 1000) / 1000 })).filter((r) => r.overlap > 0.02); },
     draw(c) {
       const yb = (P.title || P.kicker) ? drawHeader(c, P, c.k(1, 10), true) : c.A.top;
-      const u = c.clamp(c.f / Math.max(1, N - 1)), at = {}, g = c.g, cam = camAt(u, c);
-      if (depthOn && DO.layers) {                      // hậu cảnh: bụi/mảnh xa, thị sai + DOF theo đúng camera của cảnh
+      const u = c.clamp(c.f / Math.max(1, N - 1)), at = {}, AN = {}, g = c.g;
+      // ctx cũ/giả (test node, công cụ ngoài) có thể thiếu hàm neo → dự phòng: không đăng ký, bộ phận = tâm vật
+      const regA = c.anchor || (() => {}), pick = c.pickPart || ((an, p) => an[p] || an.center || null);
+      const icA = c.iconAnchors || ((n, o) => ({ center: [o.x ?? 0, o.y ?? 0, (o.s ?? 1) * 0.8] }));
+      const sm01 = (a, b, x) => { const t = c.clamp((x - a) / (b - a)); return t * t * (3 - 2 * t); };
+      // ---- tham số nhân vật ở frame này (dùng chung: camera bám bộ phận, điểm neo, vẽ) ----
+      const argsOf = (a, id, i) => {
+        const q = pose(id, u, c), rig = isRigName(a.icon);
+        const dx = rig ? q.x - pose(id, Math.max(0, u - 0.02), c).x : 0;
+        const face = a.face || (rig && !/:(left|right)\b/.test(a.icon) && dx < -1e-4 ? 'left' : undefined);
+        const args = { action: discrete(a, id, u, 'action'), expr: discrete(a, id, u, 'expr'), face, hair: a.hair, colors: a.colors, heat: q.heat, t0: uf(a.in ?? 0) / c.FPS,
+          view: discrete(a, id, u, 'view'), outfit: a.outfit, bottom: a.bottom, beard: a.beard, glasses: a.glasses, build: a.build };   // vòng 23: góc nhìn (đổi theo key) + ngoại hình
+        if (a.freeze !== undefined) args.freeze_f = uf(a.freeze);          // vòng 22: đứng hình (camera lao vào bộ phận không thấy chân còn chạy)
+        if (rig) {
+          if (q.xray > 0.01 && a.organs) { args.xray = q.xray; args.organs = a.organs; if (a.bpm) args.bpm = a.bpm; }
+          const tk = talkAt(a, u, c.f / c.FPS, i);
+          if (tk > 0) args.talk = tk;
+          const act = args.action || (String(a.icon).split(':')[2] || 'idle');
+          if (!a.slide && (act === 'walk' || act === 'run') && movesAtAll(id)) {   // chống trượt chân: pha bước = quãng đường / sải
+            const u0 = a.in ?? 0, steps = 24;
+            let Ld = 0, prev = pose(id, u0, c);
+            for (let j = 1; j <= steps; j++) {
+              const uj = u0 + (Math.max(u0, u) - u0) * j / steps, cj = pose(id, uj, c);
+              Ld += Math.hypot((cj.x - prev.x) * c.W, (cj.y - prev.y) * c.H) / Math.max(10, (cj.size + prev.size) / 4);
+              prev = cj;
+            }
+            args.cycle = Ld / Math.max(0.1, strideOf(a.icon, act));
+          }
+        }
+        return { q, args, rig };
+      };
+      const ACT = Object.fromEntries(acts.map((a, i) => [a.id || `a${i}`, { a, i, ...argsOf(a, a.id || `a${i}`, i) }]));
+      const worldOf = (refName) => {                   // "id.part" → [x, y] thế giới (0..1) ở frame này — cho camera `at`
+        const [id, part] = String(refName).split('.'), o = ACT[id];
+        if (!o) return null;
+        const q = o.q;
+        if (!part) return [q.x, q.y];
+        const un = icA(o.a.icon || 'dot', { x: 0, y: 0, s: 1, seed: o.i + 3, args: o.args }), pt = pick(un, part);
+        return [q.x + pt[0] * q.size / 2 / c.W, q.y + pt[1] * q.size / 2 / c.H];
+      };
+      // zoom sâu / portal → nhãn lui; keep_labels: true = camera "soi kính lúp" (nhãn là nội dung, giữ lại khi phóng)
+      const cam = camAt(u, c, worldOf), kz = (P.keep_labels ? 1 : 1 - sm01(1.8, 3.2, cam.zoom || 1)) * (c.fade ?? 1);
+      if (BDI.length) drawBackdrop(c, BDI, BD, cam, proj, lens, depthOn);
+      if (depthOn && DO.layers && !BDI.length) {       // hậu cảnh: bụi/mảnh xa, thị sai + DOF theo đúng camera của cảnh
         const kind = { hud: 'spark', synth: 'spark', sketch: 'cross', boil: 'cross', swiss: 'tick', picto: 'disc', spy: 'strip' }[c.L.look] || 'mote';
         for (const p of DUST) {
           const [x, y, s, d] = proj(c, cam, p.x, p.y + Math.sin((c.f + p.r * 7) * 0.015) * 0.01, p.z); if (x < -40 || x > c.W + 40 || y < -40 || y > c.H + 40) continue;
@@ -1286,41 +1706,66 @@ function scene(c0, P) {
         }
       }
       const order = acts.map((a, i) => {
-        const id = a.id || `a${i}`, q = pose(id, u, c), vm = verbDelta(c, VI[id], i, acts.length, q.size) || VID;
+        const id = a.id || `a${i}`, q = ACT[id].q, vm = verbDelta(c, VI[id], i, acts.length, q.size) || VID;
         const z = q.z - vm.z * q.size / c.H, [x0, y0, s, d] = proj(c, cam, q.x, q.y, z);
         const r = q.size / 2 * s, x = x0 + vm.x * s, y = y0 + vm.y * s;
+        const rot = (q.rot - (depthOn ? cam.rot : 0)) * Math.PI / 180 + vm.rot;
         at[id] = [x, y, r];
-        return { a, i, id, q, vm, z, d, x, y, r };
+        regA(id, x, y, r);
+        if (!a.lottie_url && !a.rive_url) {
+          AN[id] = icA(a.icon || 'dot', { x, y, s: r, sx: vm.sx, sy: vm.sy, rot, seed: i + 3, args: ACT[id].args });
+          for (const [pn, v] of Object.entries(AN[id])) regA(`${id}.${pn}`, v[0], v[1], v[2]);
+        }
+        return { a, i, id, q, vm, z, d, x, y, r, rot };
       });
+      const ref = (name) => {                          // "id" | "id.part" → [x, y, r] canvas
+        if (!name) return null;
+        const [id, part] = String(name).split('.');
+        if (!at[id]) return null;
+        return part && AN[id] ? pick(AN[id], part) : at[id];
+      };
       if (depthOn) order.sort((p, q) => q.d - p.d || p.i - q.i);   // xa vẽ trước (painter)
       for (const o of order) {
-        const { a, i, id, q, vm, x, y, r } = o, s = r;
+        const { a, i, id, q, vm, x, y, r, rot } = o, s = r;
         const kin = c.k(uf(a.in ?? 0), 8, false), kout = a.out !== undefined ? 1 - c.k(uf(a.out), 6, false) : 1;
         if (kin <= 0 || kout <= 0 || o.d < -1.76) continue;
         g.save();
         if (depthOn) g.filter = lens(cam, o.z, o.d, vm.blur);
         else if (vm.blur > 0.6) g.filter = `blur(${vm.blur.toFixed(1)}px)`;
         if ((a.role === 'hot' && s < 400) || vm.glow > 0.05) c.K.halo(c, x, y, s * (1 + 0.3 * vm.glow));
-        const rot = (q.rot - (depthOn ? cam.rot : 0)) * Math.PI / 180 + vm.rot, alpha = q.alpha * kout * vm.alpha;
+        const alpha = q.alpha * kout * vm.alpha;
         if (a.lottie_url || a.rive_url) {                   // media actor: Lottie/Rive chạy theo frame (engines/html/media.js)
           c.enter(kin, [x - s, y - s, 2 * s, 2 * s], () => c.media.draw(a, x, y, s, c.f - uf(a.in ?? 0), c.FPS, alpha, rot));
         } else {
           // nhân vật rig:<loài> (rig2d.js): hành động/biểu cảm đổi theo key, đồng hồ riêng từ lúc vào, tự quay mặt theo hướng đi
-          const rig = typeof a.icon === 'string' && a.icon.startsWith('rig:'), dx = rig ? q.x - pose(id, Math.max(0, u - 0.02), c).x : 0;
-          const face = a.face || (rig && !/:(left|right)\b/.test(a.icon) && dx < -1e-4 ? 'left' : undefined);
-          const args = { action: discrete(a, id, u, 'action'), expr: discrete(a, id, u, 'expr'), face, hair: a.hair, colors: a.colors, heat: q.heat, t0: uf(a.in ?? 0) / c.FPS };
+          const args = { ...ACT[id].args };
+          if (a.look_at && ACT[id].rig) {              // mắt nhìn theo vật/bộ phận khác (đổi dấu x khi nhân vật quay trái)
+            const T = ref(a.look_at), E0 = pick(AN[id] || {}, 'eye') || [x, y];
+            if (T) { const dx = T[0] - E0[0], dy = T[1] - E0[1], dd = Math.hypot(dx, dy) || 1; args.gaze = [dx / dd * 0.85 * (args.face === 'left' ? -1 : 1), dy / dd * 0.6]; }
+          }
           c.enter(kin, [x - s, y - s, 2 * s, 2 * s], () => c.icon(a.icon || 'dot', { x, y, s, sx: vm.sx, sy: vm.sy, role: a.role, p: q.p, rot, alpha, heat: q.heat, seed: i + 3, args, k: vm.reveal, z: o.z }));
+          if (a.hold && AN[id] && kin > 0.3) {          // đạo cụ cầm tay (thú: ngậm ở miệng)
+            const hp = pick(AN[id], ACT[id].rig ? 'hand' : 'right');
+            c.icon(a.hold, { x: hp[0] + s * 0.06 * (args.face === 'left' ? -1 : 1), y: hp[1] - s * 0.1, s: s * 0.2 * (a.hold_size || 1), role: a.hold_role, rot: rot * 0.5, alpha, seed: i + 41, p: q.p });
+          }
+          const fp = discrete(a, id, u, 'focus');
+          if (fp && AN[id]) {                          // vầng sáng nhịp quanh một bộ phận (gọi tên cơ chế đang nói)
+            const [px, py, pr] = pick(AN[id], fp), pu = 0.5 + 0.5 * Math.sin(c.f * 0.22);
+            c.K.halo(c, px, py, Math.max(40, pr * 2.4));
+            c.draw([{ k: 'arc', x: 0, y: 0, r: 1, a0: 0, a1: Math.PI * 2, role: a.focus_role || 'accent', w: 0.55 }], { x: px, y: py, s: Math.max(18, pr * (1.45 + 0.12 * pu)), plain: true, alpha: alpha * (0.65 + 0.35 * pu) });
+          }
         }
         g.restore();
       }
       for (const ar of arrs) {
-        const A = at[ar.from], B = at[ar.to]; if (!A || !B) continue;
-        const k = c.k(uf(ar.u ?? 0.3), 9, false), d = Math.hypot(B[0] - A[0], B[1] - A[1]) || 1, ux = (B[0] - A[0]) / d, uy = (B[1] - A[1]) / d;
+        const A = ref(ar.from), B = ref(ar.to); if (!A || !B) continue;
+        const k = c.k(uf(ar.u ?? 0.3), 9, false) * kz, d = Math.hypot(B[0] - A[0], B[1] - A[1]) || 1, ux = (B[0] - A[0]) / d, uy = (B[1] - A[1]) / d;
+        if (k <= 0) continue;
         c.K.arrow(c, A[0] + ux * A[2] * 1.15, A[1] + uy * A[2] * 1.15, B[0] - ux * B[2] * 1.2, B[1] - uy * B[2] * 1.2, k, 'dim');
       }
       for (const x of fxs) {
         const f0 = uf(x.u), t = c.f - f0; if (t < 0 || t > 22) continue;
-        const A = x.at && at[x.at], pp = A ? null : depthOn ? proj(c, cam, x.x ?? 0.5, x.y ?? 0.5, x.z ?? 0) : [(x.x ?? 0.5) * c.W, (x.y ?? 0.5) * c.H, 1];
+        const A = x.at && ref(x.at), pp = A ? null : depthOn ? proj(c, cam, x.x ?? 0.5, x.y ?? 0.5, x.z ?? 0) : [(x.x ?? 0.5) * c.W, (x.y ?? 0.5) * c.H, 1];
         const px = A ? A[0] : pp[0], py = A ? A[1] : pp[1], sc = A ? Math.max(0.3, A[2] / 85) : pp[2];
         if (x.kind === 'splash') {                     // các giọt nhỏ bắn toả ra
           for (let i = 0; i < 7; i++) { const ang = -Math.PI * (0.1 + 0.8 * i / 6), rr = (30 + t * 14) * (depthOn ? sc : 1), gy = t * t * 0.9;
@@ -1337,18 +1782,45 @@ function scene(c0, P) {
           g.restore();
         }
       }
-      for (const l of labs) {
-        const A = l.of && at[l.of], k = c.k(uf(l.u ?? 0.2), 8, false);
+      const placed = [];
+      lensList.forEach((L, Li) => placed.push(...drawLens(c, L, ref, u, uf, yb, lensSide(c, Li, yb))));       // vòng 22: nhãn không chồng nhau — nhãn sau né nhãn trước (dời xuống/lên)
+      const minYOf = (l) => Math.max(c.A.top + 70, yb + (l.tag ? 76 : 48));
+      labs.forEach((l, li) => { if (!l.bubble) chooseSpot(c, li, yb, minYOf(l)); });   // vòng 23: chọn chỗ cho MỌI nhãn theo thứ tự (kể cả nhãn chưa hiện)
+      for (let li = 0; li < labs.length; li++) {
+        const l = labs[li];
+        const A = l.of && ref(l.of), k = c.k(uf(l.u ?? 0.2), 8, false) * kz * (l.out !== undefined ? 1 - c.k(uf(l.out), 6, false) : 1);
+        if (k <= 0) continue;
+        if (l.bubble && A) { bubble(c, l, A, k, yb); continue; }
         // nhãn bám vật: kẹp trong vùng an toàn theo bề rộng chữ (đo bằng k=0, không vẽ). Viên nhãn mỗi look một kiểu
         // (mono IN HOA + ngoặc ở hud…) → đo bản rộng nhất (mono, in hoa, có ngoặc) cho chắc, thừa thì nhãn chỉ lùi vào trong.
-        const b = !A ? null : l.tag ? c.text(`[ ${l.text} ]`, 0, 0, { size: 62, font: 'mono', upper: true, k: 0, maxW: 820 })
+        const b = !A ? null : l.tag ? tagBox(c, l.text)
           : c.text(l.text, 0, 0, { size: l.size || 54, k: 0, maxW: 760 });
         const hw = b ? Math.min((c.A.x1 - c.A.x0) / 2, (b.x1 - b.x0) / 2 + (l.tag ? 40 : 20)) : 0;
         const Lp = !A && depthOn && l.z !== undefined ? proj(c, cam, l.x ?? 0.5, l.y ?? 0.8, l.z) : null;
-        const x = A ? Math.min(c.A.x1 - hw, Math.max(c.A.x0 + hw, A[0])) : Lp ? Lp[0] : (l.x ?? 0.5) * c.W;
-        const rawY = A ? A[1] + A[2] + 70 : Lp ? Lp[1] : (l.y ?? 0.8) * c.H;
-        const minLabY = Math.max(c.A.top + 70, yb + (l.tag ? 76 : 48));
-        const y = Math.min(c.A.bottom - 26, Math.max(minLabY, rawY));
+        const bm = b || (l.tag ? tagBox(c, l.text) : c.text(l.text, 0, 0, { size: l.size || 54, k: 0, maxW: 760 }));
+        const hwAll = Math.min((c.A.x1 - c.A.x0) / 2, (bm.x1 - bm.x0) / 2 + (l.tag ? 40 : 20));      // vòng 22: mọi nhãn kẹp trong vùng an toàn
+        const minLabY = minYOf(l), sp = chooseSpot(c, li, yb, minLabY);   // vòng 23: phía/độ dời đã chọn để né vật
+        const [rx, ry] = A ? sidePos(A, sp, labMeasure(c, li)) : [(Lp ? Lp[0] : (l.x ?? 0.5) * c.W) + sp[0], (Lp ? Lp[1] : (l.y ?? 0.8) * c.H) + sp[1]];
+        const x = Math.min(c.A.x1 - hwAll, Math.max(c.A.x0 + hwAll, rx));
+        let y = Math.min(c.A.bottom - 26, Math.max(minLabY, ry));
+        // vòng 23: chỗ đã chọn (chooseSpot) biết kính, tiêu đề kính và nhãn trước → lượt chống chồng ở đây chỉ gỡ phần còn
+        // sót (vd camera bay làm nhãn bám vật trôi vào nhau), cùng hình hộp với chooseSpot (tâm chữ, đệm 10 px), dời ≤ 160 px.
+        const lw2 = Math.min((c.A.x1 - c.A.x0) / 2, (bm.x1 - bm.x0) / 2 + (l.tag ? 40 : 20)), lh = (bm.y1 - bm.y0) + 20, cy0 = (bm.y0 + bm.y1) / 2;
+        const y00 = y;
+        for (let pass = 0; pass < 4; pass++) {
+          const hit = placed.find((q) => Math.abs(q.x - x) < q.w + lw2 - 4 && Math.abs(q.y - (y + cy0)) < (q.h + lh) / 2 - 4);
+          if (!hit) break;
+          const down = hit.y + (hit.h + lh) / 2 + 6 - cy0, up = hit.y - (hit.h + lh) / 2 - 6 - cy0;
+          const ny = down <= c.A.bottom - 26 && Math.abs(down - y00) <= Math.abs(up - y00) ? down : up >= minLabY ? up : down;
+          if (Math.abs(ny - y00) > 160 || ny > c.A.bottom - 26 || ny < minLabY) break;
+          y = ny;
+        }
+        placed.push({ x, y: y + cy0, w: lw2, h: lh });
+        if (!l.tag && (LOV[li] || 0) > 0.08) {          // vòng 23: không còn chỗ trống → lót nền tối mờ (đọc được, như thẻ chú thích)
+          const m = labMeasure(c, li), pw = m.hw - 6, x0 = x - pw, y0 = y + m.y0 - 14, h = m.y1 - m.y0 + 28;
+          c.later(() => { g.save(); g.globalAlpha *= 0.74 * k; g.fillStyle = (c.pal && c.pal.bg) || '#000'; g.beginPath();
+            if (g.roundRect) g.roundRect(x0, y0, 2 * pw, h, 16); else g.rect(x0, y0, 2 * pw, h); g.fill(); g.restore(); });
+        }
         if (l.tag) c.K.tag(c, l.text, x, y, k, l.role || 'accent'); else c.K.label(c, l.text, x, y, k, { align: 'center', size: l.size || 54, role: l.role, maxW: 760 });
       }
     },

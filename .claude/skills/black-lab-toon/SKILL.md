@@ -28,8 +28,8 @@ Viết lại từ `cartoon-short-kit` (vendor/cartoon-short-kit/SKILL.md) cho h�
 - `mix_raw.wav` của audio.py, `loudnorm` động của finish.sh → stems + `vidlib/mix.py` + master tuyến tính.
 
 ## Quy trình (lệnh `/video`)
-1. `python studio.py video "<ý tưởng>"` → `need_storyboard`: đọc `brief.md`, kiểm chứng số liệu (web search, ghi
-   `sources`), viết `storyboard.json` (chỉ trường ngữ nghĩa; Flow prompt do tool compile).
+1. `python studio.py video "<ý tưởng>"` → `need_storyboard`: đọc `brief.md`, kiểm chứng số liệu (WebSearch + mở trang
+   bằng WebFetch; ghi `sources` có cấu trúc + `claims`, shot ghi `claims` — vòng 21, `python studio.py facts <slug>`), viết `storyboard.json` (chỉ trường ngữ nghĩa; Flow prompt do tool compile).
 2. Chọn đường dựng từng shot: **`mode: code`** cho cảnh Flow làm kém — sơ đồ, mặt cắt, so sánh tỉ lệ, cân, thước,
    nhiệt kế, đồng hồ đo, bộ đếm, chữ trong cảnh cần đúng chính tả, outro/"next", cảnh nối loop, camera bay chính xác.
    `"code": {"scene": "<engines/three/scenes/*.js>", "params": {...}}`. **Mọi ý tưởng mới dùng cảnh tổng quát `stage`**:

@@ -119,7 +119,7 @@ class Rig(unittest.TestCase):
         """Mọi loài × hành động × biểu cảm × vài frame: primitive hợp lệ (toạ độ hữu hạn, vai màu đúng), tất định,
         có chuyển động (thở/đi), quay trái = đối xứng gương."""
         out = node(f"""import {{ SPECIES, ACTIONS, EXPRS, rigPrims }} from '{RIG}';
-const ROLES = new Set(['ink','dim','hot','cold','accent','bg']); let n = 0, bad = [], still = [];
+const ROLES = new Set(['ink','dim','hot','cold','accent','bg','skin','hair']); let n = 0, bad = [], still = [];
 for (const sp of Object.keys(SPECIES)) for (const a of ACTIONS) {{
   for (const e of EXPRS) for (const f of [0, 13, 47]) {{
     const pr = rigPrims(`rig:${{sp}}:${{a}}:${{e}}`, {{ f, fps: 30, seed: 7 }}); n++;

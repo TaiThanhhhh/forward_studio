@@ -10,6 +10,8 @@ OUTPUTS = [  # (khoá, đường dẫn tương đối, nhãn tiếng Việt)
     ("final", "out/final.mp4", "Video Shorts 9:16"),
     ("endscreen", "out/endscreen_16x9.mp4", "End screen 16:9"),
     ("captions", "out/captions.srt", "Phụ đề .srt"),
+    ("post", "out/post.md", "Bài đăng theo nền tảng (đầu ra gọn)"),
+    ("cover", "out/cover-16x9.jpg", "Bìa 16:9"),
     ("publish", "publish.md", "Tiêu đề / mô tả / hashtag"),
     ("report", "qa/report.html", "Báo cáo QA"),
     ("look", "qa/look/sheet.jpg", "Contact sheet look-check"),
@@ -123,8 +125,9 @@ def _stage_progress(p, sb, status):
         "audio": os.path.exists(os.path.join(p, "work", "mix.wav")),
         "look": os.path.exists(os.path.join(p, "qa", "look", "sheet.jpg")),
         "render": os.path.exists(os.path.join(p, "out", "final.mp4")),
-        "thumbnails": os.path.exists(os.path.join(p, "thumbnails", "contact-sheet.png")),
-        "publish": os.path.exists(os.path.join(p, "publish.md")),
+        "thumbnails": os.path.exists(os.path.join(p, "thumbnails", "contact-sheet.png"))
+        or os.path.exists(os.path.join(p, "out", "cover-16x9.jpg")),
+        "publish": os.path.exists(os.path.join(p, "publish.md")) or os.path.exists(os.path.join(p, "out", "post.md")),
         "qa": os.path.exists(os.path.join(p, "qa", "report.html")),
     }
     stages = pipeline.STAGES
@@ -243,7 +246,8 @@ def detail(slug, last_job=None):
     s.update({
         "stages": _stage_progress(p, sb, s["status"]), "shots_detail": shots, "outputs": outputs,
         "thumbnails": [f"thumbnails/{t}" for t in thumbs], "qa_detail": _qa(p),
-        "publish_md": _read(os.path.join(p, "publish.md")), "topic": sb.get("topic"), "hook": sb.get("hook"),
+        "publish_md": _read(os.path.join(p, "publish.md")) or _read(os.path.join(p, "out", "post.md")),
+        "topic": sb.get("topic"), "hook": sb.get("hook"),
         "truth": sb.get("truth"), "total": tl.get("duration"),
         "style_bible": _read(os.path.join(p, "prompts.txt"))[:6000],
     })

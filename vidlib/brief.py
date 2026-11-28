@@ -120,8 +120,9 @@ def mix_help():
         "  - **5 Cinematic 3D `stage` Camera Presets (`frame.preset`):** `ecu_macro` (extreme close-up hook), "
         "`low_hero` (dramatic low upward angle), `tracking_low` (low side-tracking motion), `over_shoulder` "
         "(perspective clash/target view), `dolly_zoom` (Vertigo tension push/FOV shift). Vary presets across 3D shots.\n"
-        "  - **3 Agency Transitions (`transition_in`):** `iris_match` (scale-through match cut into the subject), "
-        "`whip_match` (directional momentum whip), `tape_stop` (pattern interrupt / myth-busting cut)."
+        "  - **4 Agency Transitions (`transition_in`):** `zoom_through` + `through: \"hero.eye\"` (dive INTO a "
+        "character/prop part of the previous shot — 2D portal or 3D `frame.dive`), `iris_match` (scale-through match cut "
+        "into the subject), `whip_match` (directional momentum whip), `tape_stop` (pattern interrupt / myth-busting cut)."
     )
     return "\n".join(lines)
 
@@ -269,6 +270,53 @@ def strip_json(text):
 
 
 LAST_USAGE = {}     # token của lần gọi gần nhất → pipeline ghi vào work/cost.json
+LAST_RESEARCH = {}  # vòng 21: URL/truy vấn web THẬT của lần gọi gần nhất → work/research.json (facts.py đối chiếu)
+MAX_CONTINUE = 6    # số lần nối tiếp tối đa khi server tạm dừng lượt (pause_turn) trong lúc tìm kiếm
+
+RESEARCH_NOTE = """
+
+## Research tools available in THIS call (fact discipline)
+You have `web_search` and `web_fetch`. Before writing the JSON: search every number and factual claim you plan to use,
+open (`web_fetch`) the primary source for each key number (agency, journal, institute, dataset), and cite in `sources`
+ONLY pages you actually retrieved in this conversation (with `publisher` + `year`). Prefer primary sources over blogs,
+social media or aggregator sites. If you cannot confirm a number, round it with a hedge ("about", "up to") and mark the
+claim `estimate`, or drop it. When research is done, your FINAL message is ONLY the JSON object (no prose)."""
+
+
+def web_tools():
+    """Công cụ server của Claude API cho brief (config/channel.json → facts.web_search; tắt: BRIEF_WEB_SEARCH=0)."""
+    cfg = channel().get("facts") or {}
+    if not cfg.get("web_search", True) or os.environ.get("BRIEF_WEB_SEARCH", "1") == "0":
+        return []
+    return [{"type": "web_search_20260209", "name": "web_search", "max_uses": int(cfg.get("max_searches", 10))},
+            {"type": "web_fetch_20260209", "name": "web_fetch", "max_uses": int(cfg.get("max_fetches", 6))}]
+
+
+def _research_of(blocks):
+    """(urls, queries) thật sự đã tìm/mở — từ các khối kết quả công cụ server trong câu trả lời."""
+    urls, queries = [], []
+    for b in blocks:
+        t = getattr(b, "type", "")
+        if t == "server_tool_use":
+            inp = getattr(b, "input", None) or {}
+            if isinstance(inp, dict) and inp.get("query"):
+                queries.append(str(inp["query"]))
+        elif t == "web_search_tool_result":
+            c = getattr(b, "content", None)
+            if isinstance(c, list):                   # thành công: danh sách kết quả; lỗi: một object (không raise)
+                urls += [getattr(r, "url", None) for r in c if getattr(r, "url", None)]
+        elif t == "web_fetch_tool_result":
+            c = getattr(b, "content", None)
+            if getattr(c, "url", None):
+                urls.append(c.url)
+    return list(dict.fromkeys(urls)), list(dict.fromkeys(queries))
+
+
+def _final_text(blocks):
+    """Chữ sau khối công cụ cuối cùng (phần trả lời; bỏ lời dẫn trước/giữa các lượt tìm)."""
+    last = max((i for i, b in enumerate(blocks) if getattr(b, "type", "").endswith("tool_result")
+                or getattr(b, "type", "") == "server_tool_use"), default=-1)
+    return "".join(b.text for b in blocks[last + 1:] if getattr(b, "type", "") == "text")
 
 
 def ask(provider, prompt):
@@ -276,21 +324,38 @@ def ask(provider, prompt):
     if provider == "claude":
         import anthropic  # noqa: PLC0415 — chỉ cần khi dùng --ai claude
         model = os.environ.get("CLAUDE_MODEL", "claude-opus-5-5")
+        tools = web_tools()
+        user = {"role": "user", "content": prompt + (RESEARCH_NOTE if tools else "")}
+        client, blocks, tin, tout, msg = anthropic.Anthropic(), [], 0, 0, None
         # Output JSON dài → streaming để tránh timeout; effort "high" (mặc định của Opus 5.5 là medium);
-        # fallback phía server khi bị từ chối nhầm.
-        with anthropic.Anthropic().beta.messages.stream(
-                model=model, max_tokens=64000, output_config={"effort": "high"},
-                betas=["server-side-fallback-2026-07-01"], fallbacks="default",
-                messages=[{"role": "user", "content": prompt}]) as stream:
-            msg = stream.get_final_message()
+        # fallback phía server khi bị từ chối nhầm; web search/fetch chạy phía server — pause_turn: gửi lại lượt dở dang
+        # (không thêm tin nhắn "tiếp tục"), server tự chạy tiếp.
+        for _ in range(MAX_CONTINUE + 1):
+            messages = [user] + ([{"role": "assistant", "content": blocks}] if blocks else [])
+            with client.beta.messages.stream(
+                    model=model, max_tokens=64000, output_config={"effort": "high"},
+                    betas=["server-side-fallback-2026-07-01"], fallbacks="default",
+                    messages=messages, **({"tools": tools} if tools else {})) as stream:
+                msg = stream.get_final_message()
+            u = getattr(msg, "usage", None)
+            tin += getattr(u, "input_tokens", 0) or 0
+            tout += getattr(u, "output_tokens", 0) or 0
+            blocks = blocks + list(msg.content)
+            if msg.stop_reason != "pause_turn":
+                break
         if msg.stop_reason == "refusal":
             raise StudioError("Claude từ chối yêu cầu — thử diễn đạt lại ý tưởng.")
         if msg.stop_reason == "max_tokens":
             raise StudioError("Câu trả lời bị cắt (max_tokens) — rút gọn ý tưởng hoặc thử lại.")
-        u = getattr(msg, "usage", None)
-        LAST_USAGE.update({"provider": "claude", "model": model, "tokens_in": getattr(u, "input_tokens", 0) or 0,
-                           "tokens_out": getattr(u, "output_tokens", 0) or 0})
-        return "".join(b.text for b in msg.content if getattr(b, "type", "") == "text")
+        if msg.stop_reason == "pause_turn":
+            raise StudioError(f"Claude còn đang tìm kiếm sau {MAX_CONTINUE} lần nối tiếp — giảm facts.max_searches "
+                              "hoặc thử lại.")
+        urls, queries = _research_of(blocks)
+        LAST_RESEARCH.clear()
+        LAST_RESEARCH.update({"provider": "claude", "model": model, "web_search": bool(tools), "urls": urls,
+                              "queries": queries})
+        LAST_USAGE.update({"provider": "claude", "model": model, "tokens_in": tin, "tokens_out": tout})
+        return _final_text(blocks) if tools else "".join(b.text for b in blocks if getattr(b, "type", "") == "text")
     if provider == "gemini":
         from google import genai  # noqa: PLC0415
 
